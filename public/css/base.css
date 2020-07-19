@@ -1,0 +1,1188 @@
+
+@font-face{
+    font-family: 'Helvetica Neue LT Std-Roman';
+    src: url('../fonts/HelveticaNeueLTStd-Roman.otf') format('opentype');
+}
+
+@font-face{
+    font-family: 'Helvetica Neue LT Std-LtCn';
+    src: url('../fonts/HelveticaNeueLTStd-LtCn.otf') format('opentype');
+}
+
+@font-face{
+    font-family: 'Helvetica Neue LT Std-MdCn';
+    src: url('../fonts/HelveticaNeueLTStd-MdCn.otf') format('opentype');
+}
+
+@font-face{
+    font-family: 'Helvetica Neue LT Std-BdCn';
+    src: url('../fonts/HelveticaNeueLTStd-BdCn.otf') format('opentype');
+}
+
+@font-face{
+    font-family: 'Antonio Bold';
+    src: url('../fonts/antonio.bold.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Antonio Regular';
+    src: url('../fonts/antonio.regular.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Antonio Light';
+    src: url('../fonts/antonio.light.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Jey';
+    src: url('../fonts/Jey.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Material Design Icons';
+    src: url('../fonts/materialdesignicons-webfont.ttf') format('truetype');
+}
+
+.hn-roman{
+    font-family: 'Helvetica Neue LT Std-Roman';
+}
+
+.hn-ltcn{
+    font-family: 'Helvetica Neue LT Std-LtCn';
+}
+
+.hn-mdcn{
+    font-family: 'Helvetica Neue LT Std-MdCn';
+}
+
+.hn-bdcn{
+    font-family: 'Helvetica Neue LT Std-BdCn';
+}
+
+.antonio-bold{
+    font-family: 'Antonio Bold';
+}
+
+.antonio-regular{
+    font-family: 'Antonio Regular';
+}
+
+.antonio-light{
+    font-family: 'Antonio Light';
+}
+
+.jey{
+    font-family: 'Jey';
+}
+
+.material-design{
+    font-family: 'Material Design Icons';
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+#body{
+    margin: 0;   
+}
+
+.not-selected{
+    display: none
+}
+
+@media(max-width: 1920px)
+{
+    .navs-wrapper{
+        position: absolute;
+        width: 100%;
+        top: 0;
+    }
+    #first-nav{
+        width: 100%;
+        height: 60px;
+        background-color: #212f3d;
+        position: fixed;
+        top: 0;
+        z-index: 10;
+    }
+    #second-nav{
+        position: fixed;
+        top: 60px;
+        z-index: 10;
+        width: 100%;
+        height: 45px;
+        background-color: rgba(188, 208, 29, 95%);
+    }
+
+    #first-nav-content{
+        position: relative;
+        height: 100%;
+    }
+
+    .custom-margin{
+        margin-left: 9.375%;
+        margin-right: 9.375%;
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    #logo_link{
+        height: 30px;
+        position: absolute;
+        top: 50%;
+        margin-top: -15px;
+    }
+
+    .logo{
+        height: 30px;
+    }
+
+    #language_selector{
+        color: #c4c4c4;
+        float: right;
+        font-size: 24px;
+        margin-top: 18px;
+        display: flex;
+    }
+    #language_selector i{
+        line-height: 1.2;
+    }
+    #language_selector .l_letters{
+        font-size: 16px;
+        padding-top: 2px;
+        padding-left: 2px;
+    }
+
+    .main-nav{
+        font-size: 24px;
+        text-transform: uppercase;
+        position: relative;
+        height: 100%;
+    }
+
+    .main-nav a{
+        text-decoration: none;
+        padding-right: 30px;
+        color: #212f3d;
+    }
+
+    .menu-content{
+        display: flex;
+        position: absolute;
+        top: 50%;
+        -webkit-transform: translate(0, -40%);
+    }
+
+    .menu-item-container{
+        position: relative;
+    }
+
+    span.marker{
+        position: absolute;
+        top: -25%;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid #212f3d;
+    }
+    #home-banner{
+        margin-top: 60px;
+        width: 100%;
+        height: 750px;
+        position: relative;
+    }
+
+    #home-banner img{
+        width: 100%;
+    }
+
+    .image-review{
+        position: relative;
+    }
+
+    .image-review .review{
+        position: absolute;
+        top: 25%;
+        padding-left: 145px;
+    }
+
+    .home-carousel .slick-slide{
+        margin-left: 0 !important;
+    }
+
+    .home-banner-title{
+        font-size: 48px;
+        line-height: 1.2;
+        width: 400px;
+        color: #ffffff;
+        text-shadow: 0.5px 2px 3px rgba(0, 0, 0, 50%);
+        padding-bottom: 0;
+        /* filter: drop-shadow(2px, 2px); */
+    }
+
+    .home-banner-description{
+        font-size: 24px;
+        line-height: 1.2;
+        /* En el diseño sale diferencia de 30cm, pero calculando los pixeles del line-heigth en la realidad son 22.8 */
+        padding-top: 22.8px;
+        width: 570px;
+        color: #ffffff;
+        text-shadow: 0.5px 2px 5px rgba(0, 0, 0, 50%);
+    }
+    .home-banner-location{
+        line-height: 1.2;
+        color: #ffffff;
+        text-shadow: 0.5px 2px 5px rgba(0, 0, 0, 50%);
+        margin-top: 53.6px;
+        position: relative;
+    }
+    .home-banner-location i{
+        font-size: 40px;
+        line-height: 1.2;
+    }
+    .home-banner-location .home-location{
+        font-size: 30px;
+        position: absolute;
+        top: 0;
+    }
+    .home-banner-weather{
+        color: #ffffff;
+        text-shadow: 0.5px 2px 5px rgba(0, 0, 0, 50%);
+        margin-top: 10.2px;
+        padding-left: 50px;
+        position: relative;
+    }
+    .home-banner-weather i{
+        font-size: 58px;
+        line-height: 1.2;
+    }
+    .home-banner-weather .home-grade{
+        font-size: 48px;
+        position: absolute;
+        top: 0;
+    }
+    .home-banner-weather i,.home-banner-location i{
+        padding-right: 11px;
+    }
+
+    .home-banner-login{
+        position: absolute;
+        top: 20%;
+        left: 57.555%;
+        width: 490px;
+        height: 415px;
+        background-color: #ffffff;
+        box-shadow: 0.5px 2px 15px rgba(0, 0, 0, 15%);
+        border-radius: 10px;
+    }
+
+    .form-login-container{
+        padding: 30px;
+    }
+
+    .form-logo img{
+        height: 48px;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
+
+    .form-logo hr{
+        margin-top: 5px;
+        margin-bottom: 10px;
+        width: 284px;
+        height: 1px;
+        background-color: #6d6d6d;
+    }
+
+    .form-inicio-sesion-text{
+        font-size: 24px;
+        color: #6d6d6d;
+        text-transform: uppercase;
+        text-align: center;
+        line-height: 1.2;
+        padding-top: 2.6px;
+    }
+    .form-login-container .inputs-container{
+        padding-top: 30px;
+        color: #6d6d6d;
+    }
+    .form-login-container .inputs-container input{
+        margin-bottom: 15px;
+        height: 48px;
+        border: 1px solid #c4c4c4;
+    }
+    .form-login-container .form-password-forgotten{
+        color: #6d6d6d;
+    }
+    .form-login-container .form-password-forgotten a{
+        color: #212f3d;
+        text-decoration-line: underline;
+    }
+
+    .home-actions{
+        padding-top: 30px;
+        float: right;
+    }
+    .home-actions button.home-login-btn{
+        width: 120px;
+        height: 36px;
+        text-transform: uppercase;
+        font-size: 18px;
+        border: 2px solid transparent;
+        color: #ffffff;
+        background-color: #212f3d;
+        line-height: 1.2;
+    }
+
+    .home-actions button.home-sign-up{
+        width: 120px;
+        height: 36px;
+        text-transform: uppercase;
+        font-size: 18px;
+        border: 2px solid #212f3d;
+        color: #212f3d;
+        background-color: #ffffff;
+        line-height: 1.2;
+    }
+    .home-actions button.home-login-btn:hover{
+        background-color: #ffffff;
+        border: 2px solid #212f3d;
+        color: #212f3d;
+        line-height: 1.2;
+    }
+
+    .home-actions button.home-sign-up:hover{
+        border: 2px solid transparent;
+        color: #ffffff;
+        background-color: #212f3d;
+        line-height: 1.2;
+    }
+
+    .home-actions .home-sign-up{
+        margin-right: 30px;
+    }
+
+    #destinies{
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        padding-top: 87.6px;
+    }
+
+    .section-title{
+        padding-bottom: 27.6px;
+        font-size: 24px;
+        color: #212f3d;
+        line-height: 1.2;
+    }
+
+    #destinies .dest{
+        position: relative;
+        width: 18.75vw !important;
+        height: 475px !important;
+        border-radius: 10px;
+        box-shadow: 0.5px 2px 5px rgba(0, 0, 0, 35%);
+    }
+
+    #destinies .dest img{
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    #destinies .name-weather{
+        position: absolute;
+        display: flex;
+        top: 30px;
+        width: 11.98vw;
+        height: 47px;
+        background-color: #212f3d;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+    #destinies .name-weather .name{
+        width: 8.85vw;
+        height: 47px;
+        background-color: #bcd01d;
+        font-size: 18px;
+        color: #212f3d;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        padding-left: 15px;
+        padding-top: 10px;
+    }
+
+    #destinies .name-weather .weather{
+        font-size: 14px;
+        color: #ffffff;
+        margin-left: auto;
+        line-height: 1.2;
+        padding-right: 10px;
+        padding-top: 5px;
+    }
+    #destinies .name-weather .weather .weather-time{
+        text-align: right;
+    }
+
+    #destinies .dest .description{
+        position: absolute;
+        bottom: 0;
+        width: 11.98vw;
+        height: 110px;
+        overflow: hidden;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        background-color: rgba(255, 255, 255, 90%);
+        left: 50%;
+        -webkit-transform: translate(-50%, 0);
+        padding: 15px;
+        padding-bottom: 10px;
+        transition: height 0.5s ease-in;
+    }
+    #destinies .dest .description:hover{
+        height: 293px;
+        transition: height 0.5s ease-in;
+    }
+    #destinies .dest .description .inner-text{
+        width: auto;
+        height: 100%;
+        line-height: 1.2;
+        overflow: hidden;
+        color: #212f3d;
+        font-size: 14px;
+    }
+    .slick-dots{
+        bottom: -35px !important;
+    }
+    .slick-dots li button::before{
+        font-size: 15px !important;
+        color: #212f3d !important;
+        opacity: 1 !important;
+    }
+    .slick-dots li.slick-active button::before{
+        color: #bcd01d !important;
+    }
+
+    #services-you-like{
+        padding-top: 90px;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    #services-you-like .service-you-like-title{
+        padding-bottom: 30px;
+    }
+
+    .service-c{
+        width: 18.854vw;
+        padding-left: 2px; 
+    }
+    #services-you-like .service{
+        width: 18.85vw !important;
+        height: 585px !important;
+        position: relative;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0.5px 2px 5px rgba(0, 0, 0, 35%);
+    }
+    #services-you-like .service img{
+        width: 18.85vw;
+        height: 220px;
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
+    }
+    #services-you-like .service .service-content-container{
+        padding: 30px 15px 15px 15px;
+    }
+    #services-you-like .service .service-content-container .tag{
+        font-size: 14px;
+        line-height: 1.2;
+        color: #212f3d;
+        padding-bottom: 22.5px;
+        text-transform: uppercase;
+    }
+    #services-you-like .service .service-content-container .service-desc-title{
+        font-size: 24px;
+        line-height: 1.2;
+        color: #212f3d;
+        padding-bottom: 7.5px;
+    }
+
+    #services-you-like .service .service-content-container .service-desc-text{
+        font-size: 14px;
+        line-height: 1.2;
+        color: #212f3d;
+        padding-bottom: 30px;
+    }
+    #services-you-like .service .service-content-container hr
+    {
+        margin-top: 0;
+        margin-bottom: 15px;
+        height: 1px;
+        background-color: #c4c4c4;
+        border: none;
+    }
+    #services-you-like .service .service-content-container .service-prices .hd{
+        font-size: 14px;
+        line-height: 1.2;
+        color: #212f3d;
+        padding-bottom: 25px;
+    }
+    #services-you-like .service .service-content-container .service-prices .price{
+        line-height: 1.2;
+        font-size: 24px;
+        color: #212f3d;
+    }
+
+    #services-you-like .service .service-content-container .service-prices .price .currency{
+        text-transform: uppercase;
+        padding-right: 10px;
+    }
+
+    #services-you-like .service .service-content-container .service-prices .price sup{
+        font-size: 65% !important;
+    }
+
+    #services-you-like .slick-list{
+        box-sizing: initial !important;
+        padding-bottom: 5px;
+    }
+
+    #gtt-packages{
+        padding-top: 90px;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    #gtt-packages .packages-container{
+        display: flex;
+    }
+    #gtt-packages .package{
+        width: 18.85vw;
+        height: 396px;
+        position: relative;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0.5px 2px 5px rgba(0, 0, 0, 35%);
+        padding: 60px 30px 60px 30px;
+        text-align: center;
+    }
+    #gtt-packages .no-last{
+        margin-right: 18px;
+    }
+
+    #gtt-packages .package img{
+        height: 100px;
+        margin-bottom: 60px;
+    }
+
+    #gtt-packages .package .package-name{
+        font-size: 24px;
+        color: #212f3d;
+        padding-bottom: 25px;
+        line-height: 1.2;
+    }
+    #gtt-packages .package .package-desc{
+        font-size: 16px;
+        color: #212f3d;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    #other-services{
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 90px;
+    }
+
+    #other-services .other-services-container{
+        width: 25.52vw;
+        height: 220px;
+        border-radius: 20px;
+        position: relative;
+    }
+    #other-services .other-services-container img{
+        width: 25.52vw;
+        height: 220px;
+        border-radius: 20px;
+    }
+    #other-services .other-service-content{
+        position: absolute;
+        padding-left: 30px;
+        padding-right: 30px;
+        width: 100%;
+        top: 66%;
+    }
+
+    #other-services .other-service-content hr{
+        height: 1px !important;
+        background-color: #ffffff;
+        border: 0;
+        margin: 0;
+    }
+    #other-services .other-service-content .other-service-text{
+        padding-top: 15px;
+        font-size: 24px;
+        line-height: 1.2;
+        color: #ffffff;
+        text-transform: uppercase;
+    }
+
+    #who-we-are{
+        padding-top: 90px;
+        padding-left: 7.552%;
+        padding-right: 7.552%;
+        line-height: 1.2;
+        color: #212f3d;
+        margin-bottom: 120px;
+    }
+
+    #who-we-are .first-text, #who-we-are .second-text{
+        font-size: 18px;
+    }
+
+    #who-we-are .first-text{
+        padding-bottom: 22.5px;
+    }
+
+    #who-we-are .second-text{
+        padding-bottom: 52.5px;
+    }
+
+    #who-we-are .third-text{
+        font-size: 24px;
+        padding-bottom: 22.5px;
+    }
+
+    #who-we-are .sign-text{
+        text-align: right;
+    }
+    #who-we-are .sign{
+        font-size: 72px;
+        padding-bottom: 7.5px;
+    }
+    #who-we-are .text{
+        font-size: 18px;
+    }
+
+    #offers{
+        width: 100%;
+        height: 474px;
+        position: relative;
+    }
+    #offers img{
+        width: 100%;
+        height: 100%;
+    }
+
+    #offers .offers-info{
+        position: absolute;
+        left: 50%;
+        -webkit-transform: translate(-50%,0);
+        line-height: 1.2;
+        text-align: center;
+        top: 20%;
+    }
+
+    #offers .offers-info .big-text{
+        font-size: 60px;
+        padding-left: 6.77%;
+        padding-right: 6.77%;
+        text-align: center;
+        color: #ffffff;
+        text-shadow: 0.5px 2px 10px rgba(0, 0, 0, 35%);
+        padding-bottom: 22.5px;
+    }
+
+    #offers .offers-info .small-text{
+        font-size: 16px;
+        color: #ffffff;
+        text-align: center;
+        padding-bottom: 30px;
+    }
+    #offers .offers-info a{
+        text-align: center;
+        width: 6.25vw;
+        height: 48px;
+        border: 2px solid #ffffff;
+        border-radius: 5px;
+        font-size: 18px;
+        color: #ffffff;
+        padding-top: 10px;
+        text-transform: uppercase;
+    }
+
+    #offers .offers-info a:hover{
+        background-color: #ffffff;
+        padding-top: 12px;
+        border: none;
+        color: #212f3d;
+    }
+
+    #footer1{
+        width: 100%;
+        height: 220px;
+        background-color: #112b3a;
+        position: relative;
+    }
+
+    #footer1 .footer1-content{
+        position: absolute;
+        top: 50%;
+        -webkit-transform: translate(0, -50%);
+        padding-left: 7.552vw;
+        font-size: 16px;
+        color: #ffffff;
+        line-height: 1.2;
+        padding-right: 7.552vw;
+        display: flex;
+    }
+
+    #footer1 .footer1-content .question{
+        width: 25.5208vw;
+        text-align: right;
+        margin-right: 22.5px;
+    }
+
+    #footer1 .footer1-content input{
+        width: calc(32.03vw - 0.78vw);
+        height: 48px;
+        background-color: transparent;
+        border: 1px solid #c4c4c4;
+        border-radius: 5px;
+        color: #c4c4c4;
+        margin-right: 0.78vw;
+    }
+
+    #footer1 .footer1-content button{
+        width: 6.25vw;
+        height: 48px;
+        border-radius: 5px;
+        background-color: #ffffff;
+        border: none;
+        font-size: 18px;
+        color: #212f3d;
+        text-transform: uppercase;
+    }
+
+    #footer1 .footer1-content button:hover{
+        background-color: transparent;
+        border: 2px solid #ffffff;
+        color: #ffffff;
+    }
+
+    #footer2{
+        line-height: 1.2;
+        width: 100%;
+        height: 224px;
+        background-color: #112b3a;
+    }
+
+    #footer2 .footer2-container{
+        padding-top: 90px;
+        display: flex;
+    }
+
+    #footer2 .left-part{
+        float: left;
+        color: #ffffff;
+        font-size: 12px;
+    }
+
+    #footer2 .left-part a{
+        color: #bcd01d;
+    }
+
+    #footer2 img{
+        height: 30px;
+        margin-bottom: 22.5px;
+    }
+
+    #footer2 .right-part{
+        padding-top: 30px;
+        float: right;
+        margin-left: auto;
+        font-size: 48px;
+        text-align: right;
+    }
+
+    #footer2 .right-part a{
+        color: #bcd01d;
+    }
+}
+
+@media(max-width: 1440px)
+{
+    #first-nav{
+        width: 100%;
+        height: 45px;
+        background-color: #212f3d;
+        position: fixed;
+        top: 0;
+        z-index: 10;
+    }
+    #second-nav{
+        position: fixed;
+        top: 45px;
+        z-index: 10;
+        width: 100%;
+        height: 30px;
+        background-color: rgba(188, 208, 29, 95%);
+    }
+
+    .custom-margin{
+        margin-left: 7.03%;
+        margin-right: 7.03%;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    #logo_link{
+        height: 22.5px;
+        margin-top: -10px;
+    }
+
+    .logo{
+        height: 22.5px;
+    }
+
+    #language_selector{
+        font-size: 18px;
+        margin-top: 13.5px;
+    }
+    #language_selector .l_letters{
+        font-size: 12px;
+    }
+
+    .main-nav{
+        font-size: 18px;
+    }
+
+    span.marker{
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #212f3d;
+    }
+
+    #home-banner{
+        margin-top: 45px;
+        height: 542px;
+    }
+
+    .image-review .review{
+        padding-left: 108.75px;
+    }
+
+    .home-banner-title{
+        font-size: 36px;
+        width: 300px;
+    }
+
+    .home-banner-description{
+        font-size: 18px;
+        width: 427.5px;
+    }
+    .home-banner-location{
+        margin-top: 40px;
+    }
+    .home-banner-location i{
+        font-size: 30px;
+    }
+    .home-banner-location .home-location{
+        font-size: 24px;
+    }
+    .home-banner-weather i{
+        font-size: 48px;
+    }
+    .home-banner-weather .home-grade{
+        font-size: 36px;
+    }
+
+    .home-banner-login{
+        top: 15%;
+        width: 367.5px;
+        height: 311.25px;
+    }
+
+    .form-logo img{
+        height: 36px;
+    }
+
+    .form-logo hr{
+        margin-top: 3px;
+        margin-bottom: 6px;
+        width: 213px;
+    }
+
+    .form-inicio-sesion-text{
+        font-size: 18px;
+    }
+
+    .form-password-forgotten{
+        font-size: 12px;
+    }
+    .form-login-container .inputs-container{
+        padding-top: 20px;
+    }
+    .form-login-container .inputs-container input{
+        margin-bottom: 11px;
+        font-size: 12px;
+        height: 30px;
+    }
+    .home-actions{
+        padding-top: 20px;
+    }
+    .home-actions button{
+        height: 30px;
+        text-transform: uppercase;
+        font-size: 14px;
+    }
+
+    .home-actions .home-sign-up{
+        margin-right: 20px;
+    }
+
+    #destinies{
+        scroll-margin-top: 100px;
+        padding-left: 7.5px !important;
+        padding-right: 7.5px !important;
+    }
+
+    .section-title{
+        padding-bottom: 20px;
+        font-size: 18px;
+    }
+
+    #destinies .dest{
+        width: 20vw !important;
+        height: 350px !important;
+    }
+
+    .slick-slide{
+        margin-left: 5px;
+    }
+
+    #destinies .dest img{
+        width: 100%;
+        height: 100%;
+    }
+
+    #destinies .name-weather{
+        height: 36px;
+    }
+    #destinies .name-weather .name{
+        height: 36px;
+        font-size: 12px;
+    }
+
+    #destinies .name-weather .weather{
+        font-size: 10px;
+    }
+
+    #destinies .dest .description{
+        height: 110px;
+    }
+    #destinies .dest .description:hover{
+        height: 240px;
+    }
+    #destinies .dest .description .inner-text{
+        font-size: 10px;
+    }
+    .slick-dots li button::before{
+        font-size: 12px !important;
+    }
+
+    #services-you-like{
+        padding-top: 60px;
+        padding-left: 7.5px !important;
+        padding-right: 7.5px !important;
+    }
+
+    #services-you-like .service-you-like-title{
+        padding-bottom: 15px;
+    }
+    #services-you-like .slick-slide{
+        margin-left: 0;
+    }
+    #services-you-like .service-c{
+        width: 20vw;
+        padding-left: 1px;
+    }
+    #services-you-like .service{
+        width: 20vw !important;
+        height: 417px !important;
+    }
+    #services-you-like .service img{
+        width: 20vw;
+        height: 134.2px;
+    }
+    #services-you-like .service .service-content-container .tag{
+        font-size: 10px;
+        padding-bottom: 18px;
+    }
+    #services-you-like .service .service-content-container .service-desc-title{
+        font-size: 18px;
+        padding-bottom: 5px;
+    }
+
+    #services-you-like .service .service-content-container .service-desc-text{
+        font-size: 10px;
+        padding-bottom: 20px;
+    }
+    #services-you-like .service .service-content-container hr
+    {
+        margin-bottom: 11px;
+    }
+    #services-you-like .service .service-content-container .service-prices .hd{
+        font-size: 10px;
+        padding-bottom: 18px;
+    }
+    #services-you-like .service .service-content-container .service-prices .price{
+        font-size: 18px;
+    }
+
+    #gtt-packages{
+        padding-top: 60px;
+    }
+
+    #gtt-packages .package{
+        width: 20vw;
+        height: 285px;
+        padding: 45px 20px 45px 20px;
+    }
+
+    #gtt-packages .package img{
+        height: 72px;
+        margin-bottom: 30px;
+    }
+
+    #gtt-packages .package .package-name{
+        font-size: 16px;
+        padding-bottom: 18px;
+    }
+    #gtt-packages .package .package-desc{
+        font-size: 12px;
+    }
+
+    #other-services{
+        padding-top: 60px;
+    }
+
+    #other-services .other-services-container{
+        height: 158.4px;
+    }
+    #other-services .other-services-container img{
+        height: 100%;
+    }
+
+    #other-services .other-service-content .other-service-text{
+        font-size: 18px;
+    }
+
+    #who-we-are{
+        padding-top: 60px;
+        margin-bottom: 90px;
+    }
+
+    #who-we-are .first-text, #who-we-are .second-text{
+        font-size: 14px;
+    }
+
+    #who-we-are .first-text{
+        padding-bottom: 18.5px;
+    }
+
+    #who-we-are .second-text{
+        padding-bottom: 46px;
+    }
+
+    #who-we-are .third-text{
+        font-size: 18px;
+        padding-bottom: 18.5px;
+    }
+
+    #who-we-are .sign{
+        font-size: 54px;
+        padding-bottom: 5px;
+    }
+    #who-we-are .text{
+        font-size: 14px;
+    }
+
+    #offers{
+        height: 341px;
+    }
+
+    #offers .offers-info .big-text{
+        font-size: 45px;
+        padding-bottom: 18.5px;
+    }
+
+    #offers .offers-info .small-text{
+        font-size: 12px;
+        padding-bottom: 20px;
+    }
+    #offers .offers-info a{
+        height: 36px;
+        font-size: 12px;
+    }
+
+    #footer1{
+        height: 158.4px;
+    }
+
+    #footer1 .footer1-content{
+        font-size: 12px;
+    }
+
+    #footer1 .footer1-content .question{
+        margin-right: 18.5px;
+    }
+
+    #footer1 .footer1-content input{
+        width: calc(32.03vw - 0.78vw);
+        height: 36px;
+        font-size: 14px;
+    }
+
+    #footer1 .footer1-content button{
+        width: 6.25vw;
+        height: 36px;
+        font-size: 12px;
+    }
+
+    #footer2{
+        height: 161px;
+    }
+
+    #footer2 .footer2-container{
+        padding-top: 60px;
+    }
+
+    #footer2 .left-part{
+        font-size: 8px;
+    }
+
+    #footer2 img{
+        height: 20px;
+        margin-bottom: 18.5px;
+    }
+
+    #footer2 .right-part{
+        padding-top: 20px;
+        font-size: 36px;
+    }
+    #footer2 .right-part a{
+        margin-left: 10px;
+    }
+
+}
+
+@media(max-width: 1366px)
+{
+    #home-banner{
+        height: 450px;
+    }
+}

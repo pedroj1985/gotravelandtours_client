@@ -1,28 +1,28 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <NavBar1></NavBar1>
+    <Index></Index>
+    <Footer1></Footer1>
+    <Footer2></Footer2>
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import Footer2 from "./components/shared/Footer2.vue"
+import Footer1 from "./components/shared/Footer1.vue"
+import NavBar1 from "./components/shared/NavBar1.vue"
+import Index from "./components/index-page/Index.vue"
 
 export default {
   name: "App",
   components: {
-    HelloWorld
+    Footer2,
+    Footer1,
+    NavBar1,
+    Index
   }
 };
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
