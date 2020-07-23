@@ -1262,3 +1262,8 @@ html{
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
+.gtt__select.select-countries ul li{
+    padding-top: 7px; 
+    padding-bottom: 7px;
+}

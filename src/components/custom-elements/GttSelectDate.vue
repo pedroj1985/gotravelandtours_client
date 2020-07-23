@@ -1,5 +1,5 @@
 <template>
-    <div class="gtt__select">
+    <div class="gtt__select_date">
         <button class="gtt__toggle"
                 ref="buttonToggle"
                 @click="toggleClicked"
@@ -7,32 +7,33 @@
                 >
                 <div class="gtt__toggle_content">
                     <div class="gtt__toggle_text">
-                        <slot name="placeholder" v-if="!selectedValue">
+                        <slot name="placeholder" v-if="!dates">
                             <slot name="iconSelectedValue"></slot>
-                            Seleccione
+                            Fecha de entrada y salida
                         </slot>
-                        <slot name="selectedValue" v-bind:selectedValue="selectedValue" v-else>
+                        <div v-else>
                             <slot name="iconSelectedValue"></slot>
-                            {{ selectedValue }}
-                        </slot>
+                            {{ constructDates(dates.start, dates.end) }}
+                        </div>
                     </div>
                     <div class="gtt__toggle_arrow"><i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i></div>
                 </div>
         </button>
-
         <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">
             <span class="arrow" v-if="arrow"></span>
-            <ul class="gtt__list_area">
-                <li class="gtt__item" v-for="option in options" :key="option.id" @click="
-                                                                                        if(option.hasOwnProperty('value')){
-                                                                                            setSelectedValue(option)
-                                                                                        }
-                                                                                        else{
-                                                                                            setSelectedValue(option)
-                                                                                            }">
-                    <slot name="option" v-bind:option="option">{{ option }}</slot>
-                </li>
-            </ul>
+            <div class="gtt__date_picker">
+                <v-date-picker
+                    v-model="dates"
+                    mode="range"
+                    is-inline
+                    locale="es"
+                    :columns="$screens({ default: 1, lg: 2 })"
+                />
+            </div>
+            <hr>
+            <div v-if="dates" class="displayDate">
+                {{ constructDates(dates.start, dates.end) }}
+            </div>
         </div>
     </div>
 
@@ -40,50 +41,57 @@
 
 <script>
 import ClickOutside from 'vue-click-outside';
+import moment from 'moment'
 
 export default {
     directives: {
-        ClickOutside
+        ClickOutside,
     },
     mounted(){
         this.popupItem = this.$el
     },
     props: {
-        options: Array,
-        value: null
+        value: Object
     },
     data(){
         return {
             isVisible: false,
             arrow: true,
-            selectedValue: ''
+            dates: null
         }
     },
+    watch: {
+        dates: function(val){
+            this.$emit('input', val)
+        } 
+           },
     methods: {
         toggleClicked(){
             this.isVisible = !this.isVisible;
         },
-        setSelectedValue(item){
-            this.$refs['buttonToggle'].focus()
-            this.selectedValue = item;
-            this.emitValue(this.selectedValue);
-            this.isVisible = false;
-        },
         handleFocusOut(){
             this.isVisible = false;
         },
-        updateValue(){
-            this.selectedValue = this.value;
+        toMoment(date){
+            return moment(date)
         },
-        emitValue(value){
-            this.$emit('input', value)
+        formatDate(stringDate){
+            return this.toMoment(stringDate).locale('es').format('dddd, DD MMM YYYY')
+        },
+        constructDates(startDate, endDate){
+            let start = this.formatDate(startDate)
+            let end = this.formatDate(endDate)
+            return start+' - '+end+' ('+(this.toMoment(startDate).diff(this.toMoment(endDate), 'days'))*-1+' noches)'
+        },
+        updateValue(){
+            this.dates = this.value
         }
     }
 }
 </script>
 
 <style scoped>
-    .gtt__select{
+    .gtt__select_date{
         width: 100%;
         position: relative;
     }
@@ -117,6 +125,10 @@ export default {
         font-size: 30px;
     }
     .gtt__list_area_wrapper{
+        padding: 30px;
+        background: #ffffff;
+        /* min-height: 500px;
+        min-width: 400px; */
         position: absolute;
         border-radius: 10px;
         z-index: 2;
@@ -139,32 +151,57 @@ export default {
         border-right: 15px solid transparent;
         border-bottom: 15px solid #ffffff;
     }
-    ul.gtt__list_area{
-        height: 200px;
-        width: 400px;
-        list-style: none;
-        text-align: left;
-        border-radius: 10px;
-        overflow: auto;
-        padding-top: 15px;
-        padding-bottom: 15px;
-        background-color: #ffffff;
-        color: #212f3d;
-        padding-left: 0;
+
+    .displayDate{
+        text-align: center;
         font-family: 'Helvetica Neue LT Std-Roman';
         font-size: 14px;
-    }
-    li.gtt__item{
-        padding-left: 30px;
-        padding-right: 30px;
-        padding-bottom: 15px;
-        padding-top: 15px;
-        cursor: default;
+        color: #6d6d6d;
     }
 
-    li.gtt__item:hover{
-        background: #212f3d;
-        color: #ffffff;
+
+</style>
+<style>
+    .gtt__date_picker .vc-container{
+        font-family: 'Helvetica Neue LT Std-Roman';
+        line-height: 1.2;
+        border: none;
     }
+
+    .gtt__date_picker .vc-container .vc-title{
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+
+    .gtt__date_picker .vc-container .vc-weekday{
+        font-size: 14px;
+        /* color: #6d6d6d !important; */
+    }
+
+    .gtt__date_picker .vc-highlights .vc-highlight{
+        background: transparent;
+    }
+    .gtt__date_picker .vc-highlights + span{
+        background: #bcd01d;
+    }
+    .gtt__date_picker .vc-container span{
+        color: #212f3d;
+        padding: 16px;
+        font-size: 14px;
+    }
+
+    .gtt__date_picker .vc-highlights + span:focus{
+        background: #bcd01d;
+    }
+
+    .gtt__date_picker hr{
+        height: 1px;
+        border: none;
+        background-color: #c4c4c4;
+    }
+
+    /* .gtt__date_picker .vc-grid-cell + .vc-grid-cell > .vc-pane{
+        margin-left: 60px;
+    } */
 
 </style>

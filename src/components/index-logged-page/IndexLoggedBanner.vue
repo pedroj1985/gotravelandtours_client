@@ -10,15 +10,24 @@
             <div class="lodging-text antonio-light"><span class="bannerText">Tenemos los mejores</span> <span class="yellow-words antonio-bold">alojamientos</span><span class="bannerText"> para usted y su familia</span></div>
             <div class="lodging-form">
                 <gtt-select :options="destinies" v-model="selectedLodgingDestinyValue">
-                    <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Destino</div>
+                    <div slot="placeholder"><i slot="iconSelectedValue" class="mdi mdi-map-marker"></i> Destino</div>
+                    <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                 </gtt-select>
-                <select aria-placeholder="Fecha de entrada y salida" class="lodging-form-select lodging-form-big"></select>
+                <gtt-select-date v-model="selectedDates">
+                    <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                </gtt-select-date>
                 <div class="selects-inline">
                     <gtt-select-form :options="roomLayout" class="left" v-model="selectedRoomLayout">
                         <span slot="iconSelectedValue"><i class="mdi mdi-account"></i></span>
                     </gtt-select-form>
-                    <gtt-select :options="countries" v-model="selectedNationality">
+                    <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
                         <div slot="placeholder"><i class="mdi mdi-earth"></i> Nacionalidad</div>
+                        <template v-slot:selectedValue="selectedValue">
+                            <img :src="defaultFlagImgPath+selectedValue.selectedValue.flag" :alt="selectedValue.selectedValue.value + 'flag'" class="select-flag"> {{ selectedValue.selectedValue.value }}
+                        </template>
+                        <template v-slot:option="option">
+                            <img :src="defaultFlagImgPath+option.option.flag" :alt="option.option.value + 'flag'" class="select-flag"> {{ option.option.value }}
+                        </template>
                     </gtt-select>
                 </div>
                 <div class="form-actions text-right">
@@ -33,18 +42,22 @@
 import NavBar2 from '../shared/NavBar2'; 
 import GttSelect from '../custom-elements/GttSelect'
 import GttSelectForm from '../custom-elements/GttSelectForm'
+import GttSelectDate from '../custom-elements/GttSelectDate'
 
 export default {
     components: {
         NavBar2,
         GttSelect,
-        GttSelectForm
+        GttSelectForm,
+        GttSelectDate
     },
     data(){
         return {
+            defaultFlagImgPath: 'img/flags/',
             selectedLodgingDestinyValue: '',
             selectedRoomLayout: {},
-            selectedNationality: '',
+            selectedDates: null,
+            selectedNationality: null,
             destinies: [
                 'Option 1',
                 'Option 2',
@@ -84,9 +97,18 @@ export default {
                 }
             ],
             countries: [
-                'Cuba',
-                'Estados Unidos',
-                'España'
+                {
+                    value: 'Afganistán',
+                    flag: 'flag_afganistan.jpg'
+                },
+                {
+                    value: 'Albania',
+                    flag: 'flag_albania.jpg'
+                },
+                {
+                    value: 'Alemania',
+                    flag: 'flag_alemania.jpg'
+                },
             ]
         }
     }
@@ -151,6 +173,12 @@ export default {
 
     .selects-inline{
         display: flex;
+    }
+
+    #home-logged-banner .select-flag{
+        width: 30px;
+        height: 20px;
+        margin-right: 15px;
     }
 
 </style>

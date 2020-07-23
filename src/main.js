@@ -4,6 +4,7 @@ import VueResource from "vue-resource";
 import VueScrollTo from "vue-scrollto";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
+import VCalendar from 'v-calendar';
 
 Vue.config.productionTip = false;
 Vue.use(VueResource);
@@ -11,6 +12,16 @@ Vue.use(VueScrollTo, {
   offset: -30
 });
 Vue.use(VueRouter);
+Vue.use(VCalendar, {
+  locales: {
+      'es': {
+          masks: {
+              title: "MMMM",
+              weekdays: "WWW",
+          },
+      }
+  },
+});
 
 const router = new VueRouter({
   routes
