@@ -1298,3 +1298,57 @@ html{
     padding-top: 7px; 
     padding-bottom: 7px;
 }
+
+    .custom-text-form{
+        position: absolute;
+        display: flex;
+        top: 26%;
+        padding-left: 8vw;
+    }
+
+    .custom-form{
+        width: 39.06vw;
+        height: 350px;
+        background-color: #ffffff;
+        box-shadow: 0.5px 2px 15px rgba(0, 0, 0, 15%);
+        border-radius: 10px;
+        padding: 1.5625vw;
+    }
+
+    .custom-text{
+        font-size: 48px;
+        color: #ffffff;
+        margin-top: 70px;
+        height: auto;
+        margin-right: 1.5625vw;
+        line-height: 1.2;
+        text-align: right;
+        width: 24.74vw;
+    }
+
+    .custom-form .custom-form-select{
+        border-radius: 5px;
+        margin-bottom: 30px;
+        height: 50px;
+        font-size: 18px !important;
+    }
+    .custom-form-big{
+        width: 100%;
+    }
+    .custom-form-small{
+        width: 49.5%;
+    }
+
+    .left{
+        margin-right: 1%;
+    }
+
+    .selects-inline{
+        display: flex;
+    }
+
+    .custom-form .select-flag{
+        width: 30px;
+        height: 20px;
+        margin-right: 15px;
+    }

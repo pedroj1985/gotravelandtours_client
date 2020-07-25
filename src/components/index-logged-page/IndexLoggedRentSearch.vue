@@ -1,0 +1,140 @@
+<template>
+    <div id="index-logged-rent-search">
+        <div class="home-logged-rent-img">
+            <img src="img/homelogin_img_form_renta.jpg" alt="">
+        </div>
+        <div class="custom-text-form custom-margin">
+            <div class="custom-form">
+                <div class="selects-inline">
+                    <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
+                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Punto de recogida</div>
+                        <template v-slot:selectedValue="selectedValue">
+                            {{selectedValue.selectedValue.agency}} - {{ selectedValue.selectedValue.location }}
+                        </template>
+                        <template v-slot:option="option">
+                            {{option.option.agency}} - {{ option.option.location }}
+                        </template>
+                    </gtt-select>
+                    <gtt-select :options="pickUpDeliveryOptions" v-model="selectedDeliveryPlace">
+                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Punto de entrega</div>
+                        <template v-slot:selectedValue="selectedValue">
+                            {{selectedValue.selectedValue.agency}} - {{ selectedValue.selectedValue.location }}
+                        </template>
+                        <template v-slot:option="option">
+                            {{option.option.agency}} - {{ option.option.location }}
+                        </template>
+                    </gtt-select>
+                </div>
+                <gtt-select-date v-model="selectedDates">
+                    <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                </gtt-select-date>
+                <div class="selects-inline">
+                    <gtt-select :options="carsCategories" class="left" v-model="selectedCarCategory">
+                        <div slot="placeholder"><i class="mdi mdi-car-estate"></i> Categoría</div>
+                    </gtt-select>
+                    <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
+                        <div slot="placeholder"><i class="mdi mdi-earth"></i> Nacionalidad</div>
+                        <template v-slot:selectedValue="selectedValue">
+                            <img :src="defaultFlagImgPath+selectedValue.selectedValue.flag" :alt="selectedValue.selectedValue.value + 'flag'" class="select-flag"> {{ selectedValue.selectedValue.value }}
+                        </template>
+                        <template v-slot:option="option">
+                            <img :src="defaultFlagImgPath+option.option.flag" :alt="option.option.value + 'flag'" class="select-flag"> {{ option.option.value }}
+                        </template>
+                    </gtt-select>
+                </div>
+                <div class="form-actions text-right">
+                    <button type="submit" class="lodging-searchButton antonio-regular">Buscar</button>
+                </div>
+            </div>
+            <div class="custom-text antonio-light"><span class="yellow-words antonio-bold">Renta de autos</span><span class="bannerText"> en más de 600 puntos del territorio nacional</span></div>
+        </div>
+    </div>
+</template>
+
+<script>
+import GttSelect from '../custom-elements/GttSelect'
+import GttSelectDate from '../custom-elements/GttSelectDate'
+
+
+export default {
+    components: {
+        GttSelect,
+        GttSelectDate
+    },
+    data(){
+        return {
+            defaultFlagImgPath: 'img/flags/',
+            selectedDates: null,
+            selectedPickUpPlace: null,
+            selectedDeliveryPlace: null,
+            selectedCarCategory: '',
+            selectedNationality: null,
+            countries: [
+                {
+                    value: 'Afganistán',
+                    flag: 'flag_afganistan.jpg'
+                },
+                {
+                    value: 'Albania',
+                    flag: 'flag_albania.jpg'
+                },
+                {
+                    value: 'Alemania',
+                    flag: 'flag_alemania.jpg'
+                },
+            ],
+            carsCategories: [
+                'Alto estándar automático',
+                'Económico automático',
+                'Económico mecánico',
+                'Estándar automático',
+                'Jeep automático',
+                'Lujo automático',
+                'Medio automático',
+                'Medio mecánico',
+                'Minivan automático',
+                'Premium automático',
+            ],
+            pickUpDeliveryOptions: [
+                {
+                    agency: 'Cubacar',
+                    location: 'Hotel Copacabana'
+                },
+                {
+                    agency: 'Cubacar',
+                    location: 'Hotel Chateau Miramar'
+                },
+                {
+                    agency: 'Cubacar',
+                    location: 'Hotel Neptuno'
+                },
+                {
+                    agency: 'Cubacar',
+                    location: 'Kasalta'
+                },
+                {
+                    agency: 'Havanautos',
+                    location: 'Hotel Chateau Miramar'
+                }
+            ]
+        }
+    }
+}
+</script>
+
+<style scoped>
+    #index-logged-rent-search{
+        width: 100%;
+        position: relative;
+        height: 750px;
+    }
+    #index-logged-rent-search .home-logged-rent-img img{
+        width: 100%;
+        height: 100%;
+    }
+
+    .custom-text{
+        text-align: left;
+        margin-left: 30px;
+    }
+</style>
