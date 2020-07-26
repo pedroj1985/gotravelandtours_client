@@ -209,8 +209,6 @@ export default {
         text-align: center;
     }
 
-</style>
-<style>
     .hotel-carousel button.slick-arrow{
         z-index: 1;
         width: 45px;
