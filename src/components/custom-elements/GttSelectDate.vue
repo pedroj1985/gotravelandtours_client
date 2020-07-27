@@ -13,7 +13,8 @@
                         </slot>
                         <div v-else>
                             <slot name="iconSelectedValue"></slot>
-                            {{ constructDates(dates.start, dates.end) }}
+                            <span v-if="mode == 'range'">{{ constructDates(dates.start, dates.end) }}</span>
+                            <span v-else>{{ constructSingleDate(dates) }}</span>
                         </div>
                     </div>
                     <div class="gtt__toggle_arrow"><i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i></div>
@@ -24,15 +25,16 @@
             <div class="gtt__date_picker">
                 <v-date-picker
                     v-model="dates"
-                    mode="range"
+                    :mode="mode"
                     is-inline
                     locale="es"
-                    :columns="$screens({ default: 1, lg: 2 })"
+                    :columns="$screens({ default: 1, lg: mode == 'range' ? 2 : 1 })"
                 />
             </div>
             <hr>
             <div v-if="dates" class="displayDate">
-                {{ constructDates(dates.start, dates.end) }}
+                <span v-if="mode == 'range'">{{ constructDates(dates.start, dates.end) }}</span>
+                <span v-else>{{ constructSingleDate(dates) }}</span>
             </div>
         </div>
     </div>
@@ -51,7 +53,11 @@ export default {
         this.popupItem = this.$el
     },
     props: {
-        value: Object
+        value: Object,
+        mode: {
+            type: String,
+            default: 'range'
+        }
     },
     data(){
         return {
@@ -83,8 +89,16 @@ export default {
             let end = this.formatDate(endDate)
             return start+' - '+end+' ('+(this.toMoment(startDate).diff(this.toMoment(endDate), 'days'))*-1+' noches)'
         },
+        constructSingleDate(date)
+        {
+            return this.toMoment(date).locale('es').format('DD MMM YYYY')
+;
+        },
         updateValue(){
             this.dates = this.value
+        },
+        setScreensByMode(){
+            return this.mode == 'range' ? 2 : 1;
         }
     }
 }
@@ -99,7 +113,7 @@ export default {
     .gtt__toggle{
         width: 100%;
         padding-left: 15px; 
-        padding-right: 15px; 
+        padding-right: 7px; 
         height: 50px;
         background-color: #ffffff;
         border: 1px solid #c4c4c4;
@@ -131,7 +145,7 @@ export default {
         min-width: 400px; */
         position: absolute;
         border-radius: 10px;
-        z-index: 2;
+        z-index: 3;
         top: 45px;
         margin-top: 30px;
         box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);

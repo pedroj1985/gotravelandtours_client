@@ -1,5 +1,5 @@
 <template>
-        <Slick class="custom-margin car-carousel"
+        <Slick class="car-carousel custom-margin"
             ref="slick"
             :slidesToShow="4"
             :arrows="true"
@@ -173,7 +173,7 @@ export default {
 
 <style>
     .car-carousel{
-        width: 100%;
+        /* width: 100%; */
     }
     .index-logged-car{
         width: 18.75vw;

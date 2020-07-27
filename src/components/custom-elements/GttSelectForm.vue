@@ -7,7 +7,7 @@
                 >
                 <div class="gtt__toggle_content">
                     <div class="gtt__toggle_text">
-                        <slot name="placeholder" v-if="!emitValue">
+                        <slot name="placeholder" v-if="!isChanged">
                             Seleccione
                         </slot>
                         <div v-else>
@@ -77,6 +77,7 @@ export default {
     },
     data(){
         return {
+            isChanged: false,
             isVisible: false,
             arrow: true,
             emitValue: {},
@@ -110,12 +111,14 @@ export default {
         },
         add(item, step = 1){
             item.value+=step
+            this.isChanged = true;
             this.updateValue(item)
         },
         remove(item, step = 1){
             item.value-=step
+            this.isChanged = true;
             this.updateValue(item)
-        }
+        },
     }
 }
 </script>
@@ -157,7 +160,7 @@ export default {
     .gtt__list_area_wrapper{
         position: absolute;
         border-radius: 10px;
-        z-index: 2;
+        z-index: 3;
         top: 45px;
         margin-top: 30px;
         box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);

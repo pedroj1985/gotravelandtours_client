@@ -119,7 +119,7 @@ export default {
     .gtt__list_area_wrapper{
         position: absolute;
         border-radius: 10px;
-        z-index: 2;
+        z-index: 3;
         top: 45px;
         margin-top: 30px;
         box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);
@@ -140,8 +140,9 @@ export default {
         border-bottom: 15px solid #ffffff;
     }
     ul.gtt__list_area{
-        height: 200px;
-        width: 400px;
+        min-height: 200px;
+        max-height: 500px;
+        min-width: 150px;
         list-style: none;
         text-align: left;
         border-radius: 10px;
