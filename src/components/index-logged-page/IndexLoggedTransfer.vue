@@ -4,6 +4,7 @@
             <img src="img/homelogin_img_form_traslados.jpg" alt="">
         </div>
         <div class="custom-text-form custom-margin">
+            <div class="custom-text antonio-light"><span class="bannerText">Las mejores ofertas en </span><span class="yellow-words antonio-bold">traslados</span></div>
             <div class="custom-form">
                 <div class="selects-inline">
                     <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
@@ -50,11 +51,11 @@
                     </gtt-select-form>
                 </div>
                 <div class="selects-inline">
-                    <gtt-select :options="journeyTypes" v-model="selectedJourneyType" class="left">
+                    <gtt-select :options="journeyTypes" v-model="selectedJourneyType" class="left custom-width-select">
                         <div slot="placeholder"><i class="mdi mdi-transit-transfer"></i> Tipo de trayecto</div>
                         <i slot="iconSelectedValue" class="mdi mdi-transit-transfer"></i>
                     </gtt-select>
-                    <gtt-select :options="transferTypes" v-model="selectedTransferType" class="left">
+                    <gtt-select :options="transferTypes" v-model="selectedTransferType" class="left custom-width-select">
                         <div slot="placeholder"><i class="mdi mdi-bus-side"></i> Tipo de traslado</div>
                         <i slot="iconSelectedValue" class="mdi mdi-bus-side"></i>
                     </gtt-select>
@@ -63,7 +64,6 @@
                     </div>
                 </div>
             </div>
-            <div class="custom-text antonio-light"><span class="yellow-words antonio-bold">Renta de autos</span><span class="bannerText"> en más de 600 puntos del territorio nacional</span></div>
         </div>
     </div>
 </template>
@@ -77,7 +77,7 @@ export default {
     components: {
         GttSelect,
         GttSelectDate,
-        GttSelectForm
+        GttSelectForm,
     },
     data(){
         return {
@@ -88,7 +88,7 @@ export default {
             selectedArrivalDate: null,
             selectedArrivalHour: null,
             selectedPassengers: null,
-            selectedLuggage: null,
+            selectedLuggages: null,
             selectedJourneyType: null,
             selectedTransferType: null,
             journeyTypes: [
@@ -151,6 +151,11 @@ export default {
 <style scoped>
     #index-logged-transfer{
         position: relative;
+        width: 100%;
+        height: 750px;
+    }
+    #index-logged-transfer img{
+        width: 100%;
     }
     .minor-left{
         margin-right: 0.5%;
@@ -160,6 +165,17 @@ export default {
     }
     #index-logged-transfer .hour{
         width: 7.19vw;
+    }
+
+    .custom-width-select{
+        width: 10.42vw;
+    }
+
+    .form-actions{
+        margin-left: auto;
+    }
+    .custom-text{
+        margin-top: 100px;
     }
 </style>
 <style>

@@ -4,6 +4,7 @@
       <IndexLoggedHotels></IndexLoggedHotels>
       <IndexLoggedRent></IndexLoggedRent>
       <IndexLoggedTransfer></IndexLoggedTransfer>
+      <IndexLoggedDestinies></IndexLoggedDestinies>
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import IndexLoggedBanner from "./IndexLoggedBanner";
 import IndexLoggedHotels from "./IndexLoggedHotels";
 import IndexLoggedRent from "./IndexLoggedRent";
 import IndexLoggedTransfer from "./IndexLoggedTransfer";
+import IndexLoggedDestinies from "./IndexLoggedDestinies";
 
 export default {
     name: 'IndexLogged',
@@ -20,6 +22,7 @@ export default {
         IndexLoggedHotels,
         IndexLoggedRent,
         IndexLoggedTransfer,
+        IndexLoggedDestinies,
         }
 }
 </script>
