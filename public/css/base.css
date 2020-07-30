@@ -510,44 +510,45 @@ html{
         width: 18.854vw;
         padding-left: 2px; 
     }
-    #services-you-like .service{
+    .service{
         width: 18.85vw !important;
         height: 585px !important;
+        margin-bottom: 5px;
         position: relative;
         background-color: #ffffff;
         border-radius: 10px;
         box-shadow: 0.5px 2px 5px rgba(0, 0, 0, 35%);
     }
-    #services-you-like .service img{
+    .service img{
         width: 18.85vw;
         height: 220px;
         border-top-right-radius: 10px;
         border-top-left-radius: 10px;
     }
-    #services-you-like .service .service-content-container{
+    .service .service-content-container{
         padding: 30px 15px 15px 15px;
     }
-    #services-you-like .service .service-content-container .tag{
+    .service .service-content-container .tag{
         font-size: 14px;
         line-height: 1.2;
         color: #212f3d;
         padding-bottom: 22.5px;
         text-transform: uppercase;
     }
-    #services-you-like .service .service-content-container .service-desc-title{
+    .service .service-content-container .service-desc-title{
         font-size: 24px;
         line-height: 1.2;
         color: #212f3d;
         padding-bottom: 7.5px;
     }
 
-    #services-you-like .service .service-content-container .service-desc-text{
+    .service .service-content-container .service-desc-text{
         font-size: 14px;
         line-height: 1.2;
         color: #212f3d;
         padding-bottom: 30px;
     }
-    #services-you-like .service .service-content-container hr
+    .service .service-content-container hr
     {
         margin-top: 0;
         margin-bottom: 15px;
@@ -555,19 +556,19 @@ html{
         background-color: #c4c4c4;
         border: none;
     }
-    #services-you-like .service .service-content-container .service-prices .hd{
+    .service .service-content-container .service-prices .hd{
         font-size: 14px;
         line-height: 1.2;
         color: #212f3d;
         padding-bottom: 25px;
     }
-    #services-you-like .service .service-content-container .service-prices .price{
+    .service .service-content-container .service-prices .price{
         line-height: 1.2;
         font-size: 24px;
         color: #212f3d;
     }
 
-    #services-you-like .service .service-content-container .service-prices .price .currency{
+    .service .service-content-container .service-prices .price .currency{
         text-transform: uppercase;
         padding-right: 10px;
     }
@@ -576,7 +577,7 @@ html{
         font-size: 65% !important;
     }
 
-    #services-you-like .slick-list{
+    .slick-list{
         box-sizing: initial !important;
         padding-bottom: 5px;
     }
@@ -1373,4 +1374,10 @@ html{
     }
     #index-logged-destinies .slick-next{
         right: 50px;
+    }
+    .carousel-absolute{
+        position: absolute;
+        top: -45px;
+        z-index: 2;
+        width: 100%;
     }

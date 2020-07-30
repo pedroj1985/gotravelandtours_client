@@ -5,6 +5,7 @@
       <IndexLoggedRent></IndexLoggedRent>
       <IndexLoggedTransfer></IndexLoggedTransfer>
       <IndexLoggedDestinies></IndexLoggedDestinies>
+      <IndexLoggedExcursion></IndexLoggedExcursion>
   </div>
 </template>
 
@@ -14,6 +15,7 @@ import IndexLoggedHotels from "./IndexLoggedHotels";
 import IndexLoggedRent from "./IndexLoggedRent";
 import IndexLoggedTransfer from "./IndexLoggedTransfer";
 import IndexLoggedDestinies from "./IndexLoggedDestinies";
+import IndexLoggedExcursion from "./IndexLoggedExcursion";
 
 export default {
     name: 'IndexLogged',
@@ -23,6 +25,7 @@ export default {
         IndexLoggedRent,
         IndexLoggedTransfer,
         IndexLoggedDestinies,
+        IndexLoggedExcursion
         }
 }
 </script>

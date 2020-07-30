@@ -13,8 +13,8 @@
                         </slot>
                         <div v-else>
                             <slot name="iconSelectedValue"></slot>
-                            <span v-if="mode == 'range'">{{ constructDates(dates.start, dates.end) }}</span>
-                            <span v-else>{{ constructSingleDate(dates) }}</span>
+                            <span v-if="mode == 'range'"> {{ constructDates(dates.start, dates.end) }}</span>
+                            <span v-else> {{ constructSingleDate(dates) }}</span>
                         </div>
                     </div>
                     <div class="gtt__toggle_arrow"><i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i></div>

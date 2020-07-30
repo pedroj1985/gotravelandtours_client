@@ -31,10 +31,4 @@ export default {
         position: relative;
         width: 100%;
     }
-    .carousel-absolute{
-        position: absolute;
-        top: -45px;
-        z-index: 2;
-        width: 100%;
-    }
 </style>
