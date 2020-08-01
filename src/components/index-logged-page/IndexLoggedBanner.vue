@@ -6,33 +6,38 @@
         <div class="navs-wrapper">
             <NavBar2></NavBar2>
         </div>
+        <GttModalSearch v-show="isModalActive">
+            <div slot="image">
+                <img src="img/icopaq_alojamiento_color.svg" alt="">
+            </div>
+        </GttModalSearch>
         <div class="lodging-text-form custom-margin">
             <div class="lodging-text antonio-light"><span class="bannerText">Tenemos los mejores</span> <span class="yellow-words antonio-bold">alojamientos</span><span class="bannerText"> para usted y su familia</span></div>
             <div class="lodging-form">
-                <gtt-select :options="destinies" v-model="selectedLodgingDestinyValue">
-                    <div slot="placeholder"><i slot="iconSelectedValue" class="mdi mdi-map-marker"></i> Destino</div>
-                    <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-                </gtt-select>
-                <gtt-select-date v-model="selectedDates">
-                    <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                </gtt-select-date>
-                <div class="selects-inline">
-                    <gtt-select-form :options="roomLayout" class="left" v-model="selectedRoomLayout">
-                        <span slot="iconSelectedValue"><i class="mdi mdi-account"></i></span>
-                    </gtt-select-form>
-                    <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
-                        <div slot="placeholder"><i class="mdi mdi-earth"></i> Nacionalidad</div>
-                        <template v-slot:selectedValue="selectedValue">
-                            <img :src="defaultFlagImgPath+selectedValue.selectedValue.flag" :alt="selectedValue.selectedValue.value + 'flag'" class="select-flag"> {{ selectedValue.selectedValue.value }}
-                        </template>
-                        <template v-slot:option="option">
-                            <img :src="defaultFlagImgPath+option.option.flag" :alt="option.option.value + 'flag'" class="select-flag"> {{ option.option.value }}
-                        </template>
+                    <gtt-select :options="destinies" v-model="selectedLodgingDestinyValue">
+                        <div slot="placeholder"><i slot="iconSelectedValue" class="mdi mdi-map-marker"></i> Destino</div>
+                        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                     </gtt-select>
-                </div>
-                <div class="form-actions text-right">
-                    <button type="submit" class="lodging-searchButton antonio-regular">Buscar</button>
-                </div>
+                    <gtt-select-date v-model="selectedDates">
+                        <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                    </gtt-select-date>
+                    <div class="selects-inline">
+                        <gtt-select-form :options="roomLayout" class="left" v-model="selectedRoomLayout">
+                            <span slot="iconSelectedValue"><i class="mdi mdi-account"></i></span>
+                        </gtt-select-form>
+                        <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
+                            <div slot="placeholder"><i class="mdi mdi-earth"></i> Nacionalidad</div>
+                            <template v-slot:selectedValue="selectedValue">
+                                <img :src="defaultFlagImgPath+selectedValue.selectedValue.flag" :alt="selectedValue.selectedValue.value + 'flag'" class="select-flag"> {{ selectedValue.selectedValue.value }}
+                            </template>
+                            <template v-slot:option="option">
+                                <img :src="defaultFlagImgPath+option.option.flag" :alt="option.option.value + 'flag'" class="select-flag"> {{ option.option.value }}
+                            </template>
+                        </gtt-select>
+                    </div>
+                    <div class="form-actions text-right">
+                        <button type="submit" @click="activateModal" class="lodging-searchButton antonio-regular">Buscar</button>
+                    </div>
             </div>
         </div>
     </div>
@@ -43,16 +48,24 @@ import NavBar2 from '../shared/NavBar2';
 import GttSelect from '../custom-elements/GttSelect'
 import GttSelectForm from '../custom-elements/GttSelectForm'
 import GttSelectDate from '../custom-elements/GttSelectDate'
+import GttModalSearch from '../custom-elements/GttModalSearch'
 
 export default {
     components: {
         NavBar2,
         GttSelect,
         GttSelectForm,
-        GttSelectDate
+        GttSelectDate,
+        GttModalSearch
+    },
+    methods:{
+        activateModal(){
+            this.isModalActive = true;
+        }
     },
     data(){
         return {
+            isModalActive: false,
             defaultFlagImgPath: 'img/flags/',
             selectedLodgingDestinyValue: '',
             selectedRoomLayout: {},
