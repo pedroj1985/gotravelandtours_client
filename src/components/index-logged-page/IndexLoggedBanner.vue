@@ -10,6 +10,13 @@
             <div slot="image">
                 <img src="img/icopaq_alojamiento_color.svg" alt="">
             </div>
+            <div slot="searching-text" class="searching-text">
+                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">alojamientos</span> <span class="antonio-light">en {{ selectedLodgingDestinyValue }}</span>
+            </div>
+            <div slot="searching-fields" class="searching-fields">
+                <div v-if="selectedDates">entre el {{ constructDate(selectedDates.start) }} y el {{ constructDate(selectedDates.end) }} ({{ calculateNights(selectedDates.start, selectedDates.end)}} noches)</div>
+                <div v-if="selectedRoomLayout">para {{ constructDisplay(selectedRoomLayout) }}</div>
+            </div>
         </GttModalSearch>
         <div class="lodging-text-form custom-margin">
             <div class="lodging-text antonio-light"><span class="bannerText">Tenemos los mejores</span> <span class="yellow-words antonio-bold">alojamientos</span><span class="bannerText"> para usted y su familia</span></div>
@@ -23,6 +30,11 @@
                     </gtt-select-date>
                     <div class="selects-inline">
                         <gtt-select-form :options="roomLayout" class="left" v-model="selectedRoomLayout">
+                            <template slot="placeholder">
+                                <span>
+                                    <i class="mdi mdi-account"></i> Seleccione
+                                </span>
+                            </template>
                             <span slot="iconSelectedValue"><i class="mdi mdi-account"></i></span>
                         </gtt-select-form>
                         <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
@@ -49,6 +61,7 @@ import GttSelect from '../custom-elements/GttSelect'
 import GttSelectForm from '../custom-elements/GttSelectForm'
 import GttSelectDate from '../custom-elements/GttSelectDate'
 import GttModalSearch from '../custom-elements/GttModalSearch'
+import moment from 'moment'
 
 export default {
     components: {
@@ -61,7 +74,21 @@ export default {
     methods:{
         activateModal(){
             this.isModalActive = true;
-        }
+        },
+        constructDate(date){
+           return moment(date).locale('es').format('DD MMM YYYY');
+        },
+        calculateNights(min, max){
+            return moment(min).diff(moment(max), 'days') * -1;
+        },
+        constructDisplay(d){
+            let s = '';
+            Object.keys(d).forEach(element => {
+                s = s+' · '+d[element].value+' '+d[element].display
+            });
+
+            return s.substring(2);
+        },
     },
     data(){
         return {
