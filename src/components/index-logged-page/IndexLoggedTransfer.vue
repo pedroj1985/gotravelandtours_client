@@ -3,6 +3,18 @@
         <div class="home-logged-transfer-img">
             <img src="img/homelogin_img_form_traslados.jpg" alt="">
         </div>
+        <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
+            <div slot="image">
+                <img src="img/icopaq_traslado_color.svg" alt="">
+            </div>
+            <div slot="searching-text" class="searching-text">
+                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">traslados</span> <span class="antonio-light">en <span v-if="selectedDestinyPlace">{{ selectedDestinyPlace }}</span><span v-else>cualquier lugar</span></span>
+            </div>
+            <div slot="searching-fields" class="searching-fields">
+                <div v-if="selectedDepartureDate && selectedArrivalDate">entre el {{ constructDate(selectedDepartureDate) }} y el {{ constructDate(selectedArrivalDate) }}</div>
+                <div v-if="selectedPassengers">para {{ constructDisplay(selectedPassengers) }}</div>
+            </div>
+        </GttModalSearch>
         <div class="custom-text-form custom-margin">
             <div class="custom-text antonio-light"><span class="bannerText">Las mejores ofertas en </span><span class="yellow-words antonio-bold">traslados</span></div>
             <div class="custom-form">
@@ -60,7 +72,7 @@
                         <i slot="iconSelectedValue" class="mdi mdi-bus-side"></i>
                     </gtt-select>
                     <div class="form-actions text-right">
-                        <button type="submit" class="lodging-searchButton antonio-regular">Buscar</button>
+                        <button type="submit" @click="activateModal" class="lodging-searchButton antonio-regular">Buscar</button>
                     </div>
                 </div>
             </div>
@@ -72,15 +84,48 @@
 import GttSelect from '../custom-elements/GttSelect'
 import GttSelectDate from '../custom-elements/GttSelectDate'
 import GttSelectForm from '../custom-elements/GttSelectForm'
+import GttModalSearch from '../custom-elements/GttModalSearch'
+import { constructDate, constructDisplay } from '../../utils/utils'
+import { eventBus } from '../../main';
 
 export default {
     components: {
         GttSelect,
         GttSelectDate,
         GttSelectForm,
+        GttModalSearch
+    },
+    created () {
+        window.addEventListener('scroll', this.handleScroll);
+    },
+    destroyed () {
+        window.removeEventListener('scroll', this.handleScroll);
+    },
+    methods: {
+        handleScroll(){
+            let height = window.innerHeight
+            if(height*0.25 > this.$el.getBoundingClientRect().top
+                && height*0 < this.$el.getBoundingClientRect().top)
+            {
+                eventBus.$emit('componentScrolled', 'transfer')
+            }
+        },
+        activateModal(){
+            this.isModalActive = true;
+        },
+        desactivateModal(){
+            this.isModalActive = false;
+        },
+        constructDate(date){
+            return constructDate(date);
+        },
+        constructDisplay(d){
+            return constructDisplay(d);
+        }
     },
     data(){
         return {
+            isModalActive: false,
             selectedPickUpPlace: '',
             selectedDestinyPlace: '',
             selectedDepartureDate: null,

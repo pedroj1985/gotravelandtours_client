@@ -3,6 +3,18 @@
         <div class="home-logged-rent-img">
             <img src="img/homelogin_img_form_renta.jpg" alt="">
         </div>
+        <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
+            <div slot="image">
+                <img src="img/icopaq_renta_color.svg" alt="">
+            </div>
+            <div slot="searching-text" class="searching-text">
+                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">autos en renta</span> <span class="antonio-light">en <span v-if="selectedPickUpPlace">{{ selectedPickUpPlace.location }}</span><span v-else>cualquier lugar</span></span>
+            </div>
+            <div slot="searching-fields" class="searching-fields">
+                <div v-if="selectedDates">entre el {{ constructDate(selectedDates.start) }} y el {{ constructDate(selectedDates.end) }} ({{ calculateNights(selectedDates.start, selectedDates.end)}} noches)</div>
+                <div v-if="selectedCarCategory">{{selectedCarCategory}}</div>
+            </div>
+        </GttModalSearch>
         <div class="custom-text-form custom-margin">
             <div class="custom-form">
                 <div class="selects-inline">
@@ -43,7 +55,7 @@
                     </gtt-select>
                 </div>
                 <div class="form-actions text-right">
-                    <button type="submit" class="lodging-searchButton antonio-regular">Buscar</button>
+                    <button type="submit" @click="activateModal" class="lodging-searchButton antonio-regular">Buscar</button>
                 </div>
             </div>
             <div class="custom-text antonio-light"><span class="yellow-words antonio-bold">Renta de autos</span><span class="bannerText"> en más de 600 puntos del territorio nacional</span></div>
@@ -54,15 +66,33 @@
 <script>
 import GttSelect from '../custom-elements/GttSelect'
 import GttSelectDate from '../custom-elements/GttSelectDate'
+import GttModalSearch from '../custom-elements/GttModalSearch'
+import { constructDate, calculateNights } from '../../utils/utils'
 
 
 export default {
     components: {
         GttSelect,
-        GttSelectDate
+        GttSelectDate,
+        GttModalSearch
+    },
+    methods: {
+        activateModal(){
+            this.isModalActive = true;
+        },
+        desactivateModal(){
+            this.isModalActive = false;
+        },
+        constructDate(date){
+           return constructDate(date)
+        },
+        calculateNights(date){
+            return calculateNights(date)
+        }
     },
     data(){
         return {
+            isModalActive: false,
             defaultFlagImgPath: 'img/flags/',
             selectedDates: null,
             selectedPickUpPlace: null,

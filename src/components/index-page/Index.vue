@@ -6,7 +6,6 @@
         <IndexPackages></IndexPackages>
         <IndexOtherServices></IndexOtherServices>
         <IndexWhoAreWe></IndexWhoAreWe>
-        <IndexOffers></IndexOffers>
     </div>
 </template>
 
@@ -16,7 +15,6 @@ import Destinies from './Destinies'
 import IndexServices from './IndexServices'
 import IndexPackages from './IndexPackages'
 import IndexOtherServices from './IndexOtherServices'
-import IndexOffers from './IndexOffers'
 import IndexWhoAreWe from './IndexWhoAreWe'
 
 export default {
@@ -27,7 +25,6 @@ export default {
         IndexServices,
         IndexPackages,
         IndexOtherServices,
-        IndexOffers,
         IndexWhoAreWe
     },
     methods: {

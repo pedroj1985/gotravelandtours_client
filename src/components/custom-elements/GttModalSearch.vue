@@ -9,7 +9,12 @@
               <div class="second-column">
                   <slot name="searching-text"></slot>
                   <div class="progression-bar">
-                      <hr>
+                      <BarLoader
+                        :color="'#bcd01d'"
+                        :loading="loading"
+                        :width="100"
+                        :widthUnit="'%'"
+                      ></BarLoader>
                   </div>
               </div>
           </div>
@@ -27,8 +32,22 @@
 </template>
 
 <script>
-export default {
+import { BarLoader } from '@saeris/vue-spinners'
 
+export default {
+    components: {
+        BarLoader
+    },
+    data(){
+        return {
+            loading: true
+        }
+    },
+    created(){
+        setTimeout(()=>{
+            this.$emit('searchingFinished',false)
+        },2000)
+    }
 }
 </script>
 
@@ -44,6 +63,8 @@ export default {
 
     .c-modal{
         position: absolute;
+        left: 50%;
+        -webkit-transform: translate(-70%, 0);
         top: 29%;
         background-color: white;
         width: 39.06vw;
@@ -62,6 +83,9 @@ export default {
     } 
     .first-column{
         float: left;
+    }
+    .progression-bar{
+        margin-top: 10px;
     }
     .second-column{
         float: left;

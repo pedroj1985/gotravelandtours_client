@@ -12,11 +12,28 @@
 <script>
 import IndexLoggedRentSearch from '../index-logged-page/IndexLoggedRentSearch'
 import IndexLoggedRentCarousel from './IndexLoggedRentCarousel'
+import { eventBus } from '../../main';
 
 export default {
     components: {
         IndexLoggedRentSearch,
-        IndexLoggedRentCarousel
+        IndexLoggedRentCarousel,
+    },
+    methods: {
+        handleScroll(){
+            let height = window.innerHeight
+            if(height*0.25 > this.$el.getBoundingClientRect().top
+                && height*0 < this.$el.getBoundingClientRect().top)
+            {
+                eventBus.$emit('componentScrolled', 'car-rent')
+            }
+        }
+    },
+    created () {
+        window.addEventListener('scroll', this.handleScroll);
+    },
+    destroyed () {
+        window.removeEventListener('scroll', this.handleScroll);
     }
 }
 </script>

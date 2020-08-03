@@ -12,11 +12,28 @@
 <script>
 import IndexLoggedExcursionSearch from './IndexLoggedExcursionSearch'
 import IndexServicesCarousel from '../index-page/IndexServicesCarousel'
+import { eventBus } from '../../main';
 
 export default {
     components: {
         IndexLoggedExcursionSearch,
         IndexServicesCarousel
+    },
+    methods: {
+        handleScroll(){
+            let height = window.innerHeight
+            if(height*0.25 > this.$el.getBoundingClientRect().top
+                && height*0 < this.$el.getBoundingClientRect().top)
+            {
+                eventBus.$emit('componentScrolled', 'excursions')
+            }
+        }
+    },
+    created () {
+        window.addEventListener('scroll', this.handleScroll);
+    },
+    destroyed () {
+        window.removeEventListener('scroll', this.handleScroll);
     }
 }
 </script>

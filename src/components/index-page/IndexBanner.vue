@@ -16,7 +16,7 @@
             <img src="img/home_carrusel_03.jpg" alt="habana">
         </div>
         <div class="navs-wrapper">
-            <NavBar2></NavBar2>
+            <NavBar2 :menuLinks="menuLinks"></NavBar2>
         </div>
         <div class="home-banner-login">
             <div class="form-login-container">
@@ -49,6 +49,37 @@
         name: "IndexBanner",
         components: {
             NavBar2
+        },
+        data(){
+            return {
+                menuLinks: [
+                    {
+                        name: 'index',
+                        displayName: 'Inicio',
+                        id: 'content'
+                    },
+                    {
+                        name: 'destinies',
+                        displayName: 'Destinos',
+                        id: 'destinies'
+                    },
+                    {
+                        name: 'services-you-like',
+                        displayName: 'Servicios',
+                        id: 'services-you-like'
+                    },
+                    {
+                        name: 'gtt-packages',
+                        displayName: 'Paquetes',
+                        id: 'gtt-packages'
+                    },
+                    {
+                        name: 'who-we-are',
+                        displayName: 'GT&T',
+                        id: 'who-we-are'
+                    },
+                ]
+            }
         },
         methods: {
             handleScroll(){

@@ -138,14 +138,6 @@ html{
     .logo{
         height: 30px;
     }
-
-    #language_selector{
-        color: #c4c4c4;
-        float: right;
-        font-size: 24px;
-        margin-top: 18px;
-        display: flex;
-    }
     #language_selector i{
         line-height: 1.2;
     }

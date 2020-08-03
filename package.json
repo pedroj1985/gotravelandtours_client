@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@alfsnd/vue-bootstrap-select": "^0.4.4",
+    "@saeris/vue-spinners": "^1.0.8",
     "core-js": "^3.6.5",
     "moment": "^2.27.0",
     "v-calendar": "^1.0.0-beta.23",

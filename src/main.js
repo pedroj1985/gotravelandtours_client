@@ -28,6 +28,7 @@ const router = new VueRouter({
 });
 
 export const eventBus = new Vue();
+export const eventUserBus = new Vue();
 
 new Vue({
   router,

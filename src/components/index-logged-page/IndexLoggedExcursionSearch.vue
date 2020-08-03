@@ -3,6 +3,18 @@
         <div class="home-logged-excursion-img">
             <img src="img/homelogin_img_form_actividades.jpg" alt="">
         </div>
+        <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
+            <div slot="image">
+                <img src="img/icopaq_excursiones_color.svg" alt="">
+            </div>
+            <div slot="searching-text" class="searching-text">
+                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">excursiones</span> <span class="antonio-light">en <span v-if="selectedDestiny">{{ selectedDestiny }}</span><span v-else>cualquier lugar</span></span>
+            </div>
+            <div slot="searching-fields" class="searching-fields">
+                <div v-if="selectedDate">para el {{ constructDate(selectedDate) }} </div>
+                <div v-if="selectedPassengers">para {{ constructDisplay(selectedPassengers) }}</div>
+            </div>
+        </GttModalSearch>
         <div class="custom-text-form custom-margin">
             <div class="custom-form">
                 <div class="selects-inline">
@@ -39,7 +51,7 @@
                     </gtt-select-form>
                 </div>
                 <div class="form-actions text-right">
-                    <button type="submit" class="lodging-searchButton antonio-regular">Buscar</button>
+                    <button type="submit" @click="activateModal" class="lodging-searchButton antonio-regular">Buscar</button>
                 </div>
             </div>
             <div class="custom-text antonio-light"><span class="bannerText">Tu mejor plan en </span><span class="yellow-words antonio-bold">Excursiones y actividades</span></div>
@@ -51,16 +63,36 @@
 import GttSelect from '../custom-elements/GttSelect'
 import GttSelectForm from '../custom-elements/GttSelectForm'
 import GttSelectDate from '../custom-elements/GttSelectDate'
+import GttModalSearch from '../custom-elements/GttModalSearch'
+import { constructDate, constructDisplay, calculateNights } from '../../utils/utils'
 
 export default {
     components: {
         GttSelect,
         GttSelectForm,
-        GttSelectDate
+        GttSelectDate,
+        GttModalSearch
+    },
+    methods:{
+        activateModal(){
+            this.isModalActive = true;
+        },
+        desactivateModal(){
+            this.isModalActive = false;
+        },
+        constructDate(date){
+            return constructDate(date);
+        },
+        constructDisplay(d){
+            return constructDisplay(d);
+        },
+        calculateNights(min, max){
+            return calculateNights(min, max);
+        }
     },
     data(){
         return {
-
+            isModalActive: false,
             selectedPickUpPlace: '',
             selectedDeliveryPlace: '',
             selectedDestiny: '',

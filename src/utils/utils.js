@@ -1,0 +1,18 @@
+import moment from 'moment';
+
+export function constructDate(date){
+           return moment(date).locale('es').format('DD MMM YYYY');
+}
+
+export function calculateNights(min, max){
+    return moment(min).diff(moment(max), 'days');
+}
+
+export function constructDisplay(d){
+    let s = '';
+    Object.keys(d).forEach(element => {
+        s = s+' · '+d[element].value+' '+d[element].display
+    });
+
+    return s.substring(2);
+}

@@ -4,14 +4,14 @@
             <img src="img/homelogin_img_form_alojamiento.jpg" alt="">
         </div>
         <div class="navs-wrapper">
-            <NavBar2></NavBar2>
+            <NavBar2 :menuLinks="menuLinks"></NavBar2>
         </div>
-        <GttModalSearch v-show="isModalActive">
+        <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
             <div slot="image">
                 <img src="img/icopaq_alojamiento_color.svg" alt="">
             </div>
             <div slot="searching-text" class="searching-text">
-                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">alojamientos</span> <span class="antonio-light">en {{ selectedLodgingDestinyValue }}</span>
+                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">alojamientos</span> <span class="antonio-light">en <span v-if="selectedLodgingDestinyValue">{{ selectedLodgingDestinyValue }}</span><span v-else>cualquier lugar</span></span>
             </div>
             <div slot="searching-fields" class="searching-fields">
                 <div v-if="selectedDates">entre el {{ constructDate(selectedDates.start) }} y el {{ constructDate(selectedDates.end) }} ({{ calculateNights(selectedDates.start, selectedDates.end)}} noches)</div>
@@ -62,6 +62,7 @@ import GttSelectForm from '../custom-elements/GttSelectForm'
 import GttSelectDate from '../custom-elements/GttSelectDate'
 import GttModalSearch from '../custom-elements/GttModalSearch'
 import moment from 'moment'
+import { eventBus } from '../../main';
 
 export default {
     components: {
@@ -71,9 +72,26 @@ export default {
         GttSelectDate,
         GttModalSearch
     },
+    created () {
+        window.addEventListener('scroll', this.handleScroll);
+    },
+    destroyed () {
+        window.removeEventListener('scroll', this.handleScroll);
+    },
     methods:{
+        handleScroll(){
+            let height = window.innerHeight
+            if(height*0.25 > this.$el.getBoundingClientRect().top
+                && height*0 < this.$el.getBoundingClientRect().top)
+            {
+                eventBus.$emit('componentScrolled', 'lodging')
+            }
+        },
         activateModal(){
             this.isModalActive = true;
+        },
+        desactivateModal(){
+            this.isModalActive = false
         },
         constructDate(date){
            return moment(date).locale('es').format('DD MMM YYYY');
@@ -92,6 +110,33 @@ export default {
     },
     data(){
         return {
+            menuLinks: [
+                {
+                    name: 'index',
+                    displayName: 'Inicio',
+                    id: 'home-logged-banner'
+                },
+                {
+                    name: 'lodging',
+                    displayName: 'alojamientos',
+                    id: 'home-logged-banner'
+                },
+                {
+                    name: 'car-rent',
+                    displayName: 'renta de autos',
+                    id: 'index-logged-rent-wrapper'
+                },
+                {
+                    name: 'transfer',
+                    displayName: 'traslados',
+                    id: 'index-logged-transfer'
+                },
+                {
+                    name: 'excursions',
+                    displayName: 'Excursiones y actividades',
+                    id: 'index-logged-excursion'
+                },
+            ],
             isModalActive: false,
             defaultFlagImgPath: 'img/flags/',
             selectedLodgingDestinyValue: '',
