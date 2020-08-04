@@ -113,7 +113,7 @@ export default {
         font-size: 16px;
     }
 
-    @media(max-width: 1368px){
+    @media(max-width: 1440px){
         .user-photo{
             font-size: 20px;
             width: 30px;
