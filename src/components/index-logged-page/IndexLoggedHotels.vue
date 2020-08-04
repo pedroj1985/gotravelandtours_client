@@ -1,38 +1,47 @@
 <template>
-    <Slick class="custom-margin hotel-carousel"
-        ref="slick"
-        :slidesToShow="4"
-        :arrows="true"
-        > 
-        <div class="index-logged-hotel-wrapper" v-for="hotel in hotels" :key="hotel.id">
-            <div class="index-logged-hotel">
-                <img :src="'img/'+hotel.img" alt="">
-                <div class="name-weather">
-                    <div class="name antonio-regular">{{hotel.weather.location}}</div>
-                    <div class="weather hn-ltcn">
-                        <div class="weather-time mdi" :class="setWeatherClass(hotel.weather.weather)"></div>
-                        <div class="temp">{{hotel.weather.temp}}°C</div>
+    <div class="custom-margin hotel-carousel-wrapper">
+        <Slick class="hotel-carousel"
+            ref="slick"
+            :slidesToShow="4"
+            :arrows="true"
+            :swipe="true"
+            > 
+            <div slot="prevArrow" class="custom-prevArrow">
+                <i class="mdi mdi-chevron-left"></i>
+            </div>
+            <div slot="nextArrow" class="custom-nextArrow">
+                <i class="mdi mdi-chevron-right"></i>
+            </div>
+            <div class="index-logged-hotel-wrapper" v-for="hotel in hotels" :key="hotel.id">
+                <div class="index-logged-hotel">
+                    <img :src="'img/'+hotel.img" alt="">
+                    <div class="name-weather">
+                        <div class="name antonio-regular">{{hotel.weather.location}}</div>
+                        <div class="weather hn-ltcn">
+                            <div class="weather-time mdi" :class="setWeatherClass(hotel.weather.weather)"></div>
+                            <div class="temp">{{hotel.weather.temp}}°C</div>
+                        </div>
                     </div>
-                </div>
-                <div class="index-logged-hotel-description">
-                    <div class="hotel-name hn-roman">
-                        {{hotel.name}}
-                    </div>
-                    <div class="hotel-stars hn-roman">
-                        <div><i class="mdi mdi-star"></i></div>
-                        {{hotel.stars}}
-                    </div>
-                    <div class="hotel-price hn-roman">
-                        <div class="desde-word">desde</div>
-                        {{ styledPrice(hotel.min_price.value).intPart}}.<sup>{{ styledPrice(hotel.min_price.value).decimalPart}}</sup> <span class="currency">{{hotel.min_price.currency}}</span>
-                    </div>
-                    <div class="hotel-reserve">
-                        <button class="gtt-button gtt-button-rounded gtt-button-thin gtt-button-transparent">Reservar</button>
+                    <div class="index-logged-hotel-description">
+                        <div class="hotel-name hn-roman">
+                            {{hotel.name}}
+                        </div>
+                        <div class="hotel-stars hn-roman">
+                            <div><i class="mdi mdi-star"></i></div>
+                            {{hotel.stars}}
+                        </div>
+                        <div class="hotel-price hn-roman">
+                            <div class="desde-word">desde</div>
+                            {{ styledPrice(hotel.min_price.value).intPart}}.<sup>{{ styledPrice(hotel.min_price.value).decimalPart}}</sup> <span class="currency">{{hotel.min_price.currency}}</span>
+                        </div>
+                        <div class="hotel-reserve">
+                            <button class="gtt-button gtt-button-rounded gtt-button-thin gtt-button-transparent">Reservar</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </Slick>
+        </Slick>
+    </div>
 </template>
 
 <script>
@@ -154,7 +163,7 @@ export default {
 </script>
 
 <style scoped>
-    .hotel-carousel{
+    .hotel-carousel-wrapper{
         margin-top: 60px;
     }
     .index-logged-hotel{
@@ -162,6 +171,9 @@ export default {
         height: 475px;
         border-radius: 10px;
         position: relative;
+    }
+    .slick-active .index-logged-hotel{
+        box-shadow: 2px 0.5px 5px rgba(0, 0, 0, 35%);
     }
     .index-logged-hotel img{
         border-radius: 10px;
@@ -222,5 +234,40 @@ export default {
     }
     .hotel-carousel button.slick-next{
         right: 50px;
+    }
+
+    @media(max-width: 1440px)
+    {
+        .hotel-carousel{
+            width: 100%;
+            height: 400px;
+        }
+        .index-logged-hotel{
+            height: 400px;
+            width: 20.05vw;
+        }
+        .index-logged-hotel-description{
+            height: 200px;
+        }
+        .hotel-name{
+            font-size: 12px;
+        }
+        .hotel-stars{
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .hotel-price{
+            font-size: 14px;
+        }
+        .desde-word{
+            font-size: 12px;
+        }
+        /* .hotel-carousel button.slick-arrow{
+            width: 30px;
+            height: 30px;
+        }
+        .hotel-carousel button.slick-arrow::before{
+            font-size: 30px;
+        } */
     }
 </style>

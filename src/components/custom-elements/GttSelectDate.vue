@@ -172,6 +172,32 @@ export default {
         font-size: 14px;
         color: #6d6d6d;
     }
+    @media(max-width: 1440px)
+    {
+        .gtt__toggle{
+            height: 30px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            padding-left: 8px; 
+            padding-right: 8px; 
+        }
+        .arrow{
+            top: -12px;
+        }
+        .gtt__toggle_text{
+            padding-top: 5px;
+        }
+        .gtt__toggle_arrow{
+            font-size: 20px;
+        }
+        .gtt__list_area_wrapper{
+            top: 30px;
+            margin-top: 20px;
+        }
+        .displayDate{
+            font-size: 10px;
+        }
+    }
 
 
 </style>
@@ -217,5 +243,22 @@ export default {
     /* .gtt__date_picker .vc-grid-cell + .vc-grid-cell > .vc-pane{
         margin-left: 60px;
     } */
+    @media(max-width: 1368px)
+    {
+        .gtt__date_picker .vc-container .vc-title{
+            font-size: 12px;
+        }
+
+        .gtt__date_picker .vc-container .vc-weekday{
+            font-size: 10px;
+            /* color: #6d6d6d !important; */
+        }
+
+        .gtt__date_picker .vc-container span{
+            padding: 12px;
+            font-size: 12px;
+        }
+    }
+
 
 </style>

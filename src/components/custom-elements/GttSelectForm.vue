@@ -230,4 +230,37 @@ export default {
         border: 1px solid #c4c4c4;
     }
 
+    @media(max-width: 1440px)
+    {
+        .gtt__toggle{
+            height: 30px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            padding-left: 8px; 
+            padding-right: 8px; 
+        }
+        .arrow{
+            top: -12px;
+        }
+        .gtt__toggle_text{
+            padding-top: 7px;
+        }
+        .gtt__toggle_arrow{
+            font-size: 20px;
+        }
+        .gtt__list_area_wrapper{
+            top: 30px;
+            margin-top: 20px;
+        }
+        .gtt__form{
+            padding: 15px;
+            font-size: 12px;
+        }
+        .gtt__picker_button{
+            width: 36px;
+            height: 36px;
+            font-size: 12px;
+        }
+    }
+
 </style>

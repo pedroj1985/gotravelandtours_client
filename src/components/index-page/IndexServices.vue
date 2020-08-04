@@ -1,7 +1,7 @@
 <template>
   <div id="services-you-like" class="custom-margin">
     <div class="service-you-like-title section-title hn-bdcn">Servicios que te pueden interesar con GT&amp;T</div>
-    <IndexServicesCarousel></IndexServicesCarousel>
+    <IndexServicesCarousel :customMargin="false"></IndexServicesCarousel>
   </div>
 </template>
 

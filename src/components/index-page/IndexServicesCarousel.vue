@@ -1,4 +1,5 @@
 <template>
+<div :class="{'custom-margin': customMargin}">
     <Slick
         class="services-carousel"
         ref="slick"
@@ -8,6 +9,12 @@
         :arrows="false"
         :dots="true"
         >
+        <div slot="prevArrow" class="custom-prevArrow">
+            <i class="mdi mdi-chevron-left"></i>
+        </div>
+        <div slot="nextArrow" class="custom-nextArrow">
+            <i class="mdi mdi-chevron-right"></i>
+        </div>
         <div class="service-c" v-for="service in services" :key="service.id">
             <div class="service" >
                 <img :src="'img/'+service.image" alt="">
@@ -28,6 +35,7 @@
             </div>
         </div>
     </Slick>
+</div>
 </template>
 
 <script>
@@ -36,6 +44,12 @@ import Slick from 'vue-slick-carousel';
 export default {
     components: {
         Slick
+    },
+    props:{
+        customMargin: {
+            type: Boolean,
+            default: true
+        }
     },
     name: "IndexServices",
     data(){
@@ -173,3 +187,9 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+    .services-carousel{
+        width: 100%;
+    }
+</style>

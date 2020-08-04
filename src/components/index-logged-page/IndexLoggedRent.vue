@@ -48,4 +48,9 @@ export default {
         position: relative;
         width: 100%;
     }
+    @media(max-width: 1440px) {
+        #index-logged-rent-wrapper{
+            height: 950px;
+        }
+    }
 </style>

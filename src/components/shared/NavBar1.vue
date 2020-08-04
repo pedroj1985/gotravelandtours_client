@@ -1,9 +1,9 @@
 <template>
     <div id="first-nav">
         <div id="first-nav-content" class="custom-margin">
-            <a href="#" id="logo_link">
+            <router-link to="/" id="logo_link">
                 <img class="logo" src="img/logo_gtt_blanco.svg" alt="Go Travel and Tours">
-            </a>
+            </router-link>
             <div class="right-side-navbar">
                 <div class="auth-user-menu" v-if="isUserLogged">
                     <div class="user-name-hello">
@@ -91,6 +91,8 @@ export default {
         margin-right: 3px;
         border: 1px solid #bcd01d;
     }
+
+
     .reservations{
         padding-left: 15px;
     }
@@ -109,5 +111,25 @@ export default {
         text-transform: uppercase;
         color: #c4c4c4;
         font-size: 16px;
+    }
+
+    @media(max-width: 1368px){
+        .user-photo{
+            font-size: 20px;
+            width: 30px;
+            height: 30px;
+        }
+        .hello, .user-name{
+            font-size: 14px;
+        }
+        .reservations i, .bills i, .shopping-cart i, .search i{
+            font-size: 14px;
+        }
+        .reservations a, .bills a, .shopping-cart a{
+            font-size: 14px;
+        }
+        #language_selector{
+            font-size: 14px;
+        }
     }
 </style>

@@ -1,7 +1,16 @@
 <template>
  <div id="other-services" class="custom-margin">
     <div class="other-services-title section-title hn-bdcn">Otros servicios</div>
-    <div id="other-services-carousel">
+    <Slick
+    id="other-services-carousel"   
+    ref="slick"
+    :slidesToShow="3"
+    :slidesToScroll="3"
+    :autoplay="true"
+    :swipe="true"
+    :arrows="false"
+    :dots="true"
+    >
         <div :key="oService.id" class="other-services-container" v-for="oService in oServices">
             <img :src="'img/'+oService.image" alt="">
             <div class="other-service-content">
@@ -9,13 +18,18 @@
                 <div class="other-service-text hn-roman">{{oService.name}}</div>
             </div>
         </div>
-    </div>
+    </Slick>
  </div> 
 </template>
 
 <script>
+import Slick from 'vue-slick-carousel'
+
 export default {
     name: "IndexOtherServices",
+    components: {
+        Slick
+    },
     data(){
         return {
             oServices: [

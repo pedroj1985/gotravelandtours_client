@@ -111,4 +111,19 @@ export default {
         margin-top: auto;
     }
 
+    @media(max-width: 1440px)
+    {
+        .c-modal{
+            top: 29%;
+            width: 49.06vw;
+            height: 300px;
+        }
+        .searching-text{
+            font-size: 36px;
+        }
+        .c-modal-bottom .second-column{
+            font-size: 10px;
+        }
+    }
+
 </style>

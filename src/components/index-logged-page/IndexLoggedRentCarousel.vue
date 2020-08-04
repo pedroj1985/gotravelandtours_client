@@ -1,9 +1,17 @@
 <template>
-        <Slick class="car-carousel custom-margin"
+    <div class="custom-margin">
+        <Slick class="car-carousel"
             ref="slick"
             :slidesToShow="4"
             :arrows="true"
+            :swipe="true"
             > 
+            <div slot="prevArrow" class="custom-prevArrow">
+                <i class="mdi mdi-chevron-left"></i>
+            </div>
+            <div slot="nextArrow" class="custom-nextArrow">
+                <i class="mdi mdi-chevron-right"></i>
+            </div>
             <div class="index-logged-car-wrapper" v-for="car in cars" :key="car.id">
                 <div class="index-logged-car">
                     <img :src="'img/'+car.img" alt="">
@@ -46,6 +54,7 @@
                 </div>
             </div>
         </Slick>
+    </div>
 </template>
 
 <script>
@@ -202,6 +211,9 @@ export default {
         transform: translate(-50%, 0);
         background: rgba(33, 47, 61,80%);
     }
+    .slick-active .index-logged-car{
+        box-shadow: 2px 0.5px 5px rgba(0, 0, 0, 35%);
+    }
     .index-logged-car-name{
         color: #212f3d;
         text-align: center;
@@ -259,5 +271,62 @@ export default {
     }
     .car-carousel button.slick-next{
         right: 50px;
+    }
+
+    @media(max-width: 1440px){
+        .index-logged-car{
+            width: 20.05vw;
+            height: 400px;
+        }
+        .index-logged-car-description{
+            font-size: 14px;
+            height: 160px;
+            padding: 8px;
+        }
+        .index-logged-car-name{
+            line-height: 1.2;
+            height: 65px;
+            padding: 8px;
+        }
+        .car-name{
+            font-size: 14px;
+        }
+        .car-category{
+            font-size: 12px;
+        }
+        .capacity, .luggage, .car-type{
+            margin-bottom: 5px;
+        }
+        .agencies{
+            margin-top: 15px;
+            font-size: 24px;
+        }
+        .agencies div{
+            margin-right: 10px;
+        }
+        .non-selected{
+            color: #6d6d6d;
+        }
+        .car-price{
+            margin-top: 15px;
+            text-align: right;
+            font-size: 14px;
+        }
+        .car-price .from-word{
+            font-size: 12px;
+        }
+        .car-carousel button.slick-arrow{
+            width: 30px;
+            height: 30px;
+        }
+        .car-carousel button.slick-arrow::before{
+            font-size: 36px;
+        }
+        .car-carousel button.slick-prev{
+            left: 40px;
+        }
+        .car-carousel button.slick-next{
+            right: 50px;
+        }
     }
 </style>

@@ -133,7 +133,7 @@ export default {
     #index-logged-excursion-search{
         position: relative;
         width: 100%;
-        height: 750px;
+        /* height: 750px; */
     }
     #index-logged-excursion-search img{
         width: 100%;
@@ -150,5 +150,15 @@ export default {
     .custom-text{
         text-align: left;
         margin-left: 30px;
+    }
+
+    @media(max-width: 1440px)
+    {
+        .custom-width-big{
+            width: 65%;
+        }
+        .custom-width-small{
+            width: 35%;
+        }
     }
 </style>

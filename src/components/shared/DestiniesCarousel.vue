@@ -1,12 +1,19 @@
 <template>
     <Slick
         id="destinies-carousel"
-        class="custom-margin"
         ref="slick"
         :slidesToShow="4"
+        :slidesToScroll="4"
         :draggable="true"
-        :arrows="true"
+        :arrows="arrows"
+        :dots="dots"
         >
+        <div slot="prevArrow" class="custom-prevArrow">
+            <i class="mdi mdi-chevron-left"></i>
+        </div>
+        <div slot="nextArrow" class="custom-nextArrow">
+            <i class="mdi mdi-chevron-right"></i>
+        </div>
         <div class="wrapper service-c" v-for="destiny in destinies" :key="destiny.id">
             <div class="dest">
                 <img v-bind:src="'img/'+destiny.image" alt="">
@@ -29,6 +36,16 @@ import Slick from 'vue-slick-carousel'
 export default {
     components: {
         Slick
+    },
+    props: {
+        arrows: {
+            type: Boolean,
+            default: false
+        },
+        dots: {
+            type: Boolean,
+            default: true
+        }
     },
     data(){
         return {

@@ -141,7 +141,7 @@ export default {
     }
     ul.gtt__list_area{
         min-height: 200px;
-        max-height: 500px;
+        max-height: 300px;
         min-width: 150px;
         list-style: none;
         text-align: left;
@@ -166,6 +166,42 @@ export default {
     li.gtt__item:hover{
         background: #212f3d;
         color: #ffffff;
+    }
+
+    @media(max-width: 1440px){
+        .gtt__toggle{
+            height: 30px;
+            font-size: 12px;
+            padding-left: 8px; 
+            padding-right: 8px; 
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .arrow{
+            top: -12px;
+        }
+        .gtt__toggle_text{
+            padding-top: 5px;
+        }
+        .gtt__toggle_arrow{
+            font-size: 20px;
+        }
+        .gtt__list_area_wrapper{
+            top: 30px;
+            margin-top: 20px;
+        }
+        ul.gtt__list_area{
+            font-size: 10px;
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
+        li.gtt__item{
+            padding-left: 30px;
+            padding-right: 30px;
+            padding-bottom: 8px;
+            padding-top: 8px;
+            cursor: default;
+        }
     }
 
 </style>

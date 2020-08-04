@@ -3,7 +3,7 @@
       <IndexLoggedExcursionSearch></IndexLoggedExcursionSearch>
       <div id="index-logged-excursion-wrapper" >
         <div class="carousel-absolute">
-            <IndexServicesCarousel class="custom-margin"></IndexServicesCarousel>
+            <IndexServicesCarousel></IndexServicesCarousel>
         </div>
       </div>
   </div>
@@ -56,5 +56,11 @@ export default {
         top: -107px;
         z-index: 2;
         width: 100%;
+    }
+    @media(max-width: 1440px)
+    {
+        #index-logged-excursion{
+            height: 900px;
+        }
     }
 </style>

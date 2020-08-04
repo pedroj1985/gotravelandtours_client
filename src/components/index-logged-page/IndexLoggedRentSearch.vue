@@ -167,4 +167,10 @@ export default {
         text-align: left;
         margin-left: 30px;
     }
+
+    @media(max-width: 1440px){
+        #index-logged-rent-search{
+            height: auto;
+        }
+    }
 </style>

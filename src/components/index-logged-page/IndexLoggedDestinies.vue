@@ -1,6 +1,9 @@
 <template>
     <div id="index-logged-destinies">
-        <Destinies></Destinies>
+        <div class="custom-margin">
+            <Destinies :arrows="true" :dots="false">
+            </Destinies>
+        </div>
     </div>
 </template>
 

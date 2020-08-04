@@ -1,6 +1,13 @@
 <template>
     <div id="home-banner">
-        <div class="home-carousel">
+        <Slick
+            class="home-carousel"
+            :slidesToShow="1"
+            :arrows="false"
+            :dots="false"
+            :autoplay="true"
+            :swipe="true"
+        >
             <div class="image-review">
                 <img src="img/home_carrusel_01.jpg" alt="playa">
                 <div class="review custom-margin">
@@ -12,9 +19,13 @@
                     <div class="home-banner-weather hn-ltcn"><i class="mdi mdi-weather-sunny"></i><span class="home-grade">32°C</span></div>
                 </div>
             </div>
-            <img src="img/home_carrusel_02.jpg" alt="hotel">
-            <img src="img/home_carrusel_03.jpg" alt="habana">
-        </div>
+            <div>
+                <img src="img/home_carrusel_02.jpg" alt="hotel">
+            </div>
+            <div>
+                <img src="img/home_carrusel_03.jpg" alt="habana">
+            </div>
+        </Slick>
         <div class="navs-wrapper">
             <NavBar2 :menuLinks="menuLinks"></NavBar2>
         </div>
@@ -33,8 +44,7 @@
                     <div class="form-password-forgotten hn-roman">¿Haz olvidado tu <a href="#">contraseña</a>?</div>
                     <div class="home-actions antonio-regular">
                         <button class="btn home-sign-up" type="button">registrarse</button>
-                        <button class="btn home-login-btn" type="submit">entrar</button>
-                    </div>
+                        <router-link tag="button" class="btn home-login-btn" to="/logged">entrar</router-link>                    </div>
                 </form>
             </div>
         </div>
@@ -44,11 +54,13 @@
 <script>
     import NavBar2 from "../shared/NavBar2"
     import { eventBus } from '../../main';
+    import Slick from 'vue-slick-carousel'
 
     export default {
         name: "IndexBanner",
         components: {
-            NavBar2
+            NavBar2,
+            Slick
         },
         data(){
             return {

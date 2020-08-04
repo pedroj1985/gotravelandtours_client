@@ -266,4 +266,25 @@ export default {
         margin-right: 15px;
     }
 
+    @media(max-width: 1440px){
+        #home-logged-banner{
+            width: 100%;
+            height: 100%;
+        }
+        .lodging-text-form{
+            position: absolute;
+            display: flex;
+            top: 26%;
+            padding-left: 8vw;
+        }
+        .lodging-form{
+            height: 230px;
+            width: 45.06vw;
+        }
+
+        .lodging-text{
+            font-size: 36px;
+        }
+    }
+
 </style>

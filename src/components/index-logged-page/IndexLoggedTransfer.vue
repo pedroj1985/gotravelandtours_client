@@ -197,7 +197,7 @@ export default {
     #index-logged-transfer{
         position: relative;
         width: 100%;
-        height: 750px;
+        /* height: 750px; */
     }
     #index-logged-transfer img{
         width: 100%;
@@ -221,6 +221,18 @@ export default {
     }
     .custom-text{
         margin-top: 100px;
+    }
+    @media(max-width: 1440px)
+    {
+        #index-logged-transfer .single-date-transfer{
+            width: 30%;
+        }
+        #index-logged-transfer .hour{
+            width: 20%;
+        }
+        .custom-width-select{
+            width: 30%;
+        }
     }
 </style>
 <style>
