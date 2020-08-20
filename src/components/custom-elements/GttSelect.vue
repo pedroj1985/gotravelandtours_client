@@ -7,14 +7,21 @@
                 >
                 <div class="gtt__toggle_content">
                     <div class="gtt__toggle_text">
-                        <slot name="placeholder" v-if="!selectedValue">
+                        <div class="gtt__toggle_text_first_column">
                             <slot name="iconSelectedValue"></slot>
-                            Seleccione
-                        </slot>
-                        <slot name="selectedValue" v-bind:selectedValue="selectedValue" v-else>
-                            <slot name="iconSelectedValue"></slot>
-                            {{ selectedValue }}
-                        </slot>
+                        </div>
+                        <div class="gtt__toggle_text_second_column" :class="{twoRows: selectedValue}">
+                            <div :class="{'small': selectedValue}">
+                                <slot name="placeholder">
+                                    Seleccione
+                                </slot>
+                            </div>
+                            <div v-if="selectedValue" class="bigDown">
+                                <slot name="selectedValue" v-bind:selectedValue="selectedValue">
+                                    {{ selectedValue }}
+                                </slot>
+                            </div>
+                        </div>
                     </div>
                     <div class="gtt__toggle_arrow"><i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i></div>
                 </div>
@@ -22,7 +29,7 @@
 
         <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">
             <span class="arrow" v-if="arrow"></span>
-            <ul class="gtt__list_area">
+            <ul class="gtt__list_area" v-if="!search">
                 <li class="gtt__item" v-for="option in options" :key="option.id" @click="
                                                                                         if(option.hasOwnProperty('value')){
                                                                                             setSelectedValue(option)
@@ -33,6 +40,24 @@
                     <slot name="option" v-bind:option="option">{{ option }}</slot>
                 </li>
             </ul>
+            <div class="gtt__search_area" v-else>
+                <input type="text" v-model="searchQuery" @keyup="submitSearch" placeholder="Donde desea alojarse?">
+                <ul class="gtt__list_area" v-if="searchQuery">
+                    <li class="gtt__item" v-for="option in searchResult" :key="option.id" @click="
+                                                                                            if(option.hasOwnProperty('value')){
+                                                                                                setSelectedValue(option)
+                                                                                            }
+                                                                                            else{
+                                                                                                setSelectedValue(option)
+                                                                                                }">
+                        <slot name="option" v-bind:option="option">{{ option }}</slot>
+                    </li>
+                </ul>
+                <div class="no-result-area" v-else>
+                    <div class="result-area-search-icon"><i class="mdi mdi-magnify"></i></div>
+                    <slot name="no-result-text">Buscar por destino alojamiento o punto de interés</slot>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -50,16 +75,29 @@ export default {
     },
     props: {
         options: Array,
+        search: {
+            type: Boolean,
+            default: false
+        },
         value: null
     },
     data(){
         return {
             isVisible: false,
+            searchResult: [],
+            searchQuery: '',
             arrow: true,
             selectedValue: ''
         }
     },
     methods: {
+        submitSearch(){
+            let result = this.options.filter((e) => {
+                return e.toLowerCase().includes(this.searchQuery.toLowerCase());
+            })
+
+            this.searchResult = result;
+        },
         toggleClicked(){
             this.isVisible = !this.isVisible;
         },
@@ -109,8 +147,19 @@ export default {
         display: flex;
     }
     .gtt__toggle_text{
+        display: flex;
         float: left;
+    }
+    .gtt__toggle_text_first_column, .gtt__toggle_text_second_column{
         padding-top: 11px;
+    }
+    .gtt__toggle_text_second_column{
+        text-align: left;
+        padding-left: 5px;
+    }
+
+    .twoRows{
+        padding-top: 2px;
     }
     .gtt__toggle_arrow{
         margin-left: auto;
@@ -139,6 +188,43 @@ export default {
         border-right: 15px solid transparent;
         border-bottom: 15px solid #ffffff;
     }
+    .gtt__search_area{
+        /* height: 300px; */
+        width: 400px;
+        text-align: left;
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-top: 30px;
+        color: #212f3d;
+        padding-bottom: 30px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        font-family: 'Helvetica Neue LT Std-Roman';
+        font-size: 14px;
+    }
+    .result-area-search-icon{
+        font-size: 60px;
+        color: #6d6d6d;
+    }
+    .gtt__search_area input{
+        border: none;
+        width: 100%;
+        padding-top: 15px;
+        padding-bottom: 30px;
+        font-size: 14px;
+        border-bottom: 1px solid #c4c4c4;
+    }
+
+    .no-result-area{
+        font-size: 12px;
+        text-align: center;
+        color: #6d6d6d;
+        padding-top: 60px;
+        line-height: 1.2;
+    }
+    .gtt__search_result_area{
+        overflow: auto;
+    }
     ul.gtt__list_area{
         min-height: 200px;
         max-height: 300px;
@@ -150,10 +236,15 @@ export default {
         padding-top: 15px;
         padding-bottom: 15px;
         background-color: #ffffff;
+        margin-bottom: 0;
         color: #212f3d;
         padding-left: 0;
         font-family: 'Helvetica Neue LT Std-Roman';
         font-size: 14px;
+    }
+    .gtt__search_area ul.gtt__list_area{
+        width: 100%;
+        height: 100%;
     }
     li.gtt__item{
         padding-left: 30px;
@@ -170,7 +261,7 @@ export default {
 
     @media(max-width: 1440px){
         .gtt__toggle{
-            height: 30px;
+            height: 35px;
             font-size: 12px;
             padding-left: 8px; 
             padding-right: 8px; 
@@ -181,7 +272,16 @@ export default {
             top: -12px;
         }
         .gtt__toggle_text{
+            padding-top: 0px;
+        }
+        .gtt__toggle_text_first_column, .gtt__toggle_text_second_column{
             padding-top: 5px;
+        }
+        .gtt__toggle_text_second_column .bigDown{
+            line-height: 1;
+        }
+        .twoRows{
+            padding-top: 0px;
         }
         .gtt__toggle_arrow{
             font-size: 20px;

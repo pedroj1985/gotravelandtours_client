@@ -7,12 +7,18 @@
                 >
                 <div class="gtt__toggle_content">
                     <div class="gtt__toggle_text">
-                        <slot name="placeholder" v-if="!isChanged">
-                            Seleccione
-                        </slot>
-                        <div v-else>
+                        <div class="gtt__toggle_text_first_column">
                             <slot name="iconSelectedValue"></slot>
-                            {{ constructDisplay(emitValue) }}
+                        </div>
+                        <div class="gtt__toggle_text_second_column" :class="{twoRows: isChanged}">
+                            <div :class="{'small': isChanged}">
+                                <slot name="placeholder">
+                                    Seleccione
+                                </slot>
+                            </div>
+                            <div v-if="isChanged">
+                                {{ constructDisplay(emitValue) }}
+                            </div>
                         </div>
                     </div>
                     <div class="gtt__toggle_arrow"><i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i></div>
@@ -35,6 +41,16 @@
                         <button class="gtt__picker_button" @click="add(item, item.step)"><i class="mdi mdi-plus"></i></button>
                     </div>
                 </div>
+                <div class="gtt__item gtt__itemKids row">
+                    <div class="col-md-6 gtt__kidsSelect" v-for="(kid, i) in kids" :key="kid.id">
+                        <gtt-select :options="kidsAgeList" v-model="kid.age">
+                            <span slot="placeholder">Edad del menor {{i+1}}</span>
+                            <template v-slot:selectedValue="selectedValue">
+                                {{selectedValue.selectedValue}} años
+                            </template>
+                        </gtt-select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -43,8 +59,12 @@
 
 <script>
 import ClickOutside from 'vue-click-outside';
+import GttSelect from '../custom-elements/GttSelect';
 
 export default {
+    components: {
+        GttSelect
+    },
     directives: {
         ClickOutside
     },
@@ -77,6 +97,10 @@ export default {
     },
     data(){
         return {
+            kids: [],
+            kidsAgeList: [
+                0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+            ],
             isChanged: false,
             isVisible: false,
             arrow: true,
@@ -110,11 +134,21 @@ export default {
             return s.substring(2);
         },
         add(item, step = 1){
+            if(item.code == "kids")
+            {
+                this.kids.push({
+                    age: null
+                    })
+            }
             item.value+=step
             this.isChanged = true;
             this.updateValue(item)
         },
         remove(item, step = 1){
+            if(item.code == "kids")
+            {
+                this.kids.pop()
+            }
             item.value-=step
             this.isChanged = true;
             this.updateValue(item)
@@ -151,7 +185,18 @@ export default {
     }
     .gtt__toggle_text{
         float: left;
+        display: flex;
+    }
+    .gtt__toggle_text_first_column, .gtt__toggle_text_second_column{
         padding-top: 11px;
+    }
+    .gtt__toggle_text_second_column{
+        text-align: left;
+        padding-left: 5px;
+    }
+
+    .twoRows{
+        padding-top: 2px;
     }
     .gtt__toggle_arrow{
         margin-left: auto;
@@ -165,6 +210,15 @@ export default {
         margin-top: 30px;
         box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);
         display: none;
+    }
+    .gtt__itemKids{
+        margin-top: 30px;
+    }
+    .gtt__kidsSelect{
+        padding-right: 5px;
+        padding-left: 0;
+        height: 50px;
+        margin-bottom: 5px;
     }
     .isVisible{
         display: block;
@@ -185,8 +239,8 @@ export default {
         padding: 30px;
         position: relative;
         background: #ffffff;
-        width: 400px;
-        height: 200px;
+        min-width: 450px;
+        min-height: 200px;
         border-radius: 10px;
         font-family: 'Helvetica Neue LT Std-Roman';
         color: #212f3d;
@@ -217,6 +271,7 @@ export default {
         text-align: center;
     }
 
+
     .gtt__picker_button.disabled{
         color: #c4c4c4;
         border: 1px solid #c4c4c4;
@@ -233,7 +288,7 @@ export default {
     @media(max-width: 1440px)
     {
         .gtt__toggle{
-            height: 30px;
+            height: 35px;
             margin-bottom: 20px;
             font-size: 12px;
             padding-left: 8px; 
@@ -243,7 +298,13 @@ export default {
             top: -12px;
         }
         .gtt__toggle_text{
-            padding-top: 7px;
+            padding-top: 0px;
+        }
+        .gtt__toggle_text_first_column, .gtt__toggle_text_second_column{
+            padding-top: 5px;
+        }
+        .twoRows{
+            padding-top: 0px;
         }
         .gtt__toggle_arrow{
             font-size: 20px;
@@ -260,6 +321,17 @@ export default {
             width: 36px;
             height: 36px;
             font-size: 12px;
+        }
+        .gtt__itemKids{
+            margin-top: 30px;
+            width: 100%;
+            margin-left: 0px;
+        }
+        .gtt__kidsSelect{
+            padding-right: 5px;
+            padding-left: 0;
+            height: 50px;
+            margin-bottom: 5px;
         }
     }
 

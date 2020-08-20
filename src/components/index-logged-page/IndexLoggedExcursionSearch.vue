@@ -18,36 +18,35 @@
         <div class="custom-text-form custom-margin">
             <div class="custom-form">
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
-                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Punto de recogida</div>
+                    <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left" v-model="selectedPickUpPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Punto de recogida</span>
                     </gtt-select>
-                    <gtt-select :options="pickUpDeliveryOptions" v-model="selectedDeliveryPlace">
-                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Punto de entrega</div>
+                    <gtt-select :options="pickUpDeliveryOptions" :search="true" v-model="selectedDeliveryPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Punto de entrega</span>
                     </gtt-select>
                 </div>
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" class="left custom-width-big" v-model="selectedDestiny">
-                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Destino</div>
+                    <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left custom-width-big" v-model="selectedDestiny">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Destino</span>
                     </gtt-select>
                     <gtt-select :options="activityTypes" class="custom-width-small" v-model="selectedActivityType">
-                        <div slot="placeholder"><i class="mdi mdi-brightness-4"></i> Tipo de actividad</div>
                         <i slot="iconSelectedValue" class="mdi mdi-brightness-4"></i>
+                        <span slot="placeholder"> Tipo de actividad</span>
                     </gtt-select>
                 </div>
                 <div class="selects-inline">
                     <gtt-select-date v-model="selectedDate" :mode="'single'" class="left custom-width-big">
-                        <div slot="placeholder">
-                            <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                            Fecha
-                        </div>
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                        <span slot="placeholder">
+                            Fecha
+                        </span>
                     </gtt-select-date>
                     <gtt-select-form :options="passengersLayout" class="custom-width-small" v-model="selectedPassengers">
-                        <div slot="placeholder"><i class="mdi mdi-account"></i> Pasajeros</div>
                         <i slot="iconSelectedValue" class="mdi mdi-account"></i>
+                        <span slot="placeholder"> Pasajeros</span>
                     </gtt-select-form>
                 </div>
                 <div class="form-actions text-right">
@@ -100,8 +99,8 @@ export default {
             selectedDate: null,
             selectedPassengers: null,
             activityTypes: [
-                'Diurna',
-                'Nocturna'
+                'Compartida',
+                'Privada'
             ],
             pickUpDeliveryOptions: [
                 'Aeropuerto Internacional',

@@ -1235,6 +1235,7 @@ html{
     line-height: 1.2;
     text-transform: uppercase;
     border-radius: 5px;
+    border: none;
 }
 
 .form-actions button:hover{
@@ -1351,7 +1352,7 @@ html{
     .custom-form .select-flag{
         width: 30px;
         height: 20px;
-        margin-right: 15px;
+        margin-right: 5px;
     }
 
     @media(max-width: 1440px)
@@ -1369,6 +1370,11 @@ html{
             margin-bottom: 15px;
             height: 30px;
             font-size: 18px !important;
+        }
+
+        .custom-form .select-flag{
+            width: 25px;
+            height: 15px;
         }
     }
 
@@ -1446,4 +1452,20 @@ html{
         color: #ffffff;
         background: transparent;
         border: 3px solid #ffffff;
+    }
+
+    .gtt__kidsSelect .gtt__toggle{
+        padding-left: 3px !important;
+        padding-right: 3px !important;
+        font-size: 16px !important;
+    }
+
+    @media(max-width: 1440px){
+        .gtt__kidsSelect .gtt__toggle{
+            font-size: 12px !important;
+        }
+    }
+
+    .select-countries{
+        width: 25vw !important;
     }

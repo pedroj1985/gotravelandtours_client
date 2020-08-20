@@ -19,7 +19,8 @@
             <div class="custom-form">
                 <div class="selects-inline">
                     <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
-                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Punto de recogida</div>
+                        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Punto de recogida</span>
                         <template v-slot:selectedValue="selectedValue">
                             {{selectedValue.selectedValue.agency}} - {{ selectedValue.selectedValue.location }}
                         </template>
@@ -28,7 +29,8 @@
                         </template>
                     </gtt-select>
                     <gtt-select :options="pickUpDeliveryOptions" v-model="selectedDeliveryPlace">
-                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Punto de entrega</div>
+                        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Punto de entrega</span>
                         <template v-slot:selectedValue="selectedValue">
                             {{selectedValue.selectedValue.agency}} - {{ selectedValue.selectedValue.location }}
                         </template>
@@ -42,10 +44,12 @@
                 </gtt-select-date>
                 <div class="selects-inline">
                     <gtt-select :options="carsCategories" class="left" v-model="selectedCarCategory">
-                        <div slot="placeholder"><i class="mdi mdi-car-estate"></i> Categoría</div>
+                        <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
+                        <span slot="placeholder"> Categoría</span>
                     </gtt-select>
                     <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
-                        <div slot="placeholder"><i class="mdi mdi-earth"></i> Nacionalidad</div>
+                        <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
+                        <span slot="placeholder"> Nacionalidad</span>
                         <template v-slot:selectedValue="selectedValue">
                             <img :src="defaultFlagImgPath+selectedValue.selectedValue.flag" :alt="selectedValue.selectedValue.value + 'flag'" class="select-flag"> {{ selectedValue.selectedValue.value }}
                         </template>

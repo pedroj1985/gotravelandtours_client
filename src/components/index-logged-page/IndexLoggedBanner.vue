@@ -21,24 +21,21 @@
         <div class="lodging-text-form custom-margin">
             <div class="lodging-text antonio-light"><span class="bannerText">Tenemos los mejores</span> <span class="yellow-words antonio-bold">alojamientos</span><span class="bannerText"> para usted y su familia</span></div>
             <div class="lodging-form">
-                    <gtt-select :options="destinies" v-model="selectedLodgingDestinyValue">
-                        <div slot="placeholder"><i slot="iconSelectedValue" class="mdi mdi-map-marker"></i> Destino</div>
+                    <gtt-select :options="destinies" :search="true" v-model="selectedLodgingDestinyValue">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder">Destino</span>
                     </gtt-select>
                     <gtt-select-date v-model="selectedDates">
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
                     </gtt-select-date>
                     <div class="selects-inline">
                         <gtt-select-form :options="roomLayout" class="left" v-model="selectedRoomLayout">
-                            <template slot="placeholder">
-                                <span>
-                                    <i class="mdi mdi-account"></i> Seleccione
-                                </span>
-                            </template>
                             <span slot="iconSelectedValue"><i class="mdi mdi-account"></i></span>
+                            <span slot="placeholder">Visitantes</span>
                         </gtt-select-form>
                         <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
-                            <div slot="placeholder"><i class="mdi mdi-earth"></i> Nacionalidad</div>
+                            <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
+                            <span slot="placeholder"> Nacionalidad</span>
                             <template v-slot:selectedValue="selectedValue">
                                 <img :src="defaultFlagImgPath+selectedValue.selectedValue.flag" :alt="selectedValue.selectedValue.value + 'flag'" class="select-flag"> {{ selectedValue.selectedValue.value }}
                             </template>
@@ -174,12 +171,6 @@ export default {
                     display: 'Niños',
                     default: 0
                 },
-                {
-                    code: 'rooms',
-                    label: 'Habitaciones',
-                    display: 'Habitaciones',
-                    default: 1
-                }
             ],
             countries: [
                 {
@@ -263,7 +254,7 @@ export default {
     #home-logged-banner .select-flag{
         width: 30px;
         height: 20px;
-        margin-right: 15px;
+        margin-right: 5px;
     }
 
     @media(max-width: 1440px){
@@ -284,6 +275,11 @@ export default {
 
         .lodging-text{
             font-size: 36px;
+        }
+
+        #home-logged-banner .select-flag{
+            width: 25px;
+            height: 15px;
         }
     }
 

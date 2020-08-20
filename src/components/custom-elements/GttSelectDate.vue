@@ -7,14 +7,19 @@
                 >
                 <div class="gtt__toggle_content">
                     <div class="gtt__toggle_text">
-                        <slot name="placeholder" v-if="!dates">
+                        <div class="gtt__toggle_text_first_column">
                             <slot name="iconSelectedValue"></slot>
-                            Fecha de entrada y salida
-                        </slot>
-                        <div v-else>
-                            <slot name="iconSelectedValue"></slot>
-                            <span v-if="mode == 'range'"> {{ constructDates(dates.start, dates.end) }}</span>
-                            <span v-else> {{ constructSingleDate(dates) }}</span>
+                        </div>
+                        <div class="gtt__toggle_text_second_column" :class="{twoRows: dates}">
+                            <div :class="{'small': dates}">
+                                <slot name="placeholder">
+                                    Fecha de entrada y salida
+                                </slot>
+                            </div>
+                            <div v-if="dates">
+                                <span v-if="mode == 'range'"> {{ constructDates(dates.start, dates.end) }}</span>
+                                <span v-else> {{ constructSingleDate(dates) }}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="gtt__toggle_arrow"><i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i></div>
@@ -132,7 +137,18 @@ export default {
     }
     .gtt__toggle_text{
         float: left;
+        display: flex;
+    }
+    .gtt__toggle_text_first_column, .gtt__toggle_text_second_column{
         padding-top: 11px;
+    }
+    .gtt__toggle_text_second_column{
+        text-align: left;
+        padding-left: 5px;
+    }
+
+    .twoRows{
+        padding-top: 2px;
     }
     .gtt__toggle_arrow{
         margin-left: auto;
@@ -175,7 +191,7 @@ export default {
     @media(max-width: 1440px)
     {
         .gtt__toggle{
-            height: 30px;
+            height: 35px;
             margin-bottom: 20px;
             font-size: 12px;
             padding-left: 8px; 
@@ -185,7 +201,13 @@ export default {
             top: -12px;
         }
         .gtt__toggle_text{
+            padding-top: 0px;
+        }
+        .gtt__toggle_text_first_column, .gtt__toggle_text_second_column{
             padding-top: 5px;
+        }
+        .twoRows{
+            padding-top: 0px;
         }
         .gtt__toggle_arrow{
             font-size: 20px;

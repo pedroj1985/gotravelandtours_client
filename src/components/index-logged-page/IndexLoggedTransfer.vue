@@ -19,57 +19,51 @@
             <div class="custom-text antonio-light"><span class="bannerText">Las mejores ofertas en </span><span class="yellow-words antonio-bold">traslados</span></div>
             <div class="custom-form">
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
-                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Punto de origen</div>
+                    <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left" v-model="selectedPickUpPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Punto de origen</span>
                     </gtt-select>
-                    <gtt-select :options="pickUpDeliveryOptions" v-model="selectedDestinyPlace">
-                        <div slot="placeholder"><i class="mdi mdi-map-marker"></i> Punto de destino</div>
+                    <gtt-select :options="pickUpDeliveryOptions" :search="true" v-model="selectedDestinyPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Punto de destino</span>
                     </gtt-select>
                 </div>
                 <div class="selects-inline">
                     <gtt-select-date v-model="selectedDepartureDate" :mode="'single'" class="minor-left single-date-transfer">
-                        <div slot="placeholder">
-                            <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                            Fecha de salida
-                        </div>
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                        <span slot="placeholder"> Fecha de salida</span>
                     </gtt-select-date>
                     <gtt-select :options="hours" class="left hour" v-model="selectedDepartureHour">
-                        <div slot="placeholder"><i class="mdi mdi-alarm"></i> Hora</div>
                         <i slot="iconSelectedValue" class="mdi mdi-alarm"></i>
+                        <span slot="placeholder"> Hora</span>
                     </gtt-select>
                     <gtt-select-date v-model="selectedArrivalDate" :mode="'single'" class="minor-left single-date-transfer">
-                        <div slot="placeholder">
-                            <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                            Fecha de regreso
-                        </div>
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                        <span slot="placeholder">Fecha de regreso</span>
                     </gtt-select-date>
                     <gtt-select :options="hours" v-model="selectedArrivalHour" class="hour">
-                        <div slot="placeholder"><i class="mdi mdi-alarm"></i> Hora</div>
                         <i slot="iconSelectedValue" class="mdi mdi-alarm"></i>
+                        <span slot="placeholder"> Hora</span>
                     </gtt-select>
                 </div>
                 <div class="selects-inline">
                     <gtt-select-form :options="passengersLayout" class="left" v-model="selectedPassengers">
-                        <div slot="placeholder"><i class="mdi mdi-account"></i> Pasajeros</div>
                         <i slot="iconSelectedValue" class="mdi mdi-account"></i>
+                        <span slot="placeholder"> Pasajeros</span>
                     </gtt-select-form>
                     <gtt-select-form :options="luggagesLayout" v-model="selectedLuggages">
-                        <div slot="placeholder"><i class="mdi mdi-bag-personal"></i> Equipaje</div>
                         <i slot="iconSelectedValue" class="mdi mdi-bag-personal"></i>
+                        <span slot="placeholder">Equipaje</span>
                     </gtt-select-form>
                 </div>
                 <div class="selects-inline">
                     <gtt-select :options="journeyTypes" v-model="selectedJourneyType" class="left custom-width-select">
-                        <div slot="placeholder"><i class="mdi mdi-transit-transfer"></i> Tipo de trayecto</div>
                         <i slot="iconSelectedValue" class="mdi mdi-transit-transfer"></i>
+                        <span slot="placeholder"> Tipo de trayecto</span>
                     </gtt-select>
                     <gtt-select :options="transferTypes" v-model="selectedTransferType" class="left custom-width-select">
-                        <div slot="placeholder"><i class="mdi mdi-bus-side"></i> Tipo de traslado</div>
                         <i slot="iconSelectedValue" class="mdi mdi-bus-side"></i>
+                        <span slot="placeholder"> Tipo de traslado</span>
                     </gtt-select>
                     <div class="form-actions text-right">
                         <button type="submit" @click="activateModal" class="lodging-searchButton antonio-regular">Buscar</button>
@@ -141,7 +135,7 @@ export default {
                 'Solo ida'
             ],
             transferTypes: [
-                'Colectivo',
+                'Compartido',
                 'Privado'
             ],
             pickUpDeliveryOptions: [
@@ -206,10 +200,10 @@ export default {
         margin-right: 0.5%;
     }
     #index-logged-transfer .single-date-transfer{
-        width: 10.37vw;
+        width: 11.06vw;
     }
     #index-logged-transfer .hour{
-        width: 7.19vw;
+        width: 6.5vw;
     }
 
     .custom-width-select{
