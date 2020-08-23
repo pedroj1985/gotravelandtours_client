@@ -21,6 +21,7 @@
                     <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de recogida</span>
+                        <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
                         <template v-slot:selectedValue="selectedValue">
                             {{selectedValue.selectedValue.agency}} - {{ selectedValue.selectedValue.location }}
                         </template>
@@ -31,6 +32,7 @@
                     <gtt-select :options="pickUpDeliveryOptions" v-model="selectedDeliveryPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de entrega</span>
+                        <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
                         <template v-slot:selectedValue="selectedValue">
                             {{selectedValue.selectedValue.agency}} - {{ selectedValue.selectedValue.location }}
                         </template>
@@ -46,6 +48,7 @@
                     <gtt-select :options="carsCategories" class="left" v-model="selectedCarCategory">
                         <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
                         <span slot="placeholder"> Categoría</span>
+                        <span slot="selectedPlaceholder">¿Cómo desea que sea el auto?</span>
                     </gtt-select>
                     <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
                         <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
@@ -55,6 +58,9 @@
                         </template>
                         <template v-slot:option="option">
                             <img :src="defaultFlagImgPath+option.option.flag" :alt="option.option.value + 'flag'" class="select-flag"> {{ option.option.value }}
+                        </template>
+                        <template slot="selectedPlaceholder">
+                            <img :src="defaultFlagImgPath+searchCountriesPlaceholder().flag" :alt="searchCountriesPlaceholder().value + 'flag'" class="select-flag"> {{ searchCountriesPlaceholder().value }}
                         </template>
                     </gtt-select>
                 </div>
@@ -92,6 +98,20 @@ export default {
         },
         calculateNights(date){
             return calculateNights(date)
+        },
+        searchCountriesPlaceholder(){
+            let usa = this.countries.find((el)=>{
+                return el.value == "Estados Unidos"
+            })
+
+            if(usa)
+            {
+                return usa
+            }
+            else{
+                return this.countries[0]
+            }
+
         }
     },
     data(){

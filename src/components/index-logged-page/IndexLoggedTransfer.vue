@@ -22,10 +22,12 @@
                     <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left" v-model="selectedPickUpPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de origen</span>
+                        <span slot="selectedPlaceholder"> Salimos desde el:</span>
                     </gtt-select>
                     <gtt-select :options="pickUpDeliveryOptions" :search="true" v-model="selectedDestinyPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de destino</span>
+                        <span slot="selectedPlaceholder"> Nos dirigimos hasta:</span>
                     </gtt-select>
                 </div>
                 <div class="selects-inline">
@@ -36,6 +38,7 @@
                     <gtt-select :options="hours" class="left hour" v-model="selectedDepartureHour">
                         <i slot="iconSelectedValue" class="mdi mdi-alarm"></i>
                         <span slot="placeholder"> Hora</span>
+                        <span slot="selectedPlaceholder"> 08:00</span>
                     </gtt-select>
                     <gtt-select-date v-model="selectedArrivalDate" :mode="'single'" class="minor-left single-date-transfer">
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
@@ -44,6 +47,7 @@
                     <gtt-select :options="hours" v-model="selectedArrivalHour" class="hour">
                         <i slot="iconSelectedValue" class="mdi mdi-alarm"></i>
                         <span slot="placeholder"> Hora</span>
+                        <span slot="selectedPlaceholder"> 08:00</span>
                     </gtt-select>
                 </div>
                 <div class="selects-inline">
@@ -60,10 +64,12 @@
                     <gtt-select :options="journeyTypes" v-model="selectedJourneyType" class="left custom-width-select">
                         <i slot="iconSelectedValue" class="mdi mdi-transit-transfer"></i>
                         <span slot="placeholder"> Tipo de trayecto</span>
+                        <span slot="selectedPlaceholder"> ¿ida y vuelta?</span>
                     </gtt-select>
                     <gtt-select :options="transferTypes" v-model="selectedTransferType" class="left custom-width-select">
                         <i slot="iconSelectedValue" class="mdi mdi-bus-side"></i>
                         <span slot="placeholder"> Tipo de traslado</span>
+                        <span slot="selectedPlaceholder"> ¿Compartido?</span>
                     </gtt-select>
                     <div class="form-actions text-right">
                         <button type="submit" @click="activateModal" class="lodging-searchButton antonio-regular">Buscar</button>
@@ -149,13 +155,13 @@ export default {
                 {
                     code: 'adults',
                     label: 'Adultos (+16 años)',
-                    display: 'Adultos',
-                    default: 0
+                    display: 'Adulto(s)',
+                    default: 1
                 },
                 {
                     code: 'kids',
                     label: 'Niños (-15 años)',
-                    display: 'Niños',
+                    display: 'Niño(s)',
                     default: 0
                 },
             ],

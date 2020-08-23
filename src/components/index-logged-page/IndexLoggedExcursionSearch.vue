@@ -18,36 +18,40 @@
         <div class="custom-text-form custom-margin">
             <div class="custom-form">
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left" v-model="selectedPickUpPlace">
-                        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-                        <span slot="placeholder"> Punto de recogida</span>
-                    </gtt-select>
-                    <gtt-select :options="pickUpDeliveryOptions" :search="true" v-model="selectedDeliveryPlace">
-                        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-                        <span slot="placeholder"> Punto de entrega</span>
-                    </gtt-select>
-                </div>
-                <div class="selects-inline">
                     <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left custom-width-big" v-model="selectedDestiny">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Destino</span>
+                        <span slot="selectedPlaceholder"> ¿A dónde deseas ir?</span>
                     </gtt-select>
                     <gtt-select :options="activityTypes" class="custom-width-small" v-model="selectedActivityType">
                         <i slot="iconSelectedValue" class="mdi mdi-brightness-4"></i>
                         <span slot="placeholder"> Tipo de actividad</span>
+                        <span slot="selectedPlaceholder"> ¿Compartida?</span>
                     </gtt-select>
                 </div>
                 <div class="selects-inline">
-                    <gtt-select-date v-model="selectedDate" :mode="'single'" class="left custom-width-big">
+                    <gtt-select-date v-model="selectedDate" :mode="'single'" class="left">
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
                         <span slot="placeholder">
                             Fecha
                         </span>
                     </gtt-select-date>
-                    <gtt-select-form :options="passengersLayout" class="custom-width-small" v-model="selectedPassengers">
+                    <gtt-select-form :options="passengersLayout" v-model="selectedPassengers">
                         <i slot="iconSelectedValue" class="mdi mdi-account"></i>
                         <span slot="placeholder"> Pasajeros</span>
                     </gtt-select-form>
+                </div>
+                <div class="selects-inline">
+                    <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left" v-model="selectedPickUpPlace">
+                        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Punto de recogida</span>
+                        <span slot="selectedPlaceholder"> Salimos desde el:</span>
+                    </gtt-select>
+                    <gtt-select :options="pickUpDeliveryOptions" :search="true" v-model="selectedDeliveryPlace">
+                        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                        <span slot="placeholder"> Punto de entrega</span>
+                        <span slot="selectedPlaceholder"> Te recogemos en el:</span>
+                    </gtt-select>
                 </div>
                 <div class="form-actions text-right">
                     <button type="submit" @click="activateModal" class="lodging-searchButton antonio-regular">Buscar</button>
@@ -113,13 +117,13 @@ export default {
                 {
                     code: 'adults',
                     label: 'Adultos (+16 años)',
-                    display: 'Adultos',
-                    default: 0
+                    display: 'Adulto(s)',
+                    default: 1
                 },
                 {
                     code: 'kids',
                     label: 'Niños (-15 años)',
-                    display: 'Niños',
+                    display: 'Niño(s)',
                     default: 0
                 },
             ],

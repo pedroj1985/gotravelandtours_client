@@ -24,6 +24,7 @@
                     <gtt-select :options="destinies" :search="true" v-model="selectedLodgingDestinyValue">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder">Destino</span>
+                        <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
                     </gtt-select>
                     <gtt-select-date v-model="selectedDates">
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
@@ -41,6 +42,9 @@
                             </template>
                             <template v-slot:option="option">
                                 <img :src="defaultFlagImgPath+option.option.flag" :alt="option.option.value + 'flag'" class="select-flag"> {{ option.option.value }}
+                            </template>
+                            <template slot="selectedPlaceholder">
+                                <img :src="defaultFlagImgPath+searchCountriesPlaceholder().flag" :alt="searchCountriesPlaceholder().value + 'flag'" class="select-flag"> {{ searchCountriesPlaceholder().value }}
                             </template>
                         </gtt-select>
                     </div>
@@ -104,6 +108,20 @@ export default {
 
             return s.substring(2);
         },
+        searchCountriesPlaceholder(){
+            let usa = this.countries.find((el)=>{
+                return el.value == "Estados Unidos"
+            })
+
+            if(usa)
+            {
+                return usa
+            }
+            else{
+                return this.countries[0]
+            }
+
+        }
     },
     data(){
         return {
@@ -162,13 +180,13 @@ export default {
                 {
                     code: 'adults',
                     label: 'Adultos (+16 años)',
-                    display: 'Adultos',
+                    display: 'Adulto(s)',
                     default: 1
                 },
                 {
                     code: 'kids',
                     label: 'Niños (-15 años)',
-                    display: 'Niños',
+                    display: 'Niño(s)',
                     default: 0
                 },
             ],

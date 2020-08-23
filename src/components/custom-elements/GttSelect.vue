@@ -10,8 +10,8 @@
                         <div class="gtt__toggle_text_first_column">
                             <slot name="iconSelectedValue"></slot>
                         </div>
-                        <div class="gtt__toggle_text_second_column" :class="{twoRows: selectedValue}">
-                            <div :class="{'small': selectedValue}">
+                        <div class="gtt__toggle_text_second_column twoRows">
+                            <div class="small">
                                 <slot name="placeholder">
                                     Seleccione
                                 </slot>
@@ -20,6 +20,9 @@
                                 <slot name="selectedValue" v-bind:selectedValue="selectedValue">
                                     {{ selectedValue }}
                                 </slot>
+                            </div>
+                            <div v-else class="bigDown">
+                                <slot name="selectedPlaceholder"></slot>
                             </div>
                         </div>
                     </div>
@@ -41,7 +44,7 @@
                 </li>
             </ul>
             <div class="gtt__search_area" v-else>
-                <input type="text" v-model="searchQuery" @keyup="submitSearch" placeholder="Donde desea alojarse?">
+                <input type="text" v-model="searchQuery" @keyup="submitSearch" placeholder="¿Donde desea alojarse?">
                 <ul class="gtt__list_area" v-if="searchQuery">
                     <li class="gtt__item" v-for="option in searchResult" :key="option.id" @click="
                                                                                             if(option.hasOwnProperty('value')){
@@ -55,7 +58,7 @@
                 </ul>
                 <div class="no-result-area" v-else>
                     <div class="result-area-search-icon"><i class="mdi mdi-magnify"></i></div>
-                    <slot name="no-result-text">Buscar por destino alojamiento o punto de interés</slot>
+                    <slot name="no-result-text">Buscar por destino, alojamiento o punto de interés</slot>
                 </div>
             </div>
         </div>

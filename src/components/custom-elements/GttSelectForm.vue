@@ -10,13 +10,13 @@
                         <div class="gtt__toggle_text_first_column">
                             <slot name="iconSelectedValue"></slot>
                         </div>
-                        <div class="gtt__toggle_text_second_column" :class="{twoRows: isChanged}">
-                            <div :class="{'small': isChanged}">
+                        <div class="gtt__toggle_text_second_column twoRows">
+                            <div class="small">
                                 <slot name="placeholder">
                                     Seleccione
                                 </slot>
                             </div>
-                            <div v-if="isChanged">
+                            <div>
                                 {{ constructDisplay(emitValue) }}
                             </div>
                         </div>
