@@ -84,7 +84,7 @@ export default {
             cars: [
                 {
                     model_name: 'Mercedes Benz Clase C200',
-                    img: 'homelogin_img_form_renta.jpg',
+                    img: 'homelogin_renta_mercedesbenzcc.jpg',
                     category: 'premium plus',
                     capacity: '4',
                     luggage: {
@@ -102,7 +102,7 @@ export default {
                 },
                 {
                     model_name: 'Hyundai Santa Fe',
-                    img: 'homelogin_img_form_renta.jpg',
+                    img: 'homelogin_renta_hyundaisantafe.jpg',
                     category: 'jeep',
                     capacity: '5',
                     luggage: {
@@ -120,7 +120,7 @@ export default {
                 },
                 {
                     model_name: 'Peugeot 301',
-                    img: 'homelogin_img_form_renta.jpg',
+                    img: 'homelogin_renta_peugeot.jpg',
                     category: 'medium',
                     capacity: '5',
                     luggage: {
@@ -138,7 +138,7 @@ export default {
                 },
                 {
                     model_name: 'Morris Garage MG3',
-                    img: 'homelogin_img_form_renta.jpg',
+                    img: 'homelogin_renta_mg.jpg',
                     category: 'económico',
                     capacity: '4',
                     luggage: {
@@ -156,7 +156,7 @@ export default {
                     ]
                 },{
                     model_name: 'Morris Garage MG3',
-                    img: 'homelogin_img_form_renta.jpg',
+                    img: 'homelogin_renta_mg.jpg',
                     category: 'económico',
                     capacity: '4',
                     luggage: {

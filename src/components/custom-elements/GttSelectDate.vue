@@ -10,13 +10,13 @@
                         <div class="gtt__toggle_text_first_column">
                             <slot name="iconSelectedValue"></slot>
                         </div>
-                        <div class="gtt__toggle_text_second_column" :class="{twoRows: dates}">
-                            <div :class="{'small': dates}">
+                        <div class="gtt__toggle_text_second_column twoRows">
+                            <div class="small">
                                 <slot name="placeholder">
                                     Fecha de entrada y salida
                                 </slot>
                             </div>
-                            <div v-if="dates">
+                            <div class="bigDown">
                                 <span v-if="mode == 'range'"> {{ constructDates(dates.start, dates.end) }}</span>
                                 <span v-else> {{ constructSingleDate(dates) }}</span>
                             </div>
@@ -68,7 +68,7 @@ export default {
         return {
             isVisible: false,
             arrow: true,
-            dates: null
+            dates: this.value
         }
     },
     watch: {
@@ -157,8 +157,7 @@ export default {
     .gtt__list_area_wrapper{
         padding: 30px;
         background: #ffffff;
-        /* min-height: 500px;
-        min-width: 400px; */
+        /* min-height: 500px;*/
         position: absolute;
         border-radius: 10px;
         z-index: 3;
@@ -224,6 +223,12 @@ export default {
 
 </style>
 <style>
+    .gtt__date_picker .vc-grid-cell-col-1 .vc-pane{
+        margin-right: 15px;
+    }
+    .gtt__date_picker .vc-grid-cell-col-2 .vc-pane{
+        margin-left: 15px;
+    }
     .gtt__date_picker .vc-container{
         font-family: 'Helvetica Neue LT Std-Roman';
         line-height: 1.2;

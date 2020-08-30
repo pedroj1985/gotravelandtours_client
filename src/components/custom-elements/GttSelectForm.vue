@@ -41,7 +41,7 @@
                         <button class="gtt__picker_button" @click="add(item, item.step)"><i class="mdi mdi-plus"></i></button>
                     </div>
                 </div>
-                <div class="gtt__item gtt__itemKids row">
+                <div class="gtt__item gtt__itemKids row" v-if="kids.length > 0">
                     <div class="col-md-6 gtt__kidsSelect" v-for="(kid, i) in kids" :key="kid.id">
                         <gtt-select :options="kidsAgeList" v-model="kid.age">
                             <span slot="placeholder">Edad del menor {{i+1}}</span>
@@ -240,7 +240,7 @@ export default {
         position: relative;
         background: #ffffff;
         min-width: 450px;
-        min-height: 200px;
+        min-height: 150px;
         border-radius: 10px;
         font-family: 'Helvetica Neue LT Std-Roman';
         color: #212f3d;

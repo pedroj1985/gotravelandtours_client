@@ -77,6 +77,7 @@
 import GttSelect from '../custom-elements/GttSelect'
 import GttSelectDate from '../custom-elements/GttSelectDate'
 import GttModalSearch from '../custom-elements/GttModalSearch'
+import moment from 'moment'
 import { constructDate, calculateNights } from '../../utils/utils'
 
 
@@ -118,7 +119,10 @@ export default {
         return {
             isModalActive: false,
             defaultFlagImgPath: 'img/flags/',
-            selectedDates: null,
+            selectedDates: {
+                start: moment(),
+                end: moment().add(1,'days')
+            },
             selectedPickUpPlace: null,
             selectedDeliveryPlace: null,
             selectedCarCategory: '',
@@ -135,6 +139,10 @@ export default {
                 {
                     value: 'Alemania',
                     flag: 'flag_alemania.jpg'
+                },
+                {
+                    value: 'Estados Unidos',
+                    flag: 'flag_estadosunidos.jpg'
                 },
             ],
             carsCategories: [

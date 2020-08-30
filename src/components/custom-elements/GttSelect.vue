@@ -229,7 +229,7 @@ export default {
         overflow: auto;
     }
     ul.gtt__list_area{
-        min-height: 200px;
+        min-height: 100px;
         max-height: 300px;
         min-width: 150px;
         list-style: none;

@@ -156,7 +156,10 @@ export default {
             defaultFlagImgPath: 'img/flags/',
             selectedLodgingDestinyValue: '',
             selectedRoomLayout: {},
-            selectedDates: null,
+            selectedDates: {
+                start: moment(),
+                end: moment().add(1, 'days')
+            },
             selectedNationality: null,
             destinies: [
                 'Option 1',
@@ -179,13 +182,13 @@ export default {
             roomLayout: [
                 {
                     code: 'adults',
-                    label: 'Adultos (+16 años)',
+                    label: 'Adultos',
                     display: 'Adulto(s)',
                     default: 1
                 },
                 {
                     code: 'kids',
-                    label: 'Niños (-15 años)',
+                    label: 'Niños',
                     display: 'Niño(s)',
                     default: 0
                 },
@@ -202,6 +205,10 @@ export default {
                 {
                     value: 'Alemania',
                     flag: 'flag_alemania.jpg'
+                },
+                {
+                    value: 'Estados Unidos',
+                    flag: 'flag_estadosunidos.jpg'
                 },
             ]
         }

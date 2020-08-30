@@ -19,12 +19,12 @@
             <div class="custom-text antonio-light"><span class="bannerText">Las mejores ofertas en </span><span class="yellow-words antonio-bold">traslados</span></div>
             <div class="custom-form">
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left" v-model="selectedPickUpPlace">
+                    <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de origen</span>
                         <span slot="selectedPlaceholder"> Salimos desde el:</span>
                     </gtt-select>
-                    <gtt-select :options="pickUpDeliveryOptions" :search="true" v-model="selectedDestinyPlace">
+                    <gtt-select :options="pickUpDeliveryOptions" v-model="selectedDestinyPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de destino</span>
                         <span slot="selectedPlaceholder"> Nos dirigimos hasta:</span>
@@ -85,6 +85,7 @@ import GttSelect from '../custom-elements/GttSelect'
 import GttSelectDate from '../custom-elements/GttSelectDate'
 import GttSelectForm from '../custom-elements/GttSelectForm'
 import GttModalSearch from '../custom-elements/GttModalSearch'
+import moment from 'moment'
 import { constructDate, constructDisplay } from '../../utils/utils'
 import { eventBus } from '../../main';
 
@@ -128,9 +129,9 @@ export default {
             isModalActive: false,
             selectedPickUpPlace: '',
             selectedDestinyPlace: '',
-            selectedDepartureDate: null,
+            selectedDepartureDate: moment(),
             selectedDepartureHour: null,
-            selectedArrivalDate: null,
+            selectedArrivalDate: moment().add(1, 'days'),
             selectedArrivalHour: null,
             selectedPassengers: null,
             selectedLuggages: null,
@@ -154,13 +155,13 @@ export default {
             passengersLayout: [
                 {
                     code: 'adults',
-                    label: 'Adultos (+16 años)',
+                    label: 'Adultos',
                     display: 'Adulto(s)',
                     default: 1
                 },
                 {
                     code: 'kids',
-                    label: 'Niños (-15 años)',
+                    label: 'Niños',
                     display: 'Niño(s)',
                     default: 0
                 },

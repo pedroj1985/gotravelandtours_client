@@ -18,7 +18,7 @@
         <div class="custom-text-form custom-margin">
             <div class="custom-form">
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left custom-width-big" v-model="selectedDestiny">
+                    <gtt-select :options="pickUpDeliveryOptions" class="left custom-width-big" v-model="selectedDestiny">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Destino</span>
                         <span slot="selectedPlaceholder"> ¿A dónde deseas ir?</span>
@@ -42,12 +42,12 @@
                     </gtt-select-form>
                 </div>
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" :search="true" class="left" v-model="selectedPickUpPlace">
+                    <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de recogida</span>
                         <span slot="selectedPlaceholder"> Salimos desde el:</span>
                     </gtt-select>
-                    <gtt-select :options="pickUpDeliveryOptions" :search="true" v-model="selectedDeliveryPlace">
+                    <gtt-select :options="pickUpDeliveryOptions" v-model="selectedDeliveryPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de entrega</span>
                         <span slot="selectedPlaceholder"> Te recogemos en el:</span>
@@ -67,6 +67,7 @@ import GttSelect from '../custom-elements/GttSelect'
 import GttSelectForm from '../custom-elements/GttSelectForm'
 import GttSelectDate from '../custom-elements/GttSelectDate'
 import GttModalSearch from '../custom-elements/GttModalSearch'
+import moment from 'moment'
 import { constructDate, constructDisplay, calculateNights } from '../../utils/utils'
 
 export default {
@@ -100,7 +101,7 @@ export default {
             selectedDeliveryPlace: '',
             selectedDestiny: '',
             selectedActivityType: '',
-            selectedDate: null,
+            selectedDate: moment(),
             selectedPassengers: null,
             activityTypes: [
                 'Compartida',
@@ -116,13 +117,13 @@ export default {
             passengersLayout: [
                 {
                     code: 'adults',
-                    label: 'Adultos (+16 años)',
+                    label: 'Adultos',
                     display: 'Adulto(s)',
                     default: 1
                 },
                 {
                     code: 'kids',
-                    label: 'Niños (-15 años)',
+                    label: 'Niños',
                     display: 'Niño(s)',
                     default: 0
                 },
