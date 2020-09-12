@@ -126,6 +126,13 @@ html{
         padding-right: 30px;
     }
 
+    .custom-padding-top{
+        padding-top: 60px;
+    }
+    .custom-padding-top-2-navbar{
+        padding-top: 105px;
+    }
+
     #logo_link{
         height: 30px;
         position: absolute;
