@@ -65,7 +65,16 @@ export default {
                     price: {
                         value: 87.5,
                         currency: 'USD'
-                    }
+                    },
+                    items: [
+                        {
+                            name: 'Deluxe x2',
+                            price: {
+                                value: 88.6,
+                                currency: 'USD'
+                            }
+                        }
+                    ]
                 }
             ],
             breadcrumbList: [

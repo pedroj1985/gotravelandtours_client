@@ -1245,11 +1245,22 @@ html{
     border: none;
 }
 
-.form-actions button:hover{
-    border: 2px solid #212f3d;
+.form-actions button.inverse{
     background-color: #ffffff;
     color: #212f3d;
+    border: 2px solid #212f3d;
+}
+
+.form-actions button:hover{
+    background-color: #ffffff;
+    border: 2px solid #212f3d;
+    color: #212f3d;
     cursor: pointer;
+}
+
+.form-actions button.inverse:hover{
+    background-color: #212f3d;
+    color: #ffffff;
 }
 
 @media(max-width: 1368px){
