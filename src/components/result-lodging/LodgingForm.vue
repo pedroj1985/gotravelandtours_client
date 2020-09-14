@@ -22,7 +22,7 @@
             <span slot="placeholder">Visitantes</span>
         </gtt-select-form>
         <gtt-select-form :options="rooms" v-model="selectedRooms">
-            <span slot="iconSelectedValue"><i class="mdi mdi-bed"></i></span>
+            <span slot="iconSelectedValue"><i class="mdi mdi-bunk-bed"></i></span>
             <span slot="placeholder">Habitaciones</span>
         </gtt-select-form>
         <gtt-select :options="countries" v-model="selectedNationality">
@@ -132,7 +132,7 @@ export default {
 <style scoped>
     #lodging-form{
         width: 100%;
-        height: 100%;
+        /* height: 100%; */
         padding: 15px;
         background-color: #bcd01b;
         border-radius: 10px;
