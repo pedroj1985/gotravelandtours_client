@@ -2,12 +2,36 @@
   <div id="content">
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
       <Breadcrumb :elementList="breadcrumbList"></Breadcrumb>
-      <div id="twoColumn" class="custom-margin row">
-        <div class="col-lg-3 left-column-filter-wrapper">
+      <div id="twoColumn">
+        <div class="left-column-filter-wrapper">
             <LeftColumnFilters></LeftColumnFilters>
         </div>
-        <div class="col-lg-9 right-column-list-wrapper">
-            <RightColumnList :resultList="resultList" :filters="filters"></RightColumnList>
+        <div class="right-column-list-wrapper">
+            <div class="map-wrapper">
+                <div class="left-side-map">
+                    <div class="custom-line-1">
+                        <img src="../../../public/img/icopaq_alojamiento_black.svg" alt="alojamiento">
+                        <div class="result-search">
+                            <div class="result-search-text-title antonio-regular">Hemos encontrado en {{filters.selectedLodgingDestinyValue}} {{resultList.length}} sitios para alojarse.</div>
+                            <div class="result-search-text hn-roman">Del {{filters.selectedArriveDate.locale('es').format('DD MMM YYYY')}} al 
+                                                                         {{filters.selectedDepartureDate.locale('es').format('DD MMM YYYY')}}, para
+                                                                         {{constructDisplay(filters.selectedRoomLayout)}}, {{constructDisplay(filters.selectedRooms)}}</div>
+                        </div>
+                    </div>
+                    <div class="custom-line-2">
+                        <div class="organizedBySelect">
+                            <GttSelect :options="organizedBy" :twoRows="false">
+                                <i slot="iconSelectedValue" class="mdi mdi-swap-vertical"></i>
+                                <span slot="placeholder">Organizar por</span>
+                            </GttSelect>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-side-map">
+                    <img src="../../../public/img/icomap.svg" alt="mapa">
+                </div>
+            </div>
+            <RightColumnList :resultList="resultList" :filters="filters" class="right-column-content"></RightColumnList>
         </div>
         </div>
   </div>
@@ -18,6 +42,7 @@ import NavBar2 from '../shared/NavBar2';
 import LeftColumnFilters from './LeftColumnFilters';
 import RightColumnList from './RightColumnList';
 import Breadcrumb from '../shared/Breadcrumb';
+import GttSelect from '../custom-elements/GttSelect';
 import moment from 'moment'
 
 export default {
@@ -25,12 +50,27 @@ export default {
         NavBar2,
         LeftColumnFilters,
         RightColumnList,
-        Breadcrumb
+        Breadcrumb,
+        GttSelect
+    },
+    methods: {
+        constructDisplay(d){
+            let s = '';
+            Object.keys(d).forEach(element => {
+                s = s+' · '+d[element].value+' '+d[element].display
+            });
+
+            return s.substring(2);
+        },
     },
     data(){
         return {
+            organizedBy: [
+                'Prueba 1',
+                'Prueba 2'
+            ],
             filters: {
-                selectedLodgingDestinyValue: '',
+                selectedLodgingDestinyValue: 'Santiago de Cuba',
                 selectedArriveDate: moment(),
                 selectedDepartureDate: moment().add(1, 'days'),
                 selectedRoomLayout: {
@@ -71,6 +111,24 @@ export default {
                             name: 'Deluxe x2',
                             price: {
                                 value: 88.6,
+                                currency: 'USD'
+                            },
+                            info: "DETALLE DE LA HABITACIÓN\nHabitación de 37.36m2, espaciosa y funcional. Localizada en el segundo y tercer piso con balcón y vista al centro de la ciudad. Ideal para matrimonios\n\nAmenidades\nAire acondicionado - Teléfono - TV Satelital - Bar - Wifi - Mini nevera",
+                            roomLayout: "DISTRIBUCIÓN DE LA HABITACIÓN\nHabitación 1 (3 adultos) estándar deluxe, todo incluido\nHabitación 2 (2 adultos, 1 niño) estándar deluxe, todo incluido"
+                        },
+                        {
+                            name: 'Deluxe Single',
+                            price: {
+                                value: 70.25,
+                                currency: 'USD'
+                            },
+                            info: "DETALLE DE LA HABITACIÓN\nHabitación de 37.36m2, espaciosa y funcional. Localizada en el segundo y tercer piso con balcón y vista al centro de la ciudad. Ideal para matrimonios\n\nAmenidades\nAire acondicionado - Teléfono - TV Satelital - Bar - Wifi - Mini nevera",
+                            roomLayout: "DISTRIBUCIÓN DE LA HABITACIÓN\nHabitación 1 (3 adultos) estándar deluxe, todo incluido\nHabitación 2 (2 adultos, 1 niño) estándar deluxe, todo incluido"
+                        },
+                        {
+                            name: 'Estándar',
+                            price: {
+                                value: 50.25,
                                 currency: 'USD'
                             },
                             info: "DETALLE DE LA HABITACIÓN\nHabitación de 37.36m2, espaciosa y funcional. Localizada en el segundo y tercer piso con balcón y vista al centro de la ciudad. Ideal para matrimonios\n\nAmenidades\nAire acondicionado - Teléfono - TV Satelital - Bar - Wifi - Mini nevera",
@@ -147,8 +205,71 @@ export default {
     .left-column-filter-wrapper{
         padding-left: 0;
         padding-right: 30px;
+        width: 450px;
     }
     .right-column-list-wrapper{
+        width: 100%;
         padding-right: 0;
+    }
+    #twoColumn{
+        display: flex;
+        margin-left: 9.375%;
+        padding-left: 30px;
+    }
+    .right-column-content{
+        /* TODO Ver si usar vw en vez de height */
+        margin-right: 9.375vw;
+        padding-right: 30px;
+    }
+    .map-wrapper{
+        background-color: #f5f5f5;
+        margin-bottom: 50px;
+        padding-left: 15px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-right: calc(9.375vw + 30px);
+        display: flex;
+    }
+    .map-wrapper .left-side-map{
+        padding-right: 30px;
+        width: 100%;
+    }
+    .map-wrapper .left-side-map img{
+        height: 60px;
+    }
+    .map-wrapper .right-side-map img{
+        height: 150px;
+        width: 230px;
+        object-fit: cover;
+    }
+    .map-wrapper .right-side-map{
+        margin-left: auto;
+    }
+    .map-wrapper .left-side-map .custom-line-1{
+        display: flex;
+        margin-bottom: 20px;
+    }
+    .map-wrapper .left-side-map .custom-line-2{
+        display: flex;
+    }
+    .map-wrapper .left-side-map .custom-line-2 .organizedBySelect{
+        margin-left: auto;
+    }
+    .result-search{
+        padding-left: 45px;
+    }
+    .result-search-text-title{
+        font-size: 30px;
+        color: #212f3d;
+    }
+    .result-search-text{
+        font-size: 18px;
+        color: #6d6d6d;
+    }
+    #twoColumn .map-wrapper .gtt__select .gtt__toggle{
+        margin-bottom: 0;
+        font-size: 18px;
+        background-color: transparent;
+        width: 230px;
     }
 </style>

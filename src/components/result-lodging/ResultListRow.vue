@@ -107,6 +107,7 @@ export default {
         margin-right: auto;
         color: #6d6d6d;
         font-size: 16px;
+        width: 15%;
     }
     .item-children-section{
         color: #6d6d6d;

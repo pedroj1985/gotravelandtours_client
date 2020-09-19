@@ -10,8 +10,8 @@
                         <div class="gtt__toggle_text_first_column">
                             <slot name="iconSelectedValue"></slot>
                         </div>
-                        <div class="gtt__toggle_text_second_column twoRows">
-                            <div class="small">
+                        <div class="gtt__toggle_text_second_column" :class="{twoRows: twoRows}">
+                            <div class="small" v-if="twoRows || (twoRows == false && !selectedValue)">
                                 <slot name="placeholder">
                                     Seleccione
                                 </slot>
@@ -78,6 +78,9 @@ export default {
     },
     props: {
         options: Array,
+        twoRows: {
+            default: true
+        },
         search: {
             type: Boolean,
             default: false
