@@ -5,9 +5,13 @@ import VueScrollTo from "vue-scrollto";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
 import VCalendar from 'v-calendar';
+import BootstrapVue from 'bootstrap-vue';
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.config.productionTip = false;
 Vue.use(VueResource);
+Vue.use(BootstrapVue);
 Vue.use(VueScrollTo, {
   offset: -30
 });

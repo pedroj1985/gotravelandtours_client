@@ -1487,3 +1487,31 @@ html{
     .select-countries{
         width: 25vw !important;
     }
+    /* pagination */
+    .pagination-section{
+        margin-top: 90px;
+        margin-bottom: 90px;
+    }
+    .custom-page-container .page-item{
+        margin-right: 5px;
+        border-radius: 5px;
+    }
+    .custom-page-container .page-link{
+        font-family: 'Antonio Light';
+        color: #212f3d;
+        border-radius: 5px;
+        border: 1px solid #212f3d;
+    }
+
+    .custom-page-container .page-link:hover{
+        color: white;
+        background-color: #212f3d;
+    }
+    .custom-page-container .page-link:focus{
+        box-shadow: 0 0 0 0.2rem rgba(115, 121, 127, 0.3)
+    }
+    .custom-page-container .page-item.active .page-link{
+        color: white;
+        background-color: #212f3d;
+        border: 1px solid #212f3d;
+    }

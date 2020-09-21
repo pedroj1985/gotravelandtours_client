@@ -12,7 +12,7 @@
                     <div class="custom-line-1">
                         <img src="../../../public/img/icopaq_alojamiento_black.svg" alt="alojamiento">
                         <div class="result-search">
-                            <div class="result-search-text-title antonio-regular">Hemos encontrado en {{filters.selectedLodgingDestinyValue}} {{resultList.length}} sitios para alojarse.</div>
+                            <div class="result-search-text-title antonio-regular">Hemos encontrado en {{filters.selectedLodgingDestinyValue}} {{resultTotal}} sitios para alojarse.</div>
                             <div class="result-search-text hn-roman">Del {{filters.selectedArriveDate.locale('es').format('DD MMM YYYY')}} al 
                                                                          {{filters.selectedDepartureDate.locale('es').format('DD MMM YYYY')}}, para
                                                                          {{constructDisplay(filters.selectedRoomLayout)}}, {{constructDisplay(filters.selectedRooms)}}</div>
@@ -31,7 +31,7 @@
                     <img src="../../../public/img/icomap.svg" alt="mapa">
                 </div>
             </div>
-            <RightColumnList :resultList="resultList" :filters="filters" class="right-column-content"></RightColumnList>
+            <RightColumnList :filters="filters" class="right-column-content" @resultSize="setResultTotal"></RightColumnList>
         </div>
         </div>
   </div>
@@ -62,6 +62,9 @@ export default {
 
             return s.substring(2);
         },
+        setResultTotal(value){
+            this.resultTotal = value;
+        }
     },
     data(){
         return {
@@ -69,6 +72,7 @@ export default {
                 'Prueba 1',
                 'Prueba 2'
             ],
+            resultTotal: 0,
             filters: {
                 selectedLodgingDestinyValue: 'Santiago de Cuba',
                 selectedArriveDate: moment(),
@@ -91,77 +95,6 @@ export default {
                 },
                 selectedNationality: null,
             },
-            resultList:[
-                {
-                    images: [
-                        '/img/homelogin_destino_habana.jpg',
-                        '/img/home_servicios_restaurant.jpg',
-                        '/img/home_servicios_autos.jpg',
-                    ],
-                    name: 'Hotel Iberostar Grand Packard',
-                    stars: 5,
-                    location: 'La Habana, Cuba',
-                    mapLink: 'http://a.a',
-                    price: {
-                        value: 87.5,
-                        currency: 'USD'
-                    },
-                    items: [
-                        {
-                            name: 'Deluxe x2',
-                            price: {
-                                value: 88.6,
-                                currency: 'USD'
-                            },
-                            info: "DETALLE DE LA HABITACIÓN\nHabitación de 37.36m2, espaciosa y funcional. Localizada en el segundo y tercer piso con balcón y vista al centro de la ciudad. Ideal para matrimonios\n\nAmenidades\nAire acondicionado - Teléfono - TV Satelital - Bar - Wifi - Mini nevera",
-                            roomLayout: "DISTRIBUCIÓN DE LA HABITACIÓN\nHabitación 1 (3 adultos) estándar deluxe, todo incluido\nHabitación 2 (2 adultos, 1 niño) estándar deluxe, todo incluido"
-                        },
-                        {
-                            name: 'Deluxe Single',
-                            price: {
-                                value: 70.25,
-                                currency: 'USD'
-                            },
-                            info: "DETALLE DE LA HABITACIÓN\nHabitación de 37.36m2, espaciosa y funcional. Localizada en el segundo y tercer piso con balcón y vista al centro de la ciudad. Ideal para matrimonios\n\nAmenidades\nAire acondicionado - Teléfono - TV Satelital - Bar - Wifi - Mini nevera",
-                            roomLayout: "DISTRIBUCIÓN DE LA HABITACIÓN\nHabitación 1 (3 adultos) estándar deluxe, todo incluido\nHabitación 2 (2 adultos, 1 niño) estándar deluxe, todo incluido"
-                        },
-                        {
-                            name: 'Estándar',
-                            price: {
-                                value: 50.25,
-                                currency: 'USD'
-                            },
-                            info: "DETALLE DE LA HABITACIÓN\nHabitación de 37.36m2, espaciosa y funcional. Localizada en el segundo y tercer piso con balcón y vista al centro de la ciudad. Ideal para matrimonios\n\nAmenidades\nAire acondicionado - Teléfono - TV Satelital - Bar - Wifi - Mini nevera",
-                            roomLayout: "DISTRIBUCIÓN DE LA HABITACIÓN\nHabitación 1 (3 adultos) estándar deluxe, todo incluido\nHabitación 2 (2 adultos, 1 niño) estándar deluxe, todo incluido"
-                        }
-                    ]
-                },
-                {
-                    images: [
-                        '/img/homelogin_destino_habana.jpg',
-                        '/img/home_servicios_restaurant.jpg',
-                        '/img/home_servicios_autos.jpg',
-                    ],
-                    name: 'Hotel Tryp Habana Libre',
-                    stars: 3,
-                    location: 'La Habana, Cuba',
-                    mapLink: 'http://a.a',
-                    price: {
-                        value: 56.5,
-                        currency: 'USD'
-                    },
-                    items: [
-                        {
-                            name: 'Doble Deluxe',
-                            price: {
-                                value: 50.6,
-                                currency: 'USD'
-                            },
-                            info: "DETALLE DE LA HABITACIÓN\nHabitación de 37.36m2, espaciosa y funcional. Localizada en el segundo y tercer piso con balcón y vista al centro de la ciudad. Ideal para matrimonios\n\nAmenidades\nAire acondicionado - Teléfono - TV Satelital - Bar - Wifi - Mini nevera",
-                        }
-                    ]
-                }
-            ],
             breadcrumbList: [
                 'Inicio',
                 'Alojamientos',

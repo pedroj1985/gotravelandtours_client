@@ -38,6 +38,9 @@
                 <img :src="defaultFlagImgPath+searchCountriesPlaceholder().flag" :alt="searchCountriesPlaceholder().value + 'flag'" class="select-flag"> {{ searchCountriesPlaceholder().value }}
             </template>
         </gtt-select>
+        <div class="form-actions lodging-form-search-btn">
+            <button type="submit" class="antonio-regular">Buscar</button>
+        </div>
   </div>
 </template>
 
@@ -136,6 +139,9 @@ export default {
         padding: 15px;
         background-color: #bcd01b;
         border-radius: 10px;
+    }
+    .lodging-form-search-btn{
+        text-align: right;
     }
 </style>
 <style>
