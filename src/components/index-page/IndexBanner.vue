@@ -38,13 +38,14 @@
                 </div>
                 <form action="/login" method="POST">
                     <div class="form-group inputs-container hn-roman">
-                        <input type="text" class="form-control" name="username" id="username-input" placeholder="Usuario">
-                        <input type="text" class="form-control" name="password" id="password-input" placeholder="Contraseña">
+                        <input v-model="username" type="text" class="form-control" name="username" id="username-input" placeholder="Usuario">
+                        <input v-model="password" type="text" class="form-control" name="password" id="password-input" placeholder="Contraseña">
                     </div>
                     <div class="form-password-forgotten hn-roman">¿Haz olvidado tu <a href="#">contraseña</a>?</div>
                     <div class="home-actions antonio-regular">
                         <button class="btn home-sign-up" type="button">registrarse</button>
-                        <router-link tag="button" class="btn home-login-btn" to="/logged">entrar</router-link>                    </div>
+                        <button class="btn home-login-btn" @click="login" type="button">entrar</button>                    
+                    </div>
                 </form>
             </div>
         </div>
@@ -55,6 +56,8 @@
     import NavBar2 from "../shared/NavBar2"
     import { eventBus } from '../../main';
     import Slick from 'vue-slick-carousel'
+    import {authLogin} from '../../utils/auth'
+    import {authConfig} from '../../../public/js/auth_config'
 
     export default {
         name: "IndexBanner",
@@ -64,6 +67,8 @@
         },
         data(){
             return {
+                username: '',
+                password: '',
                 menuLinks: [
                     {
                         name: 'index',
@@ -94,6 +99,24 @@
             }
         },
         methods: {
+            login(){
+                let user = {
+                    usuario: this.username,
+                    password: this.password
+                }
+                authLogin(user)
+                        .then(({data}) => {
+                            const {rol} = data;
+                            if(rol == 'Administrador'){
+                                window.location.replace(authConfig.externalURL+"?"+authConfig.userParam+"="+user.usuario+"&"+authConfig.passParam+"="+user.password)
+                            }
+                            else {
+                                if(rol == 'Cliente'){
+                                    this.$router.push({name: 'indexLogged'})
+                                }
+                            }
+                        })
+            },
             handleScroll(){
                 let height = window.innerHeight
                 if(height*0.25 > this.$el.getBoundingClientRect().top

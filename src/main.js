@@ -6,6 +6,8 @@ import VueRouter from "vue-router";
 import { routes } from "./routes";
 import VCalendar from 'v-calendar';
 import BootstrapVue from 'bootstrap-vue';
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -16,6 +18,7 @@ Vue.use(VueScrollTo, {
   offset: -30
 });
 Vue.use(VueRouter);
+Vue.use(axios, VueAxios);
 Vue.use(VCalendar, {
   locales: {
       'es': {
@@ -24,7 +27,7 @@ Vue.use(VCalendar, {
               weekdays: "WWW",
           },
       }
-  },
+  }
 });
 
 const router = new VueRouter({
