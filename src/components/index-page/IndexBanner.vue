@@ -38,8 +38,9 @@
                 </div>
                 <form action="/login" method="POST">
                     <div class="form-group inputs-container hn-roman">
+                        <div class="test-error" v-if="testErrorVisible">{{testError}}</div>
                         <input v-model="username" type="text" class="form-control" name="username" id="username-input" placeholder="Usuario">
-                        <input v-model="password" type="text" class="form-control" name="password" id="password-input" placeholder="Contraseña">
+                        <input v-model="password" type="password" class="form-control" name="password" id="password-input" placeholder="Contraseña">
                     </div>
                     <div class="form-password-forgotten hn-roman">¿Haz olvidado tu <a href="#">contraseña</a>?</div>
                     <div class="home-actions antonio-regular">
@@ -58,6 +59,7 @@
     import Slick from 'vue-slick-carousel'
     import {authLogin} from '../../utils/auth'
     import {authConfig} from '../../../public/js/auth_config'
+    import {codes} from '../../utils/codes'
 
     export default {
         name: "IndexBanner",
@@ -67,6 +69,8 @@
         },
         data(){
             return {
+                testError: '',
+                testErrorVisible: false,
                 username: '',
                 password: '',
                 menuLinks: [
@@ -112,10 +116,26 @@
                             }
                             else {
                                 if(rol == 'Cliente'){
+                                    localStorage.setItem(
+                                        'token', data.token
+                                    )
+                                    localStorage.setItem(
+                                        'nombre', data.nombre
+                                    )
                                     this.$router.push({name: 'indexLogged'})
                                 }
                             }
-                        })
+                        }).catch(
+                            ({response})=>{
+                                const {status} = response
+                                if(status == codes.invalidCredentials){
+                                    this.testError = 'Credenciales inválidas'      
+                                    this.cleanInputs()
+                                    this.testErrorVisible = true
+                                    setTimeout(()=>this.testErrorVisible = false,3000)
+                                }
+                            }
+                        )
             },
             handleScroll(){
                 let height = window.innerHeight
@@ -124,6 +144,10 @@
                 {
                     eventBus.$emit('componentScrolled', 'index')
                 }
+            },
+            cleanInputs(){
+                this.username = ''
+                this.password = ''
             }
         },
         created () {
@@ -134,3 +158,13 @@
         }
     }
 </script>
+<style>
+    .test-error{
+        color: red;
+        border: 1px solid red;
+        border-radius: 5px;
+        background-color: rgba(255, 0, 0, 0.5);
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+</style>

@@ -10,7 +10,7 @@
                         <div class="hello antonio-light">Buenas tardes</div>
                         <div class="user-name antonio-bold">{{ user.name }}</div>
                     </div>
-                    <div class="user-photo">
+                    <div class="user-photo" @click="activeRegisterModal">
                         <img :src="user.photo" v-if="user.photo" alt="">
                         <i v-else class="mdi mdi-account"></i>
                     </div>
@@ -25,11 +25,16 @@
                 <div class="search" v-if="isUserLogged"><i class="mdi mdi-magnify"></i></div>
             </div>
         </div>
+        <RegisterModal v-if="modalActive" @closeModal="activeRegisterModal"></RegisterModal>
     </div> 
 </template>
 
 <script>
+import RegisterModal from './Register'
 export default {
+    components: {
+        RegisterModal
+    },
     name: "NavBar1",
     props: {
         user: Object,
@@ -38,6 +43,16 @@ export default {
             default: false
         }
     },
+    data(){
+        return {
+            modalActive: false
+        }
+    },
+    methods: {
+        activeRegisterModal(){
+            return this.modalActive = !this.modalActive;
+        }
+    }
 }
 </script>
 <style scoped>
@@ -90,6 +105,9 @@ export default {
         margin-left: 5px;
         margin-right: 3px;
         border: 1px solid #bcd01d;
+    }
+    .user-photo:hover{
+        cursor: pointer;
     }
 
 

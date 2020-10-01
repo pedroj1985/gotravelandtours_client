@@ -2,9 +2,9 @@ export const lodging_sites = [
             
                 {
                     images: [
-                        '/img/homelogin_destino_habana.jpg',
-                        '/img/home_servicios_restaurant.jpg',
-                        '/img/home_servicios_autos.jpg',
+                        'img/homelogin_destino_habana.jpg',
+                        'img/home_servicios_restaurant.jpg',
+                        'img/home_servicios_autos.jpg',
                     ],
                     name: 'Hotel Iberostar Grand Packard',
                     stars: 5,
@@ -46,9 +46,9 @@ export const lodging_sites = [
                 },
                 {
                     images: [
-                        '/img/homelogin_destino_habana.jpg',
-                        '/img/home_servicios_restaurant.jpg',
-                        '/img/home_servicios_autos.jpg',
+                        'img/homelogin_destino_habana.jpg',
+                        'img/home_servicios_restaurant.jpg',
+                        'img/home_servicios_autos.jpg',
                     ],
                     name: 'Hotel Iberostar Bella Vista',
                     stars: 3,
@@ -71,9 +71,9 @@ export const lodging_sites = [
                 },
                 {
                     images: [
-                        '/img/homelogin_destino_habana.jpg',
-                        '/img/home_servicios_restaurant.jpg',
-                        '/img/home_servicios_autos.jpg',
+                        'img/homelogin_destino_habana.jpg',
+                        'img/home_servicios_restaurant.jpg',
+                        'img/home_servicios_autos.jpg',
                     ],
                     name: 'Hotel Tryp Habana Libre',
                     stars: 3,

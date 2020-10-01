@@ -6,11 +6,11 @@ import VueRouter from "vue-router";
 import { routes } from "./routes";
 import VCalendar from 'v-calendar';
 import BootstrapVue from 'bootstrap-vue';
-import axios from 'axios'
-import VueAxios from 'vue-axios'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-
+import VeeValidate from "vee-validate"
+import {ValidationProvider} from "vee-validate"
+import {ValidationObserver} from "vee-validate"
 Vue.config.productionTip = false;
 Vue.use(VueResource);
 Vue.use(BootstrapVue);
@@ -18,7 +18,6 @@ Vue.use(VueScrollTo, {
   offset: -30
 });
 Vue.use(VueRouter);
-Vue.use(axios, VueAxios);
 Vue.use(VCalendar, {
   locales: {
       'es': {
@@ -29,7 +28,9 @@ Vue.use(VCalendar, {
       }
   }
 });
-
+Vue.use(VeeValidate);
+Vue.component('ValidationProvider', ValidationProvider);
+Vue.component('ValidationObserver', ValidationObserver);
 const router = new VueRouter({
   routes
 });
