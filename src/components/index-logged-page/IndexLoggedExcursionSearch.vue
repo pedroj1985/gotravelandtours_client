@@ -18,7 +18,7 @@
         <div class="custom-text-form custom-margin">
             <div class="custom-form">
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" class="left custom-width-big" v-model="selectedDestiny">
+                    <gtt-select :options="pickUpDeliveryOptions" class="cleft custom-width-big" v-model="selectedDestiny">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Destino</span>
                         <span slot="selectedPlaceholder"> ¿A dónde deseas ir?</span>
@@ -30,7 +30,7 @@
                     </gtt-select>
                 </div>
                 <div class="selects-inline">
-                    <gtt-select-date v-model="selectedDate" :mode="'single'" class="left">
+                    <gtt-select-date v-model="selectedDate" :mode="'single'" class="cleft">
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
                         <span slot="placeholder">
                             Fecha
@@ -42,7 +42,7 @@
                     </gtt-select-form>
                 </div>
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
+                    <gtt-select :options="pickUpDeliveryOptions" class="cleft" v-model="selectedPickUpPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de recogida</span>
                         <span slot="selectedPlaceholder"> Salimos desde el:</span>

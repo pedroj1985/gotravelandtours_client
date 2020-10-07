@@ -18,7 +18,7 @@
         <div class="custom-text-form custom-margin">
             <div class="custom-form">
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" class="left" v-model="selectedPickUpPlace">
+                    <gtt-select :options="pickUpDeliveryOptions" class="cleft" v-model="selectedPickUpPlace">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Punto de recogida</span>
                         <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
@@ -45,7 +45,7 @@
                     <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
                 </gtt-select-date>
                 <div class="selects-inline">
-                    <gtt-select :options="carsCategories" class="left" v-model="selectedCarCategory">
+                    <gtt-select :options="carsCategories" class="cleft" v-model="selectedCarCategory">
                         <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
                         <span slot="placeholder"> Categoría</span>
                         <span slot="selectedPlaceholder">¿Cómo desea que sea el auto?</span>

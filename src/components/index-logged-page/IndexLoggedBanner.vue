@@ -30,7 +30,7 @@
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
                     </gtt-select-date>
                     <div class="selects-inline">
-                        <gtt-select-form :options="roomLayout" class="left" v-model="selectedRoomLayout">
+                        <gtt-select-form :options="roomLayout" class="cleft" v-model="selectedRoomLayout">
                             <span slot="iconSelectedValue"><i class="mdi mdi-account"></i></span>
                             <span slot="placeholder">Visitantes</span>
                         </gtt-select-form>

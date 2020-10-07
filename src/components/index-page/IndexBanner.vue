@@ -44,7 +44,7 @@
                     </div>
                     <div class="form-password-forgotten hn-roman">¿Haz olvidado tu <a href="#">contraseña</a>?</div>
                     <div class="home-actions antonio-regular">
-                        <button class="btn home-sign-up" type="button">registrarse</button>
+                        <!-- <button class="btn home-sign-up" type="button">registrarse</button> -->
                         <button class="btn home-login-btn" @click="login" type="button">entrar</button>                    
                     </div>
                 </form>
@@ -57,7 +57,7 @@
     import NavBar2 from "../shared/NavBar2"
     import { eventBus } from '../../main';
     import Slick from 'vue-slick-carousel'
-    import {authLogin} from '../../utils/auth'
+    import {authLogin, updateHeader} from '../../utils/auth'
     import {authConfig} from '../../../public/js/auth_config'
     import {codes} from '../../utils/codes'
 
@@ -122,6 +122,10 @@
                                     localStorage.setItem(
                                         'nombre', data.nombre
                                     )
+                                    localStorage.setItem(
+                                        'cliente', data.clienteId
+                                    )
+                                    updateHeader(localStorage.getItem('token'))
                                     this.$router.push({name: 'indexLogged'})
                                 }
                             }

@@ -14,14 +14,26 @@
                         <div class="test-error" v-if="testErrorVisible">{{testError}}</div>
                         <ValidationObserver ref="observer"
                                              tag="form" @submit.prevent="submit()">
-                            <ValidationProvider rules="required" v-slot="{errors}">
+                            <ValidationProvider name="usuario" rules="required" v-slot="{errors}">
                                 <input v-model="username" type="text" class="form-control" name="username" id="username-input" placeholder="Usuario">
                                 <span>{{errors[0]}}</span>
                             </ValidationProvider>
+                            <ValidationProvider name="teléfono" rules="required" v-slot="{errors}">
                                 <input v-model="phone" type="text" class="form-control" name="phone" id="phone-input" placeholder="Teléfono">
+                                <span>{{errors[0]}}</span>
+                            </ValidationProvider>
+                            <ValidationProvider name="email" rules="required" v-slot="{errors}">
                                 <input v-model="email" type="email" class="form-control" name="email" id="email-input" placeholder="Correo electrónico">
+                                <span>{{errors[0]}}</span>
+                            </ValidationProvider>
+                            <ValidationProvider name="contraseña" rules="required|confirmed:confirm" v-slot="{errors}">
                                 <input v-model="password" type="password" class="form-control" name="password" id="password-input" placeholder="Contraseña">
+                                <span>{{errors[0]}}</span>
+                            </ValidationProvider>
+                            <ValidationProvider name="confirm password" vid="confirm" rules="required" v-slot="{errors}">
                                 <input v-model="confirm_password" type="password" class="form-control" name="confirm_password" id="confirm-password-input" placeholder="Confirme la contraseña">
+                                <span>{{errors[0]}}</span>
+                            </ValidationProvider>
                         </ValidationObserver>
                     </div>
                     <div class="form-password-forgotten hn-roman">¿Ya tienes una cuenta? <a href="#">Inicia Sesión</a></div>
@@ -65,17 +77,22 @@ export default {
                 let user = {
                     username: this.username,
                     password: this.password,
-                    phone: this.phone,
-                    email: this.email
+                    telefono: this.phone,
+                    correo: this.email,
+                    clienteId: localStorage.getItem('cliente'),
+                    rolId: 3,
                 }
-                authRegister(user).then(({data}) => {
-                    console.log(data)
-                }).catch(resp => {
-                    this.testError = `Ocurrió un problema con la conexión (Código de Error: ${resp.response.status})`
-                    this.testErrorVisible = true
-                    setTimeout(()=>this.testErrorVisible = false,3000)
+                authRegister(user, {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    })
+                    .then(({data}) => {
+                        console.log(data)
+                        this.$toasted.show(`El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,{
+                            type: 'success'
+                        })
+                        this.close()
+                }).catch(() => {
                 })
-                console.log('lo mío primero')
             }
         }
     }

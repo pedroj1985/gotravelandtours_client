@@ -88,6 +88,10 @@ html{
     margin: 0;   
 }
 
+.gtt-notification{
+    font-size: 18px;
+}
+
 .not-selected{
     display: none
 }
@@ -1359,7 +1363,7 @@ html{
         width: 49.5%;
     }
 
-    .left{
+    .cleft{
         margin-right: 1%;
     }
 
