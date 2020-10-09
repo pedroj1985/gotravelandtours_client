@@ -21,3 +21,8 @@ export function updateHeader(token){
         'Authorization': `Bearer ${token}`
     }}
 }
+
+export function closeSession(vueInstance){
+    localStorage.removeItem('token')
+    vueInstance.$router.push({name:'index'})
+}

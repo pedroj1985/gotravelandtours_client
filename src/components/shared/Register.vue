@@ -38,7 +38,10 @@
                     </div>
                     <div class="form-password-forgotten hn-roman">¿Ya tienes una cuenta? <a href="#">Inicia Sesión</a></div>
                     <div class="home-actions antonio-regular">
-                        <button class="btn home-sign-up" type="button" @click="submit()">registrarse</button>
+                        <button class="btn home-sign-up" type="button" @click="submit()">
+                            <template v-if="!loading">registrarse</template>
+                            <b-spinner small class="loading-spinner" label="Text Centered" v-else></b-spinner>
+                        </button>
                         <button class="btn home-sign-up" type="button" @click="close">cerrar</button>
                     </div>
                 </form>
@@ -58,6 +61,7 @@ import {authRegister} from '../../utils/auth'
 export default {
     data(){
         return {
+            loading: false,
             username: '',
             phone: '',
             email: '',
@@ -82,6 +86,7 @@ export default {
                     clienteId: localStorage.getItem('cliente'),
                     rolId: 3,
                 }
+                this.loading = true
                 authRegister(user, {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                     })
@@ -90,8 +95,10 @@ export default {
                         this.$toasted.show(`El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,{
                             type: 'success'
                         })
+                        this.loading = false
                         this.close()
                 }).catch(() => {
+                    this.loading = false
                 })
             }
         }

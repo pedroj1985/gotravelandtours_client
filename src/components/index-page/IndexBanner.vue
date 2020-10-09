@@ -45,7 +45,10 @@
                     <div class="form-password-forgotten hn-roman">¿Haz olvidado tu <a href="#">contraseña</a>?</div>
                     <div class="home-actions antonio-regular">
                         <!-- <button class="btn home-sign-up" type="button">registrarse</button> -->
-                        <button class="btn home-login-btn" @click="login" type="button">entrar</button>                    
+                        <button class="btn home-login-btn" @click="login" type="button">
+                            <template v-if="!loading">entrar</template>
+                            <b-spinner small class="loading-spinner" label="Text Centered" v-else></b-spinner>
+                        </button>                    
                     </div>
                 </form>
             </div>
@@ -69,6 +72,7 @@
         },
         data(){
             return {
+                loading: false,
                 testError: '',
                 testErrorVisible: false,
                 username: '',
@@ -108,6 +112,7 @@
                     usuario: this.username,
                     password: this.password
                 }
+                this.loading = true
                 authLogin(user)
                         .then(({data}) => {
                             const {rol} = data;
@@ -125,18 +130,23 @@
                                     localStorage.setItem(
                                         'cliente', data.clienteId
                                     )
+                                    this.loading = false
                                     updateHeader(localStorage.getItem('token'))
                                     this.$router.push({name: 'indexLogged'})
                                 }
                             }
                         }).catch(
                             ({response})=>{
+                                this.loading = false
                                 const {status} = response
                                 if(status == codes.invalidCredentials){
-                                    this.testError = 'Credenciales inválidas'      
+                                    this.$toasted.show(`Lo sentimos, usuario y/o contraseña incorrectos.`,{
+                                        type: 'error'
+                                    })
+                                    // this.testError = 'Credenciales inválidas'      
                                     this.cleanInputs()
-                                    this.testErrorVisible = true
-                                    setTimeout(()=>this.testErrorVisible = false,3000)
+                                    // this.testErrorVisible = true
+                                    // setTimeout(()=>this.testErrorVisible = false,3000)
                                 }
                             }
                         )
