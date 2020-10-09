@@ -20,7 +20,7 @@ Vue.use(VueResource);
 Vue.use(BootstrapVue);
 Vue.use(Toasted, {
   duration: 5000,
-  containerClass: 'gtt-notification'
+  className: 'gtt-notification'
 })
 Vue.use(VueScrollTo, {
   offset: -30
