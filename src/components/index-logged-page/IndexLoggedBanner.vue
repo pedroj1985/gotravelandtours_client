@@ -11,7 +11,7 @@
                 <img src="img/icopaq_alojamiento_color.svg" alt="">
             </div>
             <div slot="searching-text" class="searching-text">
-                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">alojamientos</span> <span class="antonio-light">en <span v-if="selectedLodgingDestinyValue">{{ selectedLodgingDestinyValue }}</span><span v-else>cualquier lugar</span></span>
+                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">alojamientos</span> <span class="antonio-light">en <span v-if="selectedLodgingDestinyValue">{{ selectedLodgingDestinyValue.nombre }}</span><span v-else>cualquier lugar</span></span>
             </div>
             <div slot="searching-fields" class="searching-fields">
                 <div v-if="selectedDates">entre el {{ constructDate(selectedDates.start) }} y el {{ constructDate(selectedDates.end) }} ({{ calculateNights(selectedDates.start, selectedDates.end)}} noches)</div>
@@ -21,10 +21,16 @@
         <div class="lodging-text-form custom-margin">
             <div class="lodging-text antonio-light"><span class="bannerText">Tenemos los mejores</span> <span class="yellow-words antonio-bold">alojamientos</span><span class="bannerText"> para usted y su familia</span></div>
             <div class="lodging-form">
-                    <gtt-select :options="destinies" :search="true" v-model="selectedLodgingDestinyValue">
+                    <gtt-select :openedLodging.sync="lodgingOpened" @click.native="loadDestinies" v-model="selectedLodgingDestinyValue" :options="destinies">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder">Destino</span>
                         <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
+                        <template v-slot:option="option">
+                            {{option.option.nombre}}
+                        </template>
+                        <template v-slot:selectedValue="selectedValue">
+                            {{selectedValue.selectedValue.nombre}}
+                        </template>
                     </gtt-select>
                     <gtt-select-date v-model="selectedDates">
                         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
@@ -64,6 +70,7 @@ import GttSelectDate from '../custom-elements/GttSelectDate'
 import GttModalSearch from '../custom-elements/GttModalSearch'
 import moment from 'moment'
 import { eventBus } from '../../main';
+import {authSearchRegions,authSearchLodging} from '../../utils/auth'
 
 export default {
     components: {
@@ -73,13 +80,31 @@ export default {
         GttSelectDate,
         GttModalSearch
     },
-    created () {
+    async created () {
         window.addEventListener('scroll', this.handleScroll);
     },
     destroyed () {
         window.removeEventListener('scroll', this.handleScroll);
     },
     methods:{
+        async loadDestinies(){
+            if(this.lodgingOpened == true)
+            {
+                let {data} = await authSearchRegions()
+                let totalResult = []
+                data.forEach(item=>{
+                    totalResult = totalResult.concat({
+                        nombre: item.Nombre,
+                        regionid: item.RegionId,
+                        type: 'region'
+                    })
+                })
+                this.destinies = totalResult
+            }
+        },
+        handleLodgingClose(){
+            this.lodgingOpened = false
+        },
         handleScroll(){
             let height = window.innerHeight
             if(height*0.25 > this.$el.getBoundingClientRect().top
@@ -88,8 +113,31 @@ export default {
                 eventBus.$emit('componentScrolled', 'lodging')
             }
         },
-        activateModal(){
+        async activateModal(){
             this.isModalActive = true;
+            let region = {RegionId: this.selectedLodgingDestinyValue.regionid}
+            let cliente = {ClienteId: localStorage.getItem('cliente')}
+            let searchItem = {
+                Entrada: this.selectedDates.start,
+                Salida: this.selectedDates.end,
+                Region: region,
+                Cliente: cliente
+           }
+            try{
+                let {data} = await authSearchLodging(searchItem)
+                this.desactivateModal()
+                this.$router.push(
+                    {
+                        name: 'resultLodging',
+                        params: {
+                            searchResult: data
+                        }
+                    }
+                )
+            }
+            catch(error){
+                console.log(error)
+            }
         },
         desactivateModal(){
             this.isModalActive = false
@@ -153,6 +201,7 @@ export default {
                 },
             ],
             isModalActive: false,
+            lodgingOpened: false,
             defaultFlagImgPath: 'img/flags/',
             selectedLodgingDestinyValue: '',
             selectedRoomLayout: {},
@@ -161,24 +210,7 @@ export default {
                 end: moment().add(1, 'days')
             },
             selectedNationality: null,
-            destinies: [
-                'Option 1',
-                'Option 2',
-                'Option 1',
-                'Option 2',
-                'Option 1',
-                'Option 2',
-                'Option 1',
-                'Option 2',
-                'Option 1',
-                'Option 2',
-                'Option 1',
-                'Option 2',
-                'Option 1',
-                'Option 2',
-                'Option 1',
-                'Option 2',
-            ],
+            destinies: [],
             roomLayout: [
                 {
                     code: 'adults',

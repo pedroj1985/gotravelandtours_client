@@ -1,5 +1,5 @@
 <template>
- <div class="modal-backdrop">
+ <div class="c-modal-backdrop">
     <div class="c-modal custom-margin">
       <div class="c-modal-body">
           <div class="modal-row">
@@ -44,15 +44,15 @@ export default {
         }
     },
     created(){
-        setTimeout(()=>{
-            this.$emit('searchingFinished',false)
-        },2000)
+        // setTimeout(()=>{
+        //     this.$emit('searchingFinished',false)
+        // },2000)
     }
 }
 </script>
 
 <style>
-    .modal-backdrop{
+    .c-modal-backdrop{
         position: fixed;
         top: 0;
         bottom: 0;
@@ -60,6 +60,7 @@ export default {
         right: 0;
         opacity: 1;
         background-color: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
     }
 
     .c-modal{
@@ -74,6 +75,7 @@ export default {
         padding-bottom: 15px;
         padding-left: 30px;
         padding-right: 30px;
+        z-index: 9999;
     }
     .modal-row{
         display: flex;

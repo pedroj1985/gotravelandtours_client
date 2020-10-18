@@ -1336,7 +1336,7 @@ button.btn .loading-spinner{
 
     .custom-form{
         width: 39.06vw;
-        height: 350px;
+        /* min-height: 350px; */
         background-color: #ffffff;
         box-shadow: 0.5px 2px 15px rgba(0, 0, 0, 15%);
         border-radius: 10px;

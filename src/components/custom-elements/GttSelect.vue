@@ -18,7 +18,7 @@
                             </div>
                             <div v-if="selectedValue" class="bigDown">
                                 <slot name="selectedValue" v-bind:selectedValue="selectedValue">
-                                    {{ selectedValue }}
+                                    <span :title="selectedValue">{{ selectedValue }}</span>
                                 </slot>
                             </div>
                             <div v-else class="bigDown">
@@ -32,17 +32,20 @@
 
         <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">
             <span class="arrow" v-if="arrow"></span>
-            <ul class="gtt__list_area" v-if="!search">
-                <li class="gtt__item" v-for="option in options" :key="option.id" @click="
-                                                                                        if(option.hasOwnProperty('value')){
-                                                                                            setSelectedValue(option)
-                                                                                        }
-                                                                                        else{
-                                                                                            setSelectedValue(option)
-                                                                                            }">
-                    <slot name="option" v-bind:option="option">{{ option }}</slot>
-                </li>
-            </ul>
+            <div v-if="!search" class="gtt__list_area_div">
+                <input type="text" class="gtt__list_area_input" v-model="searchQuery" @keyup="submitSearch" placeholder="Buscar">
+                <ul class="gtt__list_area">
+                    <li class="gtt__item" v-for="option in searchResult" :key="option.id" @click="
+                                                                                            if(option.hasOwnProperty('value')){
+                                                                                                setSelectedValue(option)
+                                                                                            }
+                                                                                            else{
+                                                                                                setSelectedValue(option)
+                                                                                                }">
+                        <slot name="option" v-bind:option="option">{{ option }}</slot>
+                    </li>
+                </ul>
+            </div>
             <div class="gtt__search_area" v-else>
                 <input type="text" v-model="searchQuery" @keyup="submitSearch" placeholder="¿Donde desea alojarse?">
                 <ul class="gtt__list_area" v-if="searchQuery">
@@ -68,6 +71,7 @@
 
 <script>
 import ClickOutside from 'vue-click-outside';
+// import {HTTP} from '../../utils/auth'
 
 export default {
     directives: {
@@ -75,17 +79,35 @@ export default {
     },
     mounted(){
         this.popupItem = this.$el
+        this.searchResult = this.options
+        this.updateValue()
+    },
+    watch: {
+        options: function(val){
+            this.searchResult = val
+        }
     },
     props: {
-        options: Array,
+        openedLodging: {
+            default: false
+        },
         twoRows: {
             default: true
+        },
+        options: {
+            type: Array
         },
         search: {
             type: Boolean,
             default: false
         },
-        value: null
+        searchFinished: {
+            type: Boolean,
+            default: false
+        },
+        value: {
+            default: null
+        }
     },
     data(){
         return {
@@ -99,25 +121,41 @@ export default {
     methods: {
         submitSearch(){
             let result = this.options.filter((e) => {
-                return e.toLowerCase().includes(this.searchQuery.toLowerCase());
+                return e.nombre.toLowerCase().includes(this.searchQuery.toLowerCase());
             })
 
             this.searchResult = result;
         },
-        toggleClicked(){
+        async toggleClicked(){
             this.isVisible = !this.isVisible;
+            if(this.isVisible == true){
+                this.emitOpen()
+            }
+            else{
+                this.searchQuery = ''
+                this.emitClose()
+            }
         },
         setSelectedValue(item){
             this.$refs['buttonToggle'].focus()
             this.selectedValue = item;
             this.emitValue(this.selectedValue);
+            this.searchQuery = ''
             this.isVisible = false;
+            this.emitClose()
         },
         handleFocusOut(){
             this.isVisible = false;
+            this.emitClose()
         },
         updateValue(){
             this.selectedValue = this.value;
+        },
+        emitClose(){
+                this.$emit('update:openedLodging', false)
+        },
+        emitOpen(){
+                this.$emit('update:openedLodging', true)
         },
         emitValue(value){
             this.$emit('input', value)
@@ -170,6 +208,10 @@ export default {
     .gtt__toggle_arrow{
         margin-left: auto;
         font-size: 30px;
+    }
+    .gtt__list_area_div{
+        background: white;
+        border-radius: 10px;
     }
     .gtt__list_area_wrapper{
         position: absolute;
@@ -247,6 +289,15 @@ export default {
         padding-left: 0;
         font-family: 'Helvetica Neue LT Std-Roman';
         font-size: 14px;
+    }
+    .gtt__list_area_input{
+        width: 100%;
+        border: none;
+        background: white;
+        padding-left: 30px;
+        padding-top: 15px;
+        padding-right: 30px;
+        border-radius: 10px;
     }
     .gtt__search_area ul.gtt__list_area{
         width: 100%;

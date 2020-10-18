@@ -58,7 +58,9 @@ export default {
         this.popupItem = this.$el
     },
     props: {
-        value: Object,
+        value:{
+            default: moment()
+        },
         mode: {
             type: String,
             default: 'range'

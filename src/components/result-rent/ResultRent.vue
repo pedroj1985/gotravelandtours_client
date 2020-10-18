@@ -4,18 +4,28 @@
       <Breadcrumb :elementList="breadcrumbList"></Breadcrumb>
       <div id="twoColumn">
         <div class="left-column-filter-wrapper">
-            <LeftColumnFilters></LeftColumnFilters>
+            <div id="left-column-filters">
+                <RentForm
+                    :propPickUpDate="selectedPickUpDate"
+                    :propDeliveryDate="selectedDeliveryDate"
+                    :propPickUpPlace="selectedPickUpPlace"
+                    :propDeliveryPlace="selectedDeliveryPlace"
+                    :propCarCategory="selectedCarCategory"
+                    :propTransmission="selectedTransmissionType"
+                    :propNationality="selectedNationality"
+                ></RentForm>
+            </div>
         </div>
         <div class="right-column-list-wrapper">
             <div class="map-wrapper">
                 <div class="left-side-map">
                     <div class="custom-line-1">
-                        <img src="../../../public/img/icopaq_alojamiento_black.svg" alt="alojamiento">
+                        <img src="../../../public/img/icopaq_renta_gris.svg" alt="alojamiento">
                         <div class="result-search">
-                            <div class="result-search-text-title antonio-regular">Hemos encontrado en {{filters.selectedLodgingDestinyValue}} {{resultTotal}} sitios para alojarse.</div>
-                            <div class="result-search-text hn-roman">Del {{filters.selectedArriveDate.locale('es').format('DD MMM YYYY')}} al 
-                                                                         {{filters.selectedDepartureDate.locale('es').format('DD MMM YYYY')}}, para
-                                                                         {{constructDisplay(filters.selectedRoomLayout)}}, {{constructDisplay(filters.selectedRooms)}}</div>
+                            <div class="result-search-text-title antonio-regular">Hemos encontrado del 
+                                                                        {{toMoment(filter.pickUpDate).locale('es').format('DD MMM YYYY')}} al 
+                                                                        {{toMoment(filter.deliveryDate).locale('es').format('DD MMM YYYY')}} 
+                                                                        {{resultTotal}} autos.</div>
                         </div>
                     </div>
                     <div class="custom-line-2">
@@ -31,7 +41,7 @@
                     <img src="../../../public/img/icomap.svg" alt="mapa">
                 </div>
             </div>
-            <RightColumnList :filters="filters" class="right-column-content" @resultSize="setResultTotal"></RightColumnList>
+            <RentRightColumnList v-if="dataLoaded" :perPage="2" :list="resultList" class="right-column-content"></RentRightColumnList>
         </div>
         </div>
   </div>
@@ -39,24 +49,61 @@
 
 <script>
 import NavBar2 from '../shared/NavBar2';
-import LeftColumnFilters from './LeftColumnFilters';
-import RightColumnList from './RightColumnList';
-import Breadcrumb from '../shared/Breadcrumb';
-import GttSelect from '../custom-elements/GttSelect';
+import RentForm from './RentForm'
 import moment from 'moment'
+import Breadcrumb from '../shared/Breadcrumb';
+import GttSelect from '../custom-elements/GttSelect'
+import RentRightColumnList from './RentRightColumnList'
+import {authGetImage} from '../../utils/auth'
 
 export default {
     components: {
         NavBar2,
-        LeftColumnFilters,
-        RightColumnList,
+        RentForm,
         Breadcrumb,
-        GttSelect
+        GttSelect,
+        RentRightColumnList
     },
     created(){
-        console.log(this.$route.params['searchResult'])
+        this.filter = this.$route.params['filters']
+        this.resultTotal = this.$route.params['searchResult'].length
+        let temp = this.$route.params['searchResult']
+        this.setSearchValues(
+            this.filter.deliveryDate,
+            this.filter.deliveryPlace,
+            this.filter.nationality,
+            this.filter.marca,
+            this.filter.pickUpDate,
+            this.filter.pickUpPlace,
+            this.filter.transmision
+        )
+        this.createList(temp)
+        
     },
     methods: {
+        async createList(temp){
+            for (let item of temp){
+                        let {data} = await authGetImage(item.Vehiculo.ProductoId)
+                        this.resultList.push(
+                            {
+                                nombre: item.Vehiculo.Nombre,
+                                plazas: item.Vehiculo.CantidadPlazas,
+                                descripcion: item.Vehiculo.Descripcion,
+                                transmision: item.Vehiculo.TipoTransmision,
+                                modeloId: item.Vehiculo.ModeloId,
+                                precio: item.PrecioOrden,
+                                distribuidor: item.Distribuidor.Nombre,
+                                distribuidorId: item.Distribuidor.DistribuidorId,
+                                imagen: data.ImageContent
+                            }
+                        )
+                        console.log(data)
+                    }
+            this.dataLoaded = true
+        },
+        toMoment(date){
+            return moment(date)
+        },
         constructDisplay(d){
             let s = '';
             Object.keys(d).forEach(element => {
@@ -67,42 +114,45 @@ export default {
         },
         setResultTotal(value){
             this.resultTotal = value;
+        },
+        setSearchValues(
+            selectedDeliveryDate,
+            selectedDeliveryPlace,
+            selectedNationality,
+            selectedCarCategory,
+            selectedPickUpDate,
+            selectedPickUpPlace,
+            selectedTransmissionType
+        ){
+            this.selectedPickUpPlace = selectedPickUpPlace
+            this.selectedPickUpDate = selectedPickUpDate
+            this.selectedDeliveryPlace = selectedDeliveryPlace
+            this.selectedDeliveryDate = selectedDeliveryDate
+            this.selectedNationality = selectedNationality
+            this.selectedCarCategory = selectedCarCategory
+            this.selectedTransmissionType = selectedTransmissionType
         }
     },
     data(){
         return {
+            dataLoaded: false,
+            resultList: [],
+            filter: null,
             organizedBy: [
                 'Prueba 1',
                 'Prueba 2'
             ],
+            selectedPickUpPlace: null,
+            selectedDeliveryPlace: null,
+            selectedNationality: null,
+            selectedPickUpDate: null,
+            selectedDeliveryDate: null,
+            selectedTransmissionType: null,
+            selectedCarCategory: null,
             resultTotal: 0,
-            filters: {
-                selectedLodgingDestinyValue: 'Santiago de Cuba',
-                selectedArriveDate: moment(),
-                selectedDepartureDate: moment().add(1, 'days'),
-                selectedRoomLayout: {
-                    adults: {
-                        value: 2,
-                        display: 'Adulto(s)'
-                    },
-                    kids: {
-                        value: 1,
-                        display: 'Niño(s)'
-                    }
-                },
-                selectedRooms: {
-                    rooms: {
-                        value: 2,
-                        display: 'Habitación(es)'
-                    }
-                },
-                selectedNationality: null,
-            },
             breadcrumbList: [
                 'Inicio',
-                'Alojamientos',
-                'Matanzas',
-                'Varadero',
+                'Renta',
                 'Resultados de la búsqueda'
             ],
             menuLinks: [
@@ -207,5 +257,8 @@ export default {
         font-size: 18px;
         background-color: transparent;
         width: 230px;
+    }
+    #left-column-filters{
+        height: 100%;
     }
 </style>

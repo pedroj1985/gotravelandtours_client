@@ -16,6 +16,52 @@ export function authRegister(user, head){
     return HTTP.post('/Usuarios',user,{headers:head})
 }
 
+export function authSearchLodging(searchItem){
+    let token = localStorage.getItem('token')
+    return HTTP.post('/Alojamientoes/BuscarOrden', searchItem, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authSearchRegions(){
+    let token = localStorage.getItem('token')
+    return HTTP.get('/Regions?col=-1', null, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authSearchPuntosInteres(){
+    let token = localStorage.getItem('token')
+    return HTTP.get('/PuntoInteres?col=-1', null, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authSearchMarcas(){
+    let token = localStorage.getItem('token')
+    return HTTP.get('/Marcas?col=-1', null, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+export function authSearchCars(searchItem){
+    let token = localStorage.getItem('token')
+    return HTTP.post('/Vehiculoes/BuscarOrden', searchItem, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authGetImage(id){
+    let token = localStorage.getItem('token')
+    return HTTP.post('/AlmacenImagenes/getmain', null, {
+        params: {idProducto: id},
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authSearchCountries(){
+    return axios.get('https://restcountries.eu/rest/v2/all?fields=name')
+}
+
 export function updateHeader(token){
     headers = {...headers,...{
         'Authorization': `Bearer ${token}`
