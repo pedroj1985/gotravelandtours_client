@@ -6,9 +6,11 @@
                         <button type="button" class="btn-children-info" :class="{'selected': selectedInfo == 'info'}" @click="selectInfo('info')"><i class="mdi mdi-clipboard-text"></i></button>
                     </div>
                     <div class="item-children-name hn-roman">
-                        {{child.name}}
+                        <slot name="itemChildrenNameSlot" v-bind:child="child">
+                            {{child.name}}
+                        </slot>
                     </div>
-                    <slot name="item-children" v-bind:child="child">
+                    <slot name="itemChildren" v-bind:child="child">
                             <div class="item-children-section hn-roman">
                                 <div class="item-children-section-item">AD</div>
                                 <div class="item-children-section-item item-children-section-icon"><i class="mdi mdi-phone-check"></i></div>
@@ -21,7 +23,9 @@
                     </slot>
                     <div class="item-children-right-part">
                         <div class="item-children-price hn-roman">
-                            {{ styledPrice(child.price.value).intPart}}.<sup>{{ styledPrice(child.price.value).decimalPart}}</sup> {{child.price.currency}}
+                            <slot name="itemChildrenPriceSlot" v-bind:child="child">
+                                {{ styledPrice(child.price.value).intPart}}.<sup>{{ styledPrice(child.price.value).decimalPart}}</sup> {{child.price.currency}}
+                            </slot>
                         </div>
                         <div class="item-children-reserve form-actions">
                             <button type="submit" class="antonio-regular inverse btn-cart"><i class="mdi mdi-cart"></i></button>
@@ -31,9 +35,11 @@
                 </div>
                 <div class="item-children-content hn-roman">
                     <div class="item-children-content-info" v-if="selectedInfo == 'info'">
-                        <pre class="hn-roman">{{child.info}}</pre>
+                        <slot name="itemContentInfoSlot" v-bind:child="child">
+                            <pre class="hn-roman">{{child.info}}</pre>
+                        </slot>
                     </div>
-                    <slot name="item-room-layout" v-bind:roomLayout="child.roomLayout">
+                    <slot name="item-room-layout" v-bind:extraInfo="child">
                         <div class="item-children-content-info" v-if="selectedInfo == 'roomLayout'">
                             <pre class="hn-roman">{{child.roomLayout}}</pre>
                         </div>

@@ -8,7 +8,14 @@
             </div>
             <div class="list-item-info">
                 <div class="item-name hn-bdcn">
-                    {{item.nombre}}
+                    {{displayName(item.nombre)}}
+                </div>
+                <div class="item-subname hn-bdcn">
+                    {{$helpers.traducir(item.marca)}},
+                    {{$helpers.traducir($helpers.findTransmissionLocale(item.transmision))}}
+                </div>
+                <div class="item-provider hn-bdcn">
+                    {{item.provider}}
                 </div>
                 <slot name="item-other-info" v-bind:item="item">
                     <div class="item-other-info hn-roman">
@@ -21,6 +28,16 @@
                         </div>
                     </div>
                 </slot>
+                <div class="item-info-icon">
+                    <div class="item-info-icon-people">
+                        <div class="iii-info-item iii-info-icon"><i class="mdi mdi-account"></i></div>
+                        <div class="iii-info-item iii-info-text">{{item.plazas}}</div>
+                    </div>
+                    <div class="item-info-icon-transmission">
+                        <div class="iii-info-item iii-info-icon"><i class="mdi mdi-engine"></i></div>
+                        <div class="iii-info-item iii-info-text">{{displayTransmission($helpers.traducir($helpers.findTransmissionLocale(item.transmision)))}}</div>
+                    </div>
+                </div>
             </div>
             <div class="list-item-price">
                 <div class="price-wrapper">
@@ -32,28 +49,29 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="list-item-children">
-            <ResultListRow v-for="child in filteredItems" :key="child.id" :child="child"></ResultListRow>
-        </div> -->
-        <div class="open-close-button" @click="openList">
+        <div class="list-item-children">
+            <RentResultListRow :child="item">
+            </RentResultListRow>
+        </div>
+        <!-- <div class="open-close-button" @click="openList">
             <i class="mdi" :class="{'mdi-chevron-double-down': !isOpen,
                                                             'mdi-chevron-double-up': isOpen}"></i>
-        </div>
+        </div> -->
      </div> 
 </template>
 
 <script>
-// import ResultListRow from './ResultListRow'
+import RentResultListRow from './RentResultListRow'
 export default {
-    // components: {
-    //     ResultListRow
-    // },
+    components: {
+        RentResultListRow
+    },
     props: {
         item: Object,
     },
     data(){
         return {
-            isOpen: false,
+            // isOpen: false,
             limit: 2
         }
     },
@@ -63,6 +81,16 @@ export default {
         }
     },
     methods: {
+        displayTransmission(item){
+            return item.split(' ')[0].toLowerCase()
+        },
+        displayName(data){
+            let data_splitted = data.split('-')
+            let sp = data_splitted.slice(1, data_splitted.lenght)
+
+            return sp.join('-')
+
+        },
         constructDisplay(d){
             let s = '';
             Object.keys(d).forEach(element => {
@@ -93,126 +121,3 @@ export default {
     }
 }
 </script>
-
-<style>
-    .list-item-general{
-        display: flex;
-        border: 1px solid #c4c4c4;
-    }
-    .list-item-info{
-        padding-top: 15px;
-        padding-left: 30px;
-        width: 45%;
-    }
-    .list-item-carousel{
-        width: 360px;
-        height: 252px;
-    }
-
-    .item-name{
-        min-height: 60px;
-        font-size: 24px;
-        color: #212f3d;
-    }
-    .result-images-carousel{
-        width: 360px;
-        height: 252px;
-    }
-
-    .result-images-carousel img{
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-    }
-    .list-item-carousel .slick-dots{
-        bottom: 15px !important;
-    }
-
-    .list-item-carousel .slick-dots li button::before {
-        color: #ffffff !important;
-        opacity: 70%;
-    }
-    .list-item-carousel .slick-dots li.slick-active button::before {
-        color: #bcd01d !important;
-        opacity: 70%;
-    }
-
-    .list-item-price{
-        padding: 15px;
-    }
-    .price-wrapper{
-        border-left: 1px solid #f5f5f5;
-        padding-left: 30px;
-        padding-right: 30px;
-        height: 100%;
-        color: #6d6d6d;
-        font-size: 16px;
-        position: relative;
-    }
-
-    .better-price{
-        text-transform: uppercase;
-    }
-
-    .price-wrapper .price{
-        padding-top: 15px;
-        font-size: 48px;
-        color: #6d6d6d;
-    }
-
-    .price-wrapper .details-btn{
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        -webkit-transform: translate(-50%, 0);
-    }
-    .open-close-button{
-        position: absolute;
-        bottom: -29px;
-        left: 50%;
-        z-index: 2;
-        text-align: center;
-        -webkit-transform: translate(-50%, 0);
-        width: 50px;
-        height: 30px;
-        background-image: url('../../../public/img/lengueta.svg');
-        font-size: 24px;
-        line-height: .8;
-        color: #6d6d6d;
-    }
-    .open-close-button:hover{
-        cursor: pointer;
-    }
-</style>
-<style scoped>
-    .list-item-children{
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-top: 5px;
-        background-color: #f5f5f5;
-    }
-    .item-other-info{
-        font-size: 16px;
-        color: #6d6d6d;
-    }
-    .item-other-info a{
-        color: #6d6d6d;
-        text-decoration-line: underline;
-    }
-    .item-other-info a:hover{
-        color: #212f3d;
-    }
-    .stars li{
-        display: inline-block;
-    }
-    .stars{
-        list-style: none;
-        padding-left: 0;
-        color: #bcd01d;
-        margin-bottom: 0;
-        font-size: 24px;
-    }
-    .c-space{
-        padding-right: 5px;
-    }
-</style>

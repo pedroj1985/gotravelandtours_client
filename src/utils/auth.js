@@ -43,6 +43,18 @@ export function authSearchMarcas(){
         headers: {Authorization: `Bearer ${token}`}
     })
 }
+export function authSearchMarca(id){
+    let token = localStorage.getItem('token')
+    return HTTP.get('/Marcas/'+id, null, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+export function authSearchProvider(id){
+    let token = localStorage.getItem('token')
+    return HTTP.get('/Proveedors/'+id, null, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
 export function authSearchCars(searchItem){
     let token = localStorage.getItem('token')
     return HTTP.post('/Vehiculoes/BuscarOrden', searchItem, {

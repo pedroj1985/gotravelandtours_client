@@ -54,7 +54,7 @@ import moment from 'moment'
 import Breadcrumb from '../shared/Breadcrumb';
 import GttSelect from '../custom-elements/GttSelect'
 import RentRightColumnList from './RentRightColumnList'
-import {authGetImage} from '../../utils/auth'
+import {authGetImage, authSearchMarca, authSearchProvider} from '../../utils/auth'
 
 export default {
     components: {
@@ -84,6 +84,8 @@ export default {
         async createList(temp){
             for (let item of temp){
                         let {data} = await authGetImage(item.Vehiculo.ProductoId)
+                        let marca = await authSearchMarca(item.Vehiculo.MarcaId)
+                        let provider = await authSearchProvider(item.Vehiculo.ProveedorId)
                         this.resultList.push(
                             {
                                 nombre: item.Vehiculo.Nombre,
@@ -91,13 +93,14 @@ export default {
                                 descripcion: item.Vehiculo.Descripcion,
                                 transmision: item.Vehiculo.TipoTransmision,
                                 modeloId: item.Vehiculo.ModeloId,
+                                marca: marca.data.Nombre,
                                 precio: item.PrecioOrden,
                                 distribuidor: item.Distribuidor.Nombre,
                                 distribuidorId: item.Distribuidor.DistribuidorId,
-                                imagen: data.ImageContent
+                                imagen: data.ImageContent,
+                                provider: provider.data.Nombre
                             }
                         )
-                        console.log(data)
                     }
             this.dataLoaded = true
         },

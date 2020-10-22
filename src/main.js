@@ -14,6 +14,7 @@ import {ValidationObserver} from "vee-validate"
 import {Validator} from "vee-validate"
 import Toasted from 'vue-toasted';
 import es from 'vee-validate/dist/locale/es'
+import {helpers} from './utils/helpers'
 
 Vue.config.productionTip = false;
 Vue.use(VueResource);
@@ -36,6 +37,7 @@ Vue.use(VCalendar, {
       }
   }
 });
+Vue.prototype.$helpers = helpers
 Vue.use(VeeValidate);
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);

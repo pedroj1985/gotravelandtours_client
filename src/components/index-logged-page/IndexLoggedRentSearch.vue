@@ -172,7 +172,7 @@ export default {
         },
         searchCountriesPlaceholder(){
             let usa = this.countries.find((el)=>{
-                return el.value == "Estados Unidos"
+                return el.nombre == "Estados Unidos"
             })
 
             if(usa)
