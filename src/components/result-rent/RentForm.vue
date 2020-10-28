@@ -111,6 +111,11 @@ export default {
             default: null
         }
     },
+    watch: {
+        propNationality: function(sn){
+            this.selectedNationality = sn
+        }
+    },
     methods: {
         overflowText(text, l = 30){
             if(text.length > l){

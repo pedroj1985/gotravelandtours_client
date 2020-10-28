@@ -101,7 +101,7 @@ import GttSelectDate from '../custom-elements/GttSelectDate'
 import GttModalSearch from '../custom-elements/GttModalSearch'
 import moment from 'moment'
 import { constructDate, calculateNights } from '../../utils/utils'
-import {authSearchPuntosInteres, authSearchMarcas, authSearchCars} from '../../utils/auth'
+import {authSearchPuntosInteres, authSearchMarcas, authSearchCars, authGetImage, authSearchProvider, authSearchMarca} from '../../utils/auth'
 
 
 export default {
@@ -115,29 +115,68 @@ export default {
     },
     methods: {
         async activateModal(){
-            this.isModalActive = true;
-            // let otherData = {
-            //     pickUpPlace: this.selectedPickUpPlace,
-            //     deliveryPlace: this.selectedDeliveryPlace,
-            // }
-            let marca = {MarcaId: this.selectedCarCategory.marcaid, Nombre: this.selectedCarCategory.nombre}
-            let cliente = {ClienteId: localStorage.getItem('cliente')}
-            let transmissionType = this.selectedTransmissionType.nombre
-            let searchItem = {
-                FechaRecogida: this.selectedDates.start,
-                FechaEntrega: this.selectedDates.end,
-                Marca: marca,
-                TipoTransmision: transmissionType,
-                Cliente: cliente
-           }
             try{
+                this.isModalActive = true;
+                // let otherData = {
+                //     pickUpPlace: this.selectedPickUpPlace,
+                //     deliveryPlace: this.selectedDeliveryPlace,
+                // }
+                let marca = {MarcaId: this.selectedCarCategory.marcaid, Nombre: this.selectedCarCategory.nombre}
+                let cliente = {ClienteId: localStorage.getItem('cliente')}
+                let transmissionType = this.selectedTransmissionType.nombre
+                let searchItem = {
+                    FechaRecogida: this.selectedDates.start,
+                    FechaEntrega: this.selectedDates.end,
+                    Marca: marca,
+                    TipoTransmision: transmissionType,
+                    Cliente: cliente
+                }
+                let resultList = []
                 let {data} = await authSearchCars(searchItem)
+                console.log(data)
+
+                for(let item of data)
+                {
+                    let image = await authGetImage(item.Vehiculo.ProductoId)
+                    let marca = await authSearchMarca(item.Vehiculo.MarcaId)
+                    let provider = await authSearchProvider(item.Vehiculo.ProveedorId)
+                    resultList.push(
+                        {
+                            nombre: item.Vehiculo.Nombre,
+                            tipo: 'rent',
+                            plazas: item.Vehiculo.CantidadPlazas,
+                            descripcion: item.Vehiculo.Descripcion,
+                            cancelation: item.Vehiculo.DescripcionCorta,
+                            transmision: item.Vehiculo.TipoTransmision,
+                            modeloId: item.Vehiculo.ModeloId,
+                            marca: marca.data.Nombre,
+                            precio: item.PrecioOrden,
+                            distribuidor: item.Distribuidor.Nombre,
+                            distribuidorId: item.Distribuidor.DistribuidorId,
+                            imagen: image.data.ImageContent,
+                            provider: provider.data.Nombre,
+                            providerImage: provider.data.ImageContent,
+                            orderVehiculo: item
+                        }
+                    )
+                    this.cleanVO(item)
+                }
                 this.desactivateModal()
+                let filtersToStorage = {
+                    marca: this.selectedCarCategory,
+                    transmision: this.selectedTransmissionType,
+                    pickUpPlace: this.selectedPickUpPlace,
+                    deliveryPlace: this.selectedDeliveryPlace,
+                    pickUpDate: this.selectedDates.start,
+                    deliveryDate: this.selectedDates.end,
+                    nationality: this.selectedNationality
+                }
+                localStorage.setItem('searchRentFilters', JSON.stringify(filtersToStorage))
                 this.$router.push(
                     {
                         name: 'resultRent',
                         params: {
-                            searchResult: data,
+                            searchResult: resultList,
                             filters: {
                                 marca: this.selectedCarCategory,
                                 transmision: this.selectedTransmissionType,
@@ -152,8 +191,35 @@ export default {
                 )
             }
             catch(error){
-                console.log(error)
+                this.desactivateModal()
+                this.$toasted.show('El servicio no está disponible en estos momentos' ,{
+                    type: 'error'
+                })
             }
+        },
+        cleanVO(order){
+            order.DistribuidorId = order.Distribuidor.DistribuidorId
+            order.Distribuidor = {
+                DistribuidorId: order.Distribuidor.DistribuidorId
+            }
+            order.Vehiculo = {
+                ProductoId: order.Vehiculo.ProductoId
+            }
+            order.Sobreprecio = {
+                SobreprecioId: order.Sobreprecio.SobreprecioId
+            }
+            if(this.selectedPickUpPlace){
+                order.LugarRecogida = {
+                        nombre: this.selectedPickUpPlace.nombre,
+                        PuntoInteresId: this.selectedPickUpPlace.puntointeresid
+                    }
+                }
+            if(this.selectedDeliveryPlace){
+                order.LugarEntrega = {
+                        nombre: this.selectedDeliveryPlace.nombre,
+                        PuntoInteresId: this.selectedDeliveryPlace.puntointeresid
+                    }
+                }
         },
         desactivateModal(){
             this.isModalActive = false;
@@ -198,49 +264,73 @@ export default {
         // },
         async loadMarcas(){
             if(this.categoriesOpened == true){
-                let {data} = await authSearchMarcas()
-                let totalResult = []
-                data.forEach(item=>{
-                    totalResult = totalResult.concat({
-                        nombre: item.Nombre,
-                        marcaid: item.MarcaId,
-                        type: 'marca'
+                try{
+                    let {data} = await authSearchMarcas()
+                    let totalResult = []
+                    data.forEach(item=>{
+                        totalResult = totalResult.concat({
+                            nombre: item.Nombre,
+                            marcaid: item.MarcaId,
+                            type: 'marca'
+                        })
                     })
-                })
-                console.log(data)
-                this.carsCategories = totalResult
+                    console.log(data)
+                    this.carsCategories = totalResult
+                }
+                catch(error)
+                {
+                    this.$toasted.show('El servicio no está disponible en estos momentos' ,{
+                        type: 'error'
+                    })
+                }
             }
         },
         async loadPickUpPlaces(){
             if(this.pickUpOpened == true){
-                let {data} = await authSearchPuntosInteres()
-                let totalResult = []
-                data.forEach(item=>{
-                    totalResult = totalResult.concat({
-                        nombre: item.Nombre,
-                        regionid: item.RegionId,
-                        puntointeresid: item.PuntoInteresId,
-                        type: 'punto-interes'
+                try{
+                    let {data} = await authSearchPuntosInteres()
+                    let totalResult = []
+                    data.forEach(item=>{
+                        totalResult = totalResult.concat({
+                            nombre: item.Nombre,
+                            regionid: item.RegionId,
+                            puntointeresid: item.PuntoInteresId,
+                            type: 'punto-interes'
+                        })
                     })
-                })
-                console.log(totalResult)
-                this.pickUpDeliveryOptions = totalResult
+                    console.log(totalResult)
+                    this.pickUpDeliveryOptions = totalResult
+                }
+                catch(error)
+                {
+                    this.$toasted.show('El servicio no está disponible en estos momentos' ,{
+                        type: 'error'
+                    })
+                }
             }
         },
         async loadDeliveryPlaces(){
             if(this.deliveryOpened == true){
-                let {data} = await authSearchPuntosInteres()
-                let totalResult = []
-                data.forEach(item=>{
-                    totalResult = totalResult.concat({
-                        nombre: item.Nombre,
-                        regionid: item.RegionId,
-                        puntointeresid: item.PuntoInteresId,
-                        type: 'punto-interes'
+                try{
+                    let {data} = await authSearchPuntosInteres()
+                    let totalResult = []
+                    data.forEach(item=>{
+                        totalResult = totalResult.concat({
+                            nombre: item.Nombre,
+                            regionid: item.RegionId,
+                            puntointeresid: item.PuntoInteresId,
+                            type: 'punto-interes'
+                        })
                     })
-                })
-                console.log(totalResult)
-                this.pickUpDeliveryOptions = totalResult
+                    console.log(totalResult)
+                    this.pickUpDeliveryOptions = totalResult
+                }
+                catch(error)
+                {
+                    this.$toasted.show('El servicio no está disponible en estos momentos' ,{
+                        type: 'error'
+                    })
+                }
             }
         },
     },

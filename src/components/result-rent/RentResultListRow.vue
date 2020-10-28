@@ -12,18 +12,29 @@
                     </div>
                     <slot name="itemChildren" v-bind:child="child">
                             <div class="item-children-section hn-roman">
-                                <div class="item-children-section-item">AD</div>
+                                <div class="item-children-section-item item-children-section-icon item-children-info-btn" v-if="child.cancelation">
+                                    <button type="button" class="btn-children-info" :class="{'selected': selectedInfo == 'cancelation_policy'}" @click="selectInfo('cancelation_policy')">
+                                        <i class="mdi mdi-credit-card-off-outline"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-children-section hn-roman">
+                                <div class="item-children-section-item item-children-section-icon item-children-info-btn" v-if="child.cancelation">
+                                    <button type="button" class="btn-children-info">
+                                        <i class="mdi mdi-email"></i>
+                                    </button>
+                                </div>
                             </div>
                     </slot>
                     <div class="item-children-right-part">
-                        <div class="item-children-price hn-roman">
+                        <!-- <div class="item-children-price hn-roman">
                             <slot name="itemChildrenPriceSlot" v-bind:child="child">
                                 {{ styledPrice(child.precio).intPart}}.<sup>{{ styledPrice(child.precio).decimalPart}}</sup> USD
                             </slot>
-                        </div>
+                        </div> -->
                         <div class="item-children-reserve form-actions">
-                            <button type="submit" class="antonio-regular inverse btn-cart"><i class="mdi mdi-cart"></i></button>
-                            <button type="submit" class="antonio-regular">Reservar</button>
+                            <button type="submit" class="antonio-regular inverse btn-cart" @click="addToCartAndNotifyIt"><i class="mdi mdi-cart"></i></button>
+                            <button type="submit" class="antonio-regular" @click="addToCartAndGoTo">Reservar</button>
                         </div>
                     </div>
                 </div>
@@ -35,22 +46,66 @@
                             <!-- </pre> -->
                         </slot>
                     </div>
+                    <div class="item-children-content-info" v-if="selectedInfo == 'cancelation_policy'">
+                        <slot name="itemContentInfoSlot" v-bind:child="child">
+                            <!-- <pre class="hn-roman"> -->
+                                <div v-html="child.cancelation"></div>
+                            <!-- </pre> -->
+                        </slot>
+                    </div>
                 </div>
             </div>
         </div>
 </template>
 
 <script>
+// import {authReserve} from '../../utils/auth'
 export default {
+    created(){
+        this.filters = JSON.parse(localStorage.getItem('searchRentFilters'))
+    },
     data(){
         return {
             selectedInfo: '',
+            filters: null
         }
     },
     props: {
         child: Object
     },
     methods: {
+        addToCartAndGoTo(){
+            this.addToCart()
+            this.$router.push(
+                {
+                    name: 'reservation',
+                }
+            )
+        },
+        addToCartAndNotifyIt(){
+            this.addToCart()
+            this.$toasted.show('Elemento agregado con éxito a su carrito de compra.' ,{
+                type: 'success'
+            })
+        },
+        addToCart(){
+            let vo = this.child.orderVehiculo
+
+            let arrLPRA = new Array()
+            vo.ListaPreciosRentaAutos.forEach( item => {
+                item.PrecioRentaAutos = {
+                    PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
+                }
+                arrLPRA.push({
+                    PrecioRentaAutos: {
+                        PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
+                    }
+                })
+            })
+            vo.ListaPreciosRentaAutos = arrLPRA
+
+            this.$helpers.shoppingCartAdd(this.child)
+        },
         styledPrice(number){
             let intPart = Math.floor(number)
             let decimalPart = (number - intPart).toFixed(2) * 100
@@ -88,8 +143,13 @@ export default {
         display: flex;
     }
     .item-children-content{
+        padding-right: 60px;
+        padding-left: 60px;
+    }
+    .item-children-content-info{
         padding-right: 230px;
         padding-left: 60px;
+        padding-bottom: 30px;
     }
     .item-children-content pre{
         font-size: 16px;
@@ -103,7 +163,7 @@ export default {
         margin-right: auto;
         color: #6d6d6d;
         font-size: 16px;
-        /* width: 15%; */
+        width: 20%;
     }
     .item-children-section{
         color: #6d6d6d;

@@ -15,7 +15,11 @@
                     <div class="vl"></div>
                     <div class="reservations hn-roman"><a href="#">Mis reservas <i class="mdi mdi-timetable"></i></a></div>
                     <div class="bills hn-roman"><a href="#">Mis facturas <i class="mdi mdi-file-document-outline"></i></a></div>
-                    <div class="shopping-cart"><a href="#"><i class="mdi mdi-cart"></i></a></div>
+                    <div class="shopping-cart">
+                        <router-link :to="{name: 'reservation'}">
+                            <i class="mdi mdi-cart"></i>
+                        </router-link>
+                    </div>
                 </div>
                 <div id="language_selector">
                     <i class="mdi mdi-web"></i><span class="l_letters hn-roman">ES</span>

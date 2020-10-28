@@ -29,7 +29,7 @@
                         </div>
                         <div class="item-children-reserve form-actions">
                             <button type="submit" class="antonio-regular inverse btn-cart"><i class="mdi mdi-cart"></i></button>
-                            <button type="submit" class="antonio-regular">Reservar</button>
+                            <button type="submit" class="antonio-regular" @click="reserve">Reservar</button>
                         </div>
                     </div>
                 </div>

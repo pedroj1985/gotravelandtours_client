@@ -4,8 +4,15 @@ let headers = {
     'Content-Type': 'application/json',
 }
 export const HTTP = axios.create({
-    baseURL: "http://gotravelandtours.com/publicEliecer/api"
+    baseURL: "http://gotravelandtours.com/publicEliecer/api",
+    timeout: 15000
 })
+export function authCheck(){
+    if(localStorage.getItem('token') == null){
+        return false
+    }
+    return true
+}
 
 export function authLogin(user){
     return HTTP.post('/Login',user,headers)
@@ -43,21 +50,31 @@ export function authSearchMarcas(){
         headers: {Authorization: `Bearer ${token}`}
     })
 }
+
 export function authSearchMarca(id){
     let token = localStorage.getItem('token')
     return HTTP.get('/Marcas/'+id, null, {
         headers: {Authorization: `Bearer ${token}`}
     })
 }
+
 export function authSearchProvider(id){
     let token = localStorage.getItem('token')
     return HTTP.get('/Proveedors/'+id, null, {
         headers: {Authorization: `Bearer ${token}`}
     })
 }
+
 export function authSearchCars(searchItem){
     let token = localStorage.getItem('token')
     return HTTP.post('/Vehiculoes/BuscarOrden', searchItem, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authReserve(orden){
+    let token = localStorage.getItem('token')
+    return HTTP.post('/Ordens', orden, {
         headers: {Authorization: `Bearer ${token}`}
     })
 }
@@ -81,6 +98,6 @@ export function updateHeader(token){
 }
 
 export function closeSession(vueInstance){
-    localStorage.removeItem('token')
+    localStorage.clear()
     vueInstance.$router.push({name:'index'})
 }

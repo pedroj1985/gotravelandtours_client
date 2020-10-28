@@ -10,24 +10,13 @@
                 <div class="item-name hn-bdcn">
                     {{displayName(item.nombre)}}
                 </div>
-                <div class="item-subname hn-bdcn">
+                <!-- <div class="item-subname hn-bdcn">
                     {{$helpers.traducir(item.marca)}},
                     {{$helpers.traducir($helpers.findTransmissionLocale(item.transmision))}}
-                </div>
+                </div> -->
                 <div class="item-provider hn-bdcn">
-                    {{item.provider}}
+                    <img :src="item.providerImage" :alt="item.provider">
                 </div>
-                <slot name="item-other-info" v-bind:item="item">
-                    <div class="item-other-info hn-roman">
-                        <!-- <div class="item-location" v-if="item.location">
-                            <span class="c-space"><i class="mdi mdi-map-marker"></i></span>{{item.location}}
-                        </div> -->
-                        <div class="item-map-link" v-if="item.mapLink">
-                            <span class="c-space"><i class="mdi mdi-map"></i></span>
-                            <a :href="item.mapLink" class="map-location">Ubicación en el mapa</a>
-                        </div>
-                    </div>
-                </slot>
                 <div class="item-info-icon">
                     <div class="item-info-icon-people">
                         <div class="iii-info-item iii-info-icon"><i class="mdi mdi-account"></i></div>
@@ -42,6 +31,11 @@
             <div class="list-item-price">
                 <div class="price-wrapper">
                     <div class="hn-mdcn better-price">Precio para:</div>
+                    <span class="hn-roman total-days">{{totalDays}} día(s) </span>
+                    <span class="hn-roman has-insurance">
+                        <template v-if="hasInsurance(item.transmision)">(seguro incluido)</template>
+                        <template v-else>(seguro no incluido)</template>
+                    </span>
                     <div class="price antonio-light">{{ styledPrice(item.precio).intPart}}.<sup>{{ styledPrice(item.precio).decimalPart}}</sup> USD</div>
                     <div class="details-btn form-actions">
                         <button type="submit" class="antonio-regular">Ver detalles</button>
@@ -68,6 +62,10 @@ export default {
     },
     props: {
         item: Object,
+        totalDays: {
+            type: Number,
+            default: 0
+        }
     },
     data(){
         return {
@@ -81,6 +79,10 @@ export default {
         }
     },
     methods: {
+        hasInsurance(tString){
+            let t = tString.split(' ').lenght
+            return t>1
+        },
         displayTransmission(item){
             return item.split(' ')[0].toLowerCase()
         },

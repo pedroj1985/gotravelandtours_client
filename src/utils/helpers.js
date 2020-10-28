@@ -14,5 +14,19 @@ export const helpers = {
         }
 
         return str
+    },
+    shoppingCartAdd(value){
+        if(localStorage.getItem('gttCart')){
+            let temp = JSON.parse(localStorage.getItem('gttCart'))
+            temp.push(value)
+            localStorage.setItem('gttCart', JSON.stringify(temp))
+        }
+        else{
+            localStorage.setItem('gttCart', JSON.stringify([value]))
+        }
+
+    },
+    shoppingCartDeleteAll(){
+        localStorage.removeItem('gttCart')
     }
 }

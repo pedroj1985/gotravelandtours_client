@@ -14,12 +14,13 @@ import Footer1 from "./components/shared/Footer1.vue"
 import NavBar1 from "./components/shared/NavBar1.vue"
 import IndexOffers from "./components/index-page/IndexOffers"
 import { eventUserBus } from "./main"
+import {authCheck} from "./utils/auth"
 
 export default {
   name: "App",
   computed: {
     isLogged(){
-      return this.user ? true : false
+      return authCheck()
     }
   },
   data(){

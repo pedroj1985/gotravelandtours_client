@@ -14,11 +14,16 @@ import {ValidationObserver} from "vee-validate"
 import {Validator} from "vee-validate"
 import Toasted from 'vue-toasted';
 import es from 'vee-validate/dist/locale/es'
+import VueTimepicker from 'vue2-timepicker'
+import 'vue2-timepicker/dist/VueTimepicker.css'
+import VueLodash from 'vue-lodash'
+import lodash from 'lodash'
 import {helpers} from './utils/helpers'
 
 Vue.config.productionTip = false;
 Vue.use(VueResource);
 Vue.use(BootstrapVue);
+Vue.use(VueLodash,{lodash: lodash});
 Vue.use(Toasted, {
   duration: 5000,
   className: 'gtt-notification'
@@ -41,9 +46,13 @@ Vue.prototype.$helpers = helpers
 Vue.use(VeeValidate);
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
+Vue.component('VueTimepicker', VueTimepicker);
 Validator.localize("es",es)
 const router = new VueRouter({
-  routes
+  routes,
+  scrollBehavior () {
+    return { x: 0, y: 0 };
+  }
 });
 router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)) {
@@ -67,6 +76,7 @@ router.beforeEach((to, from, next) => {
 
 export const eventBus = new Vue();
 export const eventUserBus = new Vue();
+export const eventFiltersRent = new Vue();
 
 new Vue({
   router,

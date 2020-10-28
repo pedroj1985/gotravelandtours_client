@@ -1,7 +1,7 @@
 <template>
   <div id="result-list">
       <div class="list-item" v-for="item in resultList" :key="item.id">
-          <RentResultListItem :item="item">
+          <RentResultListItem :item="item" :totalDays="totalDays">
           </RentResultListItem>
       </div>
     </div>
@@ -10,11 +10,15 @@
     import RentResultListItem from './RentResultListItem';
     export default {
         components: {
-            RentResultListItem
+            RentResultListItem,
         },
         props: {
             resultList: Array,
-        },
+            totalDays: {
+                type: Number,
+                default: 0
+            }
+        }
     }
 </script>
 

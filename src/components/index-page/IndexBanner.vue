@@ -128,6 +128,9 @@
                                         'nombre', data.nombre
                                     )
                                     localStorage.setItem(
+                                        'userid', data.Id
+                                    )
+                                    localStorage.setItem(
                                         'cliente', data.clienteId
                                     )
                                     this.loading = false

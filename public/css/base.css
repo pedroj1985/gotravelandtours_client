@@ -44,6 +44,111 @@
     src: url('../fonts/materialdesignicons-webfont.ttf') format('truetype');
 }
 
+.background-yellow{
+    background-color: #bcd01d;
+}
+
+.br-10{
+    border-radius: 10px;
+}
+
+.pad-15{
+    padding: 15px;
+}
+.pad-5{
+    padding: 5px;
+}
+
+.p-30-15{
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.pr-30{
+    padding-right: 30px;
+}
+
+.pl-30{
+    padding-left: 30px;
+}
+
+.pt-30{
+    padding-top: 30px;
+}
+
+.pb-30{
+    padding-bottom: 30px;
+}
+.pr-15{
+    padding-right: 15px;
+}
+
+.pl-15{
+    padding-left: 15px;
+}
+
+.pt-15{
+    padding-top: 15px;
+}
+
+.pb-15{
+    padding-bottom: 15px;
+}
+
+.gtt-first-color{
+    color: #212f3d;
+}
+.gtt-text-color{
+    color: #6d6d6d;
+}
+
+.font24{
+    font-size: 24px;
+}
+.font14{
+    font-size: 14px;
+}
+.font12{
+    font-size: 12px;
+}
+.font16{
+    font-size: 16px;
+}
+.font18{
+    font-size: 18px;
+}
+.font36{
+    font-size: 36px;
+}
+.font48{
+    font-size: 48px;
+}
+
+.to-uppercase{
+    text-transform: uppercase;
+}
+
+.general-text-opt{
+    line-height: 1.2;
+}
+
+.custom-padding-top{
+    padding-top: 60px;
+}
+
+.flex-wrapper{
+    display: flex;
+}
+
+.flex-left-side{
+    margin-right: auto;
+}
+.flex-right-side{
+    margin-left: auto;
+}
+
 .hn-roman{
     font-family: 'Helvetica Neue LT Std-Roman';
 }
@@ -132,6 +237,10 @@ button.btn .loading-spinner{
         margin-right: 9.375%;
         padding-left: 30px;
         padding-right: 30px;
+    }
+    .custom-padding{
+        padding-left: calc(9.375% + 30px);
+        padding-right: calc(9.375% + 30px);
     }
 
     .custom-padding-top{
@@ -1569,9 +1678,14 @@ button.btn .loading-spinner{
         font-size: 18px;
         color: #212f3d;
     }
+    .item-provider img{
+        height: 70px;
+        width: auto;
+    }
     .result-images-carousel{
         width: 360px;
         height: 252px;
+        padding: 1px;
     }
 
     .result-images-carousel img{
@@ -1682,3 +1796,97 @@ button.btn .loading-spinner{
         .iii-info-icon{
             font-size: 36px;
         }
+
+    .left-column-filter-wrapper{
+        padding-left: 0;
+        padding-right: 30px;
+        width: 450px;
+    }
+    .right-column-list-wrapper{
+        width: 100%;
+        padding-right: 0;
+    }
+    #twoColumn{
+        display: flex;
+        margin-left: 9.375%;
+        padding-left: 30px;
+    }
+    .right-column-content{
+        /* TODO Ver si usar vw en vez de height */
+    }
+    .map-wrapper{
+        background-color: #f5f5f5;
+        margin-bottom: 50px;
+        padding-left: 15px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-right: calc(9.375vw + 30px);
+        display: flex;
+    }
+    .map-wrapper .left-side-map{
+        padding-right: 30px;
+        width: 100%;
+    }
+    .map-wrapper .left-side-map img{
+        height: 60px;
+    }
+    .map-wrapper .right-side-map img{
+        height: 150px;
+        width: 230px;
+        object-fit: cover;
+    }
+    .map-wrapper .right-side-map{
+        margin-left: auto;
+    }
+    .map-wrapper .left-side-map .custom-line-1{
+        display: flex;
+        margin-bottom: 20px;
+    }
+    .map-wrapper .left-side-map .custom-line-2{
+        display: flex;
+    }
+    .map-wrapper .left-side-map .custom-line-2 .organizedBySelect{
+        margin-left: auto;
+    }
+    .result-search{
+        padding-left: 45px;
+    }
+    .result-search-text-title{
+        font-size: 30px;
+        color: #212f3d;
+    }
+    .result-search-text{
+        font-size: 18px;
+        color: #6d6d6d;
+    }
+    #twoColumn .map-wrapper .gtt__select .gtt__toggle{
+        margin-bottom: 0;
+        font-size: 18px;
+        background-color: transparent;
+        width: 230px;
+    }
+    #left-column-filters{
+        height: 100%;
+    }
+    #result-list{
+        margin-right: 9.375vw;
+    }
+    #rent-reservation-view .list-item-price{
+        width: 30%;
+    }
+    #rent-reservation-view .price-wrapper{
+        padding-left: 15px;
+        padding-right: 0;
+    }
+    span.vue__time-picker{
+        display: flex;
+        width: 22%;
+        font-size: 18px;
+        border: none;
+    }
+    span.vue__time-picker input.display-time{
+        width: 100%;
+        text-align: center;
+        height: auto;
+        border: none;
+    }
