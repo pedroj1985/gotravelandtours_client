@@ -149,4 +149,21 @@ export default {
         border-bottom: 1px solid #f5f5f5;
         outline: none;
     }
+    @media(max-width: 1440px){
+        .ir-text-wrapper{
+            font-size: 12px;
+        }
+        .ir-inputs-wrapper{
+            margin-top: 10px;
+        }
+        .ir-info-name{
+            font-size: 10px;
+        }
+        .ir-input{
+            font-size: 12px;
+        }
+        .input-icon{
+            font-size: 12px;
+        }
+    }
 </style>

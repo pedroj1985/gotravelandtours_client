@@ -525,6 +525,26 @@ button.btn .loading-spinner{
         line-height: 1.2;
     }
 
+    .user-photo{
+        font-size: 30px;
+        text-align: center;
+        width: 40px;
+        height: 40px;
+        line-height: 1.2;
+        margin-top: 10px;
+        color: #bcd01d;
+        border-radius: 100%;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-left: 5px;
+        margin-right: 3px;
+        border: 1px solid #bcd01d;
+    }
+    .user-photo:hover{
+        cursor: pointer;
+    }
     .dest{
         position: relative;
         width: 18.75vw !important;
@@ -1383,7 +1403,7 @@ button.btn .loading-spinner{
 @media(max-width: 1368px){
     .form-actions button{
         height: 40px;
-        font-size: 16px;
+        font-size: 14px;
     }
 }
 .vueSelect .vs__dropdown-toggle {
@@ -1494,7 +1514,7 @@ button.btn .loading-spinner{
     {
         .custom-form{
             width: 45.06vw;
-            height: 230px;
+            height: auto;
         }
 
         .custom-text{

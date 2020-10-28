@@ -134,6 +134,10 @@
                                         'cliente', data.clienteId
                                     )
                                     this.loading = false
+                                    let u = {
+                                        name: data.nombre
+                                    }
+                                    this.$emit('userLogin', u)
                                     updateHeader(localStorage.getItem('token'))
                                     this.$router.push({name: 'indexLogged'})
                                 }

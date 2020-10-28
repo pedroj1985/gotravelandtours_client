@@ -38,7 +38,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="reserve-right-row col">
+                <div class="reserve-right-row col-md-9 col-sm-7">
                     <div class="verify-step">
                         <div class="verify-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15">
                             <span><i class="mdi mdi-bed"></i> Paso 1: </span><span>Verificar datos de su reservación</span>
@@ -73,7 +73,7 @@
                                 ></FlightInfoRow>
                             </div>
                             <div class="form-actions text-right">
-                                <button type="button" @click="reserve" class="lodging-searchButton antonio-regular">
+                                <button type="button" @click="reserve" class="reserveButton antonio-regular">
                                     <template v-if="!isReserving">Crear Orden</template>
                                     <b-spinner small class="loading-spinner" label="Text Centered" v-else></b-spinner>
                                 </button>
@@ -320,6 +320,43 @@ export default {
     }
     .rrv{
         margin-bottom: 15px;
+    }
+
+    @media(max-width: 1440px){
+        .fir{
+            margin-top: 20px;
+        }
+        .reserve-title{
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .reserve-card .img-wrapper{
+            height: 70px;
+        }
+        .reserve-card-item-name{
+            font-size: 10px;
+        }
+        .reserve-total-to-pay{
+            margin-top: 30px;
+        }
+        .total-to-pay-text{
+            padding-right: 10px;
+            font-size: 12px;
+        }
+        .font48{
+            font-size: 36px;
+        }
+        .reserve-nav-text{
+            position: relative;
+            padding-top: 10px;
+            font-size: 16px;
+        }
+        .create-order-step-title, .verify-step-title{
+            font-size: 18px;
+        }
+        .reserveButton{
+            width: auto;
+        }
     }
 
 </style>

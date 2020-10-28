@@ -1,6 +1,6 @@
 <template>
     <div id="content">
-        <IndexBanner></IndexBanner>
+        <IndexBanner @userLogin="emitUserLogin"></IndexBanner>
         <Destinies></Destinies>
         <IndexServices></IndexServices>
         <IndexPackages></IndexPackages>
@@ -28,6 +28,10 @@ export default {
         IndexWhoAreWe
     },
     methods: {
+        emitUserLogin(value)
+        {
+            this.$emit('userLogin', value)
+        }
     }
 };
 </script>

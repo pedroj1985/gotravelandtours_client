@@ -10,7 +10,7 @@
                         <div class="hello antonio-light">Buenas tardes</div>
                         <div class="user-name antonio-bold">{{ user.name }}</div>
                     </div>
-                    <GttButtonModal :user="user" :classToButton="'user-photo'">
+                    <GttButtonModal @userLogin="emitUserLogin" :user="user" :classToButton="'user-photo'">
                     </GttButtonModal>
                     <div class="vl"></div>
                     <div class="reservations hn-roman"><a href="#">Mis reservas <i class="mdi mdi-timetable"></i></a></div>
@@ -45,30 +45,14 @@ export default {
             default: false
         }
     },
+    methods: {
+        emitUserLogin(value)
+        {
+            this.$emit('userLogin', value)
+        }
+    }
 }
 </script>
-<style>
-    .user-photo{
-        font-size: 30px;
-        text-align: center;
-        width: 40px;
-        height: 40px;
-        line-height: 1.2;
-        margin-top: 10px;
-        color: #bcd01d;
-        border-radius: 100%;
-        padding-left: 1px;
-        padding-right: 1px;
-        padding-top: 0;
-        padding-bottom: 0;
-        margin-left: 5px;
-        margin-right: 3px;
-        border: 1px solid #bcd01d;
-    }
-    .user-photo:hover{
-        cursor: pointer;
-    }
-</style>
 <style scoped>
     .right-side-navbar{
         display: flex;
@@ -124,11 +108,6 @@ export default {
     }
 
     @media(max-width: 1440px){
-        .user-photo{
-            font-size: 20px;
-            width: 30px;
-            height: 30px;
-        }
         .hello, .user-name{
             font-size: 14px;
         }

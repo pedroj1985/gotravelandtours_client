@@ -259,4 +259,21 @@ export default {
     .selected{
         color: #c4c4c4;
     }
+    @media(max-width: 1440px)
+    {
+        .item-children-info-btn{
+            font-size: 18px;
+        }
+        .item-children-name{
+            font-size: 12px;
+        }
+        .item-children-section{
+            color: #6d6d6d;
+            font-size: 18px;
+            display: flex;
+        }
+        .item-children-content-info{
+            font-size: 12px;
+        }
+    }
 </style>

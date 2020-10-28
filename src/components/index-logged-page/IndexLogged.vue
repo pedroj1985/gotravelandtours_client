@@ -16,16 +16,9 @@ import IndexLoggedRent from "./IndexLoggedRent";
 import IndexLoggedTransfer from "./IndexLoggedTransfer";
 import IndexLoggedDestinies from "./IndexLoggedDestinies";
 import IndexLoggedExcursion from "./IndexLoggedExcursion";
-import { eventUserBus } from "../../main"
 
 export default {
     name: 'IndexLogged',
-    //Este código es solo de ejemplo
-    created(){
-      eventUserBus.$emit('userLogin',{
-        name: 'Mary Jean Tours',
-      })
-    },
     components: {
         IndexLoggedBanner,
         IndexLoggedHotels,

@@ -147,9 +147,8 @@ export default {
         padding-left: 60px;
     }
     .item-children-content-info{
-        padding-right: 230px;
-        padding-left: 60px;
         padding-bottom: 30px;
+        font-size: 12px;
     }
     .item-children-content pre{
         font-size: 16px;
@@ -174,10 +173,10 @@ export default {
     .item-children-section-item{
         padding-right: 25px;
         align-self: center;
-        font-size: 30px !important;
+        font-size: 30px;
     }
     .item-children-section-icon{
-        font-size: 30px !important;
+        font-size: 30px;
         color: #212f3d;
         align-self: center;
     }
@@ -211,5 +210,20 @@ export default {
     }
     .selected{
         color: #c4c4c4;
+    }
+
+    @media(max-width: 1440px)
+    {
+        .item-children-info-btn{
+            font-size: 18px;
+        }
+        .item-children-name{
+            font-size: 12px;
+        }
+        .item-children-section{
+            color: #6d6d6d;
+            font-size: 18px;
+            display: flex;
+        }
     }
 </style>

@@ -46,4 +46,15 @@ export default {
     .tr-info-value{
         font-size: 18px !important;
     }
+    @media(max-width: 1440px){
+        .twoRowsDiv{
+            padding: 5px;
+        }
+        .tr-info-name{
+            font-size: 10px !important;
+        }
+        .tr-info-value{
+            font-size: 12px !important;
+        }
+    }
 </style>

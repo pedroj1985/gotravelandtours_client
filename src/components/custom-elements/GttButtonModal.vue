@@ -71,6 +71,7 @@ export default {
         },
         closeSession(){
             this.handleFocusOut()
+            this.$emit('userLogin',null)
             closeSession(this)
         }
     }
