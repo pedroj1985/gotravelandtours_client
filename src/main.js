@@ -19,6 +19,8 @@ import 'vue2-timepicker/dist/VueTimepicker.css'
 import VueLodash from 'vue-lodash'
 import lodash from 'lodash'
 import {helpers} from './utils/helpers'
+import Multiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.min.css'
 
 Vue.config.productionTip = false;
 Vue.use(VueResource);
@@ -43,7 +45,10 @@ Vue.use(VCalendar, {
   }
 });
 Vue.prototype.$helpers = helpers
-Vue.use(VeeValidate);
+Vue.use(VeeValidate, {
+  fieldsBagName: 'inputs ',
+});
+Vue.component('multiselect', Multiselect)
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
 Vue.component('VueTimepicker', VueTimepicker);

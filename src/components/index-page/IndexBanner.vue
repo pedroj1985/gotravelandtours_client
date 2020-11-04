@@ -42,7 +42,7 @@
                         <input v-model="username" type="text" class="form-control" name="username" id="username-input" placeholder="Usuario">
                         <input v-model="password" type="password" class="form-control" name="password" id="password-input" placeholder="Contraseña">
                     </div>
-                    <div class="form-password-forgotten hn-roman">¿Haz olvidado tu <a href="#">contraseña</a>?</div>
+                    <div class="form-password-forgotten hn-roman">¿Has olvidado tu <a href="#">contraseña</a>?</div>
                     <div class="home-actions antonio-regular">
                         <!-- <button class="btn home-sign-up" type="button">registrarse</button> -->
                         <button class="btn home-login-btn" @click="login" type="button">

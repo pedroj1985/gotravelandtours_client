@@ -13,7 +13,11 @@
                     <GttButtonModal @userLogin="emitUserLogin" :user="user" :classToButton="'user-photo'">
                     </GttButtonModal>
                     <div class="vl"></div>
-                    <div class="reservations hn-roman"><a href="#">Mis reservas <i class="mdi mdi-timetable"></i></a></div>
+                    <div class="reservations hn-roman">
+                        <router-link :to="{name: 'myreservations'}">
+                            Mis reservas <i class="mdi mdi-timetable"></i>
+                        </router-link>
+                    </div>
                     <div class="bills hn-roman"><a href="#">Mis facturas <i class="mdi mdi-file-document-outline"></i></a></div>
                     <div class="shopping-cart">
                         <router-link :to="{name: 'reservation'}">

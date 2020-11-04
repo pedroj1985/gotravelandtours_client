@@ -14,6 +14,17 @@ export function authCheck(){
     return true
 }
 
+export function getUser(){
+    let s = localStorage.getItem('token')
+    let u = localStorage.getItem('nombre')
+    let id = localStorage.getItem('cliente')
+    if(s && u && id){
+      return {name: u,
+              clienteId: id}
+    }
+    return null
+}
+
 export function authLogin(user){
     return HTTP.post('/Login',user,headers)
 }
@@ -83,6 +94,20 @@ export function authGetImage(id){
     let token = localStorage.getItem('token')
     return HTTP.post('/AlmacenImagenes/getmain', null, {
         params: {idProducto: id},
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authGetOrders(searchItem){
+    let token = localStorage.getItem('token')
+    return HTTP.post('/Ordens/Buscar', searchItem, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authGetOrdersCount(searchItem){
+    let token = localStorage.getItem('token')
+    return HTTP.post('/Ordens/Count', searchItem, {
         headers: {Authorization: `Bearer ${token}`}
     })
 }

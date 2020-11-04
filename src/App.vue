@@ -13,6 +13,7 @@ import Footer2 from "./components/shared/Footer2.vue"
 import Footer1 from "./components/shared/Footer1.vue"
 import NavBar1 from "./components/shared/NavBar1.vue"
 import IndexOffers from "./components/index-page/IndexOffers"
+import {getUser} from "./utils/auth"
 
 export default {
   name: "App",
@@ -33,11 +34,7 @@ export default {
     }
   },
   mounted(){
-    let s = localStorage.getItem('token')
-    let u = localStorage.getItem('nombre')
-    if(s && u){
-      this.user = {name: u}
-    }
+    this.user = getUser()
   },
   components: {
     Footer2,
