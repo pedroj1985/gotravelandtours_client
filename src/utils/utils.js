@@ -16,3 +16,10 @@ export function constructDisplay(d){
 
     return s.substring(2);
 }
+
+export function overflowText(text, l = 30){
+            if(text.length > l){
+                return `${text.substring(0, l)}...`
+            }
+            return text
+        }

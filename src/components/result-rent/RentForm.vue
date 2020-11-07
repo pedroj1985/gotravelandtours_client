@@ -1,5 +1,17 @@
 <template>
   <div id="lodging-form">
+        <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
+            <div slot="image">
+                <img src="img/icopaq_renta_color.svg" alt="">
+            </div>
+            <div slot="searching-text" class="searching-text">
+                <span class="antonio-light">Buscando disponibilidad de </span><span class="antonio-bold text-highlight">autos en renta</span> <span class="antonio-light">en <span v-if="selectedPickUpPlace">{{ selectedPickUpPlace.nombre }}</span><span v-else>cualquier lugar</span></span>
+            </div>
+            <div slot="searching-fields" class="searching-fields">
+                <div v-if="selectedPickUpDate && selectedDeliveryDate">entre el {{ constructDate(selectedPickUpDate) }} y el {{ constructDate(selectedDeliveryDate) }} ({{ calculateNights(selectedDeliveryDate, selectedPickUpDate)}} días)</div>
+                <div v-if="selectedCarCategory">{{selectedCarCategory.nombre}}</div>
+            </div>
+        </GttModalSearch>
         <gtt-select :openedLodging.sync="pickUpOpened" @click.native="loadPickUpPlaces" :options="pickUpDeliveryOptions" class="cleft" v-model="selectedPickUpPlace">
             <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
             <span slot="placeholder"> Punto de recogida</span>
@@ -8,7 +20,7 @@
                 {{option.option.nombre}}
             </template>
             <template v-slot:selectedValue="selectedValue">
-                <span id="selectedPickUp">{{overflowText(selectedValue.selectedValue.nombre)}}</span>
+                <span id="selectedPickUp">{{overflowText(selectedValue.selectedValue.nombre, 21)}}</span>
                 <b-tooltip target="selectedPickUp" triggers="hover">
                     {{selectedValue.selectedValue.nombre}}
                 </b-tooltip>
@@ -22,7 +34,10 @@
                 {{option.option.nombre}}
             </template>
             <template v-slot:selectedValue="selectedValue">
-                {{overflowText(selectedValue.selectedValue.nombre)}}
+                <span id="selectedDelivery">{{overflowText(selectedValue.selectedValue.nombre, 21)}}</span>
+                <b-tooltip target="selectedDelivery" triggers="hover">
+                    {{selectedValue.selectedValue.nombre}}
+                </b-tooltip>
             </template>
         </gtt-select>
         <gtt-select-date v-model="selectedPickUpDate" :mode="'single'">
@@ -56,7 +71,7 @@
                 {{option.option.nombre}}
             </template>
             <template v-slot:selectedValue="selectedValue">
-                {{overflowText(selectedValue.selectedValue.nombre)}}
+                {{overflowText(selectedValue.selectedValue.nombre, 21)}}
             </template>
         </gtt-select>
         <gtt-select :options="countries" v-model="selectedNationality">
@@ -73,7 +88,7 @@
             </template>
         </gtt-select>
         <div class="form-actions lodging-form-search-btn">
-            <button type="submit" class="antonio-regular">Buscar</button>
+            <button @click="activateModal" type="submit" class="antonio-regular">Buscar</button>
         </div>
   </div>
 </template>
@@ -81,12 +96,20 @@
 <script>
 import GttSelect from '../custom-elements/GttSelect';
 import GttSelectDate from '../custom-elements/GttSelectDate';
-import {authSearchPuntosInteres, authSearchMarcas} from '../../utils/auth'
+import {authSearchPuntosInteres, 
+        authSearchMarcas, 
+        authSearchCars, 
+        authSearchMarca, 
+        authGetImage,
+        authSearchProvider} from '../../utils/auth'
+import GttModalSearch from '../custom-elements/GttModalSearch'
+import { constructDate, calculateNights} from '../../utils/utils'
 
 export default {
     components: {
         GttSelect,
         GttSelectDate,
+        GttModalSearch
     },
     props: {
         propPickUpDate:{
@@ -117,11 +140,127 @@ export default {
         }
     },
     methods: {
+        async activateModal(){
+            try{
+                this.isModalActive = true;
+                // let otherData = {
+                //     pickUpPlace: this.selectedPickUpPlace,
+                //     deliveryPlace: this.selectedDeliveryPlace,
+                // }
+                let marca = {MarcaId: this.selectedCarCategory.marcaid, Nombre: this.selectedCarCategory.nombre}
+                let cliente = {ClienteId: localStorage.getItem('cliente')}
+                let transmissionType = this.selectedTransmissionType.nombre
+                let searchItem = {
+                    FechaRecogida: this.selectedPickUpDate,
+                    FechaEntrega: this.selectedDeliveryDate,
+                    Marca: marca,
+                    TipoTransmision: transmissionType,
+                    Cliente: cliente
+                }
+                let resultList = []
+                let {data} = await authSearchCars(searchItem)
+                console.log(data)
+
+                for(let item of data)
+                {
+                    let image = await authGetImage(item.Vehiculo.ProductoId)
+                    let marca = await authSearchMarca(item.Vehiculo.MarcaId)
+                    let provider = await authSearchProvider(item.Vehiculo.ProveedorId)
+                    resultList.push(
+                        {
+                            nombre: item.Vehiculo.Nombre,
+                            tipo: 'rent',
+                            plazas: item.Vehiculo.CantidadPlazas,
+                            descripcion: item.Vehiculo.Descripcion,
+                            cancelation: item.Vehiculo.DescripcionCorta,
+                            transmision: item.Vehiculo.TipoTransmision,
+                            modeloId: item.Vehiculo.ModeloId,
+                            marca: marca.data.Nombre,
+                            precio: item.PrecioOrden,
+                            distribuidor: item.Distribuidor.Nombre,
+                            distribuidorId: item.Distribuidor.DistribuidorId,
+                            imagen: image.data.ImageContent,
+                            provider: provider.data.Nombre,
+                            providerImage: provider.data.ImageContent,
+                            orderVehiculo: item
+                        }
+                    )
+                    this.cleanVO(item)
+                }
+                this.desactivateModal()
+                let filtersToStorage = {
+                    marca: this.selectedCarCategory,
+                    transmision: this.selectedTransmissionType,
+                    pickUpPlace: this.selectedPickUpPlace,
+                    deliveryPlace: this.selectedDeliveryPlace,
+                    pickUpDate: this.selectedPickUpDate,
+                    deliveryDate: this.selectedDeliveryDate,
+                    nationality: this.selectedNationality
+                }
+                localStorage.setItem('searchRentFilters', JSON.stringify(filtersToStorage))
+                this.$router.push(
+                    {
+                        name: 'rentResultHolder',
+                        params: {
+                            searchResult: resultList,
+                            filters: {
+                                marca: this.selectedCarCategory,
+                                transmision: this.selectedTransmissionType,
+                                pickUpPlace: this.selectedPickUpPlace,
+                                deliveryPlace: this.selectedDeliveryPlace,
+                                pickUpDate: this.selectedPickUpDate,
+                                deliveryDate: this.selectedDeliveryDate,
+                                nationality: this.selectedNationality
+                            }
+                        }
+                    }
+                )
+            }
+            catch(error){
+                this.desactivateModal()
+                this.$toasted.show('El servicio no está disponible en estos momentos' ,{
+                    type: 'error'
+                })
+            }
+        },
+        cleanVO(order){
+            order.DistribuidorId = order.Distribuidor.DistribuidorId
+            order.Distribuidor = {
+                DistribuidorId: order.Distribuidor.DistribuidorId
+            }
+            order.Vehiculo = {
+                ProductoId: order.Vehiculo.ProductoId
+            }
+            order.Sobreprecio = {
+                SobreprecioId: order.Sobreprecio.SobreprecioId
+            }
+            if(this.selectedPickUpPlace){
+                order.LugarRecogida = {
+                        nombre: this.selectedPickUpPlace.nombre,
+                        PuntoInteresId: this.selectedPickUpPlace.puntointeresid
+                    }
+                }
+            if(this.selectedDeliveryPlace){
+                order.LugarEntrega = {
+                        nombre: this.selectedDeliveryPlace.nombre,
+                        PuntoInteresId: this.selectedDeliveryPlace.puntointeresid
+                    }
+                }
+        },
+        desactivateModal(){
+            this.isModalActive = false;
+        },
         overflowText(text, l = 30){
             if(text.length > l){
                 return `${text.substring(0, l)}...`
             }
             return text
+        },
+        constructDate(date){
+           return constructDate(date)
+        },
+        calculateNights(min, max){
+            return calculateNights(min, max)
         },
         async loadMarcas(){
             if(this.categoriesOpened == true){
@@ -134,7 +273,6 @@ export default {
                         type: 'marca'
                     })
                 })
-                console.log(data)
                 this.carsCategories = totalResult
             }
         },
@@ -150,7 +288,6 @@ export default {
                         type: 'punto-interes'
                     })
                 })
-                console.log(totalResult)
                 this.pickUpDeliveryOptions = totalResult
             }
         },
@@ -166,13 +303,13 @@ export default {
                         type: 'punto-interes'
                     })
                 })
-                console.log(totalResult)
                 this.pickUpDeliveryOptions = totalResult
             }
         },
     },
     data(){
         return {
+            isModalActive: false,
             pickUpOpened: false,
             deliveryOpened: false,
             categoriesOpened: false,

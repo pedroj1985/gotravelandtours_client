@@ -175,6 +175,7 @@ export default {
                 this.$router.push(
                     {
                         name: 'resultRent',
+                        key: 'notChanged',
                         params: {
                             searchResult: resultList,
                             filters: {

@@ -33,7 +33,7 @@
         <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">
             <span class="arrow" v-if="arrow"></span>
             <div v-if="!search" class="gtt__list_area_div">
-                <input type="text" class="gtt__list_area_input" v-model="searchQuery" @keyup="submitSearch" placeholder="Buscar">
+                <input autofocus type="text" ref="gttinput" class="gtt__list_area_input" v-model="searchQuery" @keyup="submitSearch" placeholder="Buscar">
                 <ul class="gtt__list_area">
                     <li class="gtt__item" v-for="option in searchResult" :key="option.id" @click="
                                                                                             if(option.hasOwnProperty('value')){
@@ -81,6 +81,7 @@ export default {
         this.popupItem = this.$el
         this.searchResult = this.options
         this.updateValue()
+        this.focusInputSearch()
     },
     watch: {
         options: function(val){
@@ -156,6 +157,9 @@ export default {
         },
         emitOpen(){
                 this.$emit('update:openedLodging', true)
+        },
+        focusInputSearch(){
+            this.$refs.gttinput.focus()
         },
         emitValue(value){
             this.$emit('input', value)
@@ -298,6 +302,10 @@ export default {
         padding-top: 15px;
         padding-right: 30px;
         border-radius: 10px;
+        border-bottom: 1px solid #f5f5f5;
+    }
+    .gtt__list_area_input:focus{
+        outline: none;
     }
     .gtt__search_area ul.gtt__list_area{
         width: 100%;

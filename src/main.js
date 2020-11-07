@@ -33,6 +33,12 @@ Vue.use(Toasted, {
 Vue.use(VueScrollTo, {
   offset: -30
 });
+
+// const originalPush = VueRouter.prototype.push
+// VueRouter.prototype.push = function push(location) {
+//   return originalPush.call(this, location).catch(err => err)
+// }
+
 Vue.use(VueRouter);
 Vue.use(VCalendar, {
   locales: {
@@ -57,8 +63,9 @@ const router = new VueRouter({
   routes,
   scrollBehavior () {
     return { x: 0, y: 0 };
-  }
+  },
 });
+
 router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)) {
       if (localStorage.getItem('token') == null) {
