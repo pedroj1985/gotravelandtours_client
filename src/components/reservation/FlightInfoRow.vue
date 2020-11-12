@@ -19,14 +19,17 @@
                     </div>
                     <div class="flex-wrapper">
                         <vue-timepicker  v-model="hl"
+                                        :disabled="!editable"
                                          close-on-complete hide-clear-button>
                                          </vue-timepicker>
                         <span>-</span>
                         <input type="text" :value="aerolinea_landing" 
+                                            :disabled="!editable"
                                            @input="$emit('inputAerolineaLanding', $event.target.value)" 
                                            class="ir-input font18" placeholder="AEROLÍNEA">
                         <span>-</span>
                         <input type="text" :value="nvuelo_landing" 
+                                            :disabled="!editable"
                                            @input="$emit('inputNvueloLanding', $event.target.value)"
                                            class="ir-input font18" placeholder="No. VUELO">
                     </div>
@@ -50,14 +53,18 @@
                     </div>
                     <div class="flex-wrapper">
                         <vue-timepicker  v-model="ht"
-                                         close-on-complete hide-clear-button>
+                                         close-on-complete hide-clear-button
+                                         :disabled="!editable"
+                                         >
                                          </vue-timepicker>
                         <span>-</span>
                         <input type="text" :value="aerolinea_takeoff" 
+                                            :disabled="!editable"
                                            @input="$emit('inputAerolineaTakeoff', $event.target.value)" 
                                            class="ir-input font18" placeholder="AEROLÍNEA">
                         <span>-</span>
                         <input type="text" :value="nvuelo_takeoff" 
+                                            :disabled="!editable"
                                            @input="$emit('inputNvueloTakeoff', $event.target.value)"
                                            class="ir-input font18" placeholder="No. VUELO">
                     </div>
@@ -68,10 +75,6 @@
 </template>
 <script>
 export default {
-    created(){
-        this.hl = this.hora_landing
-        this.ht = this.hora_takeoff
-    },
     watch: {
         hl: function(value){
             this.$emit('inputHoraLanding', value)
@@ -79,6 +82,13 @@ export default {
         ht: function(value){
             this.$emit('inputHoraTakeoff', value)
         },
+        hora_landing: function(value){
+            this.hl = value
+        },
+        hora_takeoff: function(value){
+            this.ht = value
+        }
+
     },
     data(){
         return {
@@ -104,6 +114,10 @@ export default {
         },
         nvuelo_takeoff: {
             type: String
+        },
+        editable: {
+            type: Boolean,
+            default: true
         }
     }
 }
@@ -149,6 +163,13 @@ export default {
         border-bottom: 1px solid #f5f5f5;
         outline: none;
     }
+    .ir-input:disabled{
+        background-color: white;
+        color: #dddddd;
+    }
+    .ir-input:disabled::placeholder{
+        color: #dddddd;
+    }
     @media(max-width: 1440px){
         .ir-text-wrapper{
             font-size: 12px;
@@ -165,5 +186,14 @@ export default {
         .input-icon{
             font-size: 12px;
         }
+    }
+</style>
+<style>
+    .vue__time-picker input.disabled{
+        background-color: white;
+        color: #dddddd;
+    }
+    .vue__time-picker input.disabled::placeholder{
+        color: #dddddd;
     }
 </style>

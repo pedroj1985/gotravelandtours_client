@@ -105,6 +105,7 @@ export default {
             vo.ListaPreciosRentaAutos = arrLPRA
 
             this.$helpers.shoppingCartAdd(this.child)
+            this.$eventCartBus.$emit('updateCart')
         },
         styledPrice(number){
             let intPart = Math.floor(number)

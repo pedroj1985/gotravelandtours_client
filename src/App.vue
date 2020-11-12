@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-    <NavBar1 @userLogin="updateUser" :isUserLogged="isLogged" :user="user"></NavBar1>
-    <router-view @userLogin="updateUser"></router-view>
+    <NavBar1 @userLogin="updateUser" :isUserLogged="isLogged" :user="user" :itemsInCart="itemsInCart"></NavBar1>
+    <router-view @userLogin="updateUser" 
+                 ></router-view>
     <IndexOffers></IndexOffers>
     <Footer1></Footer1>
     <Footer2></Footer2>
@@ -24,17 +25,24 @@ export default {
   },
   data(){
     return {
-      user: null
+      user: null,
+      itemsInCart: 0
     }
   },
   methods: {
     updateUser(value){
-      console.log('entra en el evento')
       this.user = value
-    }
+    },
   },
   mounted(){
     this.user = getUser()
+    this.itemsInCart = this.$helpers.getCartItems()
+  },
+  created(){
+    this.$eventCartBus.$on('updateCart', () => {
+      console.log(this.$helpers.getCartItems())
+      this.itemsInCart = this.$helpers.getCartItems()
+    })
   },
   components: {
     Footer2,

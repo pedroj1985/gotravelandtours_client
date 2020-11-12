@@ -15,6 +15,15 @@ export const helpers = {
 
         return str
     },
+    getCartItems(){
+        if(localStorage.getItem('gttCart'))
+        {
+            let temp = JSON.parse(localStorage.getItem('gttCart'))
+            return temp.length
+        }
+
+        return 0
+    },
     shoppingCartAdd(value){
         if(localStorage.getItem('gttCart')){
             let temp = JSON.parse(localStorage.getItem('gttCart'))

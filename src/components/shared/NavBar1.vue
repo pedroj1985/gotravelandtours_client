@@ -21,7 +21,10 @@
                     <div class="bills hn-roman"><a href="#">Mis facturas <i class="mdi mdi-file-document-outline"></i></a></div>
                     <div class="shopping-cart">
                         <router-link :to="{name: 'reservation'}">
-                            <i class="mdi mdi-cart"></i>
+                            <div class="shopping-cart-wrapper">
+                                <i class="mdi mdi-cart"></i>
+                                <GttBubbleNotification :count="itemsInCart"></GttBubbleNotification>
+                            </div>
                         </router-link>
                     </div>
                 </div>
@@ -36,13 +39,19 @@
 
 <script>
 import GttButtonModal from '../custom-elements/GttButtonModal'
+import GttBubbleNotification from '../custom-elements/GttBubbleNotification'
 
 export default {
     components: {
-        GttButtonModal
+        GttButtonModal,
+        GttBubbleNotification
     },
     name: "NavBar1",
     props: {
+        itemsInCart: {
+            type: Number,
+            default: 0
+        },
         user: Object,
         isUserLogged: {
             type: Boolean,
@@ -54,10 +63,13 @@ export default {
         {
             this.$emit('userLogin', value)
         }
-    }
+    },
 }
 </script>
 <style scoped>
+    .shopping-cart-wrapper{
+        position: relative;
+    }
     .right-side-navbar{
         display: flex;
         float: right;

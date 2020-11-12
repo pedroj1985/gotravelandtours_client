@@ -55,7 +55,7 @@
         <gtt-select :options="transmissionTypes" v-model="selectedTransmissionType">
             <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
             <span slot="placeholder"> Tipo de transmisión</span>
-            <span slot="selectedPlaceholder">¿Qué tipo de transmisión desea?</span>
+            <span slot="selectedPlaceholder">¿Qué transmisión desea?</span>
             <template v-slot:selectedValue="selectedValue">
                 {{selectedValue.selectedValue.display}}
             </template>
@@ -71,7 +71,7 @@
                 {{option.option.nombre}}
             </template>
             <template v-slot:selectedValue="selectedValue">
-                {{overflowText(selectedValue.selectedValue.nombre, 21)}}
+                {{selectedValue.selectedValue.nombre}}
             </template>
         </gtt-select>
         <gtt-select :options="countries" v-model="selectedNationality">
@@ -104,6 +104,7 @@ import {authSearchPuntosInteres,
         authSearchProvider} from '../../utils/auth'
 import GttModalSearch from '../custom-elements/GttModalSearch'
 import { constructDate, calculateNights} from '../../utils/utils'
+import moment from 'moment'
 
 export default {
     components: {
@@ -113,10 +114,10 @@ export default {
     },
     props: {
         propPickUpDate:{
-            default: null
+            default: function(){return moment()}
         },
         propDeliveryDate:{
-            default: null
+            default: function(){ return moment().add(1, 'days')}
         },
         propPickUpPlace:{
             default: null
@@ -131,7 +132,12 @@ export default {
             default: null
         },
         propNationality:{
-            default: null
+            default: function(){ 
+                   return {
+                    nombre: 'Estados Unidos',
+                    flag: 'flag_estadosunidos.jpg'
+                    }
+                }
         }
     },
     watch: {
@@ -147,7 +153,14 @@ export default {
                 //     pickUpPlace: this.selectedPickUpPlace,
                 //     deliveryPlace: this.selectedDeliveryPlace,
                 // }
-                let marca = {MarcaId: this.selectedCarCategory.marcaid, Nombre: this.selectedCarCategory.nombre}
+                let marca = null
+                if(this.selectedCarCategory){
+                    marca = {MarcaId: this.selectedCarCategory.marcaid, Nombre: this.selectedCarCategory.nombre}
+                }
+                else{
+                    marca = {MarcaId: undefined, Nombre: undefined}
+                }
+                console.log(marca)
                 let cliente = {ClienteId: localStorage.getItem('cliente')}
                 let transmissionType = this.selectedTransmissionType.nombre
                 let searchItem = {
@@ -170,6 +183,7 @@ export default {
                         {
                             nombre: item.Vehiculo.Nombre,
                             tipo: 'rent',
+                            id: item.Vehiculo.ProductoId,
                             plazas: item.Vehiculo.CantidadPlazas,
                             descripcion: item.Vehiculo.Descripcion,
                             cancelation: item.Vehiculo.DescripcionCorta,

@@ -139,6 +139,7 @@
                                     }
                                     this.$emit('userLogin', u)
                                     updateHeader(localStorage.getItem('token'))
+                                    this.$eventCartBus.$emit('updateCart')
                                     this.$router.push({name: 'indexLogged'})
                                 }
                             }

@@ -149,6 +149,10 @@
     margin-left: auto;
 }
 
+.img-loading{
+    text-align: center;
+}
+
 .hn-roman{
     font-family: 'Helvetica Neue LT Std-Roman';
 }
@@ -1699,7 +1703,7 @@ button.btn .loading-spinner{
         color: #212f3d;
     }
     .item-provider img{
-        height: 70px;
+        height: 40px;
         width: auto;
     }
     .result-images-carousel{
@@ -1909,4 +1913,78 @@ button.btn .loading-spinner{
         text-align: center;
         height: auto;
         border: none;
+    }
+    .reserve-nav{
+        width: 100%;
+        background-color: #f5f5f5;
+        margin-bottom: 60px;
+    }
+    .reserve-nav-text{
+        position: relative;
+        padding-top: 15px;
+    }
+    .reserve-nav-text .marker{
+        top: 0;
+    }
+    .reserve-title{
+        margin-bottom: 30px;
+    }
+    .reserve-card{
+        display: flex;
+        margin-bottom: 10px;
+    }
+    .reserve-card .img-wrapper{
+        width: 35%;
+        height: 87px;
+    }
+    .reserve-card .img-wrapper img{
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+    .reserve-card .reserve-card-info{
+        width: 65%;
+        position: relative;
+    }
+    .reserve-card .reserve-card-info .reserve-card-item-price{
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+    }
+    .reserve-total-to-pay{
+        display: flex;
+        line-height: 1.2;
+        margin-top: 60px;
+    }
+    .total-to-pay-text{
+        width: 35%;
+        text-align: right;
+        padding-right: 20px;
+    }
+    .verify-step-title{
+        background-color: #f5f5f5;
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
+    }
+    .verify-step-content{
+        border-left: 1px solid #f5f5f5;
+        border-right: 1px solid #f5f5f5;
+        border-bottom: 1px solid #f5f5f5;
+    }
+    .create-order-step{
+        margin-top: 60px;
+        background-color: #f5f5f5;
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
+        padding-right: 180px;
+        margin-bottom: 120px;
+    }
+    .no-content{
+        margin-bottom: 120px;
+    }
+    .fir{
+        margin-top: 30px;
+    }
+    .rrv{
+        margin-bottom: 15px;
     }

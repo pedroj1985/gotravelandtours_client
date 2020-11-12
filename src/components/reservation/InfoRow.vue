@@ -17,10 +17,10 @@
                     <div class="ir-info-name font14">
                         Nombre(s)
                     </div>
-                    <input type="text" :value="name" @input="$emit('inputName', $event.target.value)" class="ir-input font18" placeholder="Su(s) nombre(s)">
+                    <input :disabled="!editable" type="text" :value="name" @input="$emit('inputName', $event.target.value)" class="ir-input font18" placeholder="Su(s) nombre(s)">
                 </div>
             </div>
-            <div class="input-right flex-wrapper ir-text-input">
+            <div class="input-right flex-wrapper ir-text-input" v-if="!onlyOne">
                 <div class="input-icon font18">
                     <i class="mdi mdi-account"></i>
                 </div>
@@ -28,7 +28,7 @@
                     <div class="ir-info-name font14">
                         Apellidos
                     </div>
-                    <input type="text" :value="lastname" @input="$emit('inputLastname', $event.target.value)" class="ir-input font18" placeholder="Sus apellidos">
+                    <input type="text" :disabled="!editable" :value="lastname" @input="$emit('inputLastname', $event.target.value)" class="ir-input font18" placeholder="Sus apellidos">
                 </div>
             </div>
         </div>
@@ -41,7 +41,16 @@ export default {
             type: String
         },
         lastname: {
-            type: String
+            type: String,
+            default: ''
+        },
+        onlyOne: {
+            type: Boolean,
+            default: false
+        },
+        editable: {
+            type: Boolean,
+            default: true
         }
     }
 }
@@ -79,8 +88,12 @@ export default {
         border: none;
     }
     .ir-input:focus{
-        border-bottom: 1px solid #f5f5f5;
+        /* border-bottom: 1px solid #f5f5f5; */
         outline: none;
+    }
+    .ir-input:disabled{
+        background-color: white;
+        color: #dddddd;
     }
     @media(max-width: 1440px){
         .ir-text-wrapper{

@@ -38,7 +38,7 @@
                     </span>
                     <div class="price antonio-light">{{ styledPrice(item.precio).intPart}}.<sup>{{ styledPrice(item.precio).decimalPart}}</sup> USD</div>
                     <div class="details-btn form-actions">
-                        <button type="submit" class="antonio-regular">Ver detalles</button>
+                        <button type="submit" @click="goDetails(item.id)" class="antonio-regular">Ver detalles</button>
                     </div>
                 </div>
             </div>
@@ -79,6 +79,16 @@ export default {
         }
     },
     methods: {
+        goDetails(id){
+            this.$router.push(
+                {
+                    name: 'rent-detail',
+                    params: {
+                        id: id
+                    }
+                }
+            )
+        },
         hasInsurance(tString){
             let t = tString.split(' ').lenght
             return t>1

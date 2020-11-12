@@ -83,9 +83,23 @@ export function authSearchCars(searchItem){
     })
 }
 
+export function authGetCar(id){
+    let token = localStorage.getItem('token')
+    return HTTP.get('/Vehiculoes/'+id, null, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
 export function authReserve(orden){
     let token = localStorage.getItem('token')
     return HTTP.post('/Ordens', orden, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function authPutReserve(id, orden){
+    let token = localStorage.getItem('token')
+    return HTTP.put('/Ordens/'+id, orden, {
         headers: {Authorization: `Bearer ${token}`}
     })
 }
@@ -112,6 +126,21 @@ export function authGetOrdersCount(searchItem){
     })
 }
 
+export function authGetOrder(id){
+    let token = localStorage.getItem('token')
+    return HTTP.get('/Ordens/'+id, null, {
+        headers: {Authorization: `Bearer ${token}`}
+    })
+}
+
+export function subscribe(email){
+    return HTTP.get('/Usuarios/Mail', null, {
+        params: {
+            email: email
+        }
+    })
+}
+
 export function authSearchCountries(){
     return axios.get('https://restcountries.eu/rest/v2/all?fields=name')
 }
@@ -124,5 +153,6 @@ export function updateHeader(token){
 
 export function closeSession(vueInstance){
     localStorage.clear()
+    vueInstance.$eventCartBus.$emit('updateCart')
     vueInstance.$router.push({name:'index'})
 }

@@ -144,6 +144,7 @@ export default {
                         {
                             nombre: item.Vehiculo.Nombre,
                             tipo: 'rent',
+                            id: item.Vehiculo.ProductoId,
                             plazas: item.Vehiculo.CantidadPlazas,
                             descripcion: item.Vehiculo.Descripcion,
                             cancelation: item.Vehiculo.DescripcionCorta,
