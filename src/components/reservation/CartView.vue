@@ -70,6 +70,7 @@
                 v-for="order in allTypesOrders"
                 :item="order"
                 :key="order.id"
+                @remove="deleteItem"
               ></RentReservationView>
             </div>
           </div>
@@ -138,11 +139,7 @@ import { authReserve } from "../../utils/auth";
 
 export default {
   created() {
-    let lsCart = localStorage.getItem("gttCart");
-    if (lsCart) {
-      this.allTypesOrders = JSON.parse(lsCart);
-      this.calculatePrice(this.allTypesOrders);
-    }
+    this.updateCart();
   },
   components: {
     RentReservationView,
@@ -152,6 +149,18 @@ export default {
   methods: {
     constructSpacedVal(f, s, separator = " ") {
       return `${f}${separator}${s}`;
+    },
+    updateCart() {
+      let lsCart = localStorage.getItem("gttCart");
+      if (lsCart) {
+        this.allTypesOrders = JSON.parse(lsCart);
+        this.calculatePrice(this.allTypesOrders);
+      }
+    },
+    deleteItem(item) {
+      this.$helpers.shoppingCartRemoveOne(item.id);
+      this.updateCart();
+      this.$eventCartBus.$emit("updateCart");
     },
     async reserve() {
       let listaVehiculosOrden = this.getListaVehiculosOrden();
@@ -177,7 +186,6 @@ export default {
         ListaVehiculosOrden: listaVehiculosOrden
       };
       this.fillReserveInfo(orden);
-      console.log(orden);
       try {
         this.isReserving = true;
         let ordenSaveIt = await authReserve(orden);
@@ -190,11 +198,10 @@ export default {
             type: "success"
           }
         );
-        this.$eventCartBus.$emit('updateCart')
+        this.$eventCartBus.$emit("updateCart");
         this.$router.push({ name: "myreservations" });
       } catch (error) {
         this.isReserving = false;
-        console.log(error);
         this.$toasted.show("Ha ocurrido un problema con la orden", {
           type: "error"
         });

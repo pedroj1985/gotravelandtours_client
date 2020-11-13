@@ -1988,3 +1988,14 @@ button.btn .loading-spinner{
     .rrv{
         margin-bottom: 15px;
     }
+    .edit-button{
+        width: auto;
+        height: auto;
+        padding: 10px;
+        line-height: 1;
+        font-size: 24px;
+        border-radius: 5px;
+    }
+    .edit-button:hover{
+        line-height: 1;
+    }

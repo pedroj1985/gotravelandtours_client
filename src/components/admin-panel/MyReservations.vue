@@ -258,7 +258,7 @@ export default {
           name: this.traducir("Closed")
         }
       ],
-      fields: ["númeroOrden", "nombreOrden", "fechaCreación", "estado"],
+      fields: ["númeroOrden", "nombreOrden", "fechaCreación", "fechaInicio", "fechaFin", "estado"],
       items: [],
       filtroNombreOrden: "",
       filtroNumeroOrden: "",

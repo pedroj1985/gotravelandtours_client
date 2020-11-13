@@ -64,6 +64,8 @@
               v-for="order in allTypesOrders"
               :item="order"
               :key="order.id"
+              :can="state == 'Open'"
+              @remove="deleteItem"
             ></RentReservationView>
           </div>
         </div>
@@ -77,7 +79,7 @@
                 v-if="state == 'Open'"
                 type="button"
                 @click="updateEditing"
-                class="gtt-button ml-auto"
+                class="gtt-button edit-button ml-auto"
               >
                 <i class="mdi mdi-pencil"></i>
               </button>
@@ -135,7 +137,8 @@ import {
   authGetImage,
   authSearchMarca,
   authSearchProvider,
-  authPutReserve
+  authPutReserve,
+  authDeleteCarOrder
 } from "../../utils/auth";
 
 import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
@@ -182,6 +185,7 @@ export default {
     return {
       order: null,
       allTypesOrders: [],
+      idsToDelete: [],
       numeroOrden: "",
       priceTotal: 0,
       editing: false,
@@ -292,6 +296,7 @@ export default {
     },
     async reserve() {
       let listaVehiculosOrden = this.getListaVehiculosOrden();
+      console.log(listaVehiculosOrden)
       listaVehiculosOrden.forEach(vo => {
         vo.NombreCliente = this.clientName;
         vo.HoraInicio = this.horaLanding;
@@ -308,9 +313,14 @@ export default {
         );
         this.cleanVO(vo);
       });
-      this.fillReserveInfo(this.order);
+      this.fillReserveInfo(this.order, listaVehiculosOrden);
       console.log(this.order);
       try {
+        for (let i of this.idsToDelete) {
+          if(i.tipo == "rent")
+            await authDeleteCarOrder(i.orderVehiculo.OrdenVehiculoId)
+        }
+        this.idsToDelete = []
         this.isReserving = true;
         let ordenSaveIt = await authPutReserve(
           this.$route.params.id,
@@ -330,6 +340,14 @@ export default {
         });
       }
     },
+    deleteItem(i){
+      this.allTypesOrders = this.allTypesOrders.filter( item=>{
+        return item.id != i.id
+      })
+      this.calculatePrice(this.allTypesOrders)
+      this.idsToDelete.push(i)
+      this.somethingChanged = true
+    },
     findDateInterval() {
       let startDates = [];
       let endDates = [];
@@ -344,7 +362,7 @@ export default {
         max: this.lodash.max(endDates)
       };
     },
-    fillReserveInfo(orden) {
+    fillReserveInfo(orden, lvo = [], lao = [], lalo = [], lto = []) {
       let dateInterval = this.findDateInterval();
 
       orden.NombreClienteFinal = this.clientName;
@@ -355,9 +373,14 @@ export default {
       orden.CantidadInfante = 0;
       orden.isActive = true;
       orden.PrecioGeneralOrden = this.priceTotal;
+      orden.ListaVehiculosOrden = lvo
+      orden.ListaActividadOrden = lao
+      orden.ListaAlojamientoOrden = lalo
+      orden.ListaTrasladoOrden = lto
     }
   }
 };
 </script>
 
-<style></style>
+<style scoped>
+</style>
