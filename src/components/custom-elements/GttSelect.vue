@@ -28,6 +28,7 @@
                     </div>
                     <div class="gtt__toggle_arrow"><i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i></div>
                 </div>
+                <slot name="error"></slot>
         </button>
 
         <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">

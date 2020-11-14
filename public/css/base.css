@@ -1999,3 +1999,16 @@ button.btn .loading-spinner{
     .edit-button:hover{
         line-height: 1;
     }
+
+    .gtt-errors{
+        font-size: 12px;
+        color: #ff0000;
+    }
+    .required-field::after{
+        content: ' *';
+        color: #ff0000;
+    }
+    .required-note{
+        font-size: 14px;
+        margin-bottom: 5px;
+    }

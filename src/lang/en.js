@@ -7,5 +7,6 @@ export const en = {
     Closed: 'Closed',
     Accepted: 'Accepted',
     Rejected: 'Rejected',
-    Autorized: 'Authorized'
+    Autorized: 'Authorized',
+    ValidationRequired: 'This field is required'
 }

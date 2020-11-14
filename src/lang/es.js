@@ -7,5 +7,6 @@ export const es = {
     Closed: 'Cerrada',
     Accepted: 'Aceptada',
     Rejected: 'Rechazada',
-    Autorized: 'Autorizada'
+    Autorized: 'Autorizada',
+    ValidationRequired: 'Este campo es requerido'
 }

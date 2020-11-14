@@ -31,127 +31,136 @@
     </GttModalSearch>
     <div class="custom-text-form custom-margin">
       <div class="custom-form">
-        <div class="selects-inline">
-          <gtt-select
-            :openedLodging.sync="pickUpOpened"
-            @click.native="loadPickUpPlaces"
-            :options="pickUpDeliveryOptions"
-            class="cleft"
-            v-model="selectedPickUpPlace"
-          >
-            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-            <span slot="placeholder"> Punto de recogida</span>
-            <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
-            <template v-slot:option="option">
-              {{ option.option.nombre }}
-            </template>
-            <template v-slot:selectedValue="selectedValue">
-              <span id="selectedPickUp">{{
-                overflowText(selectedValue.selectedValue.nombre)
-              }}</span>
-              <b-tooltip target="selectedPickUp" triggers="hover">
-                {{ selectedValue.selectedValue.nombre }}
-              </b-tooltip>
-            </template>
-          </gtt-select>
-          <gtt-select
-            :openedLodging.sync="deliveryOpened"
-            @click.native="loadDeliveryPlaces"
-            :options="pickUpDeliveryOptions"
-            v-model="selectedDeliveryPlace"
-          >
-            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-            <span slot="placeholder"> Punto de entrega</span>
-            <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
-            <template v-slot:option="option">
-              {{ option.option.nombre }}
-            </template>
-            <template v-slot:selectedValue="selectedValue">
-              {{ overflowText(selectedValue.selectedValue.nombre) }}
-            </template>
-          </gtt-select>
-        </div>
-        <gtt-select-date v-model="selectedDates">
-          <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-        </gtt-select-date>
-        <div class="selects-inline">
-          <gtt-select
-            :options="transmissionTypes"
-            v-model="selectedTransmissionType"
-          >
-            <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-            <span slot="placeholder"> Tipo de transmisión</span>
-            <span slot="selectedPlaceholder"
-              >¿Qué tipo de transmisión desea?</span
+          <div class="selects-inline">
+            <gtt-select
+              :openedLodging.sync="pickUpOpened"
+              @click.native="loadPickUpPlaces"
+              :options="pickUpDeliveryOptions"
+              class="cleft"
+              v-model="selectedPickUpPlace"
             >
-            <template v-slot:selectedValue="selectedValue">
-              {{ selectedValue.selectedValue.display }}
-            </template>
-            <template v-slot:option="option">
-              {{ option.option.display }}
-            </template>
-          </gtt-select>
-        </div>
-        <div class="selects-inline">
-          <gtt-select
-            :openedLodging.sync="categoriesOpened"
-            @click.native="loadMarcas"
-            :options="carsCategories"
-            class="cleft"
-            v-model="selectedCarCategory"
-          >
-            <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
-            <span slot="placeholder"> Categoría</span>
-            <span slot="selectedPlaceholder">¿Cómo desea que sea el auto?</span>
-            <template v-slot:option="option">
-              {{ option.option.nombre }}
-            </template>
-            <template v-slot:selectedValue="selectedValue">
-              {{ overflowText(selectedValue.selectedValue.nombre) }}
-            </template>
-          </gtt-select>
-          <gtt-select
-            :options="countries"
-            v-model="selectedNationality"
-            class="select-countries"
-          >
-            <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-            <span slot="placeholder"> Nacionalidad</span>
-            <template v-slot:selectedValue="selectedValue">
-              <img
-                :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
-                :alt="selectedValue.selectedValue.nombre + 'flag'"
-                class="select-flag"
-              />
-              {{ selectedValue.selectedValue.nombre }}
-            </template>
-            <template v-slot:option="option">
-              <img
-                :src="defaultFlagImgPath + option.option.flag"
-                :alt="option.option.nombre + 'flag'"
-                class="select-flag"
-              />
-              {{ option.option.nombre }}
-            </template>
-            <template slot="selectedPlaceholder">
-              <img
-                :src="defaultFlagImgPath + selectedNationality.flag"
-                :alt="selectedNationality.nombre + 'flag'"
-                class="select-flag"
-              />
-              {{ selectedNationality.nombre }}
-            </template>
-          </gtt-select>
-        </div>
-        <div class="form-actions text-right">
-          <button
-            type="submit"
-            @click="activateModal"
-            class="lodging-searchButton antonio-regular"
-          >
-            Buscar
-          </button>
-        </div>
+              <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+              <span slot="placeholder"> Punto de recogida</span>
+              <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
+              <template v-slot:option="option">
+                {{ option.option.nombre }}
+              </template>
+              <template v-slot:selectedValue="selectedValue">
+                <span id="selectedPickUp">{{
+                  overflowText(selectedValue.selectedValue.nombre)
+                }}</span>
+                <b-tooltip target="selectedPickUp" triggers="hover">
+                  {{ selectedValue.selectedValue.nombre }}
+                </b-tooltip>
+              </template>
+            </gtt-select>
+            <gtt-select
+              :openedLodging.sync="deliveryOpened"
+              @click.native="loadDeliveryPlaces"
+              :options="pickUpDeliveryOptions"
+              v-model="selectedDeliveryPlace"
+            >
+              <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+              <span slot="placeholder"> Punto de entrega</span>
+              <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
+              <template v-slot:option="option">
+                {{ option.option.nombre }}
+              </template>
+              <template v-slot:selectedValue="selectedValue">
+                {{ overflowText(selectedValue.selectedValue.nombre) }}
+              </template>
+            </gtt-select>
+          </div>
+          <gtt-select-date v-model="selectedDates">
+            <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+          </gtt-select-date>
+          <div class="selects-inline">
+              <div ref="gttTransmision"
+                   class="cleft"
+                   style="width: 100%;"
+                    >
+                <gtt-select
+                  :options="transmissionTypes"
+                  v-model="selectedTransmissionType"
+                >
+                  <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
+                  <span slot="placeholder" class="required-field"> Tipo de transmisión</span>
+                  <span slot="selectedPlaceholder"
+                    >¿Qué tipo de transmisión desea?</span
+                  >
+                  <template v-slot:selectedValue="selectedValue">
+                    {{ selectedValue.selectedValue.display }}
+                  </template>
+                  <template v-slot:option="option">
+                    {{ option.option.display }}
+                  </template>
+                  <span slot="error" class="gtt-errors">
+                  </span>
+                </gtt-select>
+              </div>
+              <gtt-select
+                :openedLodging.sync="categoriesOpened"
+                @click.native="loadMarcas"
+                :options="carsCategories"
+                v-model="selectedCarCategory"
+              >
+              <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
+              <span slot="placeholder"> Categoría</span>
+              <span slot="selectedPlaceholder">¿Cómo desea que sea el auto?</span>
+              <template v-slot:option="option">
+                {{ option.option.nombre }}
+              </template>
+              <template v-slot:selectedValue="selectedValue">
+                {{ overflowText(selectedValue.selectedValue.nombre) }}
+              </template>
+            </gtt-select>
+          </div>
+          <div class="selects-inline">
+            <gtt-select
+              :options="countries"
+              v-model="selectedNationality"
+              class="select-countries"
+              style="width: 50%; !important;"
+            >
+              <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
+              <span slot="placeholder"> Nacionalidad</span>
+              <template v-slot:selectedValue="selectedValue">
+                <img
+                  :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
+                  :alt="selectedValue.selectedValue.nombre + 'flag'"
+                  class="select-flag"
+                />
+                {{ selectedValue.selectedValue.nombre }}
+              </template>
+              <template v-slot:option="option">
+                <img
+                  :src="defaultFlagImgPath + option.option.flag"
+                  :alt="option.option.nombre + 'flag'"
+                  class="select-flag"
+                />
+                {{ option.option.nombre }}
+              </template>
+              <template slot="selectedPlaceholder">
+                <img
+                  :src="defaultFlagImgPath + selectedNationality.flag"
+                  :alt="selectedNationality.nombre + 'flag'"
+                  class="select-flag"
+                />
+                {{ selectedNationality.nombre }}
+              </template>
+            </gtt-select>
+            <div class="form-actions text-right">
+              <button
+                type="submit"
+                @click="activateModal"
+                class="lodging-searchButton antonio-regular"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+          <p class="required-note"><b>NOTA:</b> Los campos con <span style="color: red;">*</span> son
+                                    requeridos.</p>
       </div>
       <div class="custom-text antonio-light">
         <span class="yellow-words antonio-bold">Renta de autos</span
@@ -177,6 +186,9 @@ import {
   authSearchProvider,
   authSearchMarca
 } from "../../utils/auth";
+import {gttIsValid,
+        renderValid,
+        getValid} from '../../utils/validation'
 
 export default {
   components: {
@@ -187,90 +199,112 @@ export default {
   created() {
     this.searchCountriesPlaceholder();
   },
+  mounted(){
+    this.gttValidate()
+  },
   methods: {
-    async activateModal() {
-      try {
-        this.isModalActive = true;
-        // let otherData = {
-        //     pickUpPlace: this.selectedPickUpPlace,
-        //     deliveryPlace: this.selectedDeliveryPlace,
-        // }
-        let marca = {
-          MarcaId: this.selectedCarCategory.marcaid,
-          Nombre: this.selectedCarCategory.nombre
-        };
-        let cliente = { ClienteId: localStorage.getItem("cliente") };
-        let transmissionType = this.selectedTransmissionType.nombre;
-        let searchItem = {
-          FechaRecogida: this.selectedDates.start,
-          FechaEntrega: this.selectedDates.end,
-          Marca: marca,
-          TipoTransmision: transmissionType,
-          Cliente: cliente
-        };
-        let resultList = [];
-        let { data } = await authSearchCars(searchItem);
-        console.log(data);
-
-        for (let item of data) {
-          let image = await authGetImage(item.Vehiculo.ProductoId);
-          let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-          let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
-          resultList.push({
-            nombre: item.Vehiculo.Nombre,
-            tipo: "rent",
-            id: item.Vehiculo.ProductoId,
-            plazas: item.Vehiculo.CantidadPlazas,
-            descripcion: item.Vehiculo.Descripcion,
-            cancelation: item.Vehiculo.DescripcionCorta,
-            transmision: item.Vehiculo.TipoTransmision,
-            modeloId: item.Vehiculo.ModeloId,
-            marca: marca.data.Nombre,
-            precio: item.PrecioOrden,
-            distribuidor: item.Distribuidor.Nombre,
-            distribuidorId: item.Distribuidor.DistribuidorId,
-            imagen: image.data.ImageContent,
-            provider: provider.data.Nombre,
-            providerImage: provider.data.ImageContent,
-            orderVehiculo: item
-          });
-          this.cleanVO(item);
+    gttValidate(){
+      let validator = [
+        {
+          rules: ['required'],
+          name: 'gttTransmision',
+          value: this.selectedTransmissionType,
+          lang: 'es'
         }
-        this.desactivateModal();
-        let filtersToStorage = {
-          marca: this.selectedCarCategory,
-          transmision: this.selectedTransmissionType,
-          pickUpPlace: this.selectedPickUpPlace,
-          deliveryPlace: this.selectedDeliveryPlace,
-          pickUpDate: this.selectedDates.start,
-          deliveryDate: this.selectedDates.end,
-          nationality: this.selectedNationality
-        };
-        localStorage.setItem(
-          "searchRentFilters",
-          JSON.stringify(filtersToStorage)
-        );
-        this.$router.push({
-          name: "resultRent",
-          key: "notChanged",
-          params: {
-            searchResult: resultList,
-            filters: {
-              marca: this.selectedCarCategory,
-              transmision: this.selectedTransmissionType,
-              pickUpPlace: this.selectedPickUpPlace,
-              deliveryPlace: this.selectedDeliveryPlace,
-              pickUpDate: this.selectedDates.start,
-              deliveryDate: this.selectedDates.end,
-              nationality: this.selectedNationality
-            }
+      ]
+
+      return validator
+    },
+    async activateModal() {
+      let iv = gttIsValid(this.gttValidate())
+      if(getValid(iv))
+      {
+        try {
+          this.isModalActive = true;
+          // let otherData = {
+          //     pickUpPlace: this.selectedPickUpPlace,
+          //     deliveryPlace: this.selectedDeliveryPlace,
+          // }
+          let marca = {
+            MarcaId: this.selectedCarCategory.marcaid,
+            Nombre: this.selectedCarCategory.nombre
+          };
+          let cliente = { ClienteId: localStorage.getItem("cliente") };
+          let transmissionType = this.selectedTransmissionType.nombre;
+          let searchItem = {
+            FechaRecogida: this.selectedDates.start,
+            FechaEntrega: this.selectedDates.end,
+            Marca: marca,
+            TipoTransmision: transmissionType,
+            Cliente: cliente
+          };
+          let resultList = [];
+          let { data } = await authSearchCars(searchItem);
+          console.log(data);
+
+          for (let item of data) {
+            let image = await authGetImage(item.Vehiculo.ProductoId);
+            let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+            let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
+            resultList.push({
+              nombre: item.Vehiculo.Nombre,
+              tipo: "rent",
+              id: item.Vehiculo.ProductoId,
+              plazas: item.Vehiculo.CantidadPlazas,
+              descripcion: item.Vehiculo.Descripcion,
+              cancelation: item.Vehiculo.DescripcionCorta,
+              transmision: item.Vehiculo.TipoTransmision,
+              modeloId: item.Vehiculo.ModeloId,
+              marca: marca.data.Nombre,
+              precio: item.PrecioOrden,
+              distribuidor: item.Distribuidor.Nombre,
+              distribuidorId: item.Distribuidor.DistribuidorId,
+              imagen: image.data.ImageContent,
+              provider: provider.data.Nombre,
+              providerImage: provider.data.ImageContent,
+              orderVehiculo: item
+            });
+            this.cleanVO(item);
           }
-        });
-      } catch (error) {
-        this.desactivateModal();
-        this.$toasted.show("El servicio no está disponible en estos momentos", {
-          type: "error"
-        });
+          this.desactivateModal();
+          let filtersToStorage = {
+            marca: this.selectedCarCategory,
+            transmision: this.selectedTransmissionType,
+            pickUpPlace: this.selectedPickUpPlace,
+            deliveryPlace: this.selectedDeliveryPlace,
+            pickUpDate: this.selectedDates.start,
+            deliveryDate: this.selectedDates.end,
+            nationality: this.selectedNationality
+          };
+          localStorage.setItem(
+            "searchRentFilters",
+            JSON.stringify(filtersToStorage)
+          );
+          this.$router.push({
+            name: "resultRent",
+            key: "notChanged",
+            params: {
+              searchResult: resultList,
+              filters: {
+                marca: this.selectedCarCategory,
+                transmision: this.selectedTransmissionType,
+                pickUpPlace: this.selectedPickUpPlace,
+                deliveryPlace: this.selectedDeliveryPlace,
+                pickUpDate: this.selectedDates.start,
+                deliveryDate: this.selectedDates.end,
+                nationality: this.selectedNationality
+              }
+            }
+          });
+        } catch (error) {
+          this.desactivateModal();
+          this.$toasted.show("El servicio no está disponible en estos momentos", {
+            type: "error"
+          });
+        }
+      }
+      else{
+        renderValid(iv, this)
       }
     },
     cleanVO(order) {
@@ -480,9 +514,17 @@ export default {
   height: 100%;
 }
 
+.custom-form{
+  padding-bottom: 10px;
+}
+
 .custom-text {
   text-align: left;
   margin-left: 30px;
+}
+
+.form-actions{
+  margin-left: auto;
 }
 
 @media (max-width: 1440px) {
