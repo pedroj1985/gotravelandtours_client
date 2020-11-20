@@ -25,6 +25,7 @@
         </div>
     </div>
     <RentResultList :resultList="currentList"
+                    :onlyToSelect="onlyToSelect"
                     :totalDays="calculateNights(toMoment(filter.deliveryDate), toMoment(filter.pickUpDate))">
     </RentResultList>
     <div class="pagination-section">
@@ -75,7 +76,8 @@ export default {
     perPage: {
       default: 1
     },
-    resultTotal: Number
+    resultTotal: Number,
+    onlyToSelect: Boolean
   },
   methods: {
     calculateNights(min, max){

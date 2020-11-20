@@ -1,9 +1,10 @@
-import {helpers} from './helpers' 
+import {helpers} from './helpers'
+import moment from 'moment' 
 
-export function gttIsValid(Validator){
+export function gttIsValid(Validator, vueInstance = null){
   return Validator.map(element => {
         let passesArray = element.rules.map(item => {
-            return passes(item, element.value)
+            return passes(item, element.value, vueInstance)
         })
         let p = passesArray.filter(item => {
             return item.passes == false
@@ -41,13 +42,17 @@ export function getValid(val){
     return !r>0
 }
 
-function passes(ruleName, value){
+function passes(ruleName, value, vueInstance = null){
 
     let result = {}
+    let splittedRuleName = ruleName.split(':')
 
-    switch (ruleName) {
+    switch (splittedRuleName[0]) {
         case 'required':
             result = {ruleName: ruleName, passes: value != null}
+            break;
+        case 'dateAfter':
+            result = { ruleName: splittedRuleName[0], passes: dateAfter(value, splittedRuleName[1], vueInstance)}
             break;
     }
 
@@ -57,9 +62,14 @@ function passes(ruleName, value){
 function translateMessage(ruleName, lang){
 
     let result = ''
-    switch (ruleName) {
+    let splittedRuleName = ruleName.split(':')
+
+    switch (splittedRuleName[0]) {
         case 'required':
             result = helpers.traducir('ValidationRequired', lang)
+            break;
+        case 'dateAfter':
+            result = 'Esta fecha debe ser anterior a la fecha de recogida'
             break;
     }
 
@@ -74,6 +84,15 @@ export function renderValid(Validator, vueInstance){
             div.innerHTML += item+'<br>'
         })
     });
+}
+
+function dateAfter(date, dateToCompare, vueInstance = null){
+    if(vueInstance){
+        let d = vueInstance[dateToCompare]
+        return moment(date) > moment(d)
+    }
+
+    return true
 }
 
 // export function constructValidator(array){

@@ -24,6 +24,9 @@
                     </div>
                     <div class="gtt__toggle_arrow"><i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i></div>
                 </div>
+                <div class="gtt-errors">
+                    <slot name="error"></slot>
+                </div>
         </button>
         <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">
             <span class="arrow" v-if="arrow"></span>
@@ -33,6 +36,7 @@
                     :mode="mode"
                     is-inline
                     locale="es"
+                    :min-date="minDate"
                     :columns="$screens({ default: 1, lg: mode == 'range' ? 2 : 1 })"
                 />
             </div>
@@ -64,6 +68,11 @@ export default {
         mode: {
             type: String,
             default: 'range'
+        },
+        minDate: {
+            default: function(){
+                return moment().format('DD/MM/YYYY')
+            }
         }
     },
     data(){

@@ -46,12 +46,16 @@
                 Fecha de recogida
             </span>
         </gtt-select-date>
-        <gtt-select-date v-model="selectedDeliveryDate" :mode="'single'">
-            <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-            <span slot="placeholder">
-                Fecha de entrega
-            </span>
-        </gtt-select-date>
+        <div ref="gttDeliveryDate">
+            <gtt-select-date v-model="selectedDeliveryDate" :mode="'single'">
+                <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                <span slot="placeholder">
+                    Fecha de entrega
+                </span>
+                <span slot="error">
+                </span>
+            </gtt-select-date>
+        </div>
         <gtt-select :options="transmissionTypes" v-model="selectedTransmissionType">
             <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
             <span slot="placeholder"> Tipo de transmisión</span>
@@ -104,6 +108,9 @@ import {authSearchPuntosInteres,
         authSearchProvider} from '../../utils/auth'
 import GttModalSearch from '../custom-elements/GttModalSearch'
 import { constructDate, calculateNights} from '../../utils/utils'
+import {gttIsValid,
+        renderValid,
+        getValid} from '../../utils/validation'
 import moment from 'moment'
 
 export default {
@@ -145,96 +152,118 @@ export default {
             this.selectedNationality = sn
         }
     },
+    // mounted(){
+    //     this.gttValidate()
+    // },
     methods: {
-        async activateModal(){
-            try{
-                this.isModalActive = true;
-                // let otherData = {
-                //     pickUpPlace: this.selectedPickUpPlace,
-                //     deliveryPlace: this.selectedDeliveryPlace,
-                // }
-                let marca = null
-                if(this.selectedCarCategory){
-                    marca = {MarcaId: this.selectedCarCategory.marcaid, Nombre: this.selectedCarCategory.nombre}
-                }
-                else{
-                    marca = {MarcaId: undefined, Nombre: undefined}
-                }
-                console.log(marca)
-                let cliente = {ClienteId: localStorage.getItem('cliente')}
-                let transmissionType = this.selectedTransmissionType.nombre
-                let searchItem = {
-                    FechaRecogida: this.selectedPickUpDate,
-                    FechaEntrega: this.selectedDeliveryDate,
-                    Marca: marca,
-                    TipoTransmision: transmissionType,
-                    Cliente: cliente
-                }
-                let resultList = []
-                let {data} = await authSearchCars(searchItem)
-                console.log(data)
+    gttValidate(){
+        let validator = [
+            {
+            rules: ['dateAfter:selectedPickUpDate'],
+            name: 'gttDeliveryDate',
+            value: this.selectedDeliveryDate,
+            lang: 'es'
+            }
+        ]
 
-                for(let item of data)
-                {
-                    let image = await authGetImage(item.Vehiculo.ProductoId)
-                    let marca = await authSearchMarca(item.Vehiculo.MarcaId)
-                    let provider = await authSearchProvider(item.Vehiculo.ProveedorId)
-                    resultList.push(
-                        {
-                            nombre: item.Vehiculo.Nombre,
-                            tipo: 'rent',
-                            id: item.Vehiculo.ProductoId,
-                            plazas: item.Vehiculo.CantidadPlazas,
-                            descripcion: item.Vehiculo.Descripcion,
-                            cancelation: item.Vehiculo.DescripcionCorta,
-                            transmision: item.Vehiculo.TipoTransmision,
-                            modeloId: item.Vehiculo.ModeloId,
-                            marca: marca.data.Nombre,
-                            precio: item.PrecioOrden,
-                            distribuidor: item.Distribuidor.Nombre,
-                            distribuidorId: item.Distribuidor.DistribuidorId,
-                            imagen: image.data.ImageContent,
-                            provider: provider.data.Nombre,
-                            providerImage: provider.data.ImageContent,
-                            orderVehiculo: item
-                        }
-                    )
-                    this.cleanVO(item)
-                }
-                this.desactivateModal()
-                let filtersToStorage = {
-                    marca: this.selectedCarCategory,
-                    transmision: this.selectedTransmissionType,
-                    pickUpPlace: this.selectedPickUpPlace,
-                    deliveryPlace: this.selectedDeliveryPlace,
-                    pickUpDate: this.selectedPickUpDate,
-                    deliveryDate: this.selectedDeliveryDate,
-                    nationality: this.selectedNationality
-                }
-                localStorage.setItem('searchRentFilters', JSON.stringify(filtersToStorage))
-                this.$router.push(
+        return validator
+        },
+        async activateModal(){
+            let iv = gttIsValid(this.gttValidate(), this)
+            if(getValid(iv))
+            {
+                try{
+                    this.isModalActive = true;
+                    // let otherData = {
+                    //     pickUpPlace: this.selectedPickUpPlace,
+                    //     deliveryPlace: this.selectedDeliveryPlace,
+                    // }
+                    let marca = null
+                    if(this.selectedCarCategory){
+                        marca = {MarcaId: this.selectedCarCategory.marcaid, Nombre: this.selectedCarCategory.nombre}
+                    }
+                    else{
+                        marca = {MarcaId: undefined, Nombre: undefined}
+                    }
+                    console.log(marca)
+                    let cliente = {ClienteId: localStorage.getItem('cliente')}
+                    let transmissionType = this.selectedTransmissionType.nombre
+                    let searchItem = {
+                        FechaRecogida: this.selectedPickUpDate,
+                        FechaEntrega: this.selectedDeliveryDate,
+                        Marca: marca,
+                        TipoTransmision: transmissionType,
+                        Cliente: cliente
+                    }
+                    let resultList = []
+                    let {data} = await authSearchCars(searchItem)
+                    console.log(data)
+
+                    for(let item of data)
                     {
-                        name: 'rentResultHolder',
-                        params: {
-                            searchResult: resultList,
-                            filters: {
-                                marca: this.selectedCarCategory,
-                                transmision: this.selectedTransmissionType,
-                                pickUpPlace: this.selectedPickUpPlace,
-                                deliveryPlace: this.selectedDeliveryPlace,
-                                pickUpDate: this.selectedPickUpDate,
-                                deliveryDate: this.selectedDeliveryDate,
-                                nationality: this.selectedNationality
+                        let image = await authGetImage(item.Vehiculo.ProductoId)
+                        let marca = await authSearchMarca(item.Vehiculo.MarcaId)
+                        let provider = await authSearchProvider(item.Vehiculo.ProveedorId)
+                        resultList.push(
+                            {
+                                nombre: item.Vehiculo.Nombre,
+                                tipo: 'rent',
+                                id: item.Vehiculo.ProductoId,
+                                plazas: item.Vehiculo.CantidadPlazas,
+                                descripcion: item.Vehiculo.Descripcion,
+                                cancelation: item.Vehiculo.DescripcionCorta,
+                                transmision: item.Vehiculo.TipoTransmision,
+                                modeloId: item.Vehiculo.ModeloId,
+                                marca: marca.data.Nombre,
+                                precio: item.PrecioOrden,
+                                distribuidor: item.Distribuidor.Nombre,
+                                distribuidorId: item.Distribuidor.DistribuidorId,
+                                imagen: image.data.ImageContent,
+                                provider: provider.data.Nombre,
+                                providerImage: provider.data.ImageContent,
+                                orderVehiculo: item
+                            }
+                        )
+                        this.cleanVO(item)
+                    }
+                    this.desactivateModal()
+                    let filtersToStorage = {
+                        marca: this.selectedCarCategory,
+                        transmision: this.selectedTransmissionType,
+                        pickUpPlace: this.selectedPickUpPlace,
+                        deliveryPlace: this.selectedDeliveryPlace,
+                        pickUpDate: this.selectedPickUpDate,
+                        deliveryDate: this.selectedDeliveryDate,
+                        nationality: this.selectedNationality
+                    }
+                    localStorage.setItem('searchRentFilters', JSON.stringify(filtersToStorage))
+                    this.$router.push(
+                        {
+                            name: 'rentResultHolder',
+                            params: {
+                                searchResult: resultList,
+                                filters: {
+                                    marca: this.selectedCarCategory,
+                                    transmision: this.selectedTransmissionType,
+                                    pickUpPlace: this.selectedPickUpPlace,
+                                    deliveryPlace: this.selectedDeliveryPlace,
+                                    pickUpDate: this.selectedPickUpDate,
+                                    deliveryDate: this.selectedDeliveryDate,
+                                    nationality: this.selectedNationality
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
+                catch(error){
+                    this.desactivateModal()
+                    this.$toasted.show('El servicio no está disponible en estos momentos' ,{
+                        type: 'error'
+                    })
+                }
             }
-            catch(error){
-                this.desactivateModal()
-                this.$toasted.show('El servicio no está disponible en estos momentos' ,{
-                    type: 'error'
-                })
+            else{
+                renderValid(iv, this)
             }
         },
         cleanVO(order){

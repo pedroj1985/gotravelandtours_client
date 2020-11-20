@@ -1,4 +1,7 @@
 export const es = {
+    yes: 'Si',
+    deleteQuestion: '¿Desea eliminar este elemento?',
+    sameCar: '¿Utilizar el mismo auto?',
     Economico: 'Económico',
     Automatico: 'Automático',
     AutomaticoSinSeguro: 'Automático S/Seguro',
@@ -8,5 +11,6 @@ export const es = {
     Accepted: 'Aceptada',
     Rejected: 'Rechazada',
     Autorized: 'Autorizada',
+    Pending: 'Pendiente',
     ValidationRequired: 'Este campo es requerido'
 }

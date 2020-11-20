@@ -9,10 +9,11 @@ import MyDashboard from './components/admin-panel/MyReservations'
 import RentRouteHolder from './components/result-rent/RentRouteHolder'
 import RentDetail from './components/result-rent/RentDetail'
 import ReservationDetail from './components/reservation/ReservationDetail'
+import RentEditList from './components/reservation/RentEditList'
 
 export const routes = [
     { path: '', component: Index, name: 'index', meta:{guest: true}},
-    { path: '/logged', component: IndexLogged, name: 'indexLogged', meta:{requiresAuth: true}},
+    { path: '/logged', component: IndexLogged, name: 'indexLogged', meta:{requiresAuth: true}, props: true},
     { path: '/lodging', component: ResultLodging, name: 'resultLodging', meta:{requiresAuth: true}, props: true},
     { path: '/cars', 
                 name: 'resultRent', 
@@ -27,12 +28,16 @@ export const routes = [
                 props: true,
             },
     { path: '/rh', component: RentRouteHolder, name: 'rentResultHolder', meta:{requiresAuth: true}, props: true},
-    { path: '/to-reserve', component: CartView, name: 'reservation', meta:{requiresAuth: true}, props: true},
-    { path: '/reservation/detail/:id',
-                 component: ReservationDetail,
-                 name: 'reservation-detail', 
-                 meta:{requiresAuth: true}, 
-                 props: true},
+    { path: '/to-reserve', 
+                         meta:{requiresAuth: true}, 
+                         props: true,
+                        name: 'reservation',
+                        component: CartView, 
+                        },
+    { path: '/rent-edit', meta:{requiresAuth: true},
+                        props: true,
+                        name: 'rent-edit',
+                        component: RentEditList},
     { path: '/admin-panel',
                          component: MyAdminPanel, meta:{requiresAuth: true}, props: true,
                          children: [
@@ -45,6 +50,12 @@ export const routes = [
                                 path: '',
                                 component: MyDashboard,
                                 name: 'mydashboard'
+                            },
+                            {
+                                path: 'reservation/detail/:id',
+                                component: ReservationDetail,
+                                name: 'reservation-detail',
+                                props: true
                             }
                          ]
                         }

@@ -165,10 +165,10 @@ export default {
     }
     .ir-input:disabled{
         background-color: white;
-        color: #dddddd;
+        color: #b3b2b2;
     }
     .ir-input:disabled::placeholder{
-        color: #dddddd;
+        color: #b3b2b2;
     }
     @media(max-width: 1440px){
         .ir-text-wrapper{

@@ -220,6 +220,7 @@ export default {
       if (item.estado === "Rejected") return "r-table-danger";
       if (item.estado === "Open") return "r-table-open";
       if (item.estado === "Closed") return "r-table-close";
+      if (item.estado === "Pending") return "r-table-pending";
     }
   },
   data() {
@@ -256,7 +257,11 @@ export default {
         {
           value: "Closed",
           name: this.traducir("Closed")
-        }
+        },
+        {
+          value: "Pending",
+          name: this.traducir("Pending")
+        },
       ],
       fields: ["númeroOrden", "nombreOrden", "fechaCreación", "fechaInicio", "fechaFin", "estado"],
       items: [],
@@ -330,6 +335,9 @@ export default {
 .r-table-close {
   background: #f5f5f5;
 }
+.r-table-pending {
+  background: #fff6e0;
+}
 .r-table-success .estado {
   color: #307000;
 }
@@ -341,6 +349,9 @@ export default {
 }
 .r-table-close .estado {
   color: #212f3d;
+}
+.r-table-pending .estado {
+  color: #c88d00;
 }
 tbody tr:hover {
   cursor: pointer;

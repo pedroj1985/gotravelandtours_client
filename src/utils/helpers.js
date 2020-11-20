@@ -41,6 +41,18 @@ export const helpers = {
       localStorage.setItem("gttCart", JSON.stringify(tempWithoutElement));
     }
   },
+  // shoppingCartEditOne(id, itemEdited){
+  //   if (localStorage.getItem("gttCart")) {
+  //     let temp = JSON.parse(localStorage.getItem("gttCart"));
+  //     let tempOneToEdit = temp.find( item => {
+  //       return item.id == id
+  //     })
+  //     tempOneToEdit = itemEdited.orderVehiculo
+  //     console.log(tempOneToEdit)
+  //     console.log(temp)
+  //     // localStorage.setItem("gttCart", JSON.stringify(tempWithoutElement));
+  //   }
+  // },
   shoppingCartDeleteAll() {
     localStorage.removeItem("gttCart");
   }

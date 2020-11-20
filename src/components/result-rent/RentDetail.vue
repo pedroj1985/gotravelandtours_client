@@ -1,5 +1,5 @@
 <template>
-  <div id="content" class="custom-padding-top-2-navbar">
+  <div id="content" class="custom-padding-top-2-navbar" style="margin-top: 30px;">
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
       <!-- <Breadcrumb :elementList="breadcrumbList"></Breadcrumb> -->
       <div id="twoColumn">

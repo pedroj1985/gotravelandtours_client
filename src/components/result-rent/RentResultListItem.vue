@@ -37,14 +37,14 @@
                         <template v-else>(seguro no incluido)</template>
                     </span>
                     <div class="price antonio-light">{{ styledPrice(item.precio).intPart}}.<sup>{{ styledPrice(item.precio).decimalPart}}</sup> USD</div>
-                    <div class="details-btn form-actions">
+                    <div class="details-btn form-actions" v-if="!noDetail">
                         <button type="submit" @click="goDetails(item.id)" class="antonio-regular">Ver detalles</button>
                     </div>
                 </div>
             </div>
         </div>
         <div class="list-item-children">
-            <RentResultListRow :child="item">
+            <RentResultListRow :child="item" :onlyToSelect="onlyToSelect" @selectedElementEditRow="emitElement">
             </RentResultListRow>
         </div>
         <!-- <div class="open-close-button" @click="openList">
@@ -65,6 +65,14 @@ export default {
         totalDays: {
             type: Number,
             default: 0
+        },
+        onlyToSelect: {
+            type: Boolean,
+            default: false
+        },
+        noDetail: {
+            type: Boolean,
+            default: false
         }
     },
     data(){
@@ -79,6 +87,9 @@ export default {
         }
     },
     methods: {
+        emitElement(value){
+            this.$emit('selectedElementEditItem', value)
+        },
         goDetails(id){
             this.$router.push(
                 {

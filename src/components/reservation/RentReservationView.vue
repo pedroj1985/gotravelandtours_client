@@ -106,6 +106,13 @@
                             </div> -->
               <div class="item-children-reserve form-actions">
                 <button
+                  type="button"
+                  class="antonio-regular inverse btn-cart"
+                  @click="$emit('edit', item)"
+                >
+                  <i class="mdi mdi-pencil"></i>
+                </button>
+                <button
                   type="submit"
                   class="antonio-regular inverse btn-cart"
                   @click="$emit('remove', item)"

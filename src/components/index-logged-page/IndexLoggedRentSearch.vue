@@ -72,6 +72,7 @@
             </gtt-select>
           </div>
           <gtt-select-date v-model="selectedDates">
+            <span slot="placeholder" class="required-field"> Fecha de entrada y salida</span>
             <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
           </gtt-select-date>
           <div class="selects-inline">
@@ -189,6 +190,7 @@ import {
 import {gttIsValid,
         renderValid,
         getValid} from '../../utils/validation'
+import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 
 export default {
   components: {
@@ -196,6 +198,7 @@ export default {
     GttSelectDate,
     GttModalSearch
   },
+  mixins: [cleanVoMixin],
   created() {
     this.searchCountriesPlaceholder();
   },
@@ -240,11 +243,11 @@ export default {
           };
           let resultList = [];
           let { data } = await authSearchCars(searchItem);
-          console.log(data);
 
           for (let item of data) {
             let image = await authGetImage(item.Vehiculo.ProductoId);
             let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+            console.log(marca)
             let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
             resultList.push({
               nombre: item.Vehiculo.Nombre,
@@ -256,6 +259,7 @@ export default {
               transmision: item.Vehiculo.TipoTransmision,
               modeloId: item.Vehiculo.ModeloId,
               marca: marca.data.Nombre,
+              marcaid: marca.data.MarcaId,
               precio: item.PrecioOrden,
               distribuidor: item.Distribuidor.Nombre,
               distribuidorId: item.Distribuidor.DistribuidorId,
@@ -282,18 +286,8 @@ export default {
           );
           this.$router.push({
             name: "resultRent",
-            key: "notChanged",
             params: {
               searchResult: resultList,
-              filters: {
-                marca: this.selectedCarCategory,
-                transmision: this.selectedTransmissionType,
-                pickUpPlace: this.selectedPickUpPlace,
-                deliveryPlace: this.selectedDeliveryPlace,
-                pickUpDate: this.selectedDates.start,
-                deliveryDate: this.selectedDates.end,
-                nationality: this.selectedNationality
-              }
             }
           });
         } catch (error) {
@@ -305,30 +299,6 @@ export default {
       }
       else{
         renderValid(iv, this)
-      }
-    },
-    cleanVO(order) {
-      order.DistribuidorId = order.Distribuidor.DistribuidorId;
-      order.Distribuidor = {
-        DistribuidorId: order.Distribuidor.DistribuidorId
-      };
-      order.Vehiculo = {
-        ProductoId: order.Vehiculo.ProductoId
-      };
-      order.Sobreprecio = {
-        SobreprecioId: order.Sobreprecio.SobreprecioId
-      };
-      if (this.selectedPickUpPlace) {
-        order.LugarRecogida = {
-          nombre: this.selectedPickUpPlace.nombre,
-          PuntoInteresId: this.selectedPickUpPlace.puntointeresid
-        };
-      }
-      if (this.selectedDeliveryPlace) {
-        order.LugarEntrega = {
-          nombre: this.selectedDeliveryPlace.nombre,
-          PuntoInteresId: this.selectedDeliveryPlace.puntointeresid
-        };
       }
     },
     desactivateModal() {

@@ -1,8 +1,15 @@
 <template>
-  <div id="reserve-cart" class="custom-padding-top">
+  <div id="reserve-cart" class="custom-padding-top-2-navbar">
+    <NavBar2 :menuLinks="menuLinks"></NavBar2>
+    <GttVerificationModal v-if="deleteModal" @closeModal="closeDeleteModal"
+                                             @next="deleteItem(tempItemToDelete.id)"></GttVerificationModal>
+    <component :is="currentModalComponent" 
+                v-if="editModal" 
+                :filterData="currentFilterData"
+                @cancel="closeEditModal"
+                @editedItem="editOrder"></component>
     <div class="reserve-nav custom-padding">
       <div class="reserve-nav-text hn-bdcn font24 to-uppercase">
-        <span class="marker"></span>
         Reserva segura. ¡En solo dos minutos!
       </div>
     </div>
@@ -70,7 +77,8 @@
                 v-for="order in allTypesOrders"
                 :item="order"
                 :key="order.id"
-                @remove="deleteItem"
+                @remove="showDeleteModal"
+                @edit="showEditModal"
               ></RentReservationView>
             </div>
           </div>
@@ -136,15 +144,26 @@ import RentReservationView from "./RentReservationView";
 import InfoRow from "./InfoRow";
 import FlightInfoRow from "./FlightInfoRow";
 import { authReserve } from "../../utils/auth";
+import GttVerificationModal from "../custom-elements/GttVerificationModal"
+import NavBar2 from "../shared/NavBar2"
+import {menuLinks} from "../../menu"
+import GttEditRentModal from "../custom-elements/GttEditRentModal"
+import {transmissionTypes} from "../../utils/utils"
+import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 
 export default {
   created() {
+    this.menuLinks = menuLinks
     this.updateCart();
   },
+  mixins: [cleanVoMixin],
   components: {
     RentReservationView,
     InfoRow,
-    FlightInfoRow
+    FlightInfoRow,
+    GttVerificationModal,
+    NavBar2,
+    GttEditRentModal
   },
   methods: {
     constructSpacedVal(f, s, separator = " ") {
@@ -157,10 +176,12 @@ export default {
         this.calculatePrice(this.allTypesOrders);
       }
     },
-    deleteItem(item) {
-      this.$helpers.shoppingCartRemoveOne(item.id);
+    deleteItem(id) {
+      this.$helpers.shoppingCartRemoveOne(id);
       this.updateCart();
       this.$eventCartBus.$emit("updateCart");
+      this.tempItemToDelete = null
+      this.deleteModal = false
     },
     async reserve() {
       let listaVehiculosOrden = this.getListaVehiculosOrden();
@@ -217,6 +238,7 @@ export default {
         this.clientName,
         this.clienteLastName
       );
+      orden.NombreOrden = this.constructSpacedVal(this.clientName, this.clienteLastName)
       orden.FechaInicio = dateInterval.min;
       orden.FechaFin = dateInterval.max;
       orden.Creador = {
@@ -291,10 +313,73 @@ export default {
     },
     updateNvueloTakeoff(value) {
       this.nvueloTakeoff = value;
+    },
+    closeDeleteModal(){
+      this.deleteModal = false
+      this.tempItemToDelete = null
+    },
+    showDeleteModal(item){
+      this.deleteModal = true
+      this.tempItemToDelete = item
+    },
+    closeEditModal(){
+      this.editModal = false
+      this.currentFilterData = null
+      this.tempItemToEdit = null
+    },
+    showEditModal(item){
+      if(item.tipo == 'rent')
+      {
+        this.currentModalComponent = 'GttEditRentModal'
+        this.currentFilterData = this.constructFilterDataObj(item)
+      }
+      this.editModal = true
+      this.tempItemToEdit = item
+    },
+    constructFilterDataObj(item){
+      if(item.tipo == 'rent'){
+
+        let transmision = transmissionTypes.find(i => {
+          return i.nombre == item.transmision
+        })
+
+        return {
+          propPickUpDate: item.orderVehiculo.FechaRecogida,
+          propDeliveryDate: item.orderVehiculo.FechaEntrega,
+          propPickUpPlace: item.orderVehiculo.LugarRecogida,
+          propDeliveryPlace: item.orderVehiculo.LugarEntrega,
+          propCarCategory: {
+            marcaid: item.marcaid,
+            nombre: item.marca,
+            type: "marca"
+          },
+          propTransmission: transmision,
+          id: item.id,
+          name: item.nombre
+        }  
+      }
+    },
+    editOrder(item){
+      if(item.tipo == 'rent')
+      {
+        this.$helpers.shoppingCartRemoveOne(item.pItemId)
+        this.$helpers.shoppingCartAdd(item.nI)
+        this.updateCart()
+        this.closeEditModal()
+        this.$toasted.show("Elemento editado con éxito", {
+            type: "success"
+        });
+      }
     }
   },
   data() {
     return {
+      deleteModal: false,
+      editModal: false,
+      currentModalComponent: '',
+      currentFilterData: null,
+      tempItemToDelete: null,
+      tempItemToEdit: null,
       allTypesOrders: [],
       priceTotal: 0,
       clientName: "",
@@ -305,7 +390,8 @@ export default {
       horaTakeoff: "",
       aerolineaTakeoff: "",
       nvueloTakeoff: "",
-      isReserving: false
+      isReserving: false,
+      menuLinks: []
     };
   }
 };

@@ -2003,12 +2003,106 @@ button.btn .loading-spinner{
     .gtt-errors{
         font-size: 12px;
         color: #ff0000;
+        padding-top: 2px;
     }
     .required-field::after{
         content: ' *';
+        font-size: 16px;
+        line-height: 1;
         color: #ff0000;
     }
     .required-note{
         font-size: 14px;
         margin-bottom: 5px;
+    }
+    .vue__time-picker input.display-time.disabled, .vue__time-picker input.display-time:disabled {
+        color: #b3b2b2 !important;
+    }
+    .vue__time-picker input.display-time {
+        padding: 0 !important;
+    }
+    .vue__time-picker input.display-time.disabled::placeholder, .vue__time-picker input.display-time:disabled::placeholder {
+        color: #b3b2b2 !important;
+    }
+    .custom-checkbox label{
+        font-size: 16px;
+        line-height: 1.2;
+        font-family: 'Helvetica Neue LT Std-Roman';
+        color: #212f3d;
+    }
+    .c-modal-backdrop{
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
+    }
+
+    .c-modal{
+        position: absolute;
+        left: 50%;
+        -webkit-transform: translate(-70%, 0);
+        top: 29%;
+        background-color: white;
+        width: 39.06vw;
+        height: 350px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 30px;
+        padding-right: 30px;
+        z-index: 9999;
+    }
+    .modal-row{
+        display: flex;
+    }
+
+    .modal-logo{
+        height: 22px;
+    } 
+    .first-column{
+        float: left;
+    }
+    .progression-bar{
+        margin-top: 10px;
+    }
+    .second-column{
+        float: left;
+        padding-left: 60px;
+    }
+    .c-modal .img-container img{
+        height: 120px !important;
+    }
+    .searching-text{
+        font-size: 48px;
+        line-height: 1.2;
+        color: #212f3d;
+    }
+    .text-highlight{
+        color: #bcd01d;
+        text-transform: uppercase;
+    }
+    .c-modal-bottom{
+        position: absolute;
+        bottom: 15px;
+    }
+    .c-modal-bottom .first-column{
+        margin-top: auto;
+    }
+
+    @media(max-width: 1440px)
+    {
+        .c-modal{
+            top: 29%;
+            width: 49.06vw;
+            height: 300px;
+        }
+        .searching-text{
+            font-size: 36px;
+        }
+        .c-modal-bottom .second-column{
+            font-size: 10px;
+        }
     }

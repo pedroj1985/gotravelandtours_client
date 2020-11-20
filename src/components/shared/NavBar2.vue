@@ -4,7 +4,15 @@
             <div class="menu-content">
                 <div v-for="menuLink in menuLinks" :key="menuLink.name" class='menu-item-container'>
                     <span class="marker" :class="{'not-selected': setLinkSelected(menuLink.name)}"></span>
-                    <a href="#content" @click="changeSelected(menuLink.name)" v-scroll-to="'#'+menuLink.id">{{ menuLink.displayName }}</a>
+                    <router-link :to="{name: 'indexLogged', params: {
+                                            idPage: menuLink.id
+                                        }}"
+                                 @click="changeSelected(menuLink.name)"
+                                 v-scroll-to="'#'+menuLink.id"
+                                 >
+                        {{ menuLink.displayName }}
+                    </router-link>
+                    <!-- <a href="#content" @click="changeSelected(menuLink.name)" v-scroll-to="'#'+menuLink.id">{{ menuLink.displayName }}</a> -->
                 </div>
             </div>
         </div>
@@ -41,9 +49,16 @@ export default {
     },
     created(){
         eventBus.$on('componentScrolled', (item) => {
-            console.log(item)
             this.changeSelected(item)
         })
+    },
+    mounted(){
+        let id = this.$route.params.idPage
+        if(id){
+            let elment = document.getElementById(id)
+            console.log(elment)
+            this.$scrollTo(elment)
+        }
     }
 }
 </script>

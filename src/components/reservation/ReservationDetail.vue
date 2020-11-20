@@ -1,8 +1,9 @@
 <template>
   <div
     id="reservation-detail"
-    class="custom-padding-top-2-navbar custom-margin"
   >
+    <GttVerificationModal v-if="deleteModal" @closeModal="closeDeleteModal"
+                                             @next="deleteItem(tempIdToDelete)"></GttVerificationModal>
     <div class="reserve-two-rows row">
       <div class="reserve-left-row col-md-3 col-sm-5">
         <div id="reserve-total-preview" class="pr-30">
@@ -54,9 +55,11 @@
       <div class="reserve-right-row col-md-9 col-sm-7">
         <div class="verify-step">
           <div
-            class="verify-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15"
+            class="verify-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15 flex-wrapper"
           >
             <span class="to-uppercase">Detalles orden </span><span>No.{{ numeroOrden }}</span>
+            <span class="to-uppercase ml-auto font18 state-label"
+                  :class="'state-'+state.toLowerCase()">{{$helpers.traducir(state)}}</span>
           </div>
           <div class="verify-step-content pt-30 pr-15 pl-15 pb-15">
             <RentReservationView
@@ -65,7 +68,7 @@
               :item="order"
               :key="order.id"
               :can="state == 'Open'"
-              @remove="deleteItem"
+              @remove="showDeleteModal"
             ></RentReservationView>
           </div>
         </div>
@@ -115,7 +118,7 @@
                 type="button"
                 class="reserveButton antonio-regular"
               >
-                <template v-if="!isReserving">Editar Orden</template>
+                <template v-if="!isReserving">GUARDAR</template>
                 <b-spinner
                   small
                   class="loading-spinner"
@@ -145,15 +148,18 @@ import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
 import RentReservationView from "./RentReservationView";
 import InfoRow from "./InfoRow";
 import FlightInfoRow from "./FlightInfoRow";
+import GttVerificationModal from '../custom-elements/GttVerificationModal'
 
 export default {
   components: {
     RentReservationView,
     InfoRow,
-    FlightInfoRow
+    FlightInfoRow,
+    GttVerificationModal
   },
   mixins: [reusableMethodsMixin],
   async created() {
+    this.$emit("adminPanelInfo", "reservation-detail");
     let id = this.$route.params.id;
     let { data } = await authGetOrder(id);
 
@@ -183,6 +189,7 @@ export default {
   },
   data() {
     return {
+      deleteModal: false,
       order: null,
       allTypesOrders: [],
       idsToDelete: [],
@@ -198,10 +205,19 @@ export default {
       nvueloTakeoff: "",
       state: "",
       isReserving: false,
-      somethingChanged: false
+      somethingChanged: false,
+      tempIdToDelete: -1
     };
   },
   methods: {
+    showDeleteModal(id){
+      this.deleteModal = true
+      this.tempIdToDelete = id
+    },
+    closeDeleteModal(){
+      this.deleteModal = false
+      this.tempIdToDelete = -1
+    },
     updateEditing() {
       this.editing = true;
       this.somethingChanged = true;
@@ -347,6 +363,10 @@ export default {
       this.calculatePrice(this.allTypesOrders)
       this.idsToDelete.push(i)
       this.somethingChanged = true
+      this.deleteModal = false
+      this.tempIdToDelete = -1
+      console.log(this.idsToDelete)
+      console.log(this.tempIdToDelete)
     },
     findDateInterval() {
       let startDates = [];
@@ -366,6 +386,7 @@ export default {
       let dateInterval = this.findDateInterval();
 
       orden.NombreClienteFinal = this.clientName;
+      orden.NombreOrden = this.clientName
       orden.FechaInicio = dateInterval.min;
       orden.FechaFin = dateInterval.max;
       orden.CantidadAdulto = 1;
@@ -379,8 +400,32 @@ export default {
       orden.ListaTrasladoOrden = lto
     }
   }
-};
+}
 </script>
 
 <style scoped>
+
+.state-label{
+  border-radius: 5px;
+  padding: 5px;
+  color: white;
+}
+
+.state-pending{
+  background: #c88d00;
+}
+.state-open{
+  background: #0000ff;
+}
+.state-confirmed{
+  background: #307000;
+}
+.state-rejected{
+  background: #ff0000;
+}
+.state-closed{
+  background: #212f3d;
+}
+
+
 </style>

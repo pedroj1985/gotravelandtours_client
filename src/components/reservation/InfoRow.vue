@@ -59,6 +59,9 @@ export default {
     .info-row{
         width: 100%;
     }
+    .input-two-rows{
+        width: 100%;
+    }
     .ir-inputs-wrapper{
         display: flex;
         margin-top: 15px;
@@ -86,14 +89,15 @@ export default {
     }
     .ir-input{
         border: none;
+        width: 100%;
     }
     .ir-input:focus{
         /* border-bottom: 1px solid #f5f5f5; */
         outline: none;
     }
     .ir-input:disabled{
-        background-color: white;
-        color: #dddddd;
+        background-color: rgb(255, 255, 255);
+        color: #b3b2b2;
     }
     @media(max-width: 1440px){
         .ir-text-wrapper{

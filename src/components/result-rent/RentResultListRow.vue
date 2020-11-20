@@ -56,20 +56,30 @@
                             </slot>
                         </div> -->
           <div class="item-children-reserve form-actions">
-            <button
-              type="submit"
-              class="antonio-regular inverse btn-cart"
-              @click="addToCartAndNotifyIt"
-            >
-              <i class="mdi mdi-cart"></i>
-            </button>
-            <button
-              type="submit"
-              class="antonio-regular"
-              @click="addToCartAndGoTo"
-            >
-              Reservar
-            </button>
+              <template v-if="!onlyToSelect">
+                <button
+                  type="submit"
+                  class="antonio-regular inverse btn-cart"
+                  @click="addToCartAndNotifyIt"
+                >
+                  <i class="mdi mdi-cart"></i>
+                </button>
+                <button
+                  type="submit"
+                  class="antonio-regular"
+                  @click="addToCartAndGoTo"
+                >
+                  Reservar
+                </button>
+              </template>
+                <button
+                  v-else
+                  type="submit"
+                  class="antonio-regular"
+                  @click="emitElement"
+                >
+                  Seleccionar
+                </button>
           </div>
         </div>
       </div>
@@ -109,7 +119,11 @@ export default {
     };
   },
   props: {
-    child: Object
+    child: Object,
+    onlyToSelect: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     addToCartAndGoTo() {
@@ -127,21 +141,24 @@ export default {
         }
       );
     },
+    emitElement(){
+      this.$emit('selectedElementEditRow', this.child)
+    },
     addToCart() {
-      let vo = this.child.orderVehiculo;
+      // let vo = this.child.orderVehiculo;
 
-      let arrLPRA = new Array();
-      vo.ListaPreciosRentaAutos.forEach(item => {
-        item.PrecioRentaAutos = {
-          PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
-        };
-        arrLPRA.push({
-          PrecioRentaAutos: {
-            PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
-          }
-        });
-      });
-      vo.ListaPreciosRentaAutos = arrLPRA;
+      // let arrLPRA = new Array();
+      // vo.ListaPreciosRentaAutos.forEach(item => {
+      //   item.PrecioRentaAutos = {
+      //     PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
+      //   };
+      //   arrLPRA.push({
+      //     PrecioRentaAutos: {
+      //       PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
+      //     }
+      //   });
+      // });
+      // vo.ListaPreciosRentaAutos = arrLPRA;
 
       this.$helpers.shoppingCartAdd(this.child);
       this.$eventCartBus.$emit("updateCart");

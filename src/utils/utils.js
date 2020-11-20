@@ -23,3 +23,22 @@ export function overflowText(text, l = 30){
             }
             return text
         }
+
+export const transmissionTypes = [
+                {
+                    nombre: 'Automatico',
+                    display: 'Automático'
+                },
+                {
+                    nombre: 'Manual',
+                    display: 'Manual'
+                },
+                {
+                    nombre: 'Automatico S/Seguro',
+                    display: 'Automático S/Seguro'
+                },
+                {
+                    nombre: 'Manual S/Seguro',
+                    display: 'Manual S/Seguro'
+                }
+]

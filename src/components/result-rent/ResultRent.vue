@@ -17,7 +17,16 @@
             </div>
         </div>
         <div class="right-column-list-wrapper">
-            <RentRightColumnList v-if="dataLoaded" :perPage="10" :resultTotal="resultTotal" :list="resultList" class="right-column-content"></RentRightColumnList>
+            <RentRightColumnList :onlyToSelect="onlyToSelect" v-if="dataLoaded" :perPage="10" :resultTotal="resultTotal" :list="resultList" class="right-column-content"></RentRightColumnList>
+            <div 
+                v-else
+                class="text-center">
+                <b-spinner
+                    style="width: 5rem; height: 5rem;"
+                    class="loading-spinner"
+                    label="Text Centered"
+                ></b-spinner>
+            </div>
         </div>
         </div>
   </div>
@@ -29,24 +38,94 @@ import RentForm from './RentForm'
 import Breadcrumb from '../shared/Breadcrumb';
 import RentRightColumnList from './RentRightColumnList'
 import {eventFiltersRent} from '../../main';
+import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { authSearchCars, 
+        authSearchMarca, 
+        authGetImage,
+        authSearchProvider
+        } from '../../utils/auth'
 
 export default {
+    mixins: [cleanVoMixin],
     components: {
         NavBar2,
         RentForm,
         Breadcrumb,
         RentRightColumnList
     },
-    created(){
-        this.resultTotal = this.$route.params['searchResult'].length
-        let f = this.$route.params['filters']
-        eventFiltersRent.$emit('filters',this.$route.params['filters'])
-        this.filter = f
-        let temp = this.$route.params['searchResult']
-        this.createList(temp)
+    async created(){
+        let f = localStorage.getItem('searchRentFilters')
+        if(f){
+            this.filter = JSON.parse(f)
+            eventFiltersRent.$emit('filters',this.filter)
+        }
+        let rt = this.$route.params['searchResult']
+        if(rt){
+            let temp = this.$route.params['searchResult']
+            this.resultTotal = temp.length
+            this.createList(temp)
+        }
+        else{
+            let temp =  await this.searchResult()
+            this.resultTotal = temp.length
+            this.createList(temp)
+        }
+
         
     },
     methods: {
+        async searchResult(){
+            try {
+                let marca = {
+                    MarcaId: this.filter.marca.marcaid,
+                    Nombre: this.filter.marca.nombre
+                };
+                let cliente = { ClienteId: localStorage.getItem("cliente") };
+                let transmissionType = this.filter.transmision.nombre;
+                let searchItem = {
+                    FechaRecogida: this.filter.pickUpDate,
+                    FechaEntrega: this.filter.deliveryDate,
+                    Marca: marca,
+                    TipoTransmision: transmissionType,
+                    Cliente: cliente
+                };
+                let resultList = [];
+                let { data } = await authSearchCars(searchItem);
+
+                for (let item of data) {
+                    let image = await authGetImage(item.Vehiculo.ProductoId);
+                    let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+                    let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
+                    resultList.push({
+                    nombre: item.Vehiculo.Nombre,
+                    tipo: "rent",
+                    id: item.Vehiculo.ProductoId,
+                    plazas: item.Vehiculo.CantidadPlazas,
+                    descripcion: item.Vehiculo.Descripcion,
+                    cancelation: item.Vehiculo.DescripcionCorta,
+                    transmision: item.Vehiculo.TipoTransmision,
+                    modeloId: item.Vehiculo.ModeloId,
+                    marca: marca.data.Nombre,
+                    marcaid: marca.data.MarcaId,
+                    precio: item.PrecioOrden,
+                    distribuidor: item.Distribuidor.Nombre,
+                    distribuidorId: item.Distribuidor.DistribuidorId,
+                    imagen: image.data.ImageContent,
+                    provider: provider.data.Nombre,
+                    providerImage: provider.data.ImageContent,
+                    orderVehiculo: item
+                    });
+                    this.cleanVO(item);
+                }
+                return resultList
+            } catch (error) {
+                this.$toasted.show("El servicio no está disponible en estos momentos", {
+                    type: "error"
+                });
+
+                return []
+            }
+        },
         createList(temp){
             this.resultList = temp
             this.dataLoaded = true
@@ -70,6 +149,7 @@ export default {
     },
     data(){
         return {
+            onlyToSelect: false,
             selectedNationality: Object,
             dataLoaded: false,
             resultList: [],

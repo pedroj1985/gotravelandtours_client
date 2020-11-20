@@ -4,6 +4,7 @@
                 ref="buttonToggle"
                 @click="toggleClicked"
                 :value="updateValue"
+                :disabled="isDisabled"
                 >
                 <div class="gtt__toggle_content">
                     <div class="gtt__toggle_text">
@@ -109,6 +110,10 @@ export default {
         },
         value: {
             default: null
+        },
+        isDisabled: {
+            type: Boolean,
+            default: false
         }
     },
     data(){

@@ -18,7 +18,7 @@
               </div>
           </div>
           <div class="row" id="ap-content-wrapper">
-              <div id="ap-side-menu" class="col-lg-2 col-md-5" style="height: 100%;">
+              <div id="ap-side-menu" class="col-lg-2 col-md-5" style="height: 100%;" v-if="currentChild != 'reservation-detail'">
                   <div class="no-nav-user-photo text-center">
                     <img :src="user.photo" v-if="user.photo" alt="">
                     <i v-else class="mdi mdi-account font48"></i>
@@ -42,7 +42,8 @@
                       </ul>
                   </div>
               </div>
-              <div id="r-right-side" class="col-lg-10 col-md-7">
+              <div id="r-right-side" :class="{'col-lg-12': currentChild == 'reservation-detail',
+                                                                         'col-lg-10 col-md-7': currentChild != 'reservation-detail'}">
                   <router-view :user="user" @adminPanelInfo="updateCurrentChild"></router-view>
               </div>
           </div>
