@@ -2,9 +2,7 @@
  <div class="c-modal-backdrop">
     <div class="c-modal custom-margin">
       <div class="c-modal-body">
-          <slot name="question">
-              <div><i class="mdi mdi-alert" style="color: #ff0000;"></i> {{$helpers.traducir('deleteQuestion')}}</div>
-          </slot>
+          <div><i class="mdi mdi-alert" style="color: #ff0000;"></i> <slot name="question">{{$helpers.traducir('deleteQuestion')}}</slot> </div>
           <div class="form-actions text-right">
               <button type="button" @click="$emit('next')">{{$helpers.traducir('yes')}}</button>
               <button type="button" @click="$emit('closeModal')">No</button>

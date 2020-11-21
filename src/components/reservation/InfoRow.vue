@@ -14,7 +14,7 @@
                     <i class="mdi mdi-account"></i>
                 </div>
                 <div class="input-two-rows">
-                    <div class="ir-info-name font14">
+                    <div class="ir-info-name font14 required-field">
                         Nombre(s)
                     </div>
                     <input :disabled="!editable" type="text" :value="name" @input="$emit('inputName', $event.target.value)" class="ir-input font18" placeholder="Su(s) nombre(s)">
@@ -32,6 +32,7 @@
                 </div>
             </div>
         </div>
+        <slot name="error"></slot>
     </div>
 </template>
 <script>

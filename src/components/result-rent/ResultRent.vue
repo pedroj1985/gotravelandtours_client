@@ -67,6 +67,7 @@ export default {
         }
         else{
             let temp =  await this.searchResult()
+            console.log(temp)
             this.resultTotal = temp.length
             this.createList(temp)
         }
@@ -115,7 +116,7 @@ export default {
                     providerImage: provider.data.ImageContent,
                     orderVehiculo: item
                     });
-                    this.cleanVO(item);
+                    this.cleanVO(item, this.filter.pickUpPlace, this.filter.deliveryPlace);
                 }
                 return resultList
             } catch (error) {

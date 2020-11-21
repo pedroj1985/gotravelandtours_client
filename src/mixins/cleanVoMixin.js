@@ -1,6 +1,6 @@
 export const cleanVoMixin = {
     methods: {
-        cleanVO(order) {
+        cleanVO(order, pickUpPlace = this.selectedPickUpPlace, DeliveryPlace = this.selectedDeliveryPlace) {
             order.DistribuidorId = order.Distribuidor.DistribuidorId;
             order.Distribuidor = {
                 DistribuidorId: order.Distribuidor.DistribuidorId
@@ -11,16 +11,16 @@ export const cleanVoMixin = {
             order.Sobreprecio = {
                 SobreprecioId: order.Sobreprecio.SobreprecioId
             };
-            if (this.selectedPickUpPlace) {
+            if (pickUpPlace) {
                 order.LugarRecogida = {
-                nombre: this.selectedPickUpPlace.nombre,
-                PuntoInteresId: this.selectedPickUpPlace.puntointeresid
+                nombre: pickUpPlace.nombre,
+                PuntoInteresId: pickUpPlace.puntointeresid
                 };
             }
-            if (this.selectedDeliveryPlace) {
+            if (DeliveryPlace) {
                 order.LugarEntrega = {
-                nombre: this.selectedDeliveryPlace.nombre,
-                PuntoInteresId: this.selectedDeliveryPlace.puntointeresid
+                nombre: DeliveryPlace.nombre,
+                PuntoInteresId: DeliveryPlace.puntointeresid
                 };
             }
             let arrLPRA = new Array();

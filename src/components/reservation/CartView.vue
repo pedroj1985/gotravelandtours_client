@@ -89,12 +89,17 @@
               <span><i class="mdi mdi-account"></i> Paso 2: </span
               ><span>Datos del o los pasajero(s) y crear orden</span>
               <div class="create-order-step-content pt-30 pl-30 pb-30">
-                <InfoRow
-                  :name="clientName"
-                  :lastname="clienteLastName"
-                  @inputName="updateName"
-                  @inputLastname="updateLastname"
-                ></InfoRow>
+                <div ref="gttName">
+                  <InfoRow
+                    :name="clientName"
+                    :lastname="clienteLastName"
+                    @inputName="updateName"
+                    @inputLastname="updateLastname"
+                  >
+                    <span slot="error" class="gtt-errors">
+                    </span>
+                  </InfoRow>
+                </div>
                 <FlightInfoRow
                   class="fir"
                   :hora_landing="horaLanding"
@@ -150,6 +155,7 @@ import {menuLinks} from "../../menu"
 import GttEditRentModal from "../custom-elements/GttEditRentModal"
 import {transmissionTypes} from "../../utils/utils"
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
 export default {
   created() {
@@ -166,6 +172,18 @@ export default {
     GttEditRentModal
   },
   methods: {
+    gttValidate() {
+      let validator = [
+        {
+          rules: ["required"],
+          name: "gttName",
+          value: this.clientName,
+          lang: "es"
+        },
+      ];
+
+      return validator;
+    },
     constructSpacedVal(f, s, separator = " ") {
       return `${f}${separator}${s}`;
     },
@@ -184,48 +202,54 @@ export default {
       this.deleteModal = false
     },
     async reserve() {
-      let listaVehiculosOrden = this.getListaVehiculosOrden();
-      listaVehiculosOrden.forEach(vo => {
-        vo.NombreCliente = this.constructSpacedVal(
-          this.clientName,
-          this.clienteLastName
-        );
-        vo.HoraInicio = this.horaLanding;
-        vo.HoraFin = this.horaTakeoff;
-        vo.InformacionLlegada = this.constructSpacedVal(
-          this.aerolineaLanding,
-          this.nvueloLanding,
-          " - "
-        );
-        vo.InformacionSalida = this.constructSpacedVal(
-          this.aerolineaTakeoff,
-          this.nvueloTakeoff,
-          " - "
-        );
-      });
-      let orden = {
-        ListaVehiculosOrden: listaVehiculosOrden
-      };
-      this.fillReserveInfo(orden);
-      try {
-        this.isReserving = true;
-        let ordenSaveIt = await authReserve(orden);
-        console.log(ordenSaveIt);
-        this.$helpers.shoppingCartDeleteAll();
-        this.isReserving = false;
-        this.$toasted.show(
-          "Orden creada con éxito. A espera de la administración para su aceptación.",
-          {
-            type: "success"
-          }
-        );
-        this.$eventCartBus.$emit("updateCart");
-        this.$router.push({ name: "myreservations" });
-      } catch (error) {
-        this.isReserving = false;
-        this.$toasted.show("Ha ocurrido un problema con la orden", {
-          type: "error"
+      let iv = gttIsValid(this.gttValidate(), this);
+      if (getValid(iv)) {
+        let listaVehiculosOrden = this.getListaVehiculosOrden();
+        listaVehiculosOrden.forEach(vo => {
+          vo.NombreCliente = this.constructSpacedVal(
+            this.clientName,
+            this.clienteLastName
+          );
+          vo.HoraInicio = this.horaLanding;
+          vo.HoraFin = this.horaTakeoff;
+          vo.InformacionLlegada = this.constructSpacedVal(
+            this.aerolineaLanding,
+            this.nvueloLanding,
+            " - "
+          );
+          vo.InformacionSalida = this.constructSpacedVal(
+            this.aerolineaTakeoff,
+            this.nvueloTakeoff,
+            " - "
+          );
         });
+        let orden = {
+          ListaVehiculosOrden: listaVehiculosOrden
+        };
+        this.fillReserveInfo(orden);
+        try {
+          this.isReserving = true;
+          console.log(orden)
+          let ordenSaveIt = await authReserve(orden);
+          console.log(ordenSaveIt)
+          this.$helpers.shoppingCartDeleteAll();
+          this.isReserving = false;
+          this.$toasted.show(
+            "Orden creada con éxito. A espera de la administración para su aceptación.",
+            {
+              type: "success"
+            }
+          );
+          this.$eventCartBus.$emit("updateCart");
+          this.$router.push({ name: "myreservations" });
+        } catch (error) {
+          this.isReserving = false;
+          this.$toasted.show("Ha ocurrido un problema con la orden", {
+            type: "error"
+          });
+        }
+      } else {
+        renderValid(iv, this)
       }
     },
     fillReserveInfo(orden) {
@@ -330,6 +354,7 @@ export default {
     showEditModal(item){
       if(item.tipo == 'rent')
       {
+        console.log(item)
         this.currentModalComponent = 'GttEditRentModal'
         this.currentFilterData = this.constructFilterDataObj(item)
       }

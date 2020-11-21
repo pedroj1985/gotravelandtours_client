@@ -71,7 +71,7 @@
               </template>
             </gtt-select>
           </div>
-          <gtt-select-date v-model="selectedDates">
+          <gtt-select-date v-model="selectedDates" :day="true">
             <span slot="placeholder" class="required-field"> Fecha de entrada y salida</span>
             <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
           </gtt-select-date>
@@ -204,6 +204,12 @@ export default {
   },
   mounted(){
     this.gttValidate()
+  },
+  watch: {
+    selectedPickUpPlace: function(val) {
+      this.selectedDeliveryPlace = val
+      console.log(this.selectedDeliveryPlace)
+    }
   },
   methods: {
     gttValidate(){
@@ -423,8 +429,8 @@ export default {
       isModalActive: false,
       defaultFlagImgPath: "img/flags/",
       selectedDates: {
-        start: moment(),
-        end: moment().add(1, "days")
+        start: new Date(moment()),
+        end: new Date(moment().add(1, "days"))
       },
       selectedPickUpPlace: null,
       selectedDeliveryPlace: null,
