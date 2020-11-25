@@ -13,9 +13,17 @@
             </div>
             <div class="custom-line-2">
                 <div class="organizedBySelect">
-                    <GttSelect :options="organizedBy" :twoRows="false">
+                    <GttSelect :options="organizedBy" :twoRows="false" v-model="selectedOrganizeType">
                         <i slot="iconSelectedValue" class="mdi mdi-swap-vertical"></i>
                         <span slot="placeholder">Organizar por</span>
+                        <template v-slot:option="option">
+                          {{ option.option.displayName }}
+                        </template>
+                        <template v-slot:selectedValue="selectedValue">
+                          <span id="selectedPickUp">{{
+                            selectedValue.selectedValue.displayName
+                          }}</span>
+                        </template>
                     </GttSelect>
                 </div>
             </div>
@@ -46,10 +54,25 @@ import RentResultList from './RentResultList';
 import moment from 'moment'
 import GttSelect from '../custom-elements/GttSelect'
 import {calculateNights} from '../../utils/utils'
+import _ from "lodash"
 export default {
   components: {
     RentResultList,
     GttSelect
+  },
+  watch: {
+    selectedOrganizeType: function(val) {
+      if(val.code == 'price_desc'){
+        this.currentList = _.orderBy(this.currentList, function(o){
+          return o.precio
+        },'desc')
+      }
+      else{
+        this.currentList = _.orderBy(this.currentList, function(o){
+          return o.precio
+        },'asc')
+      }
+    }
   },
   created(){
       this.filter = JSON.parse(localStorage.getItem('searchRentFilters'))
@@ -60,9 +83,21 @@ export default {
       currentList: [],
       currentPage: 1,
       filter: Object,
+      selectedOrganizeType: 
+          {
+            displayName: 'Precio (asc)',
+            code: 'price_asc'
+          },
+
       organizedBy: [
-          'Prueba 1',
-          'Prueba 2'
+          {
+            displayName: 'Precio (asc)',
+            code: 'price_asc'
+          },
+          {
+            displayName: 'Precio (desc)',
+            code: 'price_desc'
+          }
       ],
     }
   },

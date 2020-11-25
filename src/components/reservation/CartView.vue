@@ -1,13 +1,18 @@
 <template>
   <div id="reserve-cart" class="custom-padding-top-2-navbar">
     <NavBar2 :menuLinks="menuLinks"></NavBar2>
-    <GttVerificationModal v-if="deleteModal" @closeModal="closeDeleteModal"
-                                             @next="deleteItem(tempItemToDelete.id)"></GttVerificationModal>
-    <component :is="currentModalComponent" 
-                v-if="editModal" 
-                :filterData="currentFilterData"
-                @cancel="closeEditModal"
-                @editedItem="editOrder"></component>
+    <GttVerificationModal
+      v-if="deleteModal"
+      @closeModal="closeDeleteModal"
+      @next="deleteItem(tempItemToDelete.uID)"
+    ></GttVerificationModal>
+    <component
+      :is="currentModalComponent"
+      v-if="editModal"
+      :filterData="currentFilterData"
+      @cancel="closeEditModal"
+      @editedItem="editOrder"
+    ></component>
     <div class="reserve-nav custom-padding">
       <div class="reserve-nav-text hn-bdcn font24 to-uppercase">
         Reserva segura. ¡En solo dos minutos!
@@ -27,7 +32,7 @@
               <div
                 class="reserve-card"
                 v-for="item in allTypesOrders"
-                :key="item.id"
+                :key="item.uID"
               >
                 <div class="img-wrapper">
                   <img :src="item.imagen" :alt="item.nombre" />
@@ -76,7 +81,7 @@
                 class="rrv"
                 v-for="order in allTypesOrders"
                 :item="order"
-                :key="order.id"
+                :key="order.uID"
                 @remove="showDeleteModal"
                 @edit="showEditModal"
               ></RentReservationView>
@@ -96,8 +101,7 @@
                     @inputName="updateName"
                     @inputLastname="updateLastname"
                   >
-                    <span slot="error" class="gtt-errors">
-                    </span>
+                    <span slot="error" class="gtt-errors"> </span>
                   </InfoRow>
                 </div>
                 <FlightInfoRow
@@ -149,17 +153,18 @@ import RentReservationView from "./RentReservationView";
 import InfoRow from "./InfoRow";
 import FlightInfoRow from "./FlightInfoRow";
 import { authReserve } from "../../utils/auth";
-import GttVerificationModal from "../custom-elements/GttVerificationModal"
-import NavBar2 from "../shared/NavBar2"
-import {menuLinks} from "../../menu"
-import GttEditRentModal from "../custom-elements/GttEditRentModal"
-import {transmissionTypes} from "../../utils/utils"
+import GttVerificationModal from "../custom-elements/GttVerificationModal";
+import NavBar2 from "../shared/NavBar2";
+import { menuLinks } from "../../menu";
+import GttEditRentModal from "../custom-elements/GttEditRentModal";
+import { transmissionTypes } from "../../utils/utils";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 
 export default {
   created() {
-    this.menuLinks = menuLinks
+    this.menuLinks = menuLinks;
     this.updateCart();
   },
   mixins: [cleanVoMixin],
@@ -179,7 +184,7 @@ export default {
           name: "gttName",
           value: this.clientName,
           lang: "es"
-        },
+        }
       ];
 
       return validator;
@@ -191,6 +196,7 @@ export default {
       let lsCart = localStorage.getItem("gttCart");
       if (lsCart) {
         this.allTypesOrders = JSON.parse(lsCart);
+        console.log(this.allTypesOrders);
         this.calculatePrice(this.allTypesOrders);
       }
     },
@@ -198,8 +204,8 @@ export default {
       this.$helpers.shoppingCartRemoveOne(id);
       this.updateCart();
       this.$eventCartBus.$emit("updateCart");
-      this.tempItemToDelete = null
-      this.deleteModal = false
+      this.tempItemToDelete = null;
+      this.deleteModal = false;
     },
     async reserve() {
       let iv = gttIsValid(this.gttValidate(), this);
@@ -229,9 +235,16 @@ export default {
         this.fillReserveInfo(orden);
         try {
           this.isReserving = true;
-          console.log(orden)
+          console.log(orden);
           let ordenSaveIt = await authReserve(orden);
-          console.log(ordenSaveIt)
+          let onlyOrdenId = {
+            OrdenId: ordenSaveIt.data.OrdenId
+          };
+          console.log('orden abajo')
+          console.log(onlyOrdenId);
+          // let qbCreated = await authCreateQbEstimated(onlyOrdenId)
+          // console.log('qbCreated abajo')
+          // console.log(qbCreated)
           this.$helpers.shoppingCartDeleteAll();
           this.isReserving = false;
           this.$toasted.show(
@@ -249,7 +262,7 @@ export default {
           });
         }
       } else {
-        renderValid(iv, this)
+        renderValid(iv, this);
       }
     },
     fillReserveInfo(orden) {
@@ -262,7 +275,10 @@ export default {
         this.clientName,
         this.clienteLastName
       );
-      orden.NombreOrden = this.constructSpacedVal(this.clientName, this.clienteLastName)
+      orden.NombreOrden = this.constructSpacedVal(
+        this.clientName,
+        this.clienteLastName
+      );
       orden.FechaInicio = dateInterval.min;
       orden.FechaFin = dateInterval.max;
       orden.Creador = {
@@ -338,35 +354,33 @@ export default {
     updateNvueloTakeoff(value) {
       this.nvueloTakeoff = value;
     },
-    closeDeleteModal(){
-      this.deleteModal = false
-      this.tempItemToDelete = null
+    closeDeleteModal() {
+      this.deleteModal = false;
+      this.tempItemToDelete = null;
     },
-    showDeleteModal(item){
-      this.deleteModal = true
-      this.tempItemToDelete = item
+    showDeleteModal(item) {
+      this.deleteModal = true;
+      this.tempItemToDelete = item;
     },
-    closeEditModal(){
-      this.editModal = false
-      this.currentFilterData = null
-      this.tempItemToEdit = null
+    closeEditModal() {
+      this.editModal = false;
+      this.currentFilterData = null;
+      this.tempItemToEdit = null;
     },
-    showEditModal(item){
-      if(item.tipo == 'rent')
-      {
-        console.log(item)
-        this.currentModalComponent = 'GttEditRentModal'
-        this.currentFilterData = this.constructFilterDataObj(item)
+    showEditModal(item) {
+      if (item.tipo == "rent") {
+        console.log(item);
+        this.currentModalComponent = "GttEditRentModal";
+        this.currentFilterData = this.constructFilterDataObj(item);
       }
-      this.editModal = true
-      this.tempItemToEdit = item
+      this.editModal = true;
+      this.tempItemToEdit = item;
     },
-    constructFilterDataObj(item){
-      if(item.tipo == 'rent'){
-
+    constructFilterDataObj(item) {
+      if (item.tipo == "rent") {
         let transmision = transmissionTypes.find(i => {
-          return i.nombre == item.transmision
-        })
+          return i.nombre == item.transmision;
+        });
 
         return {
           propPickUpDate: item.orderVehiculo.FechaRecogida,
@@ -381,27 +395,82 @@ export default {
           propTransmission: transmision,
           id: item.id,
           name: item.nombre
-        }  
+        };
       }
     },
-    editOrder(item){
-      if(item.tipo == 'rent')
-      {
-        this.$helpers.shoppingCartRemoveOne(item.pItemId)
-        this.$helpers.shoppingCartAdd(item.nI)
-        this.updateCart()
-        this.closeEditModal()
-        this.$toasted.show("Elemento editado con éxito", {
+    editOrder(item) {
+      if (item.tipo == "rent") {
+        if (
+          !verifyDifferentsDatesNoCartReturnBoolean(
+            {
+              FechaRecogida: item.nI.orderVehiculo.FechaRecogida,
+              FechaEntrega: item.nI.orderVehiculo.FechaEntrega
+            },
+            this.allTypesOrders.filter(i => {
+              return i.uID != this.tempItemToEdit.uID;
+            })
+          )
+        ) {
+          this.updateSelectedEdit(item.nI);
+          this.tempItemToEdit.orderVehiculo = item.nI.orderVehiculo;
+          this.revert(this.tempItemToEdit.orderVehiculo);
+          this.calculatePrice(this.allTypesOrders);
+          this.$helpers.shoppingCartUpdate(this.allTypesOrders);
+          this.updateCart();
+          // this.$helpers.shoppingCartRemoveOne(item.pItemId)
+          // this.$helpers.shoppingCartAdd(item.nI)
+          // this.updateCart()
+          this.closeEditModal();
+          this.$toasted.show("Elemento editado con éxito", {
             type: "success"
-        });
+          });
+        } else {
+          this.$toasted.show(
+            "Ya tiene un auto reservado dentro de esa misma fecha",
+            {
+              type: "error"
+            }
+          );
+        }
       }
+    },
+    revert(o) {
+      if (o.LugarRecogida) {
+        o.LugarRecogida = {
+          nombre: o.LugarRecogida.nombre,
+          puntointeresid: o.LugarRecogida.PuntoInteresId
+        };
+      }
+      if (o.LugarEntrega) {
+        o.LugarEntrega = {
+          nombre: o.LugarEntrega.nombre,
+          puntointeresid: o.LugarEntrega.PuntoInteresId
+        };
+      }
+    },
+    updateSelectedEdit(item) {
+      this.tempItemToEdit.nombre = item.nombre;
+      this.tempItemToEdit.cancelation = item.cancelation;
+      this.tempItemToEdit.descripcion = item.descripcion;
+      this.tempItemToEdit.distribuidor = item.distribuidor;
+      this.tempItemToEdit.distribuidorId = item.distribuidorId;
+      this.tempItemToEdit.id = item.id;
+      this.tempItemToEdit.imagen = item.imagen;
+      this.tempItemToEdit.marca = item.marca;
+      this.tempItemToEdit.modeloId = item.modeloId;
+      this.tempItemToEdit.plazas = item.plazas;
+      this.tempItemToEdit.precio = item.precio;
+      this.tempItemToEdit.provider = item.provider;
+      this.tempItemToEdit.providerImage = item.providerImage;
+      this.tempItemToEdit.tipo = item.tipo;
+      this.tempItemToEdit.transmision = item.transmision;
     }
   },
   data() {
     return {
       deleteModal: false,
       editModal: false,
-      currentModalComponent: '',
+      currentModalComponent: "",
       currentFilterData: null,
       tempItemToDelete: null,
       tempItemToEdit: null,

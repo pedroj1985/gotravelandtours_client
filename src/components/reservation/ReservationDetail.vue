@@ -1,19 +1,24 @@
 <template>
-  <div
-    id="reservation-detail"
-  >
-    <GttVerificationModal v-if="deleteModal" @closeModal="closeDeleteModal"
-                                             @next="deleteItem(tempIdToDelete)"></GttVerificationModal>
-    <GttVerificationModal v-if="cancelationModal" @closeModal="closeCancelationModal"
-                                             @next="cancelateOrder()">
-                                                <span slot="question">{{$helpers.traducir('cancelateQuestion')}}</span>
-                                             </GttVerificationModal>
-    <component :is="currentModalComponent" 
-                v-if="editModal" 
-                :filterData="currentFilterData"
-                @cancel="closeEditModal"
-                @editedItem="editOrder"
-                ></component>
+  <div id="reservation-detail">
+    <GttVerificationModal
+      v-if="deleteModal"
+      @closeModal="closeDeleteModal"
+      @next="deleteItem(tempIdToDelete)"
+    ></GttVerificationModal>
+    <GttVerificationModal
+      v-if="cancelationModal"
+      @closeModal="closeCancelationModal"
+      @next="cancelateOrder()"
+    >
+      <span slot="question">{{ $helpers.traducir("cancelateQuestion") }}</span>
+    </GttVerificationModal>
+    <component
+      :is="currentModalComponent"
+      v-if="editModal"
+      :filterData="currentFilterData"
+      @cancel="closeEditModal"
+      @editedItem="editOrder"
+    ></component>
     <div class="reserve-two-rows row">
       <div class="reserve-left-row col-md-3 col-sm-5">
         <div id="reserve-total-preview" class="pr-30">
@@ -67,9 +72,13 @@
           <div
             class="verify-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15 flex-wrapper"
           >
-            <span class="to-uppercase">Detalles orden </span><span>No.{{ numeroOrden }}</span>
-            <span class="to-uppercase ml-auto font18 state-label"
-                  :class="'state-'+state.toLowerCase()">{{$helpers.traducir(state)}}</span>
+            <span class="to-uppercase">Detalles orden </span
+            ><span>No.{{ numeroOrden }}</span>
+            <span
+              class="to-uppercase ml-auto font18 state-label"
+              :class="'state-' + state.toLowerCase()"
+              >{{ $helpers.traducir(state) }}</span
+            >
           </div>
           <div class="verify-step-content pt-30 pr-15 pl-15 pb-15">
             <RentReservationView
@@ -106,8 +115,7 @@
                   :onlyOne="true"
                   :editable="editing"
                 >
-                  <span slot="error" class="gtt-errors">
-                  </span>
+                  <span slot="error" class="gtt-errors"> </span>
                 </InfoRow>
               </div>
               <FlightInfoRow
@@ -143,12 +151,29 @@
                 ></b-spinner>
               </button>
             </div>
-            <div v-if="state=='Open'" id="reservation-cancelation-info" class="hn-roman font14 gtt-first-color pl-30 pb-15">
-              <span>Si cambias de planes, puedes <span class="cancelate-button" @click="showCancelationModal">CANCELAR</span> esta reservación.</span>
+            <div
+              v-if="state == 'Open'"
+              id="reservation-cancelation-info"
+              class="hn-roman font14 gtt-first-color pl-30 pb-15"
+            >
+              <span
+                >Si cambias de planes, puedes
+                <span class="cancelate-button" @click="showCancelationModal"
+                  >CANCELAR</span
+                >
+                esta reservación.</span
+              >
             </div>
-            <div id="reservation-extra-info" class="hn-roman font14 pl-30" style="color: #ff0000;">
-              <span>En caso de que los datos introducidos no sean correctos, 
-                    el proveedor no se hace responsable de la correcta realización del servicio</span>
+            <div
+              id="reservation-extra-info"
+              class="hn-roman font14 pl-30"
+              style="color: #ff0000;"
+            >
+              <span
+                >Si los datos introducidos no son correctos, nuestra agencia no
+                se hace responsable de las consecuencias que esto traiga para la
+                correcta realización del servicio o los servicios</span
+              >
             </div>
           </div>
         </div>
@@ -171,10 +196,11 @@ import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
 import RentReservationView from "./RentReservationView";
 import InfoRow from "./InfoRow";
 import FlightInfoRow from "./FlightInfoRow";
-import GttVerificationModal from '../custom-elements/GttVerificationModal'
+import GttVerificationModal from "../custom-elements/GttVerificationModal";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
-import {transmissionTypes} from "../../utils/utils"
-import GttEditRentModal from "../custom-elements/GttEditRentModal"
+import { transmissionTypes } from "../../utils/utils";
+import GttEditRentModal from "../custom-elements/GttEditRentModal";
+import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 
 export default {
   components: {
@@ -218,7 +244,7 @@ export default {
       cancelationModal: false,
       deleteModal: false,
       editModal: false,
-      currentModalComponent: '',
+      currentModalComponent: "",
       currentFilterData: null,
       tempItemToEdit: null,
       order: null,
@@ -241,73 +267,93 @@ export default {
     };
   },
   methods: {
-    editOrder(item){
-      if(item.tipo == 'rent')
-      {
-        let OrdenId = this.tempItemToEdit.orderVehiculo.OrdenId
-        let OrdenVehiculoId = this.tempItemToEdit.orderVehiculo.OrdenVehiculoId
+    editOrder(item) {
+      if (item.tipo == "rent") {
+        if (
+          !verifyDifferentsDatesNoCartReturnBoolean(
+            {
+              FechaRecogida: item.nI.orderVehiculo.FechaRecogida,
+              FechaEntrega: item.nI.orderVehiculo.FechaEntrega
+            },
+            this.allTypesOrders.filter(i => {
+              return (
+                i.orderVehiculo.OrdenVehiculoId !=
+                this.tempItemToEdit.orderVehiculo.OrdenVehiculoId
+              );
+            })
+          )
+        ) {
+          let OrdenId = this.tempItemToEdit.orderVehiculo.OrdenId;
+          let OrdenVehiculoId = this.tempItemToEdit.orderVehiculo
+            .OrdenVehiculoId;
 
-        this.updateSelectedEdit(item.nI)
-        this.tempItemToEdit.orderVehiculo = item.nI.orderVehiculo
-        this.revert(this.tempItemToEdit.orderVehiculo)
-        this.tempItemToEdit.orderVehiculo.OrdenId = OrdenId
-        this.tempItemToEdit.orderVehiculo.OrdenVehiculoId = OrdenVehiculoId
-        this.calculatePrice(this.allTypesOrders);
-        this.somethingChanged = true
-        this.closeEditModal()
+          this.updateSelectedEdit(item.nI);
+          this.tempItemToEdit.orderVehiculo = item.nI.orderVehiculo;
+          this.revert(this.tempItemToEdit.orderVehiculo);
+          this.tempItemToEdit.orderVehiculo.OrdenId = OrdenId;
+          this.tempItemToEdit.orderVehiculo.OrdenVehiculoId = OrdenVehiculoId;
+          this.calculatePrice(this.allTypesOrders);
+          this.somethingChanged = true;
+          this.closeEditModal();
+        } else {
+          this.$toasted.show(
+            "Ya tiene un auto reservado dentro de esa misma fecha",
+            {
+              type: "error"
+            }
+          );
+        }
       }
     },
-    revert(o){
-      if(o.LugarRecogida){
+    revert(o) {
+      if (o.LugarRecogida) {
         o.LugarRecogida = {
           nombre: o.LugarRecogida.nombre,
           puntointeresid: o.LugarRecogida.PuntoInteresId
-        }
+        };
       }
-      if(o.LugarEntrega){
+      if (o.LugarEntrega) {
         o.LugarEntrega = {
           nombre: o.LugarEntrega.nombre,
           puntointeresid: o.LugarEntrega.PuntoInteresId
-        }
+        };
       }
     },
-    updateSelectedEdit(item){
-      this.tempItemToEdit.nombre = item.nombre
-      this.tempItemToEdit.cancelation = item.cancelation
-      this.tempItemToEdit.descripcion = item.descripcion
-      this.tempItemToEdit.distribuidor = item.distribuidor
-      this.tempItemToEdit.distribuidorId = item.distribuidorId
-      this.tempItemToEdit.id = item.id
-      this.tempItemToEdit.imagen = item.imagen
-      this.tempItemToEdit.marca = item.marca
-      this.tempItemToEdit.modeloId = item.modeloId
-      this.tempItemToEdit.plazas = item.plazas
-      this.tempItemToEdit.precio = item.precio
-      this.tempItemToEdit.provider = item.provider
-      this.tempItemToEdit.providerImage = item.providerImage
-      this.tempItemToEdit.tipo = item.tipo
-      this.tempItemToEdit.transmision = item.transmision
+    updateSelectedEdit(item) {
+      this.tempItemToEdit.nombre = item.nombre;
+      this.tempItemToEdit.cancelation = item.cancelation;
+      this.tempItemToEdit.descripcion = item.descripcion;
+      this.tempItemToEdit.distribuidor = item.distribuidor;
+      this.tempItemToEdit.distribuidorId = item.distribuidorId;
+      this.tempItemToEdit.id = item.id;
+      this.tempItemToEdit.imagen = item.imagen;
+      this.tempItemToEdit.marca = item.marca;
+      this.tempItemToEdit.modeloId = item.modeloId;
+      this.tempItemToEdit.plazas = item.plazas;
+      this.tempItemToEdit.precio = item.precio;
+      this.tempItemToEdit.provider = item.provider;
+      this.tempItemToEdit.providerImage = item.providerImage;
+      this.tempItemToEdit.tipo = item.tipo;
+      this.tempItemToEdit.transmision = item.transmision;
     },
-    closeEditModal(){
-      this.editModal = false
-      this.currentFilterData = null
+    closeEditModal() {
+      this.editModal = false;
+      this.currentFilterData = null;
     },
-    showEditModal(item){
-      if(item.tipo == 'rent')
-      {
-        console.log(item)
-        this.currentFilterData = this.constructFilterDataObj(item)
-        this.currentModalComponent = 'GttEditRentModal'
+    showEditModal(item) {
+      if (item.tipo == "rent") {
+        console.log(item);
+        this.currentFilterData = this.constructFilterDataObj(item);
+        this.currentModalComponent = "GttEditRentModal";
       }
-      this.editModal = true
-      this.tempItemToEdit = item
+      this.editModal = true;
+      this.tempItemToEdit = item;
     },
-    constructFilterDataObj(item){
-      if(item.tipo == 'rent'){
-
+    constructFilterDataObj(item) {
+      if (item.tipo == "rent") {
         let transmision = transmissionTypes.find(i => {
-          return i.nombre == item.transmision
-        })
+          return i.nombre == item.transmision;
+        });
 
         return {
           propPickUpDate: item.orderVehiculo.FechaRecogida,
@@ -323,7 +369,7 @@ export default {
           id: item.id,
           orderId: item.orderVehiculo.OrdenVehiculoId,
           name: item.nombre
-        }  
+        };
       }
     },
     gttValidate() {
@@ -333,28 +379,49 @@ export default {
           name: "gttName",
           value: this.clientName,
           lang: "es"
-        },
+        }
       ];
 
       return validator;
     },
-    cancelateOrder(){
-      console.log(this.order)
-      // this.order.Estado = ''
+    async cancelateOrder() {
+      let listaVehiculosOrden = this.getListaVehiculosOrden();
+
+      listaVehiculosOrden.forEach(vo => {
+        this.cleanVO(vo);
+      });
+      try {
+        this.order.Estado = "Rejected";
+        let ordenSaveIt = await authPutReserve(
+          this.$route.params.id,
+          this.order
+        );
+        console.log(ordenSaveIt);
+        this.$toasted.show("Orden cancelada con éxito.", {
+          type: "success"
+        });
+        this.$router.push({ name: "myreservations" });
+      } catch (error) {
+        this.isReserving = false;
+        console.log(error);
+        this.$toasted.show("Ha ocurrido un problema con la orden", {
+          type: "error"
+        });
+      }
     },
-    showCancelationModal(){
-      this.cancelationModal = true
+    showCancelationModal() {
+      this.cancelationModal = true;
     },
-    showDeleteModal(id){
-      this.deleteModal = true
-      this.tempIdToDelete = id
+    showDeleteModal(id) {
+      this.deleteModal = true;
+      this.tempIdToDelete = id;
     },
-    closeCancelationModal(){
-      this.cancelationModal = false
+    closeCancelationModal() {
+      this.cancelationModal = false;
     },
-    closeDeleteModal(){
-      this.deleteModal = false
-      this.tempIdToDelete = -1
+    closeDeleteModal() {
+      this.deleteModal = false;
+      this.tempIdToDelete = -1;
     },
     updateEditing() {
       this.editing = true;
@@ -409,19 +476,19 @@ export default {
             provider: provider.data.Nombre,
             providerImage: provider.data.ImageContent,
             orderVehiculo: item
-          }
-          console.log(temp)
+          };
+          console.log(temp);
           if (temp.orderVehiculo.LugarRecogida) {
-              temp.orderVehiculo.LugarRecogida = {
-                nombre: temp.orderVehiculo.LugarRecogida.Nombre,
-                puntointeresid: temp.orderVehiculo.LugarRecogida.PuntoInteresId
-              };
+            temp.orderVehiculo.LugarRecogida = {
+              nombre: temp.orderVehiculo.LugarRecogida.Nombre,
+              puntointeresid: temp.orderVehiculo.LugarRecogida.PuntoInteresId
+            };
           }
           if (temp.orderVehiculo.LugarEntrega) {
-              temp.orderVehiculo.LugarEntrega = {
-                nombre: temp.orderVehiculo.LugarEntrega.Nombre,
-                puntointeresid: temp.orderVehiculo.LugarEntrega.PuntoInteresId
-              };
+            temp.orderVehiculo.LugarEntrega = {
+              nombre: temp.orderVehiculo.LugarEntrega.Nombre,
+              puntointeresid: temp.orderVehiculo.LugarEntrega.PuntoInteresId
+            };
           }
 
           this.allTypesOrders.push(temp);
@@ -451,16 +518,16 @@ export default {
         SobreprecioId: order.Sobreprecio.SobreprecioId
       };
       if (order.LugarRecogida) {
-          order.LugarRecogida = {
+        order.LugarRecogida = {
           nombre: order.LugarRecogida.nombre,
           PuntoInteresId: order.LugarRecogida.puntointeresid
-          };
+        };
       }
       if (order.LugarEntrega) {
-          order.LugarEntrega = {
+        order.LugarEntrega = {
           nombre: order.LugarEntrega.nombre,
           PuntoInteresId: order.LugarEntrega.puntointeresid
-          };
+        };
       }
       let arrLPRA = new Array();
       order.ListaPreciosRentaAutos.forEach(item => {
@@ -498,12 +565,12 @@ export default {
         this.fillReserveInfo(this.order, listaVehiculosOrden);
         try {
           for (let i of this.idsToDelete) {
-            if(i.tipo == "rent")
-              await authDeleteCarOrder(i.orderVehiculo.OrdenVehiculoId)
+            if (i.tipo == "rent")
+              await authDeleteCarOrder(i.orderVehiculo.OrdenVehiculoId);
           }
-          this.idsToDelete = []
+          this.idsToDelete = [];
           this.isReserving = true;
-          console.log(this.order)
+          console.log(this.order);
           let ordenSaveIt = await authPutReserve(
             this.$route.params.id,
             this.order
@@ -525,17 +592,17 @@ export default {
         renderValid(iv, this);
       }
     },
-    deleteItem(i){
-      this.allTypesOrders = this.allTypesOrders.filter( item=>{
-        return item.id != i.id
-      })
-      this.calculatePrice(this.allTypesOrders)
-      this.idsToDelete.push(i)
-      this.somethingChanged = true
-      this.deleteModal = false
-      this.tempIdToDelete = -1
-      console.log(this.idsToDelete)
-      console.log(this.tempIdToDelete)
+    deleteItem(i) {
+      this.allTypesOrders = this.allTypesOrders.filter(item => {
+        return item.id != i.id;
+      });
+      this.calculatePrice(this.allTypesOrders);
+      this.idsToDelete.push(i);
+      this.somethingChanged = true;
+      this.deleteModal = false;
+      this.tempIdToDelete = -1;
+      console.log(this.idsToDelete);
+      console.log(this.tempIdToDelete);
     },
     findDateInterval() {
       let startDates = [];
@@ -555,7 +622,7 @@ export default {
       let dateInterval = this.findDateInterval();
 
       orden.NombreClienteFinal = this.clientName;
-      orden.NombreOrden = this.clientName
+      orden.NombreOrden = this.clientName;
       orden.FechaInicio = dateInterval.min;
       orden.FechaFin = dateInterval.max;
       orden.CantidadAdulto = 1;
@@ -563,45 +630,43 @@ export default {
       orden.CantidadInfante = 0;
       orden.isActive = true;
       orden.PrecioGeneralOrden = this.priceTotal;
-      orden.ListaVehiculosOrden = lvo
-      orden.ListaActividadOrden = lao
-      orden.ListaAlojamientoOrden = lalo
-      orden.ListaTrasladoOrden = lto
+      orden.ListaVehiculosOrden = lvo;
+      orden.ListaActividadOrden = lao;
+      orden.ListaAlojamientoOrden = lalo;
+      orden.ListaTrasladoOrden = lto;
     }
   }
-}
+};
 </script>
 
 <style scoped>
-.cancelate-button{
+.cancelate-button {
   text-decoration-line: underline;
   color: #bcd01d;
 }
-.cancelate-button:hover{
+.cancelate-button:hover {
   cursor: pointer;
   color: rgba(188, 208, 29, 0.7);
 }
-.state-label{
+.state-label {
   border-radius: 5px;
   padding: 5px;
   color: white;
 }
 
-.state-pending{
+.state-pending {
   background: #c88d00;
 }
-.state-open{
+.state-open {
   background: #0000ff;
 }
-.state-confirmed{
+.state-confirmed {
   background: #307000;
 }
-.state-rejected{
+.state-rejected {
   background: #ff0000;
 }
-.state-closed{
+.state-closed {
   background: #212f3d;
 }
-
-
 </style>

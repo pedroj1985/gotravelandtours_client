@@ -1,7 +1,7 @@
 <template>
   <div id="result-list">
       <div class="list-item" v-for="item in resultList" :key="item.id">
-          <RentResultListItem :onlyToSelect="onlyToSelect" :item="item" :totalDays="totalDays">
+          <RentResultListItem :onlyToSelect="onlyToSelect" :item="item" :totalDays="totalDays" :noDetail="true">
           </RentResultListItem>
       </div>
     </div>

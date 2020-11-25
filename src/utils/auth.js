@@ -103,6 +103,19 @@ export function authReserve(orden) {
   });
 }
 
+export function authCreateQbEstimated(orden){
+  let token = localStorage.getItem("token");
+  return HTTP.post("/QBIntegracion/createEstimated", orden, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+export function authUpdateQbEstimated(orden){
+  let token = localStorage.getItem("token");
+  return HTTP.post("/QBIntegracion/updateEstimated", orden, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
 export function authPutReserve(id, orden) {
   let token = localStorage.getItem("token");
   return HTTP.put("/Ordens/" + id, orden, {

@@ -86,4 +86,366 @@
     .reserveButton{
         width: auto;
     }
+    .required-field::after{
+        font-size: 14px;
+    }
+    #first-nav{
+        width: 100%;
+        height: 45px;
+        background-color: #212f3d;
+        position: fixed;
+        top: 0;
+        z-index: 10;
+    }
+    #second-nav{
+        position: fixed;
+        top: 45px;
+        z-index: 9;
+        width: 100%;
+        height: 30px;
+        background-color: rgba(188, 208, 29, 95%);
+    }
+
+    .custom-margin{
+        margin-left: 7.03%;
+        margin-right: 7.03%;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    #logo_link{
+        height: 22.5px;
+        margin-top: -10px;
+    }
+
+    .logo{
+        height: 22.5px;
+    }
+
+    #language_selector{
+        font-size: 18px;
+        margin-top: 13.5px;
+    }
+    #language_selector .l_letters{
+        font-size: 12px;
+    }
+
+    .main-nav{
+        font-size: 18px;
+    }
+
+    span.marker{
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #212f3d;
+    }
+
+    #home-banner{
+        margin-top: 45px;
+        height: 542px;
+    }
+
+    .image-review .review{
+        padding-left: 108.75px;
+    }
+
+    .home-banner-title{
+        font-size: 36px;
+        width: 300px;
+    }
+
+    .home-banner-description{
+        font-size: 18px;
+        width: 427.5px;
+    }
+    .home-banner-location{
+        margin-top: 40px;
+    }
+    .home-banner-location i{
+        font-size: 30px;
+    }
+    .home-banner-location .home-location{
+        font-size: 24px;
+    }
+    .home-banner-weather i{
+        font-size: 48px;
+    }
+    .home-banner-weather .home-grade{
+        font-size: 36px;
+    }
+
+    .home-banner-login{
+        top: 15%;
+        width: 367.5px;
+        height: 311.25px;
+    }
+
+    .form-logo img{
+        height: 36px;
+    }
+
+    .form-logo hr{
+        margin-top: 3px;
+        margin-bottom: 6px;
+        width: 213px;
+    }
+
+    .form-inicio-sesion-text{
+        font-size: 18px;
+    }
+
+    .form-password-forgotten{
+        font-size: 12px;
+    }
+    .form-login-container .inputs-container{
+        padding-top: 20px;
+    }
+    .form-login-container .inputs-container input{
+        margin-bottom: 11px;
+        font-size: 12px;
+        height: 30px;
+    }
+    .home-actions{
+        padding-top: 20px;
+    }
+    .home-actions button{
+        height: 30px;
+        text-transform: uppercase;
+        font-size: 14px;
+    }
+
+    .home-actions .home-sign-up{
+        margin-right: 20px;
+    }
+
+    #destinies{
+        scroll-margin-top: 100px;
+        padding-left: 7.5px !important;
+        padding-right: 7.5px !important;
+    }
+
+    .section-title{
+        padding-bottom: 20px;
+        font-size: 18px;
+    }
+
+    .dest{
+        width: 20vw !important;
+        height: 350px !important;
+    }
+
+    .dest img{
+        width: 100%;
+        height: 100%;
+    }
+
+   .name-weather{
+        height: 36px;
+    }
+    .name-weather .name{
+        height: 36px;
+        font-size: 12px;
+    }
+
+    .name-weather .weather{
+        font-size: 10px;
+    }
+
+    .dest .description{
+        height: 110px;
+    }
+    .dest .description:hover{
+        height: 240px;
+    }
+    .dest .description .inner-text{
+        font-size: 10px;
+    }
+    .slick-dots li button::before{
+        font-size: 12px !important;
+    }
+
+    #services-you-like{
+        padding-top: 60px;
+        padding-left: 7.5px !important;
+        padding-right: 7.5px !important;
+    }
+
+    .service-you-like-title{
+        padding-bottom: 15px;
+    }
+    .slick-slide{
+        margin-left: 0;
+    }
+    .service-c{
+        width: 20vw;
+        padding-left: 1px;
+    }
+    .service{
+        width: 20vw !important;
+        height: 417px !important;
+    }
+    .service img{
+        width: 20vw;
+        height: 134.2px;
+    }
+    .service .service-content-container .tag{
+        font-size: 10px;
+        padding-bottom: 18px;
+    }
+    .service .service-content-container .service-desc-title{
+        font-size: 18px;
+        padding-bottom: 5px;
+    }
+
+    .service .service-content-container .service-desc-text{
+        font-size: 10px;
+        padding-bottom: 20px;
+    }
+    .service .service-content-container hr
+    {
+        margin-bottom: 11px;
+    }
+    .service .service-content-container .service-prices .hd{
+        font-size: 10px;
+        padding-bottom: 18px;
+    }
+    .service .service-content-container .service-prices .price{
+        font-size: 18px;
+    }
+
+    #gtt-packages{
+        padding-top: 60px;
+    }
+
+    #gtt-packages .package{
+        width: 20vw;
+        height: 285px;
+        padding: 45px 20px 45px 20px;
+    }
+
+    #gtt-packages .package img{
+        height: 72px;
+        margin-bottom: 30px;
+    }
+
+    #gtt-packages .package .package-name{
+        font-size: 16px;
+        padding-bottom: 18px;
+    }
+    #gtt-packages .package .package-desc{
+        font-size: 12px;
+    }
+
+    #other-services{
+        padding-top: 60px;
+    }
+
+    #other-services .other-services-container{
+        height: 158.4px;
+    }
+    #other-services .other-services-container img{
+        height: 100%;
+    }
+
+    #other-services .other-service-content .other-service-text{
+        font-size: 18px;
+    }
+
+    #who-we-are{
+        padding-top: 60px;
+        margin-bottom: 90px;
+    }
+
+    #who-we-are .first-text, #who-we-are .second-text{
+        font-size: 14px;
+    }
+
+    #who-we-are .first-text{
+        padding-bottom: 18.5px;
+    }
+
+    #who-we-are .second-text{
+        padding-bottom: 46px;
+    }
+
+    #who-we-are .third-text{
+        font-size: 18px;
+        padding-bottom: 18.5px;
+    }
+
+    #who-we-are .sign{
+        font-size: 54px;
+        padding-bottom: 5px;
+    }
+    #who-we-are .text{
+        font-size: 14px;
+    }
+
+    #offers{
+        height: 341px;
+    }
+
+    #offers .offers-info .big-text{
+        font-size: 45px;
+        padding-bottom: 18.5px;
+    }
+
+    #offers .offers-info .small-text{
+        font-size: 12px;
+        padding-bottom: 20px;
+    }
+    #offers .offers-info a{
+        height: 36px;
+        font-size: 12px;
+    }
+
+    #footer1{
+        height: 158.4px;
+    }
+
+    #footer1 .footer1-content{
+        font-size: 12px;
+    }
+
+    #footer1 .footer1-content .question{
+        margin-right: 18.5px;
+    }
+
+    #footer1 .footer1-content input{
+        width: calc(32.03vw - 0.78vw);
+        height: 36px;
+        font-size: 14px;
+    }
+
+    #footer1 .footer1-content button{
+        width: 6.25vw;
+        height: 36px;
+        font-size: 12px;
+    }
+
+    #footer2{
+        height: 161px;
+    }
+
+    #footer2 .footer2-container{
+        padding-top: 60px;
+    }
+
+    #footer2 .left-part{
+        font-size: 8px;
+    }
+
+    #footer2 img{
+        height: 20px;
+        margin-bottom: 18.5px;
+    }
+
+    #footer2 .right-part{
+        padding-top: 20px;
+        font-size: 36px;
+    }
+    #footer2 .right-part a{
+        margin-left: 10px;
+    }
+
 }

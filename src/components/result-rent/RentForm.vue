@@ -255,7 +255,7 @@ export default {
           //     deliveryPlace: this.selectedDeliveryPlace,
           // }
           let marca = null;
-          if (this.selectedCarCategory) {
+          if (this.selectedCarCategory || this.selectedCarCategory != "ALL_ITEMS") {
             marca = {
               MarcaId: this.selectedCarCategory.marcaid,
               Nombre: this.selectedCarCategory.nombre

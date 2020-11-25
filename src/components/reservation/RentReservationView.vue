@@ -283,6 +283,7 @@ export default {
 }
 .item-children-content-info {
   padding-bottom: 30px;
+  /* font-size: 14px; */
 }
 .item-children-content-info p {
   margin-bottom: 5px;
@@ -298,7 +299,7 @@ export default {
 .item-children-name {
   margin-right: auto;
   color: #6d6d6d;
-  font-size: 16px;
+  font-size: 20px;
   width: 20%;
 }
 .item-children-section {

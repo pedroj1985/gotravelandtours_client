@@ -70,7 +70,7 @@ function translateMessage(ruleName, lang) {
       result = helpers.traducir("ValidationRequired", lang);
       break;
     case "dateAfter":
-      result = "Esta fecha debe ser anterior a la fecha de recogida";
+      result = "Esta fecha debe ser posterior a la fecha de recogida";
       break;
   }
 

@@ -1,5 +1,6 @@
 import { es } from "../lang/es";
 import { en } from "../lang/en";
+import {uuid} from "vue-uuid"
 
 export const helpers = {
   traducir: (data, locale = "es") => {
@@ -23,7 +24,12 @@ export const helpers = {
 
     return 0;
   },
+  shoppingCartUpdate(list){
+    this.shoppingCartDeleteAll()
+    localStorage.setItem("gttCart", JSON.stringify(list))
+  },
   shoppingCartAdd(value) {
+    value["uID"] = uuid.v4()
     if (localStorage.getItem("gttCart")) {
       let temp = JSON.parse(localStorage.getItem("gttCart"));
       temp.push(value);
@@ -32,11 +38,11 @@ export const helpers = {
       localStorage.setItem("gttCart", JSON.stringify([value]));
     }
   },
-  shoppingCartRemoveOne(id) {
+  shoppingCartRemoveOne(uID) {
     if (localStorage.getItem("gttCart")) {
       let temp = JSON.parse(localStorage.getItem("gttCart"));
       let tempWithoutElement = temp.filter(item => {
-        return item.id != id;
+        return item.uID != uID;
       });
       localStorage.setItem("gttCart", JSON.stringify(tempWithoutElement));
     }

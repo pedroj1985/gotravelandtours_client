@@ -25,9 +25,12 @@
               </slot>
             </div>
             <div v-if="selectedValue" class="bigDown">
-              <slot name="selectedValue" v-bind:selectedValue="selectedValue">
-                <span :title="selectedValue">{{ selectedValue }}</span>
-              </slot>
+              <template v-if="selectedValue != 'ALL_ITEMS'">
+                <slot name="selectedValue" v-bind:selectedValue="selectedValue">
+                  <span :title="selectedValue">{{ selectedValue }}</span>
+                </slot>
+              </template>
+              <span v-else>{{$helpers.traducir("Todos")}}</span>
             </div>
             <div v-else class="bigDown">
               <slot name="selectedPlaceholder"></slot>
@@ -60,7 +63,7 @@
           placeholder="Buscar"
         />
         <ul class="gtt__list_area">
-          <li v-if="nullable" class="gtt__item" @click="setSelectedValue(null)">
+          <li v-if="nullable" class="gtt__item" @click="setSelectedValue('ALL_ITEMS')">
             {{ $helpers.traducir("Todos") }}
           </li>
           <li

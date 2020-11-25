@@ -60,6 +60,8 @@
                 <button
                   type="submit"
                   class="antonio-regular inverse btn-cart"
+                  :disabled="diffDays"
+                  :class="{disabled: diffDays}"
                   @click="addToCartAndNotifyIt"
                 >
                   <i class="mdi mdi-cart"></i>
@@ -67,6 +69,8 @@
                 <button
                   type="submit"
                   class="antonio-regular"
+                  :disabled="diffDays"
+                  :class="{disabled: diffDays}"
                   @click="addToCartAndGoTo"
                 >
                   Reservar
@@ -108,14 +112,25 @@
 
 <script>
 // import {authReserve} from '../../utils/auth'
+import {eventDiffDays} from '../../main'
+import {verifyDifferentsDates} from '../../utils/utils'
+
 export default {
   created() {
     this.filters = JSON.parse(localStorage.getItem("searchRentFilters"));
+    eventDiffDays.$on('diffDays', (i)=>{
+      this.diffDays = i
+    })
+  },
+  mounted(){
+      verifyDifferentsDates({FechaRecogida: this.child.orderVehiculo.FechaRecogida,
+                              FechaEntrega: this.child.orderVehiculo.FechaEntrega})
   },
   data() {
     return {
       selectedInfo: "",
-      filters: null
+      filters: null,
+      diffDays: false
     };
   },
   props: {
@@ -134,6 +149,8 @@ export default {
     },
     addToCartAndNotifyIt() {
       this.addToCart();
+      verifyDifferentsDates({FechaRecogida: this.child.orderVehiculo.FechaRecogida, 
+                             FechaEntrega: this.child.orderVehiculo.FechaEntrega})
       this.$toasted.show(
         "Elemento agregado con éxito a su carrito de compra.",
         {
@@ -200,7 +217,7 @@ export default {
 }
 .item-children-content-info {
   padding-bottom: 30px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .item-children-content pre {
   font-size: 16px;
@@ -213,7 +230,7 @@ export default {
 .item-children-name {
   margin-right: auto;
   color: #6d6d6d;
-  font-size: 16px;
+  font-size: 20px;
   width: 20%;
 }
 .item-children-section {

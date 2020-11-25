@@ -89,6 +89,7 @@ router.beforeEach((to, from, next) => {
 export const eventBus = new Vue();
 export const eventUserBus = new Vue();
 export const eventFiltersRent = new Vue();
+export const eventDiffDays = new Vue();
 Vue.prototype.$eventCartBus = new Vue()
 
 new Vue({

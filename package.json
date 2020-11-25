@@ -16,6 +16,7 @@
     "core-js": "^3.6.5",
     "lodash": "^4.17.20",
     "moment": "^2.27.0",
+    "uuid": "^8.3.1",
     "v-calendar": "^1.0.0-beta.23",
     "vee-validate": "^2.2.15",
     "vue": "^2.6.12",
@@ -32,6 +33,7 @@
     "vue-slick-carousel": "^1.0.6",
     "vue-slider-component": "^3.2.5",
     "vue-toasted": "^1.1.28",
+    "vue-uuid": "^2.0.2",
     "vue2-timepicker": "^1.1.5"
   },
   "devDependencies": {

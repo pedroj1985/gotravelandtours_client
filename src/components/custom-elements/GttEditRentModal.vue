@@ -315,11 +315,11 @@ export default {
     async searchResultSameCar() {
       try {
         let marca = {
-          MarcaId: this.selectedCarCategory.marcaid,
-          Nombre: this.selectedCarCategory.nombre
+          MarcaId: this.filterData.propCarCategory.marcaid,
+          Nombre: this.filterData.propCarCategory.nombre
         };
         let cliente = { ClienteId: localStorage.getItem("cliente") };
-        let transmissionType = this.selectedTransmissionType.nombre;
+        let transmissionType = this.filterData.propTransmission.nombre;
         let searchItem = {
           FechaRecogida: this.selectedPickUpDate,
           FechaEntrega: this.selectedDeliveryDate,
@@ -402,12 +402,16 @@ export default {
           this.searchResultSameCar();
         } else {
           try {
-            let marca = this.selectedCarCategory
-              ? {
-                  MarcaId: this.selectedCarCategory.marcaid,
-                  Nombre: this.selectedCarCategory.nombre
-                }
-              : null;
+            let marca = null;
+            if(this.selectedCarCategory || this.selectedCarCategory != "ALL_ITEMS")
+            {
+              marca = {
+                MarcaId: this.selectedCarCategory.marcaid,
+                Nombre: this.selectedCarCategory.nombre
+              };
+            } else {
+              marca = { MarcaId: undefined, Nombre: undefined };
+            }
             let cliente = { ClienteId: localStorage.getItem("cliente") };
             let transmissionType = this.selectedTransmissionType.nombre;
             let searchItem = {

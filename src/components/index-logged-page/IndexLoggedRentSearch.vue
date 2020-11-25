@@ -103,6 +103,7 @@
                 :openedLodging.sync="categoriesOpened"
                 @click.native="loadMarcas"
                 :options="carsCategories"
+                :nullable="true"
                 v-model="selectedCarCategory"
               >
               <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
@@ -234,10 +235,16 @@ export default {
           //     pickUpPlace: this.selectedPickUpPlace,
           //     deliveryPlace: this.selectedDeliveryPlace,
           // }
-          let marca = {
-            MarcaId: this.selectedCarCategory.marcaid,
-            Nombre: this.selectedCarCategory.nombre
-          };
+          let marca = null;
+          if(this.selectedCarCategory || this.selectedCarCategory != "ALL_ITEMS")
+          {
+            marca = {
+              MarcaId: this.selectedCarCategory.marcaid,
+              Nombre: this.selectedCarCategory.nombre
+            };
+          } else {
+            marca = { MarcaId: undefined, Nombre: undefined };
+          }
           let cliente = { ClienteId: localStorage.getItem("cliente") };
           let transmissionType = this.selectedTransmissionType.nombre;
           let searchItem = {
