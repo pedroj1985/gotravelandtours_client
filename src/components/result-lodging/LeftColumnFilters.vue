@@ -1,6 +1,12 @@
 <template>
   <div id="left-column-filters">
-      <LodgingForm></LodgingForm>
+      <LodgingForm
+        :propLodgingDestinyValue="filters.Destiny"
+        :propArriveDate="filters.Entrada"
+        :propDepartureDate="filters.Salida"
+        :propRoomLayout="filters.Visitantes"
+        :propNationality="filters.Nacionalidad"
+      ></LodgingForm>
       <OtherFilters></OtherFilters>
   </div>
 </template>
@@ -12,6 +18,11 @@ export default {
     components: {
         LodgingForm,
         OtherFilters
+    },
+    props: {
+        filters: {
+            default: null
+        }
     }
 }
 </script>

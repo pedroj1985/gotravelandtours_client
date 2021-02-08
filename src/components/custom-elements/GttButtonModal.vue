@@ -5,8 +5,7 @@
                 ref="buttonModal"
                 @click="toggleClicked"
                 >
-                <img :src="user.photo" v-if="user.photo" alt="">
-                <i v-else class="mdi mdi-account"></i>
+                <i class="mdi mdi-account"></i>
         </div>
 
         <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">
@@ -29,6 +28,7 @@
 import ClickOutside from 'vue-click-outside';
 import {closeSession} from '../../utils/auth'
 import RegisterModal from '../shared/Register'
+import {eventBus} from "../../main"
 
 export default {
     components:{
@@ -71,7 +71,7 @@ export default {
         },
         closeSession(){
             this.handleFocusOut()
-            this.$emit('userLogin',null)
+            eventBus.$emit('userLogin',null)
             closeSession(this)
         }
     }

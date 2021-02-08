@@ -14,7 +14,7 @@
         <span class="antonio-light">Buscando disponibilidad de </span
         ><span class="antonio-bold text-highlight">alojamientos</span>
         <span class="antonio-light"
-          >en
+          > en
           <span v-if="selectedLodgingDestinyValue">{{
             selectedLodgingDestinyValue.nombre
           }}</span
@@ -126,7 +126,8 @@ import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import moment from "moment";
 import { eventBus } from "../../main";
-import { authSearchRegions, authSearchLodging } from "../../utils/auth";
+import { authSearchRegions, authGetRoomTypes } from "../../utils/auth";
+import {lodgingUtilsMixin} from "../../mixins/lodgingUtilsMixin"
 
 export default {
   components: {
@@ -136,8 +137,13 @@ export default {
     GttSelectDate,
     GttModalSearch
   },
+  mixins: [
+    lodgingUtilsMixin
+  ],
   async created() {
     window.addEventListener("scroll", this.handleScroll);
+    let t = await authGetRoomTypes()
+    this.todosTipo = t.data
   },
   destroyed() {
     window.removeEventListener("scroll", this.handleScroll);
@@ -179,17 +185,51 @@ export default {
         Region: region,
         Cliente: cliente
       };
+      let searchFilters = {
+        Destiny: this.selectedLodgingDestinyValue,
+        Region: { RegionId: this.selectedLodgingDestinyValue.regionid, RegionNombre: this.selectedLodgingDestinyValue.nombre },
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: this.selectedDates.start,
+        Salida: this.selectedDates.end,
+        Visitantes: this.selectedRoomLayout,
+        Nacionalidad: this.selectedNationality
+      }
+      let resultList = []
       try {
-        let { data } = await authSearchLodging(searchItem);
-        this.desactivateModal();
-        this.$router.push({
-          name: "resultLodging",
-          params: {
-            searchResult: data
-          }
-        });
+        if(searchFilters.Visitantes.adults.value >= searchFilters.Visitantes.kids.value){
+            this.roomComb = this.$helpers.roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+        }
+        else{
+            this.roomComb = this.$helpers.roomCombination2kids(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+        }
+        let roomComb2 = this.$helpers.roomCombinationV2(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+        if(this.roomComb != 'ERROR')
+        {
+          resultList = await this.searchResult(searchItem, this.roomComb, roomComb2)
+          localStorage.setItem(
+            "searchLodgingFilters",
+            JSON.stringify(searchFilters)
+          )
+          this.desactivateModal();
+          this.$router.push({
+            name: "resultLodging",
+            params: {
+              searchResult: resultList
+            }
+          });
+        }
+        else{
+          this.desactivateModal();
+          this.$toasted.show("Demasiados niños", {
+            type: "error"
+          });
+        }
       } catch (error) {
         console.log(error);
+        this.desactivateModal();
+        this.$toasted.show("El servicio no está disponible en estos momentos", {
+          type: "error"
+        });
       }
     },
     desactivateModal() {
@@ -255,14 +295,16 @@ export default {
       isModalActive: false,
       lodgingOpened: false,
       defaultFlagImgPath: "img/flags/",
+      todosTipo: [],
       selectedLodgingDestinyValue: "",
-      selectedRoomLayout: {},
+      selectedRoomLayout: null,
       selectedDates: {
         start: moment(),
         end: moment().add(1, "days")
       },
       selectedNationality: null,
       destinies: [],
+      roomComb: null,
       roomLayout: [
         {
           code: "adults",

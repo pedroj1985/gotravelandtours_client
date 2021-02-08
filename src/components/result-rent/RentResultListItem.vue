@@ -14,7 +14,7 @@
                     {{$helpers.traducir(item.marca)}},
                     {{$helpers.traducir($helpers.findTransmissionLocale(item.transmision))}}
                 </div> -->
-        <div class="item-provider hn-bdcn">
+        <div class="item-provider hn-bdcn" :class="{viaCar: item.provider == 'Via Car'}">
           <img :src="item.providerImage" :alt="item.provider" />
         </div>
         <div class="item-info-icon">
@@ -43,12 +43,13 @@
       <div class="list-item-price">
         <div class="price-wrapper">
           <div class="hn-mdcn better-price">Precio para:</div>
-          <span class="hn-roman total-days">{{ totalDays }} día(s) </span>
-          <span class="hn-roman has-insurance">
-            <template v-if="!hasInsurance(item.transmision)"
-              >(seguro incluido)</template
-            >
-            <template v-else>(seguro no incluido)</template>
+          <span class="hn-roman total-days font20">{{ totalDays }} día(s) </span>
+          <span class="hn-roman has-insurance font20">
+            <template v-if="item.seguro">
+              <template
+                >({{item.seguro.toLowerCase()}})</template
+              >
+            </template>
           </span>
           <div class="price antonio-light">
             {{ styledPrice(item.precio).intPart }}.<sup>{{
@@ -84,7 +85,7 @@
 </template>
 
 <script>
-import RentResultListRow from "./RentResultListRow";
+import RentResultListRow from "./RentResultListRow"
 export default {
   components: {
     RentResultListRow
@@ -166,5 +167,5 @@ export default {
       return { intPart: intPart, decimalPart: decimalPart };
     }
   }
-};
+}
 </script>

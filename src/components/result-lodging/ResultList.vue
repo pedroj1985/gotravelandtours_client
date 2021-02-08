@@ -1,7 +1,7 @@
 <template>
   <div id="result-list">
       <div class="list-item" v-for="item in resultList" :key="item.id">
-          <ResultListItem :item="item" :filters="filters"></ResultListItem>
+          <ResultListItem :item="item" :filters="filters" :todosTipo="todosTipo"></ResultListItem>
       </div>
     </div>
 </template>
@@ -13,7 +13,8 @@
         },
         props: {
             resultList: Array,
-            filters: Object
+            filters: Object,
+            todosTipo: Array
         },
     }
 </script>

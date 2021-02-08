@@ -8,7 +8,7 @@
               </div>
               <div id="ap-nav-content">
                   <div id="ap-nav-text" class="general-text-opt antonio-regular font24 gtt-first-color">
-                      Área exclusiva de la agencia <span class="antonio-bold">{{user.name}}</span>, te encuentras en: <span class="admin-display-section antonio-bold" style="color: #bcd01d">{{constructDisplaySection(currentChild)}}</span>
+                      Área exclusiva de la agencia <span class="antonio-bold">{{user.clienteNombre}}</span>, te encuentras en: <span class="admin-display-section antonio-bold" style="color: #bcd01d">{{constructDisplaySection(currentChild)}}</span>
                   </div>
                   <div id="ap-nav-nav" class="general-text-opt hn-bdcn gtt-first-color font18">
                       <a href="#" class="ap-nav">Inicio</a>
@@ -24,7 +24,10 @@
                     <i v-else class="mdi mdi-account font48"></i>
                   </div>
                   <div class="gtt-first-color text-center general-text-opt antonio-light font24">
-                      {{user.name}}
+                      <span class="antonio-bold">{{user.clienteNombre}}</span>
+                  </div>
+                  <div class="gtt-first-color text-center general-text-opt antonio-light font18">
+                      <span>Bienvenido(a) </span><span class="antonio-bold">{{user.name}}</span>
                   </div>
                   <hr class="gtt-first-color gtt-separator-line">
                   <div id="ap-elements-wrapper" class="text-right">
@@ -185,6 +188,9 @@ export default {
         border: 1px solid #6d6d6d;
         border-radius: 10px;
         padding: 10px;
+    }
+    .no-nav-user-photo img{
+        width: 150px;
     }
     ul#ap-elements{
         list-style: none;

@@ -33,4 +33,14 @@ export default {
   padding-left: 4px;
   padding-right: 4px;
 }
+
+@media(max-width: 1440px){
+    .bubble{
+        font-size: 8px;
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-top: .5px;
+        padding-bottom: .5px;
+    }
+}
 </style>

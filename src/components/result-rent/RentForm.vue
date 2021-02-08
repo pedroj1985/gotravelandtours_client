@@ -8,7 +8,7 @@
         <span class="antonio-light">Buscando disponibilidad de </span
         ><span class="antonio-bold text-highlight">autos en renta</span>
         <span class="antonio-light"
-          >en
+          > en
           <span v-if="selectedPickUpPlace">{{
             selectedPickUpPlace.nombre
           }}</span
@@ -87,7 +87,7 @@
       </gtt-select-date>
     </div>
     <div ref="gttTransmision">
-      <gtt-select :options="transmissionTypes" v-model="selectedTransmissionType">
+      <gtt-select :options="transmissionTypes()" v-model="selectedTransmissionType">
         <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
         <span slot="placeholder" class="required-field"> Tipo de transmisión</span>
         <span slot="selectedPlaceholder">¿Qué transmisión desea?</span>
@@ -165,7 +165,7 @@ import {
   authSearchProvider
 } from "../../utils/auth";
 import GttModalSearch from "../custom-elements/GttModalSearch";
-import { constructDate, calculateNights } from "../../utils/utils";
+import { constructDate, calculateNights, transmissionTypes } from "../../utils/utils";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import {cleanVoMixin} from "../../mixins/cleanVoMixin"
 import moment from "moment";
@@ -221,6 +221,9 @@ export default {
   //     this.gttValidate()
   // },
   methods: {
+    transmissionTypes(){
+      return transmissionTypes
+    },
     gttValidate() {
       let validator = [
         {
@@ -263,7 +266,6 @@ export default {
           } else {
             marca = { MarcaId: undefined, Nombre: undefined };
           }
-          console.log(marca);
           let cliente = { ClienteId: localStorage.getItem("cliente") };
           let transmissionType = this.selectedTransmissionType.nombre;
           let searchItem = {
@@ -275,32 +277,33 @@ export default {
           };
           let resultList = [];
           let { data } = await authSearchCars(searchItem);
-          console.log(data);
-
-          for (let item of data) {
-            let image = await authGetImage(item.Vehiculo.ProductoId);
-            let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-            let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
-            resultList.push({
-              nombre: item.Vehiculo.Nombre,
-              tipo: "rent",
-              id: item.Vehiculo.ProductoId,
-              plazas: item.Vehiculo.CantidadPlazas,
-              descripcion: item.Vehiculo.Descripcion,
-              cancelation: item.Vehiculo.DescripcionCorta,
-              transmision: item.Vehiculo.TipoTransmision,
-              modeloId: item.Vehiculo.ModeloId,
-              marca: marca.data.Nombre,
-              precio: item.PrecioOrden,
-              distribuidor: item.Distribuidor.Nombre,
-              distribuidorId: item.Distribuidor.DistribuidorId,
-              imagen: image.data.ImageContent,
-              provider: provider.data.Nombre,
-              providerImage: provider.data.ImageContent,
-              orderVehiculo: item
-            });
-            this.cleanVO(item);
-          }
+          await Promise.all(
+            data.filter(j => {return j.ValorSobreprecioAplicado > 0}).map(async (item) => {
+              let image = await authGetImage(item.Vehiculo.ProductoId);
+              let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+              let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
+              resultList.push({
+                nombre: item.Vehiculo.Nombre,
+                tipo: "rent",
+                id: item.Vehiculo.ProductoId,
+                plazas: item.Vehiculo.CantidadPlazas,
+                descripcion: item.Vehiculo.Descripcion,
+                cancelation: item.Vehiculo.DescripcionCorta,
+                transmision: item.Vehiculo.TipoTransmision,
+                modeloId: item.Vehiculo.ModeloId,
+                seguro: item.Vehiculo.TieneSeguro,
+                marca: marca.data.Nombre,
+                precio: item.PrecioOrden,
+                distribuidor: item.Distribuidor.Nombre,
+                distribuidorId: item.Distribuidor.DistribuidorId,
+                imagen: image.data.ImageContent,
+                provider: provider.data.Nombre,
+                providerImage: provider.data.ImageContent,
+                orderVehiculo: item
+              });
+              this.cleanVO(item);
+            })
+          )
           this.desactivateModal();
           let filtersToStorage = {
             marca: this.selectedCarCategory,
@@ -331,6 +334,7 @@ export default {
             }
           });
         } catch (error) {
+          console.log(error)
           this.desactivateModal();
           this.$toasted.show(
             "El servicio no está disponible en estos momentos",
@@ -418,24 +422,6 @@ export default {
       selectedCarCategory: this.propCarCategory,
       pickUpDeliveryOptions: [],
       carsCategories: [],
-      transmissionTypes: [
-        {
-          nombre: "Automatico",
-          display: "Automático"
-        },
-        {
-          nombre: "Manual",
-          display: "Manual"
-        },
-        {
-          nombre: "Automatico S/Seguro",
-          display: "Automático S/Seguro"
-        },
-        {
-          nombre: "Manual S/Seguro",
-          display: "Manual S/Seguro"
-        }
-      ],
       defaultFlagImgPath: "img/flags/",
       countries: [
         {

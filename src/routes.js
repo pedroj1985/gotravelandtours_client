@@ -7,14 +7,16 @@ import MyAdminPanel from './components/shared/MyAdminPanel'
 import MyReservations from './components/admin-panel/MyReservations'
 import MyDashboard from './components/admin-panel/MyReservations'
 import RentRouteHolder from './components/result-rent/RentRouteHolder'
+import LodgingRouteHolder from './components/result-lodging/LodgingRouteHolder'
 import RentDetail from './components/result-rent/RentDetail'
 import ReservationDetail from './components/reservation/ReservationDetail'
 import RentEditList from './components/reservation/RentEditList'
+import LodgingDetail from './components/result-lodging/LodgingDetail'
 
 export const routes = [
     { path: '', component: Index, name: 'index', meta:{guest: true}},
     { path: '/logged', component: IndexLogged, name: 'indexLogged', meta:{requiresAuth: true}, props: true},
-    { path: '/lodging', component: ResultLodging, name: 'resultLodging', meta:{requiresAuth: true}, props: true},
+    { path: '/lodgings', component: ResultLodging, name: 'resultLodging', meta:{requiresAuth: true}, props: true},
     { path: '/cars', 
                 name: 'resultRent', 
                 component: ResultRent, 
@@ -27,7 +29,14 @@ export const routes = [
                 meta:{requiresAuth: true}, 
                 props: true,
             },
+    {path: '/lodgings/:id',
+                name: 'lodging-detail',
+                component: LodgingDetail,
+                meta:{requiresAuth: true},
+                props: true
+    },
     { path: '/rh', component: RentRouteHolder, name: 'rentResultHolder', meta:{requiresAuth: true}, props: true},
+    { path: '/lh', component: LodgingRouteHolder, name: 'lodgingResultHolder', meta:{requiresAuth: true}, props: true},
     { path: '/to-reserve', 
                          meta:{requiresAuth: true}, 
                          props: true,

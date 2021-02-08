@@ -82,7 +82,7 @@
             <div class="selects-inline">
               <div ref="gttTransmision" class="cleft" style="width: 100%;">
                 <gtt-select
-                  :options="transmissionTypes"
+                  :options="transmissionTypes()"
                   v-model="selectedTransmissionType"
                   :isDisabled="useSameCar"
                 >
@@ -162,6 +162,7 @@ import GttSelectDate from "../custom-elements/GttSelectDate";
 import moment from "moment";
 import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { transmissionTypes } from "../../utils/utils"
 import {
   authSearchPuntosInteres,
   authSearchMarcas,
@@ -173,6 +174,7 @@ import {
 
 import RentEditList from "../reservation/RentEditList";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import _ from "lodash"
 
 export default {
   components: {
@@ -198,24 +200,6 @@ export default {
       selectedCarCategory: this.filterData.propCarCategory,
       pickUpDeliveryOptions: [],
       carsCategories: [],
-      transmissionTypes: [
-        {
-          nombre: "Automatico",
-          display: "Automático"
-        },
-        {
-          nombre: "Manual",
-          display: "Manual"
-        },
-        {
-          nombre: "Automatico S/Seguro",
-          display: "Automático S/Seguro"
-        },
-        {
-          nombre: "Manual S/Seguro",
-          display: "Manual S/Seguro"
-        }
-      ]
     };
   },
   props: {
@@ -241,6 +225,9 @@ export default {
     }
   },
   methods: {
+    transmissionTypes(){
+      return transmissionTypes
+    },
     gttValidate() {
       let validator = [
         {
@@ -403,7 +390,7 @@ export default {
         } else {
           try {
             let marca = null;
-            if(this.selectedCarCategory || this.selectedCarCategory != "ALL_ITEMS")
+            if(this.selectedCarCategory && this.selectedCarCategory != "ALL_ITEMS")
             {
               marca = {
                 MarcaId: this.selectedCarCategory.marcaid,
@@ -424,39 +411,45 @@ export default {
             let resultList = [];
             this.isReserving = true;
             let { data } = await authSearchCars(searchItem);
-
-            for (let item of data) {
-              let image = await authGetImage(item.Vehiculo.ProductoId);
-              let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-              let provider = await authSearchProvider(
-                item.Vehiculo.ProveedorId
-              );
-              resultList.push({
-                orderId: this.filterData.orderId,
-                nombre: item.Vehiculo.Nombre,
-                tipo: "rent",
-                id: item.Vehiculo.ProductoId,
-                plazas: item.Vehiculo.CantidadPlazas,
-                descripcion: item.Vehiculo.Descripcion,
-                cancelation: item.Vehiculo.DescripcionCorta,
-                transmision: item.Vehiculo.TipoTransmision,
-                modeloId: item.Vehiculo.ModeloId,
-                marca: marca.data.Nombre,
-                marcaid: marca.data.MarcaId,
-                precio: item.PrecioOrden,
-                distribuidor: item.Distribuidor.Nombre,
-                distribuidorId: item.Distribuidor.DistribuidorId,
-                imagen: image.data.ImageContent,
-                provider: provider.data.Nombre,
-                providerImage: provider.data.ImageContent,
-                orderVehiculo: item
-              });
-              this.cleanVO(item);
-            }
+            await Promise.all(
+              data.filter((i) => { return i.Sobreprecio}).map( async (item) => {
+                let image = await authGetImage(item.Vehiculo.ProductoId);
+                let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+                let provider = await authSearchProvider(
+                  item.Vehiculo.ProveedorId
+                );
+                resultList.push({
+                  orderId: this.filterData.orderId,
+                  nombre: item.Vehiculo.Nombre,
+                  tipo: "rent",
+                  id: item.Vehiculo.ProductoId,
+                  plazas: item.Vehiculo.CantidadPlazas,
+                  descripcion: item.Vehiculo.Descripcion,
+                  cancelation: item.Vehiculo.DescripcionCorta,
+                  transmision: item.Vehiculo.TipoTransmision,
+                  modeloId: item.Vehiculo.ModeloId,
+                  marca: marca.data.Nombre,
+                  seguro: item.Vehiculo.TieneSeguro,
+                  marcaid: marca.data.MarcaId,
+                  precio: item.PrecioOrden,
+                  distribuidor: item.Distribuidor.Nombre,
+                  distribuidorId: item.Distribuidor.DistribuidorId,
+                  imagen: image.data.ImageContent,
+                  provider: provider.data.Nombre,
+                  providerImage: provider.data.ImageContent,
+                  orderVehiculo: item
+                });
+                this.cleanVO(item);
+                })
+            )
+            resultList = _.orderBy(resultList, function(o){
+              return o.precio
+            },'asc')
             this.isReserving = false;
             this.result = resultList;
             this.showResult = true;
           } catch (error) {
+            console.log(error)
             this.isReserving = false;
             this.$toasted.show(
               "El servicio no está disponible en estos momentos",

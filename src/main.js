@@ -74,7 +74,27 @@ router.beforeEach((to, from, next) => {
               params: { nextUrl: to.fullPath }
           })
       } else {
+        if(localStorage.getItem('fecha_exp')){
+          if((new Date(localStorage.getItem('fecha_exp'))).getTime() > (new Date()).getTime())
+          {
+            next()
+          }
+          else{
+            localStorage.clear();
+            eventCartBus.$emit("updateCart");
+            eventBus.$emit('userLogin', null)
+            Vue.toasted.show(`Sesión expirada`,{
+                type: 'error'
+            })
+            router.push({
+                name: 'index',
+                params: { nextUrl: to.fullPath }
+            })
+          }
+        }
+        else {
           next()
+        }
       }
   }
   else if(localStorage.getItem('token') == null){
@@ -90,7 +110,10 @@ export const eventBus = new Vue();
 export const eventUserBus = new Vue();
 export const eventFiltersRent = new Vue();
 export const eventDiffDays = new Vue();
-Vue.prototype.$eventCartBus = new Vue()
+const eventLodgingReserve = new Vue();
+const eventCartBus = new Vue();
+Vue.prototype.$eventCartBus = eventCartBus
+Vue.prototype.$eventLodgingReserve = eventLodgingReserve
 
 new Vue({
   router,

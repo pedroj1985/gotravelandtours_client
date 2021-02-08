@@ -8,9 +8,9 @@
                 <div class="auth-user-menu" v-if="isUserLogged">
                     <div class="user-name-hello">
                         <div class="hello antonio-light">Buenas tardes</div>
-                        <div class="user-name antonio-bold">{{ user.name }}</div>
+                        <div class="user-name antonio-bold"><span>{{ user.name }}</span><span class="antonio-light"> de </span><span>{{user.clienteNombre}}</span></div>
                     </div>
-                    <GttButtonModal @userLogin="emitUserLogin" :user="user" :classToButton="'user-photo'">
+                    <GttButtonModal :user="user" :classToButton="'user-photo'">
                     </GttButtonModal>
                     <div class="vl"></div>
                     <div class="reservations hn-roman">

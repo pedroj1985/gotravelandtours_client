@@ -33,24 +33,46 @@
               v-for="item in allTypesOrders"
               :key="item.id"
             >
-              <div class="img-wrapper">
-                <img :src="item.imagen" :alt="item.nombre" />
-              </div>
-              <div class="reserve-card-info pad-5 bg-white">
-                <div
-                  class="reserve-card-item-name hn-roman font14 gtt-text-color"
-                >
-                  {{ item.nombre }}
+              <template v-if="item.tipo == 'rent'">
+                <div class="img-wrapper">
+                  <img :src="item.imagen" :alt="item.nombre" />
                 </div>
-                <div
-                  class="reserve-card-item-price hn-roman font16 gtt-text-color"
-                >
-                  {{ styledPrice(item.precio).intPart }}.<sup>{{
-                    styledPrice(item.precio).decimalPart
-                  }}</sup>
-                  USD
+                <div class="reserve-card-info pad-5 bg-white">
+                  <div
+                    class="reserve-card-item-name hn-roman font14 gtt-text-color"
+                  >
+                    {{ item.nombre }}
+                  </div>
+                  <div
+                    class="reserve-card-item-price hn-roman font16 gtt-text-color"
+                  >
+                    {{ styledPrice(item.precio).intPart }}.<sup>{{
+                      styledPrice(item.precio).decimalPart
+                    }}</sup>
+                    USD
+                  </div>
                 </div>
-              </div>
+              </template>
+              <template v-if="item.tipo == 'lodging'">
+                <div class="img-wrapper">
+                  <img :src="item.images[0]" :alt="item.name" />
+                </div>
+                <div class="reserve-card-info pad-5 bg-white">
+                  <div
+                    class="reserve-card-item-name hn-roman font14 gtt-text-color"
+                  >
+                    {{ item.name }}
+                  </div>
+                  <div
+                    class="reserve-card-item-price hn-roman font16 gtt-text-color"
+                  >
+                    {{ styledPrice(item.total).intPart }}.<sup>{{
+                      styledPrice(item.total).decimalPart
+                    }}</sup>
+                    USD
+                  </div>
+                </div>
+              </template>
             </div>
             <div class="reserve-total-to-pay">
               <span
@@ -80,12 +102,21 @@
               >{{ $helpers.traducir(state) }}</span
             >
           </div>
-          <div class="verify-step-content pt-30 pr-15 pl-15 pb-15">
+          <div class="verify-step-content pt-30 pr-15 pl-15 pb-15" 
+               v-for="orden in allTypesOrders"
+               :key="orden.id">
+            <LodgingReservationView2
+              class="lrv"
+              v-if="orden.tipo=='lodging'"
+              :item="orden"
+            >
+            </LodgingReservationView2>
             <RentReservationView
+              v-if="orden.tipo == 'rent'"
               class="rrv"
-              v-for="order in allTypesOrders"
-              :item="order"
-              :key="order.id"
+              :ordenId="orden.OrdenId"
+              :hasVoucher="orden.HasVoucher"
+              :item="orden"
               :can="state == 'Open'"
               @remove="showDeleteModal"
               @edit="showEditModal"
@@ -189,11 +220,13 @@ import {
   authSearchMarca,
   authSearchProvider,
   authPutReserve,
-  authDeleteCarOrder
+  authDeleteCarOrder,
+  authUpdateQbEstimated
 } from "../../utils/auth";
 
 import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
 import RentReservationView from "./RentReservationView";
+import LodgingReservationView2 from "./LodgingReservationView2";
 import InfoRow from "./InfoRow";
 import FlightInfoRow from "./FlightInfoRow";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
@@ -201,6 +234,7 @@ import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { transmissionTypes } from "../../utils/utils";
 import GttEditRentModal from "../custom-elements/GttEditRentModal";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
+import _ from "lodash";
 
 export default {
   components: {
@@ -208,7 +242,8 @@ export default {
     InfoRow,
     FlightInfoRow,
     GttVerificationModal,
-    GttEditRentModal
+    GttEditRentModal,
+    LodgingReservationView2
   },
   mixins: [reusableMethodsMixin],
   async created() {
@@ -217,9 +252,12 @@ export default {
     let { data } = await authGetOrder(id);
 
     this.order = data;
+    console.log(this.order)
+    console.log('list alojamiento aqui')
     this.numeroOrden = this.order.NumeroOrden;
     this.state = this.order.Estado;
     await this.preproccesingLists(this.order.ListaVehiculosOrden);
+    await this.preproccesingLists(this.order.ListaAlojamientoOrden, 'lodging');
     this.calculatePrice(this.allTypesOrders);
     this.updateName(this.order.NombreClienteFinal);
     if (this.hasListaVehiculosOrden()) {
@@ -267,6 +305,9 @@ export default {
     };
   },
   methods: {
+    getOrderId(){
+      return this.order
+    },
     editOrder(item) {
       if (item.tipo == "rent") {
         if (
@@ -453,6 +494,33 @@ export default {
       this.nvueloTakeoff = value;
     },
     async preproccesingLists(list, type = "rent") {
+      if(type == 'lodging'){
+          let t = _.groupBy(list, function(j){
+            return j.AlojamientoId+'+'+j.FechaInicio+'+'+j.FechaFin
+          })
+          for(let [key, i]  of Object.entries(t)){
+            let images = await authGetImage(i[0].Alojamiento.ProductoId)
+            let total = _.sumBy(i, function(p){
+              return p.PrecioOrden
+            })
+            console.log(key)
+
+            let temp = {
+              tipo: 'lodging',
+              entrada: i[0].FechaInicio,
+              salida: i[0].FechaFin,
+              name: i[0].Alojamiento.Nombre,
+              stars: i[0].Alojamiento.NumeroEstrellas,
+              location: i[0].Alojamiento.Direccion,
+              lodging: i[0].Alojamiento,
+              images: [images.data.ImageContent],
+              total: total,
+              reservedRooms: i
+            }
+
+            this.allTypesOrders.push(temp);
+          }
+      }
       if (type == "rent") {
         for (let item of list) {
           let image = await authGetImage(item.Vehiculo.ProductoId);
@@ -469,6 +537,8 @@ export default {
             transmision: item.Vehiculo.TipoTransmision,
             modeloId: item.Vehiculo.ModeloId,
             marca: marca.data.Nombre,
+            marcaid: marca.data.MarcaId,
+            seguro: item.Vehiculo.TieneSeguro,
             precio: item.PrecioOrden,
             distribuidor: item.Distribuidor.Nombre,
             distribuidorId: item.Distribuidor.DistribuidorId,
@@ -547,7 +617,10 @@ export default {
       if (getValid(iv)) {
         let listaVehiculosOrden = this.getListaVehiculosOrden();
         listaVehiculosOrden.forEach(vo => {
-          vo.NombreCliente = this.clientName;
+          vo.NombreCliente = this.clientName.split(" ")
+                                            .map( i => {
+                                              return _.capitalize(i)
+                                            }).join(" ");
           vo.HoraInicio = this.horaLanding;
           vo.HoraFin = this.horaTakeoff;
           vo.InformacionLlegada = this.constructSpacedVal(
@@ -570,12 +643,18 @@ export default {
           }
           this.idsToDelete = [];
           this.isReserving = true;
-          console.log(this.order);
           let ordenSaveIt = await authPutReserve(
             this.$route.params.id,
             this.order
           );
-          console.log(ordenSaveIt);
+          let onlyOrdenId = {
+            OrdenId: ordenSaveIt.data.OrdenId
+          };
+          try{
+            await authUpdateQbEstimated(onlyOrdenId)
+          } catch(error){
+            console.log(error)
+          }
           this.isReserving = false;
           this.$toasted.show("Orden editada con éxito.", {
             type: "success"
@@ -621,8 +700,16 @@ export default {
     fillReserveInfo(orden, lvo = [], lao = [], lalo = [], lto = []) {
       let dateInterval = this.findDateInterval();
 
-      orden.NombreClienteFinal = this.clientName;
-      orden.NombreOrden = this.clientName;
+      orden.NombreClienteFinal = this.clientName.split(" ")
+                                            .map( i => {
+                                              return _.capitalize(i)
+                                            }).join(" ");
+;
+      orden.NombreOrden = this.clientName.split(" ")
+                                            .map( i => {
+                                              return _.capitalize(i)
+                                            }).join(" ");
+;
       orden.FechaInicio = dateInterval.min;
       orden.FechaFin = dateInterval.max;
       orden.CantidadAdulto = 1;

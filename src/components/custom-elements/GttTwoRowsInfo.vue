@@ -34,6 +34,8 @@ export default {
         width: 100%;
         display: flex;
         padding: 15px;
+        padding-top: 10px;
+        padding-bottom: 10px;
         border: 2px solid #f5f5f5;
         border-radius: 10px;
     }
@@ -44,7 +46,7 @@ export default {
         margin-left: 5px;
     }
     .tr-info-value{
-        font-size: 18px !important;
+        font-size: 14px !important;
     }
     @media(max-width: 1440px){
         .twoRowsDiv{

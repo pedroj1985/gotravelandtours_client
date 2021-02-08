@@ -8,62 +8,57 @@
                     </div>
                     <div class="item-children-name hn-roman">
                         <slot name="itemChildrenNameSlot" v-bind:child="child">
-                            <span class="font16">{{child.name}}</span> 
+                            <span class="font16">{{child.habitacion.Habitacion.Nombre}}</span> 
                             <!-- <span class="dist">{{child.combinacion.display}}</span> -->
                         </slot>
                     </div>
                     <slot name="itemChildren" v-bind:child="child">
                             <div class="item-children-section hn-roman">
-                                <div class="item-children-section-item">{{child.planAlimenticioCodigo}}</div>
+                                <div class="item-children-section-item">{{child.PA.Codigo}}</div>
                                 <div class="item-children-section-item item-children-section-icon"><i class="mdi mdi-phone-check"></i></div>
-                                <div class="item-children-section-item item-children-section-icon item-children-info-btn">
+                                <div>
+                                    <template v-if="child.CantAdultos == 1">
+                                        <i class="mdi mdi-account-box"></i>
+                                    </template>
+                                    <template v-if="child.CantAdultos == 2">
+                                        <i class="mdi mdi-account-box"></i>
+                                        <i class="mdi mdi-account-box"></i>
+                                    </template>
+                                    <template v-if="child.CantAdultos == 3">
+                                        <i class="mdi mdi-account-box"></i>
+                                        <i class="mdi mdi-account-box"></i>
+                                        <i class="mdi mdi-account-box"></i>
+                                    </template>
+                                    <i class="mdi mdi-account-box-outline" v-for="k in child.CantMenores" :key="k"></i>
+                                    <span class="hn-roman">
+                                        {{child.CantAdultos}} adulto(s) <template v-if="child.CantMenores>0">y {{child.CantMenores}} niño(s)</template>
+                                    </span>
+                                </div>
+                                <!-- <div class="item-children-section-item item-children-section-icon item-children-info-btn">
                                     <button type="button" class="btn-children-info" :class="{'selected': selectedInfo == 'roomLayout'}" @click="selectInfo('roomLayout')">
                                         <i class="mdi mdi-floor-plan"></i>
                                     </button>
-                                </div>
+                                </div> -->
                             </div>
                     </slot>
                     <div class="item-children-right-part">
                         <div class="item-children-price hn-roman">
                             <slot name="itemChildrenPriceSlot" v-bind:child="child">
-                                {{ styledPrice(child.combinacion.total).intPart}}.<sup>{{ styledPrice(child.combinacion.total).decimalPart}}</sup> USD
+                                {{ styledPrice(child.habitacion.PrecioOrden).intPart}}.<sup>{{ styledPrice(child.habitacion.PrecioOrden).decimalPart}}</sup> USD
                             </slot>
                         </div>
                         <div class="item-children-reserve form-actions">
-                            <button type="submit" class="antonio-regular inverse btn-cart" @click="addToCart"><i class="mdi mdi-cart"></i></button>
-                            <button type="submit" class="antonio-regular" @click="reserve">Reservar</button>
+                            <!-- <button type="submit" class="antonio-regular inverse btn-cart" @click="addToCart"><i class="mdi mdi-cart"></i></button> -->
+                            <button type="submit" class="antonio-regular" @click="addToCart">Seleccionar</button>
                         </div>
                     </div>
                 </div>
                 <div class="item-children-content hn-roman">
                     <div class="item-children-content-info" v-if="selectedInfo == 'info'">
                         <slot name="itemContentInfoSlot" v-bind:child="child">
-                            <div class="hn-roman" v-html="child.habitacion.Descripcion"></div>
+                            <div class="hn-roman" v-html="child.habitacion.Habitacion.Descripcion"></div>
                         </slot>
                     </div>
-                    <slot name="item-room-layout" v-bind:extraInfo="child">
-                        <div class="item-children-content-info pd-15" v-if="selectedInfo == 'roomLayout'">
-                            <div class="pt-30">
-                                <div v-for="distribution in child.combinacion.listado" :key="distribution.id">
-                                    <div class="flex-wrapper">
-                                        <span class="flex-left-side">{{distribution.tipoHabitacionNombre}} x{{distribution.cantidad}}</span>
-                                        <span class="flex-right-side">
-                                            {{ styledPrice(distribution.price.value).intPart}}.<sup>{{ styledPrice(distribution.price.value).decimalPart}}</sup> USD
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex-wrapper pt-15 pd-15">
-                                <span class="flex-left-side font24">
-                                    TOTAL
-                                </span>
-                                <span class="flex-right-side font24">
-                                    {{ styledPrice(child.combinacion.total).intPart}}.<sup>{{ styledPrice(child.combinacion.total).decimalPart}}</sup> USD
-                                </span>
-                            </div>
-                            <!-- <pre class="hn-roman">{{child.roomLayout}}</pre> -->
-                        </div>
-                    </slot>
                 </div>
 
             </div>

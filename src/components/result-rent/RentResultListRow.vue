@@ -182,7 +182,7 @@ export default {
     },
     styledPrice(number) {
       let intPart = Math.floor(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+      let decimalPart = Math.round((number - intPart) * 100);
 
       if (decimalPart == 0) decimalPart = "00";
 

@@ -11,7 +11,7 @@
                         :dots="true"
                         :autoplay="true"
                         >
-                        <div class="result-images-carousel" v-for="destinyImage in item.images" :key="destinyImage.id">
+                        <div class="result-images-carousel" v-for="destinyImage in item.images" :key="destinyImage">
                                 <img v-bind:src="destinyImage" alt="">
                         </div>
                     </Slick>
@@ -36,24 +36,47 @@
                                 <span class="c-space"><i class="mdi mdi-map"></i></span>
                                 <a :href="item.mapLink" class="map-location">Ubicación en el mapa</a>
                             </div>
+                            <div class="item-suggestion">
+                                <div class="item-suggestion-text hn-bdcn">
+                                    Recomendado para {{filters.Visitantes.adults.value}} adulto(s) <template v-if="filters.Visitantes.kids.value > 0"> y {{filters.Visitantes.kids.value}} niño(s)</template>
+                                </div>
+                                <div v-for="ac in item.acomodation" :key="ac.code">
+                                    <template v-if="ac.hab == 'Sencilla'">
+                                        <i class="mdi mdi-account-box"></i>
+                                    </template>
+                                    <template v-if="ac.hab == 'Doble'">
+                                        <i class="mdi mdi-account-box"></i>
+                                        <i class="mdi mdi-account-box"></i>
+                                    </template>
+                                    <template v-if="ac.hab == 'Triple'">
+                                        <i class="mdi mdi-account-box"></i>
+                                        <i class="mdi mdi-account-box"></i>
+                                        <i class="mdi mdi-account-box"></i>
+                                    </template>
+                                    <i class="mdi mdi-account-box-outline" v-for="k in ac.kids" :key="k"></i>
+                                    <span class="hn-roman">
+                                        {{ac.cantidad}} hab. {{ac.hab}} para {{ac.adults}} adulto(s) <template v-if="ac.kids>0">y {{ac.kids}} niño(s)</template>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </slot>
                 </div>
                 <div class="list-item-price">
                     <div class="price-wrapper">
                         <div class="hn-mdcn better-price">Mejor precio para:</div>
-                        <div class="hn-mdcn">{{constructDisplay(filters.selectedRoomLayout)}}, {{constructDisplay(filters.selectedRooms)}}</div>
-                        <div class="price antonio-light">{{ styledPrice(item.price.value).intPart}}.<sup>{{ styledPrice(item.price.value).decimalPart}}</sup> {{item.price.currency}}</div>
+                        <div class="hn-mdcn">{{constructDisplay(filters.Visitantes)}}</div>
+                        <div class="price antonio-light">{{ styledPrice(getMinPrice(item.habitaciones).combinacion.total).intPart}}.<sup>{{ styledPrice(getMinPrice(item.habitaciones).combinacion.total).decimalPart}}</sup> USD</div>
                         <div class="details-btn form-actions">
-                            <button type="submit" class="antonio-regular">Ver detalles</button>
+                            <button @click="goToDetail" type="submit" class="antonio-regular">Ver detalles</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="list-item-children">
-                <ResultListRow v-for="child in filteredItems" :key="child.id" :child="child"></ResultListRow>
+                <ResultListRow v-for="child in filteredItems" :key="child.id" :child="child" @listReserve="addToCart"></ResultListRow>
             </div>
-            <div class="open-close-button" @click="openList">
+            <div class="open-close-button" @click="openList" v-if="item.habitaciones.length > 2">
                 <i class="mdi" :class="{'mdi-chevron-double-down': !isOpen,
                                                                 'mdi-chevron-double-up': isOpen}"></i>
             </div>
@@ -63,14 +86,18 @@
 <script>
 import Slick from 'vue-slick-carousel'
 import ResultListRow from './ResultListRow'
+import _ from "lodash"
 export default {
+    created(){
+    },
     components: {
         Slick,
         ResultListRow
     },
     props: {
         item: Object,
-        filters: Object
+        filters: Object,
+        todosTipo: Array
     },
     data(){
         return {
@@ -80,10 +107,36 @@ export default {
     },
     computed: {
         filteredItems: function(){
-            return this.item.items.slice(0, this.limit)
+            return this.item.habitaciones.slice(0, this.limit)
         }
     },
     methods: {
+        goToDetail(){
+            let f = this.filters
+            let id = this.item.lodging.ProductoId
+
+            localStorage.setItem(
+                "searchLodgingFilters",
+                JSON.stringify(f)
+            );
+
+            this.$router.push({
+                name: "lodging-detail",
+                params: {
+                    id: id
+                }
+            })
+        },
+        addToCart(i){
+            this.item['reservedRooms'] = i
+            this.$helpers.shoppingCartAdd(this.item)
+            this.$eventCartBus.$emit('updateCart')
+        },
+        getMinPrice(array){
+            return _.minBy(array, function(e){
+                return e.combinacion.total
+            })
+        },
         constructDisplay(d){
             let s = '';
             Object.keys(d).forEach(element => {
@@ -94,7 +147,7 @@ export default {
         },
         openList(){
             if(!this.isOpen){
-                this.limit = this.item.items.lenght
+                this.limit = this.item.habitaciones.length
             }
             else{
                 this.limit = 2;
@@ -103,7 +156,7 @@ export default {
         },
         styledPrice(number){
             let intPart = Math.floor(number)
-            let decimalPart = (number - intPart).toFixed(2) * 100
+            let decimalPart = Math.round((number - intPart) * 100);
 
             if(decimalPart == 0)
                 decimalPart = '00'

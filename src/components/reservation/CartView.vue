@@ -34,24 +34,46 @@
                 v-for="item in allTypesOrders"
                 :key="item.uID"
               >
-                <div class="img-wrapper">
-                  <img :src="item.imagen" :alt="item.nombre" />
-                </div>
-                <div class="reserve-card-info pad-5 bg-white">
-                  <div
-                    class="reserve-card-item-name hn-roman font14 gtt-text-color"
-                  >
-                    {{ item.nombre }}
+                <template v-if="item.tipo == 'rent'">
+                  <div class="img-wrapper">
+                    <img :src="item.imagen" :alt="item.nombre" />
                   </div>
-                  <div
-                    class="reserve-card-item-price hn-roman font16 gtt-text-color"
-                  >
-                    {{ styledPrice(item.precio).intPart }}.<sup>{{
-                      styledPrice(item.precio).decimalPart
-                    }}</sup>
-                    USD
+                  <div class="reserve-card-info pad-5 bg-white">
+                    <div
+                      class="reserve-card-item-name hn-roman font14 gtt-text-color"
+                    >
+                      {{ item.nombre }}
+                    </div>
+                    <div
+                      class="reserve-card-item-price hn-roman font16 gtt-text-color"
+                    >
+                      {{ styledPrice(item.precio).intPart }}.<sup>{{
+                        styledPrice(item.precio).decimalPart
+                      }}</sup>
+                      USD
+                    </div>
                   </div>
-                </div>
+                </template>
+                <template v-if="item.tipo == 'lodging'">
+                  <div class="img-wrapper">
+                    <img :src="item.images[0]" :alt="item.name" />
+                  </div>
+                  <div class="reserve-card-info pad-5 bg-white">
+                    <div
+                      class="reserve-card-item-name hn-roman font14 gtt-text-color"
+                    >
+                      {{ item.name }}
+                    </div>
+                    <div
+                      class="reserve-card-item-price hn-roman font16 gtt-text-color"
+                    >
+                      {{ styledPrice(item.reservedRooms.combinacion.total).intPart }}.<sup>{{
+                        styledPrice(item.reservedRooms.combinacion.total).decimalPart
+                      }}</sup>
+                      USD
+                    </div>
+                  </div>
+                </template>
               </div>
               <div class="reserve-total-to-pay">
                 <span
@@ -76,12 +98,17 @@
               <span><i class="mdi mdi-bed"></i> Paso 1: </span
               ><span>Verificar datos de su reservación</span>
             </div>
-            <div class="verify-step-content pt-30 pr-15 pl-15 pb-15">
+            <div v-for="order in allTypesOrders" :key="order.uID" :id="order.uID" class="verify-step-content pt-30 pr-15 pl-15 pb-15">
+              <LodgingReservationView
+                class="lrv"
+                v-if="order.tipo=='lodging'"
+                :item="order"
+              >
+              </LodgingReservationView>
               <RentReservationView
                 class="rrv"
-                v-for="order in allTypesOrders"
+                v-if="order.tipo=='rent'"
                 :item="order"
-                :key="order.uID"
                 @remove="showDeleteModal"
                 @edit="showEditModal"
               ></RentReservationView>
@@ -135,6 +162,17 @@
                   ></b-spinner>
                 </button>
               </div>
+              <div
+                id="reservation-extra-info"
+                class="hn-roman font14 pl-30"
+                style="color: #ff0000; margin-top: 15px;"
+              >
+                <span
+                  >Si los datos introducidos no son correctos, nuestra agencia no
+                  se hace responsable de las consecuencias que esto traiga para la
+                  correcta realización del servicio o los servicios</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -150,9 +188,10 @@
 </template>
 <script>
 import RentReservationView from "./RentReservationView";
+import LodgingReservationView from "./LodgingReservationView";
 import InfoRow from "./InfoRow";
 import FlightInfoRow from "./FlightInfoRow";
-import { authReserve } from "../../utils/auth";
+import { authReserve, authCreateQbEstimated, authUpdOnlyInDbQbEstimated } from "../../utils/auth";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
 import NavBar2 from "../shared/NavBar2";
 import { menuLinks } from "../../menu";
@@ -161,6 +200,7 @@ import { transmissionTypes } from "../../utils/utils";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
+import _ from "lodash";
 
 export default {
   created() {
@@ -169,6 +209,7 @@ export default {
   },
   mixins: [cleanVoMixin],
   components: {
+    LodgingReservationView,
     RentReservationView,
     InfoRow,
     FlightInfoRow,
@@ -190,7 +231,15 @@ export default {
       return validator;
     },
     constructSpacedVal(f, s, separator = " ") {
-      return `${f}${separator}${s}`;
+      let splittedName = f.split(" ");
+      let name = splittedName.map( i => {
+        return _.capitalize(i)
+      }).join(" ")
+      let splittedLastName = s.split(" ");
+      let lastname = splittedLastName.map( i => {
+        return _.capitalize(i)
+      }).join(" ")
+      return `${name}${separator}${lastname}`;
     },
     updateCart() {
       let lsCart = localStorage.getItem("gttCart");
@@ -211,6 +260,13 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         let listaVehiculosOrden = this.getListaVehiculosOrden();
+        let listaAlojamientosOrden = this.getListaAlojamientosOrden();
+        listaAlojamientosOrden.forEach( ao => {
+          ao.NombreCliente = this.constructSpacedVal(
+            this.clientName,
+            this.clienteLastName
+          )
+        })
         listaVehiculosOrden.forEach(vo => {
           vo.NombreCliente = this.constructSpacedVal(
             this.clientName,
@@ -230,7 +286,8 @@ export default {
           );
         });
         let orden = {
-          ListaVehiculosOrden: listaVehiculosOrden
+          ListaVehiculosOrden: listaVehiculosOrden,
+          ListaAlojamientoOrden: listaAlojamientosOrden
         };
         this.fillReserveInfo(orden);
         try {
@@ -242,9 +299,13 @@ export default {
           };
           console.log('orden abajo')
           console.log(onlyOrdenId);
-          // let qbCreated = await authCreateQbEstimated(onlyOrdenId)
-          // console.log('qbCreated abajo')
-          // console.log(qbCreated)
+          try{
+            await authCreateQbEstimated(onlyOrdenId)
+            onlyOrdenId['EstimatedCreated'] = true
+            await authUpdOnlyInDbQbEstimated(onlyOrdenId)
+          } catch(error){
+            console.log(error)
+          }
           this.$helpers.shoppingCartDeleteAll();
           this.isReserving = false;
           this.$toasted.show(
@@ -302,13 +363,67 @@ export default {
 
       return lvo;
     },
+    getListaAlojamientosOrden(){
+      let lao = []
+      this.allTypesOrders
+                    .filter( item => {
+                      return item.tipo == 'lodging'
+                    })
+                    .map( i => {
+                      i.reservedRooms.combinacion.listado.map( j => {
+                        let po = j.precioObjOne
+                        po.Alojamiento = {
+                          ProductoId: po.Alojamiento.ProductoId
+                        }
+                        po.CantAdulto = j.tipoHabitacion
+                        po.CantNino = j.cantidadMenoresPorHabitacion
+                        po.CantInfante = 0
+                        po.PlanesAlimenticiosId = i.reservedRooms.planAlimenticio 
+                        po.PlanAlimenticio = {
+                          PlanesAlimenticiosId: i.reservedRooms.planAlimenticio
+                        }
+                        po.Habitacion = {
+                          HabitacionId: po.Habitacion.HabitacionId
+                        }
+                        po.Distribuidor = {
+                          DistribuidorId: po.Distribuidor.DistribuidorId
+                        }
+                        po.DistribuidorId = po.Distribuidor.DistribuidorId
+                        po.Sobreprecio = {
+                          SobreprecioId: po.Sobreprecio.SobreprecioId
+                        }
+                        po.ListaPrecioAlojamientos = po.ListaPrecioAlojamientos.map( lpa => {
+                          let p = {
+                            PrecioAlojamientoId: lpa.PrecioAlojamiento.PrecioAlojamientoId
+                          }
+
+                          return {
+                            PrecioAlojamiento: p
+                          }
+                        })
+                        for (let index = 0; index < j.cantidad; index++) {
+                          lao.push(po)                         
+                        }
+                      })
+                    })
+      
+      return lao
+    },
     findDateInterval() {
       let startDates = [];
       let endDates = [];
 
       this.allTypesOrders.forEach(item => {
-        startDates.push(item.orderVehiculo.FechaRecogida);
-        endDates.push(item.orderVehiculo.FechaEntrega);
+        if(item.tipo == 'rent')
+        {
+          startDates.push(item.orderVehiculo.FechaRecogida);
+          endDates.push(item.orderVehiculo.FechaEntrega);
+        }
+        if(item.tipo == 'lodging')
+        {
+          startDates.push(item.entrada);
+          endDates.push(item.salida);
+        }
       });
 
       return {
@@ -318,13 +433,18 @@ export default {
     },
     calculatePrice(value) {
       this.priceTotal = value.reduce((total, item) => {
-        return total + item.precio;
+        if(item.tipo == 'rent')
+          return total + item.precio;
+        if(item.tipo == 'lodging')
+          return total + item.reservedRooms.combinacion.total
       }, 0);
-      console.log(this.total);
+      console.log(this.priceTotal);
     },
     styledPrice(number) {
-      let intPart = Math.floor(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+      let n = number.toFixed(2)
+      let intPart = Math.floor(n);
+      let r = (n-intPart).toFixed(2)
+      let decimalPart = (r * 100).toFixed(2);
 
       if (decimalPart == 0) decimalPart = "00";
 

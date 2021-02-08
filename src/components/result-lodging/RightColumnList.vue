@@ -1,6 +1,6 @@
 <template>
   <div id="right-column-list">
-    <ResultList :resultList="currentList" :filters="filters"></ResultList>
+    <ResultList :resultList="currentList" :filters="filters" :todosTipo="todosTipo"></ResultList>
     <div class="pagination-section">
       <b-pagination
         v-model="currentPage"
@@ -16,7 +16,6 @@
 
 <script>
 import ResultList from './ResultList';
-import {lodging_sites} from '../../utils/lodging';
 export default {
   components: {
     ResultList,
@@ -30,14 +29,20 @@ export default {
   },
   mounted(){
     this.getList(this.currentPage)
-    this.total = lodging_sites.length
+    this.total = this.resultList.length
     this.$emit('resultSize',this.total)
+    console.log(this.resultList)
+    console.log('aqui va')
+    console.log(this.currentList)
+    console.log('aqui va el current')
   },
   props: {
     filters: Object,
+    resultList: Array,
     perPage: {
       default: 1
     },
+    todosTipo: Array
   },
   methods: {
     getOthers(event, page){
@@ -48,7 +53,7 @@ export default {
       let min = this.perPage * page - this.perPage;
       let max = this.perPage * page;
 
-      this.currentList = lodging_sites.slice(min, max);
+      this.currentList = this.resultList.slice(min, max);
     }
   }
 }

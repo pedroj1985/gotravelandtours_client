@@ -6,7 +6,13 @@ export const reusableMethodsMixin = {
         calculatePrice(value){
             this.priceTotal = value.reduce(
                 (total, item) => {
-                    return total+item.precio
+                    if(item.tipo == 'rent'){
+                        return total+item.precio
+                    }
+                    if(item.tipo == 'lodging')
+                    {
+                        return total+item.total
+                    }
                 }, 0
             )
         },

@@ -8,9 +8,12 @@ export const cleanVoMixin = {
             order.Vehiculo = {
                 ProductoId: order.Vehiculo.ProductoId
             };
-            order.Sobreprecio = {
-                SobreprecioId: order.Sobreprecio.SobreprecioId
-            };
+            if(order.Sobreprecio)
+            {
+                order.Sobreprecio = {
+                    SobreprecioId: order.Sobreprecio.SobreprecioId
+                };
+            }
             if (pickUpPlace) {
                 order.LugarRecogida = {
                 nombre: pickUpPlace.nombre,

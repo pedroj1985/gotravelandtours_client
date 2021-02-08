@@ -1,7 +1,21 @@
 @media(max-width: 1440px)
 {
+    .custom-padding{
+        padding-left: calc(7.03% + 30px);
+        padding-right: calc(7.03% + 30px);
+    }
+
+    .custom-padding-top{
+        padding-top: 45px;
+    }
+    .custom-padding-top-2-navbar{
+        padding-top: 75px;
+    }
+    #twoColumn{
+        margin-left: 6.375%;
+    }
     .list-item-general{
-        height: 200px;
+        /* height: 200px; */
     }
     .result-search-text-title{
         font-size: 24px;
@@ -21,7 +35,8 @@
         object-fit: contain;
     }
     .item-name{
-        font-size: 18px;
+        font-size: 16px;
+        line-height: 1.2;
     }
     .item-provider img{
         height: 50px;
@@ -446,6 +461,13 @@
     }
     #footer2 .right-part a{
         margin-left: 10px;
+    }
+
+    .item-provider img {
+        height: 30px;
+    }
+    .item-provider.viaCar img {
+        height: 50px;
     }
 
 }

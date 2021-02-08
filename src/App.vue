@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <NavBar1 @userLogin="updateUser" :isUserLogged="isLogged" :user="user" :itemsInCart="itemsInCart"></NavBar1>
-    <router-view @userLogin="updateUser" 
+    <NavBar1 :isUserLogged="isLogged" :user="user" :itemsInCart="itemsInCart"></NavBar1>
+    <router-view 
                  ></router-view>
     <IndexOffers></IndexOffers>
     <Footer1></Footer1>
@@ -15,6 +15,7 @@ import Footer1 from "./components/shared/Footer1.vue"
 import NavBar1 from "./components/shared/NavBar1.vue"
 import IndexOffers from "./components/index-page/IndexOffers"
 import {getUser} from "./utils/auth"
+import {eventBus} from "./main"
 
 export default {
   name: "App",
@@ -40,9 +41,16 @@ export default {
   },
   created(){
     this.$eventCartBus.$on('updateCart', () => {
-      console.log(this.$helpers.getCartItems())
+      console.log(this.$helpers.getCartItemsList())
       this.itemsInCart = this.$helpers.getCartItems()
     })
+    eventBus.$on('userLogin', (val) => {
+      console.log(val)
+      console.log('aqui arriba')
+      this.user = val
+    })
+
+
   },
   components: {
     Footer2,

@@ -74,6 +74,9 @@ export function overflowText(text, l = 30){
             }
             return text
         }
+export function hasInsurance(text){
+    console.log(text)
+}
 
 export const transmissionTypes = [
                 {
@@ -83,13 +86,5 @@ export const transmissionTypes = [
                 {
                     nombre: 'Manual',
                     display: 'Manual'
-                },
-                {
-                    nombre: 'Automatico S/Seguro',
-                    display: 'Automático S/Seguro'
-                },
-                {
-                    nombre: 'Manual S/Seguro',
-                    display: 'Manual S/Seguro'
                 }
 ]

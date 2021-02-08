@@ -5,6 +5,7 @@
       ref="buttonToggle"
       @click="toggleClicked"
       :value="updateValue"
+      :disabled="dsb"
     >
       <div class="gtt__toggle_content">
         <div class="gtt__toggle_text">
@@ -77,6 +78,10 @@ export default {
   props: {
     value: {
       default: moment()
+    },
+    dsb: {
+      type: Boolean,
+      default: false
     },
     day: {
       type: Boolean,

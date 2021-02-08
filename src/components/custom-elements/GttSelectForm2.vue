@@ -4,6 +4,7 @@
                 ref="buttonToggle"
                 @click="toggleClicked"
                 :value="uValue"
+                :disabled="dsb"
                 >
                 <div class="gtt__toggle_content">
                     <div class="gtt__toggle_text">
@@ -17,7 +18,7 @@
                                 </slot>
                             </div>
                             <div>
-                                {{ constructDisplay(emitValue) }}
+                                {{ constructDisplay() }}
                             </div>
                         </div>
                     </div>
@@ -27,29 +28,32 @@
         <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">
             <span class="arrow" v-if="arrow"></span>
             <div class="gtt__form">
-                <div class="gtt__item row" v-for="item in finalValue" :key="item.id">
-                    <div class="gtt__item_label col-md-6">
-                        {{ item.label }}
+                <div class="gtt__item gtt__room" v-for="i in roomsLayout" :key="i.id">
+                    <div class="gtt__room_name">Habitación {{i.room}}</div>
+                    <div class="row gtt__room_row" v-for="item in i.layout" :key="item.id">
+                        <div class="gtt__item_label col-md-6">
+                            {{ item.label }}
+                        </div>
+                        <div class="col-md-2">
+                            <button class="gtt__picker_button" :class="{disabled: item.value<=0}" :disabled="item.value<=0" @click="remove(item, item.step)"><i class="mdi mdi-minus"></i></button>
+                        </div>
+                        <div class="col-md-1">
+                            <p class="gtt__picker_value">{{ item.value }}</p>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="gtt__picker_button" @click="add(item, item.step)"><i class="mdi mdi-plus"></i></button>
+                        </div>
                     </div>
-                    <div class="col-md-2">
-                        <button class="gtt__picker_button" :class="{disabled: item.value<=0}" :disabled="item.value<=0" @click="remove(item, item.step)"><i class="mdi mdi-minus"></i></button>
-                    </div>
-                    <div class="col-md-1">
-                        <p class="gtt__picker_value">{{ item.value }}</p>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="gtt__picker_button" @click="add(item, item.step)"><i class="mdi mdi-plus"></i></button>
-                    </div>
-                </div>
-                <div class="gtt__item gtt__itemKids row" v-if="kids.length > 0">
-                    <div class="col-md-6 gtt__kidsSelect" v-for="(kid, i) in kids" :key="kid.id">
-                        <gtt-select :options="kidsAgeList" v-model="kid.age">
-                            <span slot="placeholder">Edad del menor {{i+1}}</span>
-                            <template v-slot:selectedValue="selectedValue">
-                                {{selectedValue.selectedValue}} años
-                            </template>
-                        </gtt-select>
-                    </div>
+                    <!-- <div class="gtt__item gtt__itemKids row" v-if="i.find(j => j.code == 'kids').value > 0">
+                        <div class="col-md-6 gtt__kidsSelect" v-for="(kid, i) in i.find(j => j.code == 'kids').value" :key="kid.id">
+                            <gtt-select :options="kidsAgeList" v-model="kid">
+                                <span slot="placeholder">Edad del menor {{i+1}}</span>
+                                <template v-slot:selectedValue="selectedValue">
+                                    {{selectedValue.selectedValue}} años
+                                </template>
+                            </gtt-select>
+                        </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -59,11 +63,12 @@
 
 <script>
 import ClickOutside from 'vue-click-outside';
-import GttSelect from '../custom-elements/GttSelect';
+// import GttSelect from '../custom-elements/GttSelect';
+import _ from 'lodash'
 
 export default {
     components: {
-        GttSelect
+        // GttSelect
     },
     directives: {
         ClickOutside
@@ -71,39 +76,93 @@ export default {
     mounted(){
         this.popupItem = this.$el
     },
+    watch:{
+        rooms: function(item){
+            let d = item - this.roomsLayout.length 
+            let r = []
+            if(d > 0){
+                for(let i = this.roomsLayout.length + 1; i<=this.roomsLayout.length + d;i++)
+                {
+                    let Hs = []
+                    for(let pos = 0; pos < this.options.length; pos++){
+                        let code = this.options[pos].code;
+                        let d = this.options[pos].default;
+                        Hs.push(
+                            {
+                                code: code,
+                                label: this.options[pos].label,
+                                display: this.options[pos].display,
+                                value: d
+                            }
+                        );
+                    }
+                    // console.log(this.roomsLayout)
+                    r.push({
+                        room: i,
+                        layout: Hs
+                    })
+                }
+
+                r.forEach( j => {
+                    this.roomsLayout.push(j)
+                })
+            }
+            else if(d<0){
+                for(let o = 1; o <= Math.abs(d); o++){
+                    this.roomsLayout.pop()
+                }
+            }
+
+
+        }
+    },
     props: {
+        dsb:{
+            type: Boolean,
+            default: false
+        },
         options: Array,
         value: {
-            type: Object,
-            default: null
+            type: Array,
+            default: function(){
+                return []
+            }
+        },
+        rooms: {
+            type: Number,
+            default: 1
         }
     },
     created(){
-        if(!this.value){
-            for (let index = 0; index < this.options.length; index++) {
-                let code = this.options[index].code;
-                let d = this.options[index].default;
-                this.finalValue.push(
-                    {
-                        code: code,
-                        label: this.options[index].label,
-                        display: this.options[index].display,
-                        value: d
-                    }
+        let r = []
+        if(this.value.length==0)
+        {
+            for(let index = 1; index <= this.rooms; index++){
+                let Hs = []
+                for(let pos = 0; pos < this.options.length; pos++){
+                    let code = this.options[pos].code;
+                    let d = this.options[pos].default;
+                    Hs.push(
+                        {
+                            code: code,
+                            label: this.options[pos].label,
+                            display: this.options[pos].display,
+                            value: d
+                        }
                     );
+                }
+                r.push({
+                    room: index,
+                    layout: Hs
+                })
             }
+            this.roomsLayout = r
+            this.updateValue() 
         }
         else{
-            for(const item of Object.entries(this.value)){
-                this.finalValue.push(
-                    item[1]
-                )
-            }
+            this.roomsLayout = this.value
+            this.updateValue() 
         }
-
-        this.finalValue.forEach(element => {
-        this.updateValue(element) 
-        });
     },
     data(){
         return {
@@ -115,7 +174,8 @@ export default {
             isVisible: false,
             arrow: true,
             emitValue: {},
-            finalValue: []
+            finalValue: [],
+            roomsLayout: []
         }
     },
     methods: {
@@ -128,22 +188,29 @@ export default {
         uValue(){
             this.emitValue = this.value;
         },
-        updateValue(item){
-            this.$set(this.emitValue,item.code, {
-                display: item.display,
-                code: item.code,
-                label: item.label,
-                value: item.value
-            })
-            this.$emit('input',this.emitValue);
+        updateValue(){
+            // this.$set(this.emitValue,item.code, {
+            //     display: item.display,
+            //     code: item.code,
+            //     label: item.label,
+            //     value: item.value
+            // })
+            this.$emit('input',this.roomsLayout);
         },
-        constructDisplay(d){
-            let s = '';
-            Object.keys(d).forEach(element => {
-                s = s+' · '+d[element].value+' '+d[element].display
-            });
+        constructDisplay(){
+            let totalAdults = _.sumBy(this.roomsLayout, i=>{
+                return i.layout.find(j => {
+                    return j.code == "adults"
+                }).value
+            })
+            let totalKids = _.sumBy(this.roomsLayout, i=>{
+                return i.layout.find(j => {
+                    return j.code == "kids"
+                }).value
+            })
+            let s = `${totalAdults} adultos · ${totalKids} niños`
 
-            return s.substring(2);
+            return s;
         },
         add(item, step = 1){
             if(item.code == "kids")
@@ -261,7 +328,11 @@ export default {
         line-height: 1.2;
     }
     .gtt__item{
-        display: flex;
+        /* display: flex; */
+        margin-bottom: 5px;
+    }
+    .gtt__room_row{
+        /* display: flex; */
         margin-bottom: 5px;
     }
     .gtt__item_v_picker{
@@ -296,6 +367,19 @@ export default {
     .gtt__picker_button:hover{
         color: #c4c4c4;
         border: 1px solid #c4c4c4;
+    }
+    .gtt__room{
+        margin-bottom: 15px;
+    }
+    .gtt__room_name{
+        font-size: 18px;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .gtt__form{
+        max-height: 500px;
+        overflow: scroll;
     }
 
     @media(max-width: 1440px)

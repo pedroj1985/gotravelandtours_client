@@ -1,60 +1,77 @@
 <template>
-  <div id="rent-reservation-view">
+  <div class="lodging-reservation-view">
     <div class="list-item-general">
       <div class="list-item-carousel">
         <div class="result-images-carousel">
-          <img v-bind:src="item.imagen" alt="imagen no disponible" />
+            <Slick
+                ref="slick"
+                :slidesToShow="1"
+                :slidesToScroll="1"
+                :draggable="true"
+                :arrows="false"
+                :dots="true"
+                :autoplay="true"
+                >
+                <div class="result-images-carousel" v-for="destinyImage in item.images" :key="destinyImage">
+                        <img v-bind:src="destinyImage" alt="">
+                </div>
+            </Slick>
         </div>
       </div>
       <div class="list-item-info">
         <div class="item-name hn-bdcn">
-          {{ displayName(item.nombre) }}
+          {{ item.name }}
         </div>
-        <div class="item-provider hn-bdcn" :class="{viaCar: item.provider == 'Via Car'}">
-          <img :src="item.providerImage" :alt="item.provider" />
+        <div class="item-hotel-stars" v-if="item.stars">
+            <ul class="stars">
+                <li v-for="i in item.stars" :key="i">
+                    <i class="mdi mdi-star"></i>
+                </li>
+            </ul>
         </div>
-        <div class="item-info-icon">
-          <div class="item-info-icon-people">
-            <div class="iii-info-item iii-info-icon">
-              <i class="mdi mdi-account"></i>
-            </div>
-            <div class="iii-info-item iii-info-text">{{ item.plazas }}</div>
-          </div>
-          <div class="item-info-icon-transmission">
-            <div class="iii-info-item iii-info-icon">
-              <i class="mdi mdi-engine"></i>
-            </div>
-            <div class="iii-info-item iii-info-text">
-              {{
-                displayTransmission(
-                  $helpers.traducir(
-                    $helpers.findTransmissionLocale(item.transmision)
-                  )
-                )
-              }}
-            </div>
-          </div>
+        <div class="item-location" v-if="item.location">
+            <span class="c-space"><i class="mdi mdi-map-marker"></i></span>{{item.location}}
+        </div>
+        <div class="item-map-link" v-if="item.mapLink">
+            <span class="c-space"><i class="mdi mdi-map"></i></span>
+            <a :href="item.mapLink" class="map-location">Ubicación en el mapa</a>
         </div>
       </div>
       <div class="list-item-price">
         <div class="price-wrapper">
-          <GttTwoRowsInfo :value="getDateRecogida(item)" class="info-item">
+          <GttTwoRowsInfo :value="getDateEntrada(item)" class="info-item">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-calendar"></i>
             </template>
             <template slot="tr-info-name">
-              Fecha de recogida
+              Fecha de entrada
             </template>
           </GttTwoRowsInfo>
-          <GttTwoRowsInfo :value="getDateEntrega(item)" class="info-item">
+          <GttTwoRowsInfo :value="getDateSalida(item)" class="info-item">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-calendar"></i>
             </template>
             <template slot="tr-info-name">
-              Fecha de entrega
+              Fecha de salida
             </template>
           </GttTwoRowsInfo>
-          <GttTwoRowsInfo
+          <GttTwoRowsInfo :value="getVisitantes(item)" class="info-item">
+            <template slot="tr-icon-slot">
+              <i class="mdi mdi-account"></i>
+            </template>
+            <template slot="tr-info-name">
+              Visitantes
+            </template>
+          </GttTwoRowsInfo>
+          <GttTwoRowsInfo :value="getHabitaciones(item)" class="info-item">
+            <template slot="tr-icon-slot">
+              <i class="mdi mdi-bed"></i>
+            </template>
+            <template slot="tr-info-name">
+              Habitaciones
+            </template>
+          </GttTwoRowsInfo>
+          <!-- <GttTwoRowsInfo
             class="info-item"
             :value="getDiff()"
           >
@@ -64,32 +81,7 @@
             <template slot="tr-info-name">
               Día(s) reservados
             </template>
-          </GttTwoRowsInfo>
-          <!-- <GttTwoRowsInfo
-            class="info-item"
-            :value="
-              displayTransmission(
-                $helpers.traducir(
-                  $helpers.findTransmissionLocale(item.transmision)
-                )
-              )
-            "
-          >
-            <template slot="tr-icon-slot">
-              <i class="mdi mdi-car"></i>
-            </template>
-            <template slot="tr-info-name">
-              Tipo de transmisión
-            </template>
           </GttTwoRowsInfo> -->
-          <GttTwoRowsInfo :value="item.seguro" class="info-item">
-            <template slot="tr-icon-slot">
-              <i class="mdi mdi-shield-car"></i>
-            </template>
-            <template slot="tr-info-name">
-              Seguro
-            </template>
-          </GttTwoRowsInfo>
         </div>
       </div>
     </div>
@@ -108,14 +100,7 @@
               </button>
             </div>
             <div class="item-children-name hn-bdcn">
-              <slot name="itemChildrenNameSlot" v-bind:child="item">
-                {{ $helpers.traducir(item.marca) }}
-                {{
-                  $helpers.traducir(
-                    $helpers.findTransmissionLocale(item.transmision)
-                  )
-                }}
-              </slot>
+              {{item.reservedRooms.name}}
             </div>
             <div class="item-children-right-part" v-if="can">
               <!-- <div class="item-children-price hn-roman">
@@ -149,7 +134,7 @@
               <slot name="itemContentInfoSlot" v-bind:child="item">
                 <div class="flex-wrapper">
                   <div class="to-uppercase hn-roman gtt-text-color">
-                    Detalle de la renta
+                    Desglose del alojamiento
                   </div>
                   <div class="ml-auto font24 printer-button" v-if="ordenId != -1 && this.Voucher"> 
                      <!-- :class="{divDisabled: !hasVoucher}"> -->
@@ -159,7 +144,21 @@
                   </div>
                 </div>
                 <br />
-                <p class="gtt-text-color general-text-opt">
+                <div class="flex-wrapper" v-for="(i, pos) in item.reservedRooms" :key="i.id">
+                  <div class="to-left">
+                      Hab. {{pos + 1}}, {{i.CantAdulto}} adulto(s) <template v-if="i.CantNino > 0">
+                                                                                y {{i.CantNino}} niño(s)
+                                                                            </template>
+                                                                            <template v-else> sin niños</template>
+                   </div>
+                   <div class="to-right">
+                      {{ styledPrice(i.PrecioOrden).intPart }}.<sup>{{
+                        styledPrice(i.PrecioOrden).decimalPart
+                      }}</sup>
+                      USD                  
+                   </div>
+                </div>
+                <!-- <p class="gtt-text-color general-text-opt">
                   Punto de recogida: {{ displayIfNoneLugarRecogida(item) }}
                 </p>
                 <p class="gtt-text-color general-text-opt">
@@ -167,17 +166,7 @@
                 </p>
                 <p class="gtt-text-color general-text-opt">
                   Plazas: {{ item.plazas }}
-                </p>
-                <p class="gtt-text-color general-text-opt">
-                  Transmisión:
-                  {{
-                    displayTransmission(
-                      $helpers.traducir(
-                        $helpers.findTransmissionLocale(item.transmision)
-                      )
-                    )
-                  }}
-                </p>
+                </p> -->
                 <br />
                 <div class="tab-precio flex-wrapper">
                   <div
@@ -188,10 +177,10 @@
                   <div
                     class="to-uppercase hn-roman gtt-text-color flex-right-side font24"
                   >
-                    {{ styledPrice(item.precio).intPart }}.<sup>{{
-                      styledPrice(item.precio).decimalPart
-                    }}</sup>
-                    USD                  
+                      {{ styledPrice(item.total).intPart }}.<sup>{{
+                        styledPrice(item.total).decimalPart
+                      }}</sup>
+                      USD                  
                   </div>
                 </div>
               </slot>
@@ -202,147 +191,101 @@
     </div>
   </div>
 </template>
+
 <script>
-import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
+import GttTwoRowsInfo from '../custom-elements/GttTwoRowsInfo'
+import Slick from 'vue-slick-carousel'
 import moment from "moment";
-import {voucher} from "../../utils/auth"
 
 export default {
-  async created(){
-    this.Voucher = await this.getVoucher()
-    this.UrlVoucher = this.printVoucher()
-  },
-  components: {
-    GttTwoRowsInfo
-  },
-  props: {
-    item: {
-      type: Object,
-      default: null
+    created(){
+        console.log(this.item)
+        console.log('info-hotel')
     },
-    can: {
-      type: Boolean,
-      default: true
+    components: {
+        Slick,
+        GttTwoRowsInfo
     },
-    ordenId: {
-      default: -1,
+    props: {
+        item: {
+            type: Object,
+            default: null
+        },
+        can: {
+          type: Boolean,
+          default: false
+        },
+        ordenId: {
+          default: -1,
+        },
+        hasVoucher: {
+          default: false,
+          type: Boolean
+        }
     },
-    hasVoucher: {
-      default: false,
-      type: Boolean
-    }
-  },
-  data() {
-    return {
-      selectedInfo: "info",
-      UrlVoucher: "",
-      Voucher: null
-    };
-  },
-  methods: {
-    getDateEntrega(item) {
-      moment.locale("es");
-      return this.toMoment(item.orderVehiculo.FechaEntrega).format(
-        "DD MMMM YYYY"
-      );
-    },
-    getDateRecogida(item) {
-      moment.locale("es");
-      return this.toMoment(item.orderVehiculo.FechaRecogida).format(
-        "DD MMMM YYYY"
-      );
-    },
-    getDiff(){
-      return this.constructDates(this.item.orderVehiculo.FechaRecogida, this.item.orderVehiculo.FechaEntrega)
-    },
-    constructDates(startDate, endDate) {
-      let start = moment(startDate);
-      let end = moment(endDate);
-      let diff = start.diff(end, "days") * -1
-      let dayNightString = ''
-      if(diff>1)
-        dayNightString = " días" 
-      else
-        dayNightString = " día"      
-      return (
-        diff
-          +
-        dayNightString
-      );
-    },
-    displayIfNoneLugarRecogida(item) {
-      return item.orderVehiculo.LugarRecogida
-        ? item.orderVehiculo.LugarRecogida.nombre
-        : "N/A";
-    },
-    displayIfNoneLugarEntrega(item) {
-      return item.orderVehiculo.LugarEntrega
-        ? item.orderVehiculo.LugarEntrega.nombre
-        : "N/A";
-    },
-    toMoment(date) {
-      return moment(date);
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
+    data(){
+      return {
+        selectedInfo: "info",
+        pos: 1
       }
     },
-    openList() {
-      if (!this.isOpen) {
-        this.limit = this.item.items.lenght;
-      } else {
-        this.limit = 2;
-      }
-      this.isOpen = !this.isOpen;
-    },
-    styledPrice(number) {
-      let intPart = Math.floor(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+    methods: {
+        getVisitantes(item){
+          let totalA = 0
+          let totalN = 0
 
-      if (decimalPart == 0) decimalPart = "00";
-
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    displayTransmission(item) {
-      return item.split(" ")[0].toLowerCase();
-    },
-    displayName(data) {
-      let data_splitted = data.split("-");
-      if (data_splitted.length == 1) {
-        return data;
-      }
-      let sp = data_splitted.slice(1, data_splitted.lenght);
-
-      return sp.join("-");
-    },
-    async getVoucher(){
-      try{
-        let v = await voucher(this.ordenId)
-        if(this.item.tipo == 'rent')
-        {
-          let r = v.data.find( i => {
-            return i.OrdenVehiculoId == this.item.orderVehiculo.OrdenVehiculoId
+          item.reservedRooms.forEach( i => {
+            totalA = totalA + i.CantAdulto
+            totalN = totalN + i.CantNino
           })
 
-          return r
-        }
-        return null
-      }
-      catch(e){
-        console.log(e)
-        return null
-      }
-    },
-    printVoucher(){
-      return this.Voucher?this.Voucher.UrlVoucher:''
+          return `${totalA} Adulto(s) · ${totalN} Niño(s)`
+        },
+        getHabitaciones(item){
+
+          return `${item.reservedRooms.length} Habitación(es)`
+        },
+        addPos(){
+          this.pos = this.pos + 1
+          return this.pos
+        },
+        selectInfo(section) {
+          if (this.selectedInfo == section) {
+            this.selectedInfo = "";
+          } else {
+            this.selectedInfo = section;
+          }
+        },
+        toMoment(date) {
+            return moment(date);
+        },
+        getDateEntrada(item){
+            moment.locale("es");
+            return this.toMoment(item.entrada).format(
+            "DD MMMM YYYY"
+            );
+        },
+        getDateSalida(item){
+            moment.locale("es");
+            return this.toMoment(item.salida).format(
+            "DD MMMM YYYY"
+            );
+        },
+        styledPrice(number){
+            let intPart = Math.floor(number)
+            let decimalPart = Math.round((number - intPart) * 100);
+
+            if(decimalPart == 0)
+                decimalPart = '00'
+
+            return {intPart: intPart,
+                    decimalPart: decimalPart}
+        },
     }
-  }
-};
+}
 </script>
-<style scoped>
+
+<style>
 .info-item {
   margin-bottom: 10px;
 }

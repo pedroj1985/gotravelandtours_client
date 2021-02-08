@@ -11,7 +11,7 @@
         <span class="antonio-light">Buscando disponibilidad de </span
         ><span class="antonio-bold text-highlight">autos en renta</span>
         <span class="antonio-light"
-          >en
+          > en
           <span v-if="selectedPickUpPlace">{{
             selectedPickUpPlace.nombre
           }}</span
@@ -81,7 +81,7 @@
                    style="width: 100%;"
                     >
                 <gtt-select
-                  :options="transmissionTypes"
+                  :options="transmissionTypes()"
                   v-model="selectedTransmissionType"
                 >
                   <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
@@ -179,7 +179,7 @@ import GttSelect from "../custom-elements/GttSelect";
 import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import moment from "moment";
-import { constructDate, calculateNights } from "../../utils/utils";
+import { constructDate, calculateNights, transmissionTypes, hasInsurance } from "../../utils/utils";
 import {
   authSearchPuntosInteres,
   authSearchMarcas,
@@ -213,6 +213,9 @@ export default {
     }
   },
   methods: {
+    transmissionTypes(){
+      return transmissionTypes
+    },
     gttValidate(){
       let validator = [
         {
@@ -243,46 +246,73 @@ export default {
               Nombre: this.selectedCarCategory.nombre
             };
           } else {
-            marca = { MarcaId: undefined, Nombre: undefined };
+            marca = undefined;
           }
           let cliente = { ClienteId: localStorage.getItem("cliente") };
           let transmissionType = this.selectedTransmissionType.nombre;
           let searchItem = {
-            FechaRecogida: this.selectedDates.start,
-            FechaEntrega: this.selectedDates.end,
+            FechaRecogida: moment(this.selectedDates.start).format('YYYY-MM-D'),
+            FechaEntrega: moment(this.selectedDates.end).format('YYYY-MM-D'),
             Marca: marca,
             TipoTransmision: transmissionType,
             Cliente: cliente
           };
           let resultList = [];
           let { data } = await authSearchCars(searchItem);
-
-          for (let item of data) {
-            let image = await authGetImage(item.Vehiculo.ProductoId);
-            let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-            console.log(marca)
-            let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
-            resultList.push({
-              nombre: item.Vehiculo.Nombre,
-              tipo: "rent",
-              id: item.Vehiculo.ProductoId,
-              plazas: item.Vehiculo.CantidadPlazas,
-              descripcion: item.Vehiculo.Descripcion,
-              cancelation: item.Vehiculo.DescripcionCorta,
-              transmision: item.Vehiculo.TipoTransmision,
-              modeloId: item.Vehiculo.ModeloId,
-              marca: marca.data.Nombre,
-              marcaid: marca.data.MarcaId,
-              precio: item.PrecioOrden,
-              distribuidor: item.Distribuidor.Nombre,
-              distribuidorId: item.Distribuidor.DistribuidorId,
-              imagen: image.data.ImageContent,
-              provider: provider.data.Nombre,
-              providerImage: provider.data.ImageContent,
-              orderVehiculo: item
-            });
-            this.cleanVO(item);
-          }
+          await Promise.all(
+            data.filter(j => {return j.ValorSobreprecioAplicado > 0}).map( async (item) => {
+              let image = await authGetImage(item.Vehiculo.ProductoId);
+              let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+              let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
+              resultList.push({
+                nombre: item.Vehiculo.Nombre,
+                tipo: "rent",
+                id: item.Vehiculo.ProductoId,
+                plazas: item.Vehiculo.CantidadPlazas,
+                descripcion: item.Vehiculo.Descripcion,
+                cancelation: item.Vehiculo.DescripcionCorta,
+                seguro: item.Vehiculo.TieneSeguro,
+                transmision: item.Vehiculo.TipoTransmision,
+                modeloId: item.Vehiculo.ModeloId,
+                marca: marca.data.Nombre,
+                marcaid: marca.data.MarcaId,
+                precio: item.PrecioOrden,
+                distribuidor: item.Distribuidor.Nombre,
+                distribuidorId: item.Distribuidor.DistribuidorId,
+                imagen: image.data.ImageContent,
+                provider: provider.data.Nombre,
+                providerImage: provider.data.ImageContent,
+                orderVehiculo: item
+              });
+              this.cleanVO(item);
+              })
+          )
+          // for (let item of data) {
+          //   let image = await authGetImage(item.Vehiculo.ProductoId);
+          //   let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+          //   let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
+          //   resultList.push({
+          //     nombre: item.Vehiculo.Nombre,
+          //     tipo: "rent",
+          //     id: item.Vehiculo.ProductoId,
+          //     plazas: item.Vehiculo.CantidadPlazas,
+          //     descripcion: item.Vehiculo.Descripcion,
+          //     cancelation: item.Vehiculo.DescripcionCorta,
+          //     seguro: item.Vehiculo.TieneSeguro,
+          //     transmision: item.Vehiculo.TipoTransmision,
+          //     modeloId: item.Vehiculo.ModeloId,
+          //     marca: marca.data.Nombre,
+          //     marcaid: marca.data.MarcaId,
+          //     precio: item.PrecioOrden,
+          //     distribuidor: item.Distribuidor.Nombre,
+          //     distribuidorId: item.Distribuidor.DistribuidorId,
+          //     imagen: image.data.ImageContent,
+          //     provider: provider.data.Nombre,
+          //     providerImage: provider.data.ImageContent,
+          //     orderVehiculo: item
+          //   });
+          //   this.cleanVO(item);
+          // }
           this.desactivateModal();
           let filtersToStorage = {
             marca: this.selectedCarCategory,
@@ -304,6 +334,7 @@ export default {
             }
           });
         } catch (error) {
+          console.log(error)
           this.desactivateModal();
           this.$toasted.show("El servicio no está disponible en estos momentos", {
             type: "error"
@@ -322,6 +353,9 @@ export default {
     },
     calculateNights(min, max) {
       return calculateNights(min, max);
+    },
+    hasInsurance(text){
+      return hasInsurance(text)
     },
     overflowText(text, l = 30) {
       if (text.length > l) {
@@ -364,7 +398,6 @@ export default {
               type: "marca"
             });
           });
-          console.log(data);
           this.carsCategories = totalResult;
         } catch (error) {
           this.$toasted.show(
@@ -389,7 +422,6 @@ export default {
               type: "punto-interes"
             });
           });
-          console.log(totalResult);
           this.pickUpDeliveryOptions = totalResult;
         } catch (error) {
           this.$toasted.show(
@@ -414,7 +446,6 @@ export default {
               type: "punto-interes"
             });
           });
-          console.log(totalResult);
           this.pickUpDeliveryOptions = totalResult;
         } catch (error) {
           this.$toasted.show(
@@ -463,24 +494,24 @@ export default {
         }
       ],
       carsCategories: [],
-      transmissionTypes: [
-        {
-          nombre: "Automatico",
-          display: "Automático"
-        },
-        {
-          nombre: "Manual",
-          display: "Manual"
-        },
-        {
-          nombre: "Automatico S/Seguro",
-          display: "Automático S/Seguro"
-        },
-        {
-          nombre: "Manual S/Seguro",
-          display: "Manual S/Seguro"
-        }
-      ],
+      // transmissionTypes: [
+      //   {
+      //     nombre: "Automatico",
+      //     display: "Automático"
+      //   },
+      //   {
+      //     nombre: "Manual",
+      //     display: "Manual"
+      //   },
+      //   {
+      //     nombre: "Automatico S/Seguro",
+      //     display: "Automático S/Seguro"
+      //   },
+      //   {
+      //     nombre: "Manual S/Seguro",
+      //     display: "Manual S/Seguro"
+      //   }
+      // ],
       pickUpDeliveryOptions: []
     };
   }

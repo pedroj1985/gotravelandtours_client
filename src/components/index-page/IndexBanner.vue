@@ -60,7 +60,7 @@
     import NavBar2 from "../shared/NavBar2"
     import { eventBus } from '../../main';
     import Slick from 'vue-slick-carousel'
-    import {authLogin, updateHeader} from '../../utils/auth'
+    import {authLogin, updateHeader, authGetUser} from '../../utils/auth'
     import {authConfig} from '../../../public/js/auth_config'
     import {codes} from '../../utils/codes'
 
@@ -133,14 +133,39 @@
                                     localStorage.setItem(
                                         'cliente', data.clienteId
                                     )
-                                    this.loading = false
-                                    let u = {
-                                        name: data.nombre
-                                    }
-                                    this.$emit('userLogin', u)
-                                    updateHeader(localStorage.getItem('token'))
-                                    this.$eventCartBus.$emit('updateCart')
-                                    this.$router.push({name: 'indexLogged'})
+                                    localStorage.setItem(
+                                        'fecha_exp', data.fechaF
+                                    )
+                                    authGetUser(data.clienteId).then((r) => {
+                                        let u = r.data
+                                        let userToSave = {
+                                            name: data.nombre,
+                                            clienteId: data.clienteId,
+                                            clienteNombre: u.Nombre,
+                                            clienteCorreo: u.Correo,
+                                            photo: u.ImageContent
+                                        }
+                                        let uEncode = JSON.stringify(userToSave)
+                                        localStorage.setItem("usuarioObjeto", uEncode)
+                                        this.loading = false
+                                        let uS = JSON.parse(localStorage.getItem('usuarioObjeto'))
+                                        console.log(uS)
+                                        console.log('aqui qui ')
+                                        eventBus.$emit('userLogin', uS)
+                                        updateHeader(localStorage.getItem('token'))
+                                        this.$eventCartBus.$emit('updateCart')
+                                        this.$router.push({name: 'indexLogged'})
+                                    }).catch(
+                                        () => {
+                                            localStorage.setItem("usuarioObjeto", JSON.stringify({ name: data.nombre, clienteId: data.clienteId}))
+                                            let uS = JSON.parse(localStorage.getItem('usuarioObjeto'))
+                                            let u = uS
+                                            eventBus.$emit('userLogin', u)
+                                            updateHeader(localStorage.getItem('token'))
+                                            this.$eventCartBus.$emit('updateCart')
+                                            this.$router.push({name: 'indexLogged'})
+                                        }
+                                    )
                                 }
                             }
                         }).catch(
