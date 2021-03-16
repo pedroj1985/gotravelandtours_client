@@ -114,8 +114,8 @@
             <RentReservationView
               v-if="orden.tipo == 'rent'"
               class="rrv"
-              :ordenId="orden.OrdenId"
-              :hasVoucher="orden.HasVoucher"
+              :ordenId="orden.orderVehiculo.OrdenId"
+              :hasVoucher="orden.orderVehiculo.HasVoucher"
               :item="orden"
               :can="state == 'Open'"
               @remove="showDeleteModal"
@@ -164,6 +164,7 @@
                 @inputAerolineaTakeoff="updateAerolineaTakeoff"
                 @inputNvueloLanding="updateNvueloLanding"
                 @inputNvueloTakeoff="updateNvueloTakeoff"
+                v-if="checkIfRentExist"
               ></FlightInfoRow>
             </div>
             <div class="form-actions text-right">
@@ -245,6 +246,13 @@ export default {
     GttEditRentModal,
     LodgingReservationView2
   },
+  computed: {
+    checkIfRentExist(){
+      return this.allTypesOrders.some(i => {
+        return i.tipo == 'rent'
+      })
+    }
+  },
   mixins: [reusableMethodsMixin],
   async created() {
     this.$emit("adminPanelInfo", "reservation-detail");
@@ -260,12 +268,15 @@ export default {
     await this.preproccesingLists(this.order.ListaAlojamientoOrden, 'lodging');
     this.calculatePrice(this.allTypesOrders);
     this.updateName(this.order.NombreClienteFinal);
+    /*
+      TODO Validar si se puede dividir
+    */
     if (this.hasListaVehiculosOrden()) {
       this.updateHoraLanding(this.order.ListaVehiculosOrden[0].HoraInicio);
       this.updateHoraTakeoff(this.order.ListaVehiculosOrden[0].HoraFin);
-      this.updateAerolineaLanding(
-        this.order.ListaVehiculosOrden[0].InformacionLlegada.split(" - ")[0]
-      );
+        this.updateAerolineaLanding(
+          this.order.ListaVehiculosOrden[0].InformacionLlegada.split(" - ")[0]
+        );
       this.updateNvueloLanding(
         this.order.ListaVehiculosOrden[0].InformacionLlegada.split(" - ")[1]
       );

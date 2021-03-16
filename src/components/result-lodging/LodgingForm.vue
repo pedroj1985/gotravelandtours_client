@@ -68,13 +68,28 @@
             <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
             <span slot="placeholder"> Nacionalidad</span>
             <template v-slot:selectedValue="selectedValue">
-                <img :src="defaultFlagImgPath+selectedValue.selectedValue.flag" :alt="selectedValue.selectedValue.nombre + 'flag'" class="select-flag"> {{ selectedValue.selectedValue.nombre }}
+                <img
+                :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
+                :alt="selectedValue.selectedValue.nombre + 'flag'"
+                class="select-flag"
+                />
+                {{ selectedValue.selectedValue.nombre }}
             </template>
             <template v-slot:option="option">
-                <img :src="defaultFlagImgPath+option.option.flag" :alt="option.option.nombre + 'flag'" class="select-flag"> {{ option.option.nombre }}
+                <img
+                :src="defaultFlagImgPath + option.option.flag"
+                :alt="option.option.nombre + 'flag'"
+                class="select-flag"
+                />
+                {{ option.option.nombre }}
             </template>
             <template slot="selectedPlaceholder">
-                <img :src="defaultFlagImgPath+searchCountriesPlaceholder().flag" :alt="searchCountriesPlaceholder().nombre + 'flag'" class="select-flag"> {{ searchCountriesPlaceholder().nombre }}
+                <img
+                :src="defaultFlagImgPath + selectedNationality.flag"
+                :alt="selectedNationality.nombre + 'flag'"
+                class="select-flag"
+                />
+                {{ selectedNationality.nombre }}
             </template>
         </gtt-select>
         <div class="form-actions lodging-form-search-btn">

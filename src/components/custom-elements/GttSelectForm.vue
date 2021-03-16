@@ -161,9 +161,18 @@ export default {
             {
                 this.kids.pop()
             }
-            item.value-=step
-            this.isChanged = true;
-            this.updateValue(item)
+            let r = item.value - step
+            if(r >= 1 && item.code != "kids")
+            {
+                item.value-=step
+                this.isChanged = true;
+                this.updateValue(item)
+            }
+            else if(r >= 0 && item.code == "kids"){
+                item.value-=step
+                this.isChanged = true;
+                this.updateValue(item)
+            }
         },
     }
 }

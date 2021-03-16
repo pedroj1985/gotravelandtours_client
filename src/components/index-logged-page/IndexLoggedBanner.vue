@@ -41,23 +41,31 @@
         ><span class="bannerText"> para usted y su familia</span>
       </div>
       <div class="lodging-form">
-        <gtt-select
-          :openedLodging.sync="lodgingOpened"
-          @click.native="loadDestinies"
-          v-model="selectedLodgingDestinyValue"
-          :options="destinies"
-        >
-          <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-          <span slot="placeholder">Destino</span>
-          <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
-          <template v-slot:option="option">
-            {{ option.option.nombre }}
-          </template>
-          <template v-slot:selectedValue="selectedValue">
-            {{ selectedValue.selectedValue.nombre }}
-          </template>
-        </gtt-select>
+        <div ref="gttDestinyLodging"
+              class="cleft"
+              style="width: 100%;"
+              >
+          <gtt-select
+            :openedLodging.sync="lodgingOpened"
+            @click.native="loadDestinies"
+            v-model="selectedLodgingDestinyValue"
+            :options="destinies"
+          >
+            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+            <span slot="placeholder" class="required-field">Destino</span>
+            <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
+            <template v-slot:option="option">
+              {{ option.option.nombre }}
+            </template>
+            <template v-slot:selectedValue="selectedValue">
+              {{ selectedValue.selectedValue.nombre }}
+            </template>
+            <span slot="error" class="gtt-errors">
+            </span>
+          </gtt-select>
+        </div>
         <gtt-select-date v-model="selectedDates">
+          <span slot="placeholder" class="required-field">Fecha de entrada y salida</span>
           <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
         </gtt-select-date>
         <div class="selects-inline">
@@ -69,39 +77,39 @@
             <span slot="iconSelectedValue"
               ><i class="mdi mdi-account"></i
             ></span>
-            <span slot="placeholder">Visitantes</span>
+          <span slot="placeholder" class="required-field">Visitantes</span>
           </gtt-select-form>
           <gtt-select
             :options="countries"
             v-model="selectedNationality"
             class="select-countries"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-            <span slot="placeholder"> Nacionalidad</span>
-            <template v-slot:selectedValue="selectedValue">
-              <img
-                :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
-                :alt="selectedValue.selectedValue.value + 'flag'"
-                class="select-flag"
-              />
-              {{ selectedValue.selectedValue.value }}
-            </template>
-            <template v-slot:option="option">
-              <img
-                :src="defaultFlagImgPath + option.option.flag"
-                :alt="option.option.value + 'flag'"
-                class="select-flag"
-              />
-              {{ option.option.value }}
-            </template>
-            <template slot="selectedPlaceholder">
-              <img
-                :src="defaultFlagImgPath + searchCountriesPlaceholder().flag"
-                :alt="searchCountriesPlaceholder().value + 'flag'"
-                class="select-flag"
-              />
-              {{ searchCountriesPlaceholder().value }}
-            </template>
+              <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
+              <span slot="placeholder"> Nacionalidad</span>
+              <template v-slot:selectedValue="selectedValue">
+                <img
+                  :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
+                  :alt="selectedValue.selectedValue.nombre + 'flag'"
+                  class="select-flag"
+                />
+                {{ selectedValue.selectedValue.nombre }}
+              </template>
+              <template v-slot:option="option">
+                <img
+                  :src="defaultFlagImgPath + option.option.flag"
+                  :alt="option.option.nombre + 'flag'"
+                  class="select-flag"
+                />
+                {{ option.option.nombre }}
+              </template>
+              <template slot="selectedPlaceholder">
+                <img
+                  :src="defaultFlagImgPath + selectedNationality.flag"
+                  :alt="selectedNationality.nombre + 'flag'"
+                  class="select-flag"
+                />
+                {{ selectedNationality.nombre }}
+              </template>
           </gtt-select>
         </div>
         <div class="form-actions text-right">
@@ -128,6 +136,9 @@ import moment from "moment";
 import { eventBus } from "../../main";
 import { authSearchRegions, authGetRoomTypes } from "../../utils/auth";
 import {lodgingUtilsMixin} from "../../mixins/lodgingUtilsMixin"
+import {gttIsValid,
+        renderValid,
+        getValid} from '../../utils/validation'
 
 export default {
   components: {
@@ -141,6 +152,7 @@ export default {
     lodgingUtilsMixin
   ],
   async created() {
+    this.searchCountriesPlaceholder();
     window.addEventListener("scroll", this.handleScroll);
     let t = await authGetRoomTypes()
     this.todosTipo = t.data
@@ -149,6 +161,18 @@ export default {
     window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
+    gttValidate(){
+      let validator = [
+        {
+          rules: ['required'],
+          name: 'gttDestinyLodging',
+          value: this.selectedLodgingDestinyValue,
+          lang: 'es'
+        }
+      ]
+
+      return validator
+    },
     async loadDestinies() {
       if (this.lodgingOpened == true) {
         let { data } = await authSearchRegions();
@@ -176,60 +200,67 @@ export default {
       }
     },
     async activateModal() {
-      this.isModalActive = true;
-      let region = { RegionId: this.selectedLodgingDestinyValue.regionid };
-      let cliente = { ClienteId: localStorage.getItem("cliente") };
-      let searchItem = {
-        Entrada: this.selectedDates.start,
-        Salida: this.selectedDates.end,
-        Region: region,
-        Cliente: cliente
-      };
-      let searchFilters = {
-        Destiny: this.selectedLodgingDestinyValue,
-        Region: { RegionId: this.selectedLodgingDestinyValue.regionid, RegionNombre: this.selectedLodgingDestinyValue.nombre },
-        Cliente: { ClienteId: localStorage.getItem("cliente") },
-        Entrada: this.selectedDates.start,
-        Salida: this.selectedDates.end,
-        Visitantes: this.selectedRoomLayout,
-        Nacionalidad: this.selectedNationality
-      }
-      let resultList = []
-      try {
-        if(searchFilters.Visitantes.adults.value >= searchFilters.Visitantes.kids.value){
-            this.roomComb = this.$helpers.roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+      let iv = gttIsValid(this.gttValidate())
+      if(getValid(iv))
+      {
+        this.isModalActive = true;
+        let region = { RegionId: this.selectedLodgingDestinyValue.regionid };
+        let cliente = { ClienteId: localStorage.getItem("cliente") };
+        let searchItem = {
+          Entrada: this.selectedDates.start,
+          Salida: this.selectedDates.end,
+          Region: region,
+          Cliente: cliente
+        };
+        let searchFilters = {
+          Destiny: this.selectedLodgingDestinyValue,
+          Region: { RegionId: this.selectedLodgingDestinyValue.regionid, RegionNombre: this.selectedLodgingDestinyValue.nombre },
+          Cliente: { ClienteId: localStorage.getItem("cliente") },
+          Entrada: this.selectedDates.start,
+          Salida: this.selectedDates.end,
+          Visitantes: this.selectedRoomLayout,
+          Nacionalidad: this.selectedNationality
         }
-        else{
-            this.roomComb = this.$helpers.roomCombination2kids(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
-        }
-        let roomComb2 = this.$helpers.roomCombinationV2(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
-        if(this.roomComb != 'ERROR')
-        {
-          resultList = await this.searchResult(searchItem, this.roomComb, roomComb2)
-          localStorage.setItem(
-            "searchLodgingFilters",
-            JSON.stringify(searchFilters)
-          )
+        let resultList = []
+        try {
+          if(searchFilters.Visitantes.adults.value >= searchFilters.Visitantes.kids.value){
+              this.roomComb = this.$helpers.roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+          }
+          else{
+              this.roomComb = this.$helpers.roomCombination2kids(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+          }
+          let roomComb2 = this.$helpers.roomCombinationV2(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+          if(this.roomComb != 'ERROR')
+          {
+            resultList = await this.searchResult(searchItem, this.roomComb, roomComb2)
+            localStorage.setItem(
+              "searchLodgingFilters",
+              JSON.stringify(searchFilters)
+            )
+            this.desactivateModal();
+            this.$router.push({
+              name: "resultLodging",
+              params: {
+                searchResult: resultList
+              }
+            });
+          }
+          else{
+            this.desactivateModal();
+            this.$toasted.show("Demasiados niños", {
+              type: "error"
+            });
+          }
+        } catch (error) {
+          console.log(error);
           this.desactivateModal();
-          this.$router.push({
-            name: "resultLodging",
-            params: {
-              searchResult: resultList
-            }
-          });
-        }
-        else{
-          this.desactivateModal();
-          this.$toasted.show("Demasiados niños", {
+          this.$toasted.show("El servicio no está disponible en estos momentos", {
             type: "error"
           });
         }
-      } catch (error) {
-        console.log(error);
-        this.desactivateModal();
-        this.$toasted.show("El servicio no está disponible en estos momentos", {
-          type: "error"
-        });
+      }
+      else{
+        renderValid(iv, this)
       }
     },
     desactivateModal() {
@@ -253,16 +284,16 @@ export default {
     },
     searchCountriesPlaceholder() {
       let usa = this.countries.find(el => {
-        return el.value == "Estados Unidos";
+        return el.nombre == "Estados Unidos";
       });
 
       if (usa) {
-        return usa;
+        this.selectedNationality = usa;
       } else {
-        return this.countries[0];
+        this.selectedNationality = this.countries[0];
       }
     }
-  },
+    },
   data() {
     return {
       menuLinks: [
@@ -299,8 +330,8 @@ export default {
       selectedLodgingDestinyValue: "",
       selectedRoomLayout: null,
       selectedDates: {
-        start: moment(),
-        end: moment().add(1, "days")
+        start: new Date(moment()),
+        end: new Date(moment().add(1, "days"))
       },
       selectedNationality: null,
       destinies: [],
@@ -321,22 +352,22 @@ export default {
       ],
       countries: [
         {
-          value: "Afganistán",
+          nombre: "Afganistán",
           flag: "flag_afganistan.jpg"
         },
         {
-          value: "Albania",
+          nombre: "Albania",
           flag: "flag_albania.jpg"
         },
         {
-          value: "Alemania",
+          nombre: "Alemania",
           flag: "flag_alemania.jpg"
         },
         {
-          value: "Estados Unidos",
+          nombre: "Estados Unidos",
           flag: "flag_estadosunidos.jpg"
         }
-      ]
+      ],
     };
   }
 };

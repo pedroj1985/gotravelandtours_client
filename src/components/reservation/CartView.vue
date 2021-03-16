@@ -145,6 +145,7 @@
                   @inputAerolineaTakeoff="updateAerolineaTakeoff"
                   @inputNvueloLanding="updateNvueloLanding"
                   @inputNvueloTakeoff="updateNvueloTakeoff"
+                  v-if="checkIfRentExist"
                 ></FlightInfoRow>
               </div>
               <div class="form-actions text-right">
@@ -216,6 +217,13 @@ export default {
     GttVerificationModal,
     NavBar2,
     GttEditRentModal
+  },
+  computed: {
+    checkIfRentExist(){
+      return this.allTypesOrders.some(i => {
+        return i.tipo == 'rent'
+      })
+    }
   },
   methods: {
     gttValidate() {
@@ -378,9 +386,13 @@ export default {
                         po.CantAdulto = j.tipoHabitacion
                         po.CantNino = j.cantidadMenoresPorHabitacion
                         po.CantInfante = 0
-                        po.PlanesAlimenticiosId = i.reservedRooms.planAlimenticio 
+                        // po.PlanesAlimenticiosId = i.reservedRooms.planAlimenticio 
+                        // po.PlanAlimenticio = {
+                        //   PlanesAlimenticiosId: i.reservedRooms.planAlimenticio
+                        // }
+                        po.PlanesAlimenticiosId = j.planAlimenticio 
                         po.PlanAlimenticio = {
-                          PlanesAlimenticiosId: i.reservedRooms.planAlimenticio
+                          PlanesAlimenticiosId: j.planAlimenticio
                         }
                         po.Habitacion = {
                           HabitacionId: po.Habitacion.HabitacionId
@@ -584,7 +596,7 @@ export default {
       this.tempItemToEdit.providerImage = item.providerImage;
       this.tempItemToEdit.tipo = item.tipo;
       this.tempItemToEdit.transmision = item.transmision;
-    }
+    },
   },
   data() {
     return {

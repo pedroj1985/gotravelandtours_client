@@ -126,6 +126,9 @@ export default {
   directives: {
     ClickOutside
   },
+  created(){
+      this.isVisible = this.opened
+  },
   mounted() {
     this.popupItem = this.$el;
     this.searchResult = this.options;
@@ -151,6 +154,14 @@ export default {
       type: Array
     },
     search: {
+      type: Boolean,
+      default: false
+    },
+    clickable: {
+      type: Boolean,
+      default: true
+    },
+    opened: {
       type: Boolean,
       default: false
     },
@@ -188,12 +199,15 @@ export default {
       this.searchResult = result;
     },
     async toggleClicked() {
-      this.isVisible = !this.isVisible;
-      if (this.isVisible == true) {
-        this.emitOpen();
-      } else {
-        this.searchQuery = "";
-        this.emitClose();
+      if(this.clickable)
+      {
+        this.isVisible = !this.isVisible;
+        if (this.isVisible == true) {
+          this.emitOpen();
+        } else {
+          this.searchQuery = "";
+          this.emitClose();
+        }
       }
     },
     setSelectedValue(item) {
@@ -205,8 +219,10 @@ export default {
       this.emitClose();
     },
     handleFocusOut() {
-      this.isVisible = false;
-      this.emitClose();
+      if(!this.opened){
+        this.isVisible = false;
+        this.emitClose();
+      }
     },
     updateValue() {
       this.selectedValue = this.value;

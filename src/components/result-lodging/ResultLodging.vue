@@ -31,7 +31,7 @@
                     <img src="../../../public/img/icomap.svg" alt="mapa">
                 </div>
             </div>
-            <RightColumnList :filters="filters" :todosTipo="todosTipo" :resultList="resultList" class="right-column-content" @resultSize="setResultTotal" :perPage="2"></RightColumnList>
+            <RightColumnList :filters="filters" :todosTipo="todosTipo" :resultList="resultList" class="right-column-content" @resultSize="setResultTotal" :perPage="10"></RightColumnList>
         </div>
         </div>
   </div>

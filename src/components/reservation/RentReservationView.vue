@@ -151,7 +151,7 @@
                   <div class="to-uppercase hn-roman gtt-text-color">
                     Detalle de la renta
                   </div>
-                  <div class="ml-auto font24 printer-button" v-if="ordenId != -1 && this.Voucher"> 
+                  <div class="ml-auto font24 printer-button" v-if="ordenId != -1 && Voucher"> 
                      <!-- :class="{divDisabled: !hasVoucher}"> -->
                     <a :href="UrlVoucher" target="_blank">
                       <i class="mdi mdi-printer"></i>

@@ -39,7 +39,7 @@
     </div>
     <div
       class="gtt__list_area_wrapper"
-      :class="{ isVisible: isVisible }"
+      v-if="isVisible"
       v-click-outside="handleFocusOut"
     >
       <span class="arrow" v-if="arrow"></span>
@@ -73,11 +73,22 @@ export default {
     ClickOutside
   },
   mounted() {
+    console.log(this.value)
     this.popupItem = this.$el;
+    console.log(this.opened)
+    this.isVisible = this.opened
   },
   props: {
     value: {
       default: moment()
+    },
+    clickable: {
+      type: Boolean,
+      default: true
+    },
+    opened: {
+      type: Boolean,
+      default: false
     },
     dsb: {
       type: Boolean,
@@ -101,20 +112,25 @@ export default {
     return {
       isVisible: false,
       arrow: true,
-      dates: this.value
+      dates: this.value,
     };
   },
   watch: {
     dates: function(val) {
       this.$emit("input", val);
     },
+    value: function(){
+      this.updateValue()
+    }
   },
   methods: {
     toggleClicked() {
-      this.isVisible = !this.isVisible;
+      if(this.clickable)
+          this.isVisible = !this.isVisible;
     },
     handleFocusOut() {
-      this.isVisible = false;
+      if(!this.opened)
+        this.isVisible = false;
     },
     toMoment(date) {
       return moment(date);
@@ -215,9 +231,6 @@ export default {
   top: 45px;
   margin-top: 30px;
   box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);
-  display: none;
-}
-.isVisible {
   display: block;
 }
 .arrow {

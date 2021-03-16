@@ -4,19 +4,24 @@
             <div class="children-wrapper">
                 <div class="item-children-header">
                     <div class="item-children-info-btn">
-                        <button type="button" class="btn-children-info" :class="{'selected': selectedInfo == 'info'}" @click="selectInfo('info')"><i class="mdi mdi-clipboard-text"></i></button>
+                        <button type="button" class="btn-children-info" v-b-tooltip.hover title="Descripción" :class="{'selected': selectedInfo == 'info'}" @click="selectInfo('info')"><i class="mdi mdi-clipboard-text"></i></button>
                     </div>
                     <div class="item-children-name hn-roman">
                         <slot name="itemChildrenNameSlot" v-bind:child="child">
-                            <span class="font16">{{child.habitacion.Habitacion.Nombre}}</span> 
+                            <span class="font16" @click="selectInfo('roomLayout')">{{child.rO.Nombre}}</span> 
                             <!-- <span class="dist">{{child.combinacion.display}}</span> -->
                         </slot>
                     </div>
                     <slot name="itemChildren" v-bind:child="child">
                             <div class="item-children-section hn-roman">
-                                <div class="item-children-section-item">{{child.PA.Codigo}}</div>
-                                <div class="item-children-section-item item-children-section-icon"><i class="mdi mdi-phone-check"></i></div>
-                                <div>
+                                <div class="item-children-section-item" v-b-tooltip.hover :title="child.pA.Nombre">{{child.pA.Codigo}}</div>
+                                <div class="item-children-section-item item-children-section-icon" v-b-tooltip.hover title="Confirmación Inmediata o a Solicitud"><i class="mdi mdi-phone-check"></i></div>
+                                <div class="item-children-section-item item-children-section-icon item-children-info-btn">
+                                    <button type="button" class="btn-children-info" :class="{'selected': selectedInfo == 'roomLayout'}" @click="selectInfo('roomLayout')" v-b-tooltip.hover title="Precios">
+                                        <i class="mdi mdi-floor-plan"></i>
+                                    </button>
+                                </div>
+                                <!-- <div>
                                     <template v-if="child.CantAdultos == 1">
                                         <i class="mdi mdi-account-box"></i>
                                     </template>
@@ -33,7 +38,7 @@
                                     <span class="hn-roman">
                                         {{child.CantAdultos}} adulto(s) <template v-if="child.CantMenores>0">y {{child.CantMenores}} niño(s)</template>
                                     </span>
-                                </div>
+                                </div> -->
                                 <!-- <div class="item-children-section-item item-children-section-icon item-children-info-btn">
                                     <button type="button" class="btn-children-info" :class="{'selected': selectedInfo == 'roomLayout'}" @click="selectInfo('roomLayout')">
                                         <i class="mdi mdi-floor-plan"></i>
@@ -44,20 +49,40 @@
                     <div class="item-children-right-part">
                         <div class="item-children-price hn-roman">
                             <slot name="itemChildrenPriceSlot" v-bind:child="child">
-                                {{ styledPrice(child.habitacion.PrecioOrden).intPart}}.<sup>{{ styledPrice(child.habitacion.PrecioOrden).decimalPart}}</sup> USD
+                                {{ styledPrice(totalPrecio).intPart}}.<sup>{{ styledPrice(totalPrecio).decimalPart}}</sup> USD
                             </slot>
                         </div>
                         <div class="item-children-reserve form-actions">
                             <!-- <button type="submit" class="antonio-regular inverse btn-cart" @click="addToCart"><i class="mdi mdi-cart"></i></button> -->
-                            <button type="submit" class="antonio-regular" @click="addToCart">Seleccionar</button>
+                            <button type="submit" class="antonio-regular" @click="addToCart" :disabled="roomSelectedToDis.length != 0">Seleccionar</button>
                         </div>
                     </div>
                 </div>
                 <div class="item-children-content hn-roman">
                     <div class="item-children-content-info" v-if="selectedInfo == 'info'">
                         <slot name="itemContentInfoSlot" v-bind:child="child">
-                            <div class="hn-roman" v-html="child.habitacion.Habitacion.Descripcion"></div>
+                            <div class="hn-roman" v-html="child.rO.Descripcion"></div>
                         </slot>
+                    </div>
+                    <div class="item-children-content-info pd-15" v-if="selectedInfo == 'roomLayout'">
+                        <div class="pt-30">
+                            <div v-for="room in child.l" :key="room.room">
+                                <div class="flex-wrapper" :class="{'dis': isIn(room.rn)}">
+                                    <span class="check-room" @click="addToCartOneRoom(room)"><i class="mdi mdi-check-circle"></i></span>
+                                    <span class="flex-left-side">Hab. {{room.rn}} (
+                                            <AdultsKidsIcons 
+                                                :adults="room.CantAdultos" 
+                                                :kids="room.CantidadMenores"
+                                                :id="room.id"
+                                            ></AdultsKidsIcons>
+                                        )</span>
+                                    <span class="flex-right-side">
+                                        {{ styledPrice(room.habitacion.PrecioOrden).intPart}}.<sup>{{ styledPrice(room.habitacion.PrecioOrden).decimalPart}}</sup> USD
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <pre class="hn-roman">{{child.roomLayout}}</pre> -->
                     </div>
                 </div>
 
@@ -69,7 +94,12 @@
 <script>
 import {lodgingUtilsMixin} from "../../mixins/lodgingUtilsMixin"
 import {authGetRoomTypes} from "../../utils/auth"
+import AdultsKidsIcons from './AdultsKidsIcons'
+import _ from "lodash"
 export default {
+    components: {
+        AdultsKidsIcons
+    },
     mixins: [
         lodgingUtilsMixin
     ],
@@ -77,18 +107,36 @@ export default {
         return {
             selectedInfo: '',
             todosTiposHabitaciones:  [],
+            totalPrecio: 0
         }
     },
     async created(){
         let tth = await authGetRoomTypes()
         this.todosTiposHabitaciones = tth.data
+        console.log(this.child)
+        console.log('aaaaaaaaaa')
+        this.totalPrecio = _.sumBy(
+            this.child.l,
+            i => i.habitacion.PrecioOrden
+        )
     },
     props: {
-        child: Object
+        child: Object,
+        roomSelectedToDis: Array
+    },
+    watch: {
+        roomSelectedToDis: function(item){
+            console.log(item)
+            console.log('lllllllll')
+        }
     },
     methods: {
         addToCart() {
             this.$emit('listReserve', this.child)
+        },
+        addToCartOneRoom(one){
+            this.selectInfo('roomLayout')
+            this.$emit('reserveOne', one)
         },
         styledPrice(number){
             let intPart = Math.floor(number)
@@ -99,6 +147,9 @@ export default {
 
             return {intPart: intPart,
                     decimalPart: decimalPart}
+        },
+        isIn(n){
+            return this.roomSelectedToDis.includes(n);
         },
         selectInfo(section)
         {
@@ -155,22 +206,25 @@ export default {
         font-size: 16px;
         width: 35%;
     }
+    .item-children-name span:hover{
+        cursor: pointer;
+    }
     .dist{
         font-size: 12px;
     }
     .item-children-section{
         color: #6d6d6d;
-        font-size: 24px;
+        font-size: 18px;
         display: flex;
     }
 
     .item-children-section-item{
         padding-right: 25px;
         align-self: center;
-        font-size: 30px !important;
+        font-size: 24px !important;
     }
     .item-children-section-icon{
-        font-size: 30px !important;
+        font-size: 24px !important;
         color: #212f3d;
         align-self: center;
     }
@@ -203,6 +257,23 @@ export default {
         align-self: center;
     }
     .selected{
+        color: #c4c4c4;
+    }
+    .item-children-reserve button{
+        font-size: 18px;
+    }
+    .check-room{
+        margin-right: 10px;
+    }
+    .check-room:hover{
+        cursor: pointer;
+    }
+    .dis span{
+        pointer-events: none;
+        color: #c4c4c4; 
+        border-color: #c4c4c4;
+    }
+    .dis span{
         color: #c4c4c4;
     }
 </style>

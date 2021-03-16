@@ -335,7 +335,7 @@ export const lodgingUtilsMixin = {
                                                 try{
                                                     let precioA = await authGetRoomPrice(roomPriceSearchObj)
                                                     if(precioA.data.length != 0 
-                                                                && precioA.data[0].OrdenAlojamientoId != -1 
+                                                                // && precioA.data[0].OrdenAlojamientoId != -1 
                                                                 && precioA.data[0].PrecioOrden != 0
                                                                 ){
                                                         temp.push(
@@ -348,7 +348,8 @@ export const lodgingUtilsMixin = {
                                                                 },
                                                                 tipoHabitacion: k.habId,
                                                                 tipoHabitacionNombre: k.hab,
-                                                                cantidadMenoresPorHabitacion: k.kids
+                                                                cantidadMenoresPorHabitacion: k.kids,
+                                                                planAlimenticio: lpa.PlanesAlimenticiosId
                                                             }
                                                         )
                                                     }
@@ -374,10 +375,13 @@ export const lodgingUtilsMixin = {
                                             display = display+`${element.cantidad}x${element.tipoHabitacionNombre} | `
                                         });
                                         let planA = await authGetLodgingEatingPlanOne(lpa.PlanesAlimenticiosId)
+                                        console.log(planA)
+                                        console.log('plan aqui')
                                         listadoPrecios.push({
                                             name: j.Nombre,
                                             habitacion: j,
                                             planAlimenticioCodigo: planA.data.Codigo,
+                                            planAlimenticioNombre: planA.data.Nombre,
                                             planAlimenticio: lpa.PlanesAlimenticiosId,
                                             combinacion: {
                                                 total: totalPrice,

@@ -113,11 +113,17 @@ export default {
     methods: {
         goToDetail(){
             let f = this.filters
+            let a = this.item.acomodation
             let id = this.item.lodging.ProductoId
 
             localStorage.setItem(
                 "searchLodgingFilters",
                 JSON.stringify(f)
+            );
+
+            localStorage.setItem(
+                "searchLodgingAcomodation",
+                JSON.stringify(a)
             );
 
             this.$router.push({

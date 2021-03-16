@@ -53,6 +53,13 @@ export function authGetLodging(id){
   })
 }
 
+export function authGetLodgings(){
+  let token = localStorage.getItem("token");
+  return HTTP.get("/Alojamientoes", {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+}
+
 export function authGetRoomPrice(searchRoomPrice){
   let token = localStorage.getItem("token");
   return HTTP.post("/Alojamientoes/BuscarOrdenPrecio", searchRoomPrice, {

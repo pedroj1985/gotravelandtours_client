@@ -1,23 +1,42 @@
 <template>
-  <div class="selected-room row">
-      <div class="col-md-5 room-name">
-          {{item.habitacion.Habitacion.Nombre}}
+  <div class="selected-room flex-wrapper">
+      <div class="room-name">
+          {{item.habitacion.Habitacion.Nombre}} (
+            <AdultsKidsIcons
+                :adults="item.CantAdultos"
+                :kids="item.CantidadMenores"
+                :id="id"
+            ></AdultsKidsIcons>
+          )
       </div>
-      <div class="col-md-5 room-layout">
-          {{item.CantAdultos}} Adultos, {{item.CantidadMenores}} Niños
-      </div>
-      <div class="col-md-2 room-buttons">
-        <button type="button" class="antonio-regular" @click="remove"><i class="mdi mdi-trash-can"></i></button>
+      <div class="flex-right-side room-price">
+          {{ styledPrice(item.habitacion.PrecioOrden).intPart}}.<sup>{{ styledPrice(item.habitacion.PrecioOrden).decimalPart}}</sup> USD
+          <button type="button" class="antonio-regular remove-icon" @click="remove"><i class="mdi mdi-trash-can"></i></button>
       </div>
   </div>
 </template>
 
 <script>
+import AdultsKidsIcons from './AdultsKidsIcons'
+import {uuid} from 'vue-uuid'
+
 export default {
+    components: {
+        AdultsKidsIcons
+    },
     // mounted(){
     //     console.log(this.item)
     //     console.log('room aqui')
     // },
+    created(){
+        this.id = uuid.v4()
+        console.log(this.item)
+    },
+    data(){
+        return {
+            id: null
+        }
+    },
     props: {
         item: {
             type: Object,
@@ -29,12 +48,38 @@ export default {
     methods: {
         remove(){
             this.$emit('removeFromList', this.item)
-        }
+        },
+        styledPrice(number){
+            let intPart = Math.floor(number)
+            let decimalPart = Math.round((number - intPart) * 100);
+
+            if(decimalPart == 0)
+                decimalPart = '00'
+
+            return {intPart: intPart,
+                    decimalPart: decimalPart}
+        },
     }
 
 }
 </script>
 
 <style>
-
+    .remove-icon{
+        /* border: none; */
+        background: transparent;
+        border-radius: 5px;
+        margin-left: 15px;
+    }
+    .remove-icon:hover{
+        /* border: none; */
+        color: #ffffff;
+        background: #212f3d;
+    }
+    .selected-room{
+        margin-bottom: 15px;
+    }
+    .room-name, .room-price{
+        font-size: 14px;
+    }
 </style>

@@ -18,11 +18,12 @@ export function constructDisplay(d){
     return s.substring(2);
 }
 
-export function verifyDifferentsDates(itemToCompare){
+export function verifyDifferentsDates(itemToCompare, tipo = 'rent'){
 
     let lcart = localStorage.getItem('gttCart') 
+    console.log(JSON.parse(lcart))
     if(lcart){
-        let list = JSON.parse(lcart).map(i=>{return i.orderVehiculo})
+        let list = JSON.parse(lcart).filter(i => { return i.tipo == tipo})
         eventDiffDays.$emit('diffDays', checkDifferentDates(itemToCompare, list))
     }
 }
@@ -33,9 +34,18 @@ export function verifyDifferentsDatesNoCartReturnBoolean(itemToCompare, list){
 
 export function checkDifferentDates(item, list){
     let listDates = list.map( i => {
-        return {
-            end: i.FechaEntrega,
-            start: i.FechaRecogida
+        if(i.tipo == 'rent'){
+            return {
+                end: i.orderVehiculo.FechaEntrega,
+                start: i.orderVehiculo.FechaRecogida
+            }
+        }
+        if(i.tipo == 'lodging')
+        {
+            return {
+                end: i.salida,
+                start: i.entrada
+            }
         }
     })
 

@@ -112,12 +112,19 @@ export default {
                     this.roomsLayout.pop()
                 }
             }
-
-
+            this.updateValue()
         }
     },
     props: {
         dsb:{
+            type: Boolean,
+            default: false
+        },
+        clickable: {
+            type: Boolean,
+            default: true
+        },
+        opened: {
             type: Boolean,
             default: false
         },
@@ -134,6 +141,7 @@ export default {
         }
     },
     created(){
+        this.isVisible = this.opened
         let r = []
         if(this.value.length==0)
         {
@@ -180,10 +188,12 @@ export default {
     },
     methods: {
         toggleClicked(){
-            this.isVisible = !this.isVisible;
+            if(this.clickable)
+                this.isVisible = !this.isVisible;
         },
         handleFocusOut(){
-            this.isVisible = false;
+            if(!this.opened)
+                this.isVisible = false;
         },
         uValue(){
             this.emitValue = this.value;

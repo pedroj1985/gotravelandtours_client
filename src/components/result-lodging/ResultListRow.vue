@@ -4,20 +4,20 @@
             <div class="children-wrapper">
                 <div class="item-children-header">
                     <div class="item-children-info-btn">
-                        <button type="button" class="btn-children-info" :class="{'selected': selectedInfo == 'info'}" @click="selectInfo('info')"><i class="mdi mdi-clipboard-text"></i></button>
+                        <button type="button" v-b-tooltip.hover title="Descripción" class="btn-children-info" :class="{'selected': selectedInfo == 'info'}" @click="selectInfo('info')"><i class="mdi mdi-clipboard-text"></i></button>
                     </div>
                     <div class="item-children-name hn-roman">
                         <slot name="itemChildrenNameSlot" v-bind:child="child">
-                            <span class="font16">{{child.name}}</span> 
+                            <span class="font16" @click="selectInfo('roomLayout')">{{child.name}}</span> 
                             <!-- <span class="dist">{{child.combinacion.display}}</span> -->
                         </slot>
                     </div>
                     <slot name="itemChildren" v-bind:child="child">
                             <div class="item-children-section hn-roman">
-                                <div class="item-children-section-item">{{child.planAlimenticioCodigo}}</div>
-                                <div class="item-children-section-item item-children-section-icon"><i class="mdi mdi-phone-check"></i></div>
+                                <div class="item-children-section-item" v-b-tooltip.hover :title="child.planAlimenticioNombre">{{child.planAlimenticioCodigo}}</div>
+                                <div class="item-children-section-item item-children-section-icon" v-b-tooltip.hover title="Confirmación Inmediata o a Solicitud"><i class="mdi mdi-phone-check"></i></div>
                                 <div class="item-children-section-item item-children-section-icon item-children-info-btn">
-                                    <button type="button" class="btn-children-info" :class="{'selected': selectedInfo == 'roomLayout'}" @click="selectInfo('roomLayout')">
+                                    <button type="button" v-b-tooltip.hover title="Precios" class="btn-children-info" :class="{'selected': selectedInfo == 'roomLayout'}" @click="selectInfo('roomLayout')">
                                         <i class="mdi mdi-floor-plan"></i>
                                     </button>
                                 </div>
@@ -52,14 +52,6 @@
                                         </span>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="flex-wrapper pt-15 pd-15">
-                                <span class="flex-left-side font24">
-                                    TOTAL
-                                </span>
-                                <span class="flex-right-side font24">
-                                    {{ styledPrice(child.combinacion.total).intPart}}.<sup>{{ styledPrice(child.combinacion.total).decimalPart}}</sup> USD
-                                </span>
                             </div>
                             <!-- <pre class="hn-roman">{{child.roomLayout}}</pre> -->
                         </div>
@@ -159,6 +151,9 @@ export default {
         color: #6d6d6d;
         font-size: 16px;
         width: 35%;
+    }
+    .item-children-name span:hover{
+        cursor: pointer;
     }
     .dist{
         font-size: 12px;
