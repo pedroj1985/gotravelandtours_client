@@ -321,7 +321,7 @@ export const lodgingUtilsMixin = {
                                                     ca = 3
                                                 let roomPriceSearchObj = {
                                                     Cliente: {ClienteId: localStorage.getItem("cliente")},
-                                                    PlanAlimenticio: {PlanAlimenticioId: lpa.PlanesAlimenticiosId},
+                                                    PlanAlimenticio: {PlanesAlimenticiosId: lpa.PlanesAlimenticiosId},
                                                     Alojamiento: {ProductoId: i.Alojamiento.ProductoId},
                                                     TipoHabitacion: {TipoHabitacionId: k.habId},
                                                     CantidadAdultos: ca,

@@ -1,28 +1,30 @@
 <template>
   <div id="index-logged-rent-search">
     <div class="home-logged-rent-img">
-      <img src="img/homelogin_img_form_renta.jpg" alt="" />
+      <img src="img/homelogin_img_form_renta.jpg" alt />
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
       <div slot="image">
-        <img src="img/icopaq_renta_color.svg" alt="" />
+        <img src="img/icopaq_renta_color.svg" alt />
       </div>
       <div slot="searching-text" class="searching-text">
-        <span class="antonio-light">Buscando disponibilidad de </span
-        ><span class="antonio-bold text-highlight">autos en renta</span>
-        <span class="antonio-light"
-          > en
-          <span v-if="selectedPickUpPlace">{{
+        <span class="antonio-light">Buscando disponibilidad de</span>
+        <span class="antonio-bold text-highlight">autos en renta</span>
+        <span class="antonio-light">
+          en
+          <span v-if="selectedPickUpPlace">
+            {{
             selectedPickUpPlace.nombre
-          }}</span
-          ><span v-else>cualquier lugar</span></span
-        >
+            }}
+          </span>
+          <span v-else>cualquier lugar</span>
+        </span>
       </div>
       <div slot="searching-fields" class="searching-fields">
         <div v-if="selectedDates">
           entre el {{ constructDate(selectedDates.start) }} y el
           {{ constructDate(selectedDates.end) }} ({{
-            calculateNights(selectedDates.end, selectedDates.start)
+          calculateNights(selectedDates.end, selectedDates.start)
           }}
           días)
         </div>
@@ -31,144 +33,129 @@
     </GttModalSearch>
     <div class="custom-text-form custom-margin">
       <div class="custom-form">
-          <div class="selects-inline">
-            <gtt-select
-              :openedLodging.sync="pickUpOpened"
-              @click.native="loadPickUpPlaces"
-              :options="pickUpDeliveryOptions"
-              class="cleft"
-              v-model="selectedPickUpPlace"
-            >
-              <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-              <span slot="placeholder"> Punto de recogida</span>
-              <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
-              <template v-slot:option="option">
-                {{ option.option.nombre }}
-              </template>
-              <template v-slot:selectedValue="selectedValue">
-                <span id="selectedPickUp">{{
-                  overflowText(selectedValue.selectedValue.nombre)
-                }}</span>
-                <b-tooltip target="selectedPickUp" triggers="hover">
-                  {{ selectedValue.selectedValue.nombre }}
-                </b-tooltip>
-              </template>
-            </gtt-select>
-            <gtt-select
-              :openedLodging.sync="deliveryOpened"
-              @click.native="loadDeliveryPlaces"
-              :options="pickUpDeliveryOptions"
-              v-model="selectedDeliveryPlace"
-            >
-              <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-              <span slot="placeholder"> Punto de entrega</span>
-              <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
-              <template v-slot:option="option">
-                {{ option.option.nombre }}
-              </template>
-              <template v-slot:selectedValue="selectedValue">
-                {{ overflowText(selectedValue.selectedValue.nombre) }}
-              </template>
-            </gtt-select>
-          </div>
-          <gtt-select-date v-model="selectedDates" :day="true">
-            <span slot="placeholder" class="required-field"> Fecha de entrada y salida</span>
-            <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-          </gtt-select-date>
-          <div class="selects-inline">
-              <div ref="gttTransmision"
-                   class="cleft"
-                   style="width: 100%;"
-                    >
-                <gtt-select
-                  :options="transmissionTypes()"
-                  v-model="selectedTransmissionType"
-                >
-                  <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-                  <span slot="placeholder" class="required-field"> Tipo de transmisión</span>
-                  <span slot="selectedPlaceholder"
-                    >¿Qué tipo de transmisión desea?</span
-                  >
-                  <template v-slot:selectedValue="selectedValue">
-                    {{ selectedValue.selectedValue.display }}
-                  </template>
-                  <template v-slot:option="option">
-                    {{ option.option.display }}
-                  </template>
-                  <span slot="error" class="gtt-errors">
-                  </span>
-                </gtt-select>
-              </div>
-              <gtt-select
-                :openedLodging.sync="categoriesOpened"
-                @click.native="loadMarcas"
-                :options="carsCategories"
-                :nullable="true"
-                v-model="selectedCarCategory"
-              >
-              <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
-              <span slot="placeholder"> Categoría</span>
-              <span slot="selectedPlaceholder">¿Cómo desea que sea el auto?</span>
-              <template v-slot:option="option">
-                {{ option.option.nombre }}
-              </template>
-              <template v-slot:selectedValue="selectedValue">
-                {{ overflowText(selectedValue.selectedValue.nombre) }}
-              </template>
-            </gtt-select>
-          </div>
-          <div class="selects-inline">
-            <gtt-select
-              :options="countries"
-              v-model="selectedNationality"
-              class="select-countries"
-              style="width: 50%; !important;"
-            >
+        <div class="selects-inline">
+          <gtt-select
+            :openedLodging.sync="pickUpOpened"
+            @click.native="loadPickUpPlaces"
+            :options="pickUpDeliveryOptions"
+            class="cleft"
+            v-model="selectedPickUpPlace"
+          >
+            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+            <span slot="placeholder">Punto de recogida</span>
+            <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
+            <template v-slot:option="option">{{ option.option.nombre }}</template>
+            <template v-slot:selectedValue="selectedValue">
+              <span id="selectedPickUp">
+                {{
+                overflowText(selectedValue.selectedValue.nombre)
+                }}
+              </span>
+              <b-tooltip
+                target="selectedPickUp"
+                triggers="hover"
+              >{{ selectedValue.selectedValue.nombre }}</b-tooltip>
+            </template>
+          </gtt-select>
+          <gtt-select
+            :openedLodging.sync="deliveryOpened"
+            @click.native="loadDeliveryPlaces"
+            :options="pickUpDeliveryOptions"
+            v-model="selectedDeliveryPlace"
+          >
+            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+            <span slot="placeholder">Punto de entrega</span>
+            <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
+            <template v-slot:option="option">{{ option.option.nombre }}</template>
+            <template
+              v-slot:selectedValue="selectedValue"
+            >{{ overflowText(selectedValue.selectedValue.nombre) }}</template>
+          </gtt-select>
+        </div>
+        <gtt-select-date v-model="selectedDates" :day="true">
+          <span slot="placeholder" class="required-field">Fecha de entrada y salida</span>
+          <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+        </gtt-select-date>
+        <div class="selects-inline">
+          <div ref="gttTransmision" class="cleft" style="width: 100%;">
+            <gtt-select :options="transmissionTypes()" v-model="selectedTransmissionType">
               <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-              <span slot="placeholder"> Nacionalidad</span>
-              <template v-slot:selectedValue="selectedValue">
-                <img
-                  :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
-                  :alt="selectedValue.selectedValue.nombre + 'flag'"
-                  class="select-flag"
-                />
-                {{ selectedValue.selectedValue.nombre }}
-              </template>
-              <template v-slot:option="option">
-                <img
-                  :src="defaultFlagImgPath + option.option.flag"
-                  :alt="option.option.nombre + 'flag'"
-                  class="select-flag"
-                />
-                {{ option.option.nombre }}
-              </template>
-              <template slot="selectedPlaceholder">
-                <img
-                  :src="defaultFlagImgPath + selectedNationality.flag"
-                  :alt="selectedNationality.nombre + 'flag'"
-                  class="select-flag"
-                />
-                {{ selectedNationality.nombre }}
-              </template>
+              <span slot="placeholder" class="required-field">Tipo de transmisión</span>
+              <span slot="selectedPlaceholder">¿Qué tipo de transmisión desea?</span>
+              <template
+                v-slot:selectedValue="selectedValue"
+              >{{ selectedValue.selectedValue.display }}</template>
+              <template v-slot:option="option">{{ option.option.display }}</template>
+              <span slot="error" class="gtt-errors"></span>
             </gtt-select>
-            <div class="form-actions text-right">
-              <button
-                type="submit"
-                @click="activateModal"
-                class="lodging-searchButton antonio-regular"
-              >
-                Buscar
-              </button>
-            </div>
           </div>
-          <p class="required-note"><b>NOTA:</b> Los campos con <span style="color: red;">*</span> son
-                                    requeridos.</p>
+          <gtt-select
+            :openedLodging.sync="categoriesOpened"
+            @click.native="loadMarcas"
+            :options="carsCategories"
+            :nullable="true"
+            v-model="selectedCarCategory"
+          >
+            <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
+            <span slot="placeholder">Categoría</span>
+            <span slot="selectedPlaceholder">¿Cómo desea que sea el auto?</span>
+            <template v-slot:option="option">{{ option.option.nombre }}</template>
+            <template
+              v-slot:selectedValue="selectedValue"
+            >{{ overflowText(selectedValue.selectedValue.nombre) }}</template>
+          </gtt-select>
+        </div>
+        <div class="selects-inline">
+          <gtt-select
+            :options="countries"
+            v-model="selectedNationality"
+            class="select-countries"
+            style="width: 50%; !important;"
+          >
+            <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
+            <span slot="placeholder">Nacionalidad</span>
+            <template v-slot:selectedValue="selectedValue">
+              <img
+                :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
+                :alt="selectedValue.selectedValue.nombre + 'flag'"
+                class="select-flag"
+              />
+              {{ selectedValue.selectedValue.nombre }}
+            </template>
+            <template v-slot:option="option">
+              <img
+                :src="defaultFlagImgPath + option.option.flag"
+                :alt="option.option.nombre + 'flag'"
+                class="select-flag"
+              />
+              {{ option.option.nombre }}
+            </template>
+            <template slot="selectedPlaceholder">
+              <img
+                :src="defaultFlagImgPath + selectedNationality.flag"
+                :alt="selectedNationality.nombre + 'flag'"
+                class="select-flag"
+              />
+              {{ selectedNationality.nombre }}
+            </template>
+          </gtt-select>
+          <div class="form-actions text-right">
+            <button
+              type="submit"
+              @click="activateModal"
+              class="lodging-searchButton antonio-regular"
+            >Buscar</button>
+          </div>
+        </div>
+        <p class="required-note">
+          <b>NOTA:</b> Los campos con
+          <span style="color: red;">*</span> son
+          requeridos.
+        </p>
       </div>
       <div class="custom-text antonio-light">
-        <span class="yellow-words antonio-bold">Renta de autos</span
-        ><span class="bannerText">
-          en más de 600 puntos del territorio nacional</span
-        >
+        <span class="yellow-words antonio-bold">Renta de autos</span>
+        <span class="bannerText">en más de 600 puntos del territorio nacional</span>
       </div>
     </div>
   </div>
@@ -179,7 +166,12 @@ import GttSelect from "../custom-elements/GttSelect";
 import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import moment from "moment";
-import { constructDate, calculateNights, transmissionTypes, hasInsurance } from "../../utils/utils";
+import {
+  constructDate,
+  calculateNights,
+  transmissionTypes,
+  hasInsurance
+} from "../../utils/utils";
 import {
   authSearchPuntosInteres,
   authSearchMarcas,
@@ -188,9 +180,7 @@ import {
   authSearchProvider,
   authSearchMarca
 } from "../../utils/auth";
-import {gttIsValid,
-        renderValid,
-        getValid} from '../../utils/validation'
+import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 
 export default {
@@ -203,35 +193,34 @@ export default {
   created() {
     this.searchCountriesPlaceholder();
   },
-  mounted(){
-    this.gttValidate()
+  mounted() {
+    this.gttValidate();
   },
   watch: {
     selectedPickUpPlace: function(val) {
-      this.selectedDeliveryPlace = val
-      console.log(this.selectedDeliveryPlace)
+      this.selectedDeliveryPlace = val;
+      console.log(this.selectedDeliveryPlace);
     }
   },
   methods: {
-    transmissionTypes(){
-      return transmissionTypes
+    transmissionTypes() {
+      return transmissionTypes;
     },
-    gttValidate(){
+    gttValidate() {
       let validator = [
         {
-          rules: ['required'],
-          name: 'gttTransmision',
+          rules: ["required"],
+          name: "gttTransmision",
           value: this.selectedTransmissionType,
-          lang: 'es'
+          lang: "es"
         }
-      ]
+      ];
 
-      return validator
+      return validator;
     },
     async activateModal() {
-      let iv = gttIsValid(this.gttValidate())
-      if(getValid(iv))
-      {
+      let iv = gttIsValid(this.gttValidate());
+      if (getValid(iv)) {
         try {
           this.isModalActive = true;
           // let otherData = {
@@ -239,8 +228,10 @@ export default {
           //     deliveryPlace: this.selectedDeliveryPlace,
           // }
           let marca = null;
-          if(this.selectedCarCategory || this.selectedCarCategory != "ALL_ITEMS")
-          {
+          if (
+            this.selectedCarCategory ||
+            this.selectedCarCategory != "ALL_ITEMS"
+          ) {
             marca = {
               MarcaId: this.selectedCarCategory.marcaid,
               Nombre: this.selectedCarCategory.nombre
@@ -251,8 +242,8 @@ export default {
           let cliente = { ClienteId: localStorage.getItem("cliente") };
           let transmissionType = this.selectedTransmissionType.nombre;
           let searchItem = {
-            FechaRecogida: moment(this.selectedDates.start).format('YYYY-MM-D'),
-            FechaEntrega: moment(this.selectedDates.end).format('YYYY-MM-D'),
+            FechaRecogida: moment(this.selectedDates.start).format("YYYY-MM-D"),
+            FechaEntrega: moment(this.selectedDates.end).format("YYYY-MM-D"),
             Marca: marca,
             TipoTransmision: transmissionType,
             Cliente: cliente
@@ -260,33 +251,39 @@ export default {
           let resultList = [];
           let { data } = await authSearchCars(searchItem);
           await Promise.all(
-            data.filter(j => {return j.ValorSobreprecioAplicado > 0}).map( async (item) => {
-              let image = await authGetImage(item.Vehiculo.ProductoId);
-              let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-              let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
-              resultList.push({
-                nombre: item.Vehiculo.Nombre,
-                tipo: "rent",
-                id: item.Vehiculo.ProductoId,
-                plazas: item.Vehiculo.CantidadPlazas,
-                descripcion: item.Vehiculo.Descripcion,
-                cancelation: item.Vehiculo.DescripcionCorta,
-                seguro: item.Vehiculo.TieneSeguro,
-                transmision: item.Vehiculo.TipoTransmision,
-                modeloId: item.Vehiculo.ModeloId,
-                marca: marca.data.Nombre,
-                marcaid: marca.data.MarcaId,
-                precio: item.PrecioOrden,
-                distribuidor: item.Distribuidor.Nombre,
-                distribuidorId: item.Distribuidor.DistribuidorId,
-                imagen: image.data.ImageContent,
-                provider: provider.data.Nombre,
-                providerImage: provider.data.ImageContent,
-                orderVehiculo: item
-              });
-              this.cleanVO(item);
+            data
+              .filter(j => {
+                return j.ValorSobreprecioAplicado > 0;
               })
-          )
+              .map(async item => {
+                let image = await authGetImage(item.Vehiculo.ProductoId);
+                let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+                let provider = await authSearchProvider(
+                  item.Vehiculo.ProveedorId
+                );
+                resultList.push({
+                  nombre: item.Vehiculo.Nombre,
+                  tipo: "rent",
+                  id: item.Vehiculo.ProductoId,
+                  plazas: item.Vehiculo.CantidadPlazas,
+                  descripcion: item.Vehiculo.Descripcion,
+                  cancelation: item.Vehiculo.DescripcionCorta,
+                  seguro: item.Vehiculo.TieneSeguro,
+                  transmision: item.Vehiculo.TipoTransmision,
+                  modeloId: item.Vehiculo.ModeloId,
+                  marca: marca.data.Nombre,
+                  marcaid: marca.data.MarcaId,
+                  precio: item.PrecioOrden,
+                  distribuidor: item.Distribuidor.Nombre,
+                  distribuidorId: item.Distribuidor.DistribuidorId,
+                  imagen: image.data.ImageContent,
+                  provider: provider.data.Nombre,
+                  providerImage: provider.data.ImageContent,
+                  orderVehiculo: item
+                });
+                this.cleanVO(item);
+              })
+          );
           // for (let item of data) {
           //   let image = await authGetImage(item.Vehiculo.ProductoId);
           //   let marca = await authSearchMarca(item.Vehiculo.MarcaId);
@@ -330,19 +327,21 @@ export default {
           this.$router.push({
             name: "resultRent",
             params: {
-              searchResult: resultList,
+              searchResult: resultList
             }
           });
         } catch (error) {
-          console.log(error)
+          console.log(error);
           this.desactivateModal();
-          this.$toasted.show("El servicio no está disponible en estos momentos", {
-            type: "error"
-          });
+          this.$toasted.show(
+            "El servicio no está disponible en estos momentos",
+            {
+              type: "error"
+            }
+          );
         }
-      }
-      else{
-        renderValid(iv, this)
+      } else {
+        renderValid(iv, this);
       }
     },
     desactivateModal() {
@@ -354,8 +353,8 @@ export default {
     calculateNights(min, max) {
       return calculateNights(min, max);
     },
-    hasInsurance(text){
-      return hasInsurance(text)
+    hasInsurance(text) {
+      return hasInsurance(text);
     },
     overflowText(text, l = 30) {
       if (text.length > l) {
@@ -528,7 +527,7 @@ export default {
   height: 100%;
 }
 
-.custom-form{
+.custom-form {
   padding-bottom: 10px;
 }
 
@@ -537,7 +536,7 @@ export default {
   margin-left: 30px;
 }
 
-.form-actions{
+.form-actions {
   margin-left: auto;
 }
 

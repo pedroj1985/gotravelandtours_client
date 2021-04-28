@@ -3,38 +3,45 @@
     <div class="list-item-general">
       <div class="list-item-carousel">
         <div class="result-images-carousel">
-            <Slick
-                ref="slick"
-                :slidesToShow="1"
-                :slidesToScroll="1"
-                :draggable="true"
-                :arrows="false"
-                :dots="true"
-                :autoplay="true"
-                >
-                <div class="result-images-carousel" v-for="destinyImage in item.images" :key="destinyImage">
-                        <img v-bind:src="destinyImage" alt="">
-                </div>
-            </Slick>
+          <Slick
+            ref="slick"
+            :slidesToShow="1"
+            :slidesToScroll="1"
+            :draggable="true"
+            :arrows="false"
+            :dots="true"
+            :autoplay="true"
+          >
+            <div
+              class="result-images-carousel"
+              v-for="destinyImage in item.images"
+              :key="destinyImage"
+            >
+              <img v-bind:src="destinyImage" alt />
+            </div>
+          </Slick>
         </div>
       </div>
       <div class="list-item-info">
-        <div class="item-name hn-bdcn">
-          {{ item.name }}
-        </div>
+        <div class="item-name hn-bdcn">{{ item.name }}</div>
         <div class="item-hotel-stars" v-if="item.stars">
-            <ul class="stars">
-                <li v-for="i in item.stars" :key="i">
-                    <i class="mdi mdi-star"></i>
-                </li>
-            </ul>
+          <ul class="stars">
+            <li v-for="i in item.stars" :key="i">
+              <i class="mdi mdi-star"></i>
+            </li>
+          </ul>
         </div>
         <div class="item-location" v-if="item.location">
-            <span class="c-space"><i class="mdi mdi-map-marker"></i></span>{{item.location}}
+          <span class="c-space">
+            <i class="mdi mdi-map-marker"></i>
+          </span>
+          {{item.location}}
         </div>
         <div class="item-map-link" v-if="item.mapLink">
-            <span class="c-space"><i class="mdi mdi-map"></i></span>
-            <a :href="item.mapLink" class="map-location">Ubicación en el mapa</a>
+          <span class="c-space">
+            <i class="mdi mdi-map"></i>
+          </span>
+          <a :href="item.mapLink" class="map-location">Ubicación en el mapa</a>
         </div>
       </div>
       <div class="list-item-price">
@@ -43,33 +50,25 @@
             <template slot="tr-icon-slot">
               <i class="mdi mdi-calendar"></i>
             </template>
-            <template slot="tr-info-name">
-              Fecha de entrada
-            </template>
+            <template slot="tr-info-name">Fecha de entrada</template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getDateSalida(item)" class="info-item">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-calendar"></i>
             </template>
-            <template slot="tr-info-name">
-              Fecha de salida
-            </template>
+            <template slot="tr-info-name">Fecha de salida</template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getVisitantes(item)" class="info-item">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-account"></i>
             </template>
-            <template slot="tr-info-name">
-              Visitantes
-            </template>
+            <template slot="tr-info-name">Visitantes</template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getHabitaciones(item)" class="info-item">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-bed"></i>
             </template>
-            <template slot="tr-info-name">
-              Habitaciones
-            </template>
+            <template slot="tr-info-name">Habitaciones</template>
           </GttTwoRowsInfo>
           <!-- <GttTwoRowsInfo
             class="info-item"
@@ -81,7 +80,7 @@
             <template slot="tr-info-name">
               Día(s) reservados
             </template>
-          </GttTwoRowsInfo> -->
+          </GttTwoRowsInfo>-->
         </div>
       </div>
     </div>
@@ -99,15 +98,13 @@
                 <i class="mdi mdi-clipboard-text"></i>
               </button>
             </div>
-            <div class="item-children-name hn-bdcn">
-              {{item.reservedRooms.name}}
-            </div>
+            <div class="item-children-name hn-bdcn">{{item.reservedRooms.name}}</div>
             <div class="item-children-right-part" v-if="can">
               <!-- <div class="item-children-price hn-roman">
                                 <slot name="itemChildrenPriceSlot" v-bind:child="child">
                                     {{ styledPrice(child.precio).intPart}}.<sup>{{ styledPrice(child.precio).decimalPart}}</sup> USD
                                 </slot>
-                            </div> -->
+              </div>-->
               <div class="item-children-reserve form-actions">
                 <button
                   type="button"
@@ -127,36 +124,39 @@
             </div>
           </div>
           <div class="item-children-content hn-roman">
-            <div
-              class="item-children-content-info font18"
-              v-if="selectedInfo == 'info'"
-            >
+            <div class="item-children-content-info font18" v-if="selectedInfo == 'info'">
               <slot name="itemContentInfoSlot" v-bind:child="item">
                 <div class="flex-wrapper">
-                  <div class="to-uppercase hn-roman gtt-text-color">
-                    Desglose del alojamiento
-                  </div>
-                  <div class="ml-auto font24 printer-button" v-if="ordenId != -1 && this.Voucher"> 
-                     <!-- :class="{divDisabled: !hasVoucher}"> -->
+                  <div class="to-uppercase hn-roman gtt-text-color">Desglose del alojamiento</div>
+                  <div class="ml-auto font24 printer-button" v-if="ordenId != -1 && this.Voucher">
+                    <!-- :class="{divDisabled: !hasVoucher}"> -->
                     <a :href="UrlVoucher" target="_blank">
                       <i class="mdi mdi-printer"></i>
                     </a>
                   </div>
                 </div>
                 <br />
-                <div class="flex-wrapper" v-for="(i, pos) in item.reservedRooms.combinacion.listado" :key="i.id">
+                <div
+                  class="flex-wrapper"
+                  v-for="(i, pos) in item.reservedRooms.combinacion.listado"
+                  :key="i.id"
+                >
                   <div class="to-left">
-                      Hab. {{pos + 1}}, {{i.tipoHabitacion}} adulto(s) <template v-if="i.cantidadMenoresPorHabitacion > 0">
-                                                                                y {{i.cantidadMenoresPorHabitacion}} niño(s)
-                                                                            </template>
-                                                                            <template v-else> sin niños</template>
-                   </div>
-                   <div class="to-right">
-                      {{ styledPrice(i.price.value).intPart }}.<sup>{{
-                        styledPrice(i.price.value).decimalPart
-                      }}</sup>
-                      USD                  
-                   </div>
+                    Hab. {{pos + 1}}, {{i.tipoHabitacion}} adulto(s)
+                    <template
+                      v-if="i.cantidadMenoresPorHabitacion > 0"
+                    >y {{i.cantidadMenoresPorHabitacion}} niño(s)</template>
+                    <template v-else>sin niños</template>
+                  </div>
+                  <div class="to-right">
+                    {{ styledPrice(i.price.value).intPart }}.
+                    <sup>
+                      {{
+                      styledPrice(i.price.value).decimalPart
+                      }}
+                    </sup>
+                    USD
+                  </div>
                 </div>
                 <!-- <p class="gtt-text-color general-text-opt">
                   Punto de recogida: {{ displayIfNoneLugarRecogida(item) }}
@@ -166,21 +166,18 @@
                 </p>
                 <p class="gtt-text-color general-text-opt">
                   Plazas: {{ item.plazas }}
-                </p> -->
+                </p>-->
                 <br />
                 <div class="tab-precio flex-wrapper">
-                  <div
-                    class="to-uppercase hn-roman gtt-text-color flex-left-side"
-                  >
-                    Precio total
-                  </div>
-                  <div
-                    class="to-uppercase hn-roman gtt-text-color flex-right-side font24"
-                  >
-                      {{ styledPrice(item.reservedRooms.combinacion.total).intPart }}.<sup>{{
-                        styledPrice(item.reservedRooms.combinacion.total).decimalPart
-                      }}</sup>
-                      USD                  
+                  <div class="to-uppercase hn-roman gtt-text-color flex-left-side">Precio total</div>
+                  <div class="to-uppercase hn-roman gtt-text-color flex-right-side font24">
+                    {{ styledPrice(item.reservedRooms.combinacion.total).intPart }}.
+                    <sup>
+                      {{
+                      styledPrice(item.reservedRooms.combinacion.total).decimalPart
+                      }}
+                    </sup>
+                    USD
                   </div>
                 </div>
               </slot>
@@ -193,104 +190,98 @@
 </template>
 
 <script>
-import GttTwoRowsInfo from '../custom-elements/GttTwoRowsInfo'
-import Slick from 'vue-slick-carousel'
+import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
+import Slick from "vue-slick-carousel";
 import moment from "moment";
 
 export default {
-    created(){
-        console.log(this.item)
-        console.log('info-hotel')
+  created() {
+    console.log(this.item);
+    console.log("info-hotel");
+  },
+  components: {
+    Slick,
+    GttTwoRowsInfo
+  },
+  props: {
+    item: {
+      type: Object,
+      default: null
     },
-    components: {
-        Slick,
-        GttTwoRowsInfo
+    can: {
+      type: Boolean,
+      default: false
     },
-    props: {
-        item: {
-            type: Object,
-            default: null
-        },
-        can: {
-          type: Boolean,
-          default: false
-        },
-        ordenId: {
-          default: -1,
-        },
-        hasVoucher: {
-          default: false,
-          type: Boolean
-        }
+    ordenId: {
+      default: -1
     },
-    data(){
-      return {
-        selectedInfo: "info",
-        pos: 1
+    hasVoucher: {
+      default: false,
+      type: Boolean
+    }
+  },
+  data() {
+    return {
+      selectedInfo: "info",
+      pos: 1
+    };
+  },
+  methods: {
+    getVisitantes(item) {
+      let totalA = 0;
+      let totalN = 0;
+
+      item.reservedRooms.combinacion.listado.forEach(i => {
+        totalA = totalA + i.cantidad * i.tipoHabitacion;
+        totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion;
+      });
+
+      return `${totalA} Adulto(s) · ${totalN} Niño(s)`;
+    },
+    getHabitaciones(item) {
+      let totalR = 0;
+
+      item.reservedRooms.combinacion.listado.forEach(i => {
+        totalR = totalR + i.cantidad;
+      });
+
+      return `${totalR} Habitación(es)`;
+    },
+    addPos() {
+      this.pos = this.pos + 1;
+      return this.pos;
+    },
+    selectInfo(section) {
+      if (this.selectedInfo == section) {
+        this.selectedInfo = "";
+      } else {
+        this.selectedInfo = section;
       }
     },
-    methods: {
-        getVisitantes(item){
-          let totalA = 0
-          let totalN = 0
+    toMoment(date) {
+      return moment(date);
+    },
+    getDateEntrada(item) {
+      moment.locale("es");
+      return this.toMoment(item.entrada).format("DD MMMM YYYY");
+    },
+    getDateSalida(item) {
+      moment.locale("es");
+      return this.toMoment(item.salida).format("DD MMMM YYYY");
+    },
+    styledPrice(number) {
+      let intPart = Math.floor(number);
+      let decimalPart = Math.round((number - intPart) * 100);
 
-          item.reservedRooms.combinacion.listado.forEach( i => {
-            totalA = totalA + i.cantidad * i.tipoHabitacion
-            totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion
-          })
+      if (decimalPart == 0) decimalPart = "00";
 
-          return `${totalA} Adulto(s) · ${totalN} Niño(s)`
-        },
-        getHabitaciones(item){
-          let totalR = 0
-
-          item.reservedRooms.combinacion.listado.forEach( i => {
-            totalR = totalR + i.cantidad
-          })
-
-          return `${totalR} Habitación(es)`
-        },
-        addPos(){
-          this.pos = this.pos + 1
-          return this.pos
-        },
-        selectInfo(section) {
-          if (this.selectedInfo == section) {
-            this.selectedInfo = "";
-          } else {
-            this.selectedInfo = section;
-          }
-        },
-        toMoment(date) {
-            return moment(date);
-        },
-        getDateEntrada(item){
-            moment.locale("es");
-            return this.toMoment(item.entrada).format(
-            "DD MMMM YYYY"
-            );
-        },
-        getDateSalida(item){
-            moment.locale("es");
-            return this.toMoment(item.salida).format(
-            "DD MMMM YYYY"
-            );
-        },
-        styledPrice(number){
-            let intPart = Math.floor(number)
-            let decimalPart = Math.round((number - intPart) * 100);
-
-            if(decimalPart == 0)
-                decimalPart = '00'
-
-            return {intPart: intPart,
-                    decimalPart: decimalPart}
-        },
+      return { intPart: intPart, decimalPart: decimalPart };
     }
-}
+  }
+};
 </script>
 
-<style>
+<style scoped>
 .info-item {
   margin-bottom: 10px;
 }
@@ -383,14 +374,14 @@ export default {
 .item-children-reserve button {
   font-size: 24px;
 }
-.printer-button a{
+.printer-button a {
   color: #212f3d;
 }
-.printer-button a:hover{
+.printer-button a:hover {
   color: #0056b3;
 }
-.divDisabled{
-  pointer-events:none;
+.divDisabled {
+  pointer-events: none;
   color: #6d6d6d;
 }
 @media (max-width: 1440px) {

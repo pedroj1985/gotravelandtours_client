@@ -47,9 +47,10 @@
                     <div
                       class="reserve-card-item-price hn-roman font16 gtt-text-color"
                     >
-                      {{ styledPrice(item.precio).intPart }}.<sup>{{
-                        styledPrice(item.precio).decimalPart
-                      }}</sup>
+                      {{ styledPrice(item.precio).intPart }}.
+                      <sup>
+                        {{ styledPrice(item.precio).decimalPart }}
+                      </sup>
                       USD
                     </div>
                   </div>
@@ -67,9 +68,16 @@
                     <div
                       class="reserve-card-item-price hn-roman font16 gtt-text-color"
                     >
-                      {{ styledPrice(item.reservedRooms.combinacion.total).intPart }}.<sup>{{
-                        styledPrice(item.reservedRooms.combinacion.total).decimalPart
-                      }}</sup>
+                      {{
+                        styledPrice(item.reservedRooms.combinacion.total)
+                          .intPart
+                      }}.
+                      <sup>
+                        {{
+                          styledPrice(item.reservedRooms.combinacion.total)
+                            .decimalPart
+                        }}
+                      </sup>
                       USD
                     </div>
                   </div>
@@ -81,9 +89,10 @@
                   >Total a pagar</span
                 >
                 <span class="antonio-light gtt-first-color font48">
-                  {{ styledPrice(priceTotal).intPart }}.<sup>{{
-                    styledPrice(priceTotal).decimalPart
-                  }}</sup>
+                  {{ styledPrice(priceTotal).intPart }}.
+                  <sup>
+                    {{ styledPrice(priceTotal).decimalPart }}
+                  </sup>
                   USD
                 </span>
               </div>
@@ -95,19 +104,26 @@
             <div
               class="verify-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15"
             >
-              <span><i class="mdi mdi-bed"></i> Paso 1: </span
-              ><span>Verificar datos de su reservación</span>
+              <span> <i class="mdi mdi-bed"></i> Paso 1: </span>
+              <span>Verificar datos de su reservación</span>
             </div>
-            <div v-for="order in allTypesOrders" :key="order.uID" :id="order.uID" class="verify-step-content pt-30 pr-15 pl-15 pb-15">
+            <div
+              v-for="order in allTypesOrders"
+              :key="order.uID"
+              :id="order.uID"
+              class="verify-step-content pt-30 pr-15 pl-15 pb-15"
+            >
               <LodgingReservationView
                 class="lrv"
-                v-if="order.tipo=='lodging'"
+                v-if="order.tipo == 'lodging'"
                 :item="order"
-              >
-              </LodgingReservationView>
+                :can="true"
+                @remove="showDeleteModal"
+                @edit="showEditModal"
+              ></LodgingReservationView>
               <RentReservationView
                 class="rrv"
-                v-if="order.tipo=='rent'"
+                v-if="order.tipo == 'rent'"
                 :item="order"
                 @remove="showDeleteModal"
                 @edit="showEditModal"
@@ -118,8 +134,8 @@
             <div
               class="create-order-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15"
             >
-              <span><i class="mdi mdi-account"></i> Paso 2: </span
-              ><span>Datos del o los pasajero(s) y crear orden</span>
+              <span> <i class="mdi mdi-account"></i> Paso 2: </span>
+              <span>Datos del o los pasajero(s) y crear orden</span>
               <div class="create-order-step-content pt-30 pl-30 pb-30">
                 <div ref="gttName">
                   <InfoRow
@@ -128,7 +144,7 @@
                     @inputName="updateName"
                     @inputLastname="updateLastname"
                   >
-                    <span slot="error" class="gtt-errors"> </span>
+                    <span slot="error" class="gtt-errors"></span>
                   </InfoRow>
                 </div>
                 <FlightInfoRow
@@ -168,11 +184,11 @@
                 class="hn-roman font14 pl-30"
                 style="color: #ff0000; margin-top: 15px;"
               >
-                <span
-                  >Si los datos introducidos no son correctos, nuestra agencia no
-                  se hace responsable de las consecuencias que esto traiga para la
-                  correcta realización del servicio o los servicios</span
-                >
+                <span>
+                  Si los datos introducidos no son correctos, nuestra agencia no
+                  se hace responsable de las consecuencias que esto traiga para
+                  la correcta realización del servicio o los servicios
+                </span>
               </div>
             </div>
           </div>
@@ -192,7 +208,12 @@ import RentReservationView from "./RentReservationView";
 import LodgingReservationView from "./LodgingReservationView";
 import InfoRow from "./InfoRow";
 import FlightInfoRow from "./FlightInfoRow";
-import { authReserve, authCreateQbEstimated, authUpdOnlyInDbQbEstimated } from "../../utils/auth";
+import {
+  authReserve,
+  authCreateQbEstimated,
+  authUpdOnlyInDbQbEstimated
+} from "../../utils/auth";
+import GttEditLodgingModal from "../custom-elements/GttEditLodgingModal";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
 import NavBar2 from "../shared/NavBar2";
 import { menuLinks } from "../../menu";
@@ -216,13 +237,13 @@ export default {
     FlightInfoRow,
     GttVerificationModal,
     NavBar2,
-    GttEditRentModal
+    GttEditLodgingModal
   },
   computed: {
-    checkIfRentExist(){
+    checkIfRentExist() {
       return this.allTypesOrders.some(i => {
-        return i.tipo == 'rent'
-      })
+        return i.tipo == "rent";
+      });
     }
   },
   methods: {
@@ -240,13 +261,17 @@ export default {
     },
     constructSpacedVal(f, s, separator = " ") {
       let splittedName = f.split(" ");
-      let name = splittedName.map( i => {
-        return _.capitalize(i)
-      }).join(" ")
+      let name = splittedName
+        .map(i => {
+          return _.capitalize(i);
+        })
+        .join(" ");
       let splittedLastName = s.split(" ");
-      let lastname = splittedLastName.map( i => {
-        return _.capitalize(i)
-      }).join(" ")
+      let lastname = splittedLastName
+        .map(i => {
+          return _.capitalize(i);
+        })
+        .join(" ");
       return `${name}${separator}${lastname}`;
     },
     updateCart() {
@@ -269,12 +294,12 @@ export default {
       if (getValid(iv)) {
         let listaVehiculosOrden = this.getListaVehiculosOrden();
         let listaAlojamientosOrden = this.getListaAlojamientosOrden();
-        listaAlojamientosOrden.forEach( ao => {
+        listaAlojamientosOrden.forEach(ao => {
           ao.NombreCliente = this.constructSpacedVal(
             this.clientName,
             this.clienteLastName
-          )
-        })
+          );
+        });
         listaVehiculosOrden.forEach(vo => {
           vo.NombreCliente = this.constructSpacedVal(
             this.clientName,
@@ -305,14 +330,14 @@ export default {
           let onlyOrdenId = {
             OrdenId: ordenSaveIt.data.OrdenId
           };
-          console.log('orden abajo')
+          console.log("orden abajo");
           console.log(onlyOrdenId);
-          try{
-            await authCreateQbEstimated(onlyOrdenId)
-            onlyOrdenId['EstimatedCreated'] = true
-            await authUpdOnlyInDbQbEstimated(onlyOrdenId)
-          } catch(error){
-            console.log(error)
+          try {
+            await authCreateQbEstimated(onlyOrdenId);
+            onlyOrdenId["EstimatedCreated"] = true;
+            await authUpdOnlyInDbQbEstimated(onlyOrdenId);
+          } catch (error) {
+            console.log(error);
           }
           this.$helpers.shoppingCartDeleteAll();
           this.isReserving = false;
@@ -371,68 +396,66 @@ export default {
 
       return lvo;
     },
-    getListaAlojamientosOrden(){
-      let lao = []
+    getListaAlojamientosOrden() {
+      let lao = [];
       this.allTypesOrders
-                    .filter( item => {
-                      return item.tipo == 'lodging'
-                    })
-                    .map( i => {
-                      i.reservedRooms.combinacion.listado.map( j => {
-                        let po = j.precioObjOne
-                        po.Alojamiento = {
-                          ProductoId: po.Alojamiento.ProductoId
-                        }
-                        po.CantAdulto = j.tipoHabitacion
-                        po.CantNino = j.cantidadMenoresPorHabitacion
-                        po.CantInfante = 0
-                        // po.PlanesAlimenticiosId = i.reservedRooms.planAlimenticio 
-                        // po.PlanAlimenticio = {
-                        //   PlanesAlimenticiosId: i.reservedRooms.planAlimenticio
-                        // }
-                        po.PlanesAlimenticiosId = j.planAlimenticio 
-                        po.PlanAlimenticio = {
-                          PlanesAlimenticiosId: j.planAlimenticio
-                        }
-                        po.Habitacion = {
-                          HabitacionId: po.Habitacion.HabitacionId
-                        }
-                        po.Distribuidor = {
-                          DistribuidorId: po.Distribuidor.DistribuidorId
-                        }
-                        po.DistribuidorId = po.Distribuidor.DistribuidorId
-                        po.Sobreprecio = {
-                          SobreprecioId: po.Sobreprecio.SobreprecioId
-                        }
-                        po.ListaPrecioAlojamientos = po.ListaPrecioAlojamientos.map( lpa => {
-                          let p = {
-                            PrecioAlojamientoId: lpa.PrecioAlojamiento.PrecioAlojamientoId
-                          }
+        .filter(item => {
+          return item.tipo == "lodging";
+        })
+        .map(i => {
+          i.reservedRooms.combinacion.listado.map(j => {
+            let po = j.precioObjOne;
+            po.Alojamiento = {
+              ProductoId: po.Alojamiento.ProductoId
+            };
+            po.CantAdulto = j.tipoHabitacion;
+            po.CantNino = j.cantidadMenoresPorHabitacion;
+            po.CantInfante = 0;
+            // po.PlanesAlimenticiosId = i.reservedRooms.planAlimenticio
+            // po.PlanAlimenticio = {
+            //   PlanesAlimenticiosId: i.reservedRooms.planAlimenticio
+            // }
+            po.PlanesAlimenticiosId = j.planAlimenticio;
+            po.PlanAlimenticio = {
+              PlanesAlimenticiosId: j.planAlimenticio
+            };
+            po.Habitacion = {
+              HabitacionId: po.Habitacion.HabitacionId
+            };
+            po.Distribuidor = {
+              DistribuidorId: po.Distribuidor.DistribuidorId
+            };
+            po.DistribuidorId = po.Distribuidor.DistribuidorId;
+            po.Sobreprecio = {
+              SobreprecioId: po.Sobreprecio.SobreprecioId
+            };
+            po.ListaPrecioAlojamientos = po.ListaPrecioAlojamientos.map(lpa => {
+              let p = {
+                PrecioAlojamientoId: lpa.PrecioAlojamiento.PrecioAlojamientoId
+              };
 
-                          return {
-                            PrecioAlojamiento: p
-                          }
-                        })
-                        for (let index = 0; index < j.cantidad; index++) {
-                          lao.push(po)                         
-                        }
-                      })
-                    })
-      
-      return lao
+              return {
+                PrecioAlojamiento: p
+              };
+            });
+            for (let index = 0; index < j.cantidad; index++) {
+              lao.push(po);
+            }
+          });
+        });
+
+      return lao;
     },
     findDateInterval() {
       let startDates = [];
       let endDates = [];
 
       this.allTypesOrders.forEach(item => {
-        if(item.tipo == 'rent')
-        {
+        if (item.tipo == "rent") {
           startDates.push(item.orderVehiculo.FechaRecogida);
           endDates.push(item.orderVehiculo.FechaEntrega);
         }
-        if(item.tipo == 'lodging')
-        {
+        if (item.tipo == "lodging") {
           startDates.push(item.entrada);
           endDates.push(item.salida);
         }
@@ -445,17 +468,16 @@ export default {
     },
     calculatePrice(value) {
       this.priceTotal = value.reduce((total, item) => {
-        if(item.tipo == 'rent')
-          return total + item.precio;
-        if(item.tipo == 'lodging')
-          return total + item.reservedRooms.combinacion.total
+        if (item.tipo == "rent") return total + item.precio;
+        if (item.tipo == "lodging")
+          return total + item.reservedRooms.combinacion.total;
       }, 0);
       console.log(this.priceTotal);
     },
     styledPrice(number) {
-      let n = number.toFixed(2)
+      let n = number.toFixed(2);
       let intPart = Math.floor(n);
-      let r = (n-intPart).toFixed(2)
+      let r = (n - intPart).toFixed(2);
       let decimalPart = (r * 100).toFixed(2);
 
       if (decimalPart == 0) decimalPart = "00";
@@ -501,8 +523,12 @@ export default {
     },
     showEditModal(item) {
       if (item.tipo == "rent") {
-        console.log(item);
         this.currentModalComponent = "GttEditRentModal";
+        this.currentFilterData = this.constructFilterDataObj(item);
+      } else if (item.tipo == "lodging") {
+        console.log(item)
+        console.log('elementa a editar')
+        this.currentModalComponent = "GttEditLodgingModal";
         this.currentFilterData = this.constructFilterDataObj(item);
       }
       this.editModal = true;
@@ -527,6 +553,17 @@ export default {
           propTransmission: transmision,
           id: item.id,
           name: item.nombre
+        };
+      } else if (item.tipo == "lodging") {
+        console.log(item);
+        return {
+          name: item.name,
+          id: item.uID,
+          item: item,
+          propDateIn: item.entrada,
+          propDateOut: item.salida,
+          propVisitantes: item.acomodation || item.roomL,
+          needPre: item.acomodation != null
         };
       }
     },
@@ -596,7 +633,7 @@ export default {
       this.tempItemToEdit.providerImage = item.providerImage;
       this.tempItemToEdit.tipo = item.tipo;
       this.tempItemToEdit.transmision = item.transmision;
-    },
+    }
   },
   data() {
     return {

@@ -13,6 +13,7 @@
             @modalCancel="isModalLodgingActive = false"
             @searched="updateResult"
             ></GttLodgingDetailNewSearchModal>
+        <LightBox :media="imagesTreated" v-if="isModalGalleryActive" @onClosed="isModalGalleryActive = false"></LightBox>
         <NavBar2 :menuLinks="menuLinks"></NavBar2>
         <div class="row lodging-detail-wrapper">
             <div class="col-md-3 col-sm-5 left-side-wrapper">
@@ -78,15 +79,25 @@
                             :slidesToShow="1"
                             :slidesToScroll="1"
                             :draggable="true"
-                            :arrows="false"
-                            :dots="true"
+                            :arrows="true"
+                            :dots="false"
                             :autoplay="true"
                             class="lic-carousel"
                             >
+                            <div slot="prevArrow" class="custom-prevArrow">
+                                <i class="mdi mdi-chevron-left"></i>
+                            </div>
+                            <div slot="nextArrow" class="custom-nextArrow">
+                                <i class="mdi mdi-chevron-right"></i>
+                            </div>
                             <div class="result-images-carousel" v-for="destinyImage in item.images" :key="destinyImage">
                                     <img v-bind:src="destinyImage" alt="">
+                                    <div class="w-100 h-100 position-absolute bgHolder"></div>
                             </div>
                         </Slick>
+                        <div class="footer-buttons-carousel">
+                            <i class="mdi mdi-image-multiple font18 float-right" @click="isModalGalleryActive = true"></i>
+                        </div>
                     </div>
                     <div class="lodging-info-info">
                         <div class="lodging-info-name hn-ltcn font24 gtt-text-color">
@@ -209,7 +220,7 @@
                                     <div class="buscando flex-wrapper">
                                         <div
                                             v-for="(rl, index) in this.selectedRoomLayout" 
-                                            :key="rl.room"
+                                            :key="rl.id"
                                         >
                                             <span><i v-if="index != 0">, </i>Hab. {{rl.room}} </span>
                                             (<AdultsKidsIcons 
@@ -242,7 +253,8 @@
 <script>
 import {
     authGetLodging,
-    authGetImage,
+    // authGetImage,
+    authGetImages,
     authSearchRoomsByLodging,
     authGetRoomPrice,
     authGetLodgingEatingPlanOne
@@ -260,6 +272,7 @@ import _ from 'lodash'
 import AdultsKidsIcons from './AdultsKidsIcons'
 import LodgingForm from './LodgingForm'
 import NavBar2 from '../shared/NavBar2'
+import LightBox from 'vue-image-lightbox';
 
 export default {
     components:{
@@ -272,7 +285,8 @@ export default {
         AdultsKidsIcons,
         LodgingForm,
         NavBar2,
-        GttLodgingDetailNewSearchModal
+        GttLodgingDetailNewSearchModal,
+        LightBox,
     },
     async created(){
         // this.roomsOpt = this.generateRooms()
@@ -290,9 +304,11 @@ export default {
         this.outDate = new Date(this.filters.Salida)
         let id = this.$route.params.id
         let {data} = await authGetLodging(id)
-        let img = await authGetImage(id)
+        // let img = await authGetImage(id)
+        let imgs = await authGetImages(id)
+        let imgs_array = imgs.data.map(i => i.ImageContent)
         this.item = {
-            'images': [img.data.ImageContent],
+            'images': imgs_array,
             'lodging': data
         }
         try{
@@ -309,6 +325,7 @@ export default {
             item: null,
             clickedItem: '',
             isModalLodgingActive: false,
+            isModalGalleryActive: false,
             totalToPay: 0,
             filters: null,
             totalRooms: null,
@@ -370,6 +387,11 @@ export default {
             return _.sumBy(this.roomsToReserve, i => {
                 return i.habitacion.PrecioOrden
             })
+        },
+        imagesTreated(){
+            if(this.item)
+                return this.item.images.map(i => {return {src: i, thumb: i}})
+            return []
         }
     },
     methods: {
@@ -507,6 +529,7 @@ export default {
                 images: this.item.images,
                 location: this.item.lodging.Direccion,
                 lodging: this.item.lodging,
+                roomL: this.selectedRoomLayout,
                 reservedRooms: {
                     combinacion: {
                         listado: listado,
@@ -564,7 +587,7 @@ export default {
                             let cm = el.layout.find(p => p.code=='kids').value
                             let so = {
                                 Cliente: {ClienteId: localStorage.getItem('cliente')},
-                                PlanAlimenticio: {PlanAlimenticioId: i.PlanesAlimenticiosId},
+                                PlanAlimenticio: {PlanesAlimenticiosId: i.PlanesAlimenticiosId},
                                 Alojamiento: {ProductoId: this.item.lodging.ProductoId},
                                 TipoHabitacion: {TipoHabitacionId: ca},
                                 CantidadAdultos: ca,
@@ -715,6 +738,11 @@ export default {
     .lic-carousel .result-images-carousel{
         height: 100%;
         padding: 0;
+        position: relative
+    }
+    .bgHolder{
+        top: 0;
+        background: linear-gradient(0deg, rgba(68,68,71,0.6334908963585435) 0%, rgba(0,0,0,0) 15%, rgba(0,121,255,0) 100%);
     }
     .lodging-info-info{
         padding-left: 30px;
@@ -823,5 +851,24 @@ export default {
     .buscando{
         justify-content: center;
         align-items: center;
+    }
+    .lodging-info-carousel{
+        position: relative;
+    }
+    .footer-buttons-carousel{
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding-bottom: 5px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    .footer-buttons-carousel i{
+        color: white;
+        font-size: 28px;
+        margin-left: auto;
+    }
+    .footer-buttons-carousel i:hover{
+        cursor: pointer;
     }
 </style>

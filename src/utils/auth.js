@@ -15,19 +15,19 @@ export function authCheck() {
 }
 
 export function getUser() {
-  let storageUser = JSON.parse(localStorage.getItem('usuarioObjeto'))
-  console.log(storageUser)
+  let storageUser = JSON.parse(localStorage.getItem("usuarioObjeto"));
+  console.log(storageUser);
   // if (s && u && id) {
   //   return { name: u, clienteId: id };
   // }
   return storageUser;
 }
 
-export function authGetUser(id){
+export function authGetUser(id) {
   let token = localStorage.getItem("token");
-  return HTTP.get('/Clientes/'+id, null, {
+  return HTTP.get("/Clientes/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
 
 export function authLogin(user) {
@@ -46,52 +46,59 @@ export function authSearchLodging(searchItem) {
   });
 }
 
-export function authGetLodging(id){
+export function authGetLodging(id) {
   let token = localStorage.getItem("token");
-  return HTTP.get("/Alojamientoes/"+id, {
+  return HTTP.get("/Alojamientoes/" + id, {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
 
-export function authGetLodgings(){
+export function authGetLodgings() {
   let token = localStorage.getItem("token");
   return HTTP.get("/Alojamientoes", {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
 
-export function authGetRoomPrice(searchRoomPrice){
+export function authGetLodgingsAll() {
+  let token = localStorage.getItem("token");
+  return HTTP.get("/Alojamientoes/Todos", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+export function authGetRoomPrice(searchRoomPrice) {
   let token = localStorage.getItem("token");
   return HTTP.post("/Alojamientoes/BuscarOrdenPrecio", searchRoomPrice, {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
 
 export function authSearchRoomsByLodging(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/Habitacions/Producto/" + id, {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
 
-export function authGetRoomTypes(){
+export function authGetRoomTypes() {
   let token = localStorage.getItem("token");
   return HTTP.get("/TipoHabitacions?col=-1", {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
 
-export function authGetLodgingEatingPlan(){
+export function authGetLodgingEatingPlan() {
   let token = localStorage.getItem("token");
   return HTTP.get("/PlanesAlimenticios?col=-1", {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
-export function authGetLodgingEatingPlanOne(id){
+export function authGetLodgingEatingPlanOne(id) {
   let token = localStorage.getItem("token");
-  return HTTP.get("/PlanesAlimenticios/"+id, {
+  return HTTP.get("/PlanesAlimenticios/" + id, {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
 
 export function authSearchRegions() {
@@ -147,7 +154,7 @@ export function authDeleteCarOrder(id) {
   let token = localStorage.getItem("token");
   return HTTP.delete("/OrdenVehiculoes/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  });
 }
 
 export function authReserve(orden) {
@@ -157,19 +164,19 @@ export function authReserve(orden) {
   });
 }
 
-export function authCreateQbEstimated(orden){
+export function authCreateQbEstimated(orden) {
   let token = localStorage.getItem("token");
   return HTTP.post("/QBIntegracion/createEstimated", orden, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
-export function authUpdateQbEstimated(orden){
+export function authUpdateQbEstimated(orden) {
   let token = localStorage.getItem("token");
   return HTTP.post("/QBIntegracion/updateEstimated", orden, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
-export function authUpdOnlyInDbQbEstimated(orden){
+export function authUpdOnlyInDbQbEstimated(orden) {
   let token = localStorage.getItem("token");
   return HTTP.post("/Ordens/UpdEstimated", orden, {
     headers: { Authorization: `Bearer ${token}` }
@@ -192,7 +199,7 @@ export function authGetImage(id) {
 }
 export function authGetImages(id) {
   let token = localStorage.getItem("token");
-  return HTTP.get("/AlmacenImagenes/Productos/"+id, {
+  return HTTP.get("/AlmacenImagenes/Productos/" + id, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
@@ -226,8 +233,8 @@ export function subscribe(email) {
   });
 }
 
-export function voucher(id){
-  return HTTP.get("/VoucherOrdens/Orden/"+id)
+export function voucher(id) {
+  return HTTP.get("/VoucherOrdens/Orden/" + id);
 }
 
 export function authSearchCountries() {

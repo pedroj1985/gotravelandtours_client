@@ -15,26 +15,22 @@
 </template>
 
 <script>
-import ResultList from './ResultList';
+import ResultList from "./ResultList";
 export default {
   components: {
-    ResultList,
+    ResultList
   },
-  data(){
+  data() {
     return {
       total: 1,
       currentList: [],
       currentPage: 1
-    }
+    };
   },
-  mounted(){
-    this.getList(this.currentPage)
-    this.total = this.resultList.length
-    this.$emit('resultSize',this.total)
-    console.log(this.resultList)
-    console.log('aqui va')
-    console.log(this.currentList)
-    console.log('aqui va el current')
+  mounted() {
+    this.getList(this.currentPage);
+    this.total = this.resultList.length;
+    this.$emit("resultSize", this.total);
   },
   props: {
     filters: Object,
@@ -45,22 +41,21 @@ export default {
     todosTipo: Array
   },
   methods: {
-    getOthers(event, page){
+    getOthers(event, page) {
       this.getList(page);
     },
-    getList(page)
-    {
+    getList(page) {
       let min = this.perPage * page - this.perPage;
       let max = this.perPage * page;
 
       this.currentList = this.resultList.slice(min, max);
     }
   }
-}
+};
 </script>
 
 <style>
-    #right-column-list{
-        /* height: 100%; */
-    }
+#right-column-list {
+  /* height: 100%; */
+}
 </style>

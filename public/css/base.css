@@ -1708,7 +1708,7 @@ button.btn .loading-spinner{
         right: 0;
         opacity: 1;
         background-color: rgba(0, 0, 0, 0.7);
-        z-index: 9999;
+        z-index: 990;
     }
 
     .c-modal{
@@ -1723,7 +1723,7 @@ button.btn .loading-spinner{
         padding-bottom: 15px;
         padding-left: 30px;
         padding-right: 30px;
-        z-index: 9999;
+        z-index: 991;
     }
     .modal-row{
         display: flex;

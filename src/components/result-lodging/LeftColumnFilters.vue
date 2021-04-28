@@ -1,34 +1,37 @@
 <template>
   <div id="left-column-filters">
-      <LodgingForm
-        :propLodgingDestinyValue="filters.Destiny"
-        :propArriveDate="filters.Entrada"
-        :propDepartureDate="filters.Salida"
-        :propRoomLayout="filters.Visitantes"
-        :propNationality="filters.Nacionalidad"
-      ></LodgingForm>
-      <OtherFilters></OtherFilters>
+    <LodgingForm
+      :propLodgingDestinyValue="filters.Destiny"
+      :propArriveDate="filters.Entrada"
+      :propDepartureDate="filters.Salida"
+      :propRoomLayout="filters.Visitantes"
+      :propNationality="filters.Nacionalidad"
+    ></LodgingForm>
+    <OtherFilters></OtherFilters>
   </div>
 </template>
 
 <script>
-import LodgingForm from './LodgingForm'
-import OtherFilters from './OtherFilters'
+import LodgingForm from "./LodgingForm";
+import OtherFilters from "./OtherFilters";
 export default {
-    components: {
-        LodgingForm,
-        OtherFilters
-    },
-    props: {
-        filters: {
-            default: null
-        }
+  components: {
+    LodgingForm,
+    OtherFilters
+  },
+  props: {
+    filters: {
+      type: Object,
+      default() {
+        return {};
+      }
     }
-}
+  }
+};
 </script>
 
 <style>
-    #left-column-filters{
-        height: 100%;
-    }
+#left-column-filters {
+  height: 100%;
+}
 </style>

@@ -21,8 +21,11 @@ import lodash from 'lodash'
 import {helpers} from './utils/helpers'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
+import VueLazyLoad from 'vue-lazyload'
+import 'vue-image-lightbox/dist/vue-image-lightbox.min.css'
 
 Vue.config.productionTip = false;
+Vue.use(VueLazyLoad)
 Vue.use(VueResource);
 Vue.use(BootstrapVue);
 Vue.use(VueLodash,{lodash: lodash});

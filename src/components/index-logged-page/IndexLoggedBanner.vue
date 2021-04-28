@@ -1,50 +1,43 @@
 <template>
   <div id="home-logged-banner">
     <div class="home-logged-img">
-      <img src="img/homelogin_img_form_alojamiento.jpg" alt="" />
+      <img src="img/homelogin_img_form_alojamiento.jpg" alt />
     </div>
     <div class="navs-wrapper">
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
       <div slot="image">
-        <img src="img/icopaq_alojamiento_color.svg" alt="" />
+        <img src="img/icopaq_alojamiento_color.svg" alt />
       </div>
       <div slot="searching-text" class="searching-text">
-        <span class="antonio-light">Buscando disponibilidad de </span
-        ><span class="antonio-bold text-highlight">alojamientos</span>
-        <span class="antonio-light"
-          > en
-          <span v-if="selectedLodgingDestinyValue">{{
-            selectedLodgingDestinyValue.nombre
-          }}</span
-          ><span v-else>cualquier lugar</span></span
-        >
+        <span class="antonio-light">Buscando disponibilidad de</span>
+        <span class="antonio-bold text-highlight">alojamientos</span>
+        <span class="antonio-light">
+          en
+          <span v-if="selectedLodgingDestinyValue">{{ selectedLodgingDestinyValue.nombre }}</span>
+          <span v-else>cualquier lugar</span>
+        </span>
       </div>
       <div slot="searching-fields" class="searching-fields">
         <div v-if="selectedDates">
           entre el {{ constructDate(selectedDates.start) }} y el
           {{ constructDate(selectedDates.end) }} ({{
-            calculateNights(selectedDates.start, selectedDates.end)
+          calculateNights(selectedDates.start, selectedDates.end)
           }}
           noches)
         </div>
-        <div v-if="selectedRoomLayout">
-          para {{ constructDisplay(selectedRoomLayout) }}
-        </div>
+        <div v-if="selectedRoomLayout">para {{ constructDisplay(selectedRoomLayout) }}</div>
       </div>
     </GttModalSearch>
     <div class="lodging-text-form custom-margin">
       <div class="lodging-text antonio-light">
         <span class="bannerText">Tenemos los mejores</span>
-        <span class="yellow-words antonio-bold">alojamientos</span
-        ><span class="bannerText"> para usted y su familia</span>
+        <span class="yellow-words antonio-bold">alojamientos</span>
+        <span class="bannerText">para usted y su familia</span>
       </div>
       <div class="lodging-form">
-        <div ref="gttDestinyLodging"
-              class="cleft"
-              style="width: 100%;"
-              >
+        <div ref="gttDestinyLodging" class="cleft" style="width: 100%;">
           <gtt-select
             :openedLodging.sync="lodgingOpened"
             @click.native="loadDestinies"
@@ -52,16 +45,19 @@
             :options="destinies"
           >
             <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-            <span slot="placeholder" class="required-field">Destino</span>
+            <span slot="placeholder" class="required-field">Destino o Alojamiento</span>
             <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
             <template v-slot:option="option">
-              {{ option.option.nombre }}
+              {{
+              option.option.nombre
+              }}
             </template>
             <template v-slot:selectedValue="selectedValue">
-              {{ selectedValue.selectedValue.nombre }}
+              {{
+              selectedValue.selectedValue.nombre
+              }}
             </template>
-            <span slot="error" class="gtt-errors">
-            </span>
+            <span slot="error" class="gtt-errors"></span>
           </gtt-select>
         </div>
         <gtt-select-date v-model="selectedDates">
@@ -69,47 +65,39 @@
           <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
         </gtt-select-date>
         <div class="selects-inline">
-          <gtt-select-form
-            :options="roomLayout"
-            class="cleft"
-            v-model="selectedRoomLayout"
-          >
-            <span slot="iconSelectedValue"
-              ><i class="mdi mdi-account"></i
-            ></span>
-          <span slot="placeholder" class="required-field">Visitantes</span>
+          <gtt-select-form :options="roomLayout" class="cleft" v-model="selectedRoomLayout">
+            <span slot="iconSelectedValue">
+              <i class="mdi mdi-account"></i>
+            </span>
+            <span slot="placeholder" class="required-field">Visitantes</span>
           </gtt-select-form>
-          <gtt-select
-            :options="countries"
-            v-model="selectedNationality"
-            class="select-countries"
-          >
-              <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-              <span slot="placeholder"> Nacionalidad</span>
-              <template v-slot:selectedValue="selectedValue">
-                <img
-                  :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
-                  :alt="selectedValue.selectedValue.nombre + 'flag'"
-                  class="select-flag"
-                />
-                {{ selectedValue.selectedValue.nombre }}
-              </template>
-              <template v-slot:option="option">
-                <img
-                  :src="defaultFlagImgPath + option.option.flag"
-                  :alt="option.option.nombre + 'flag'"
-                  class="select-flag"
-                />
-                {{ option.option.nombre }}
-              </template>
-              <template slot="selectedPlaceholder">
-                <img
-                  :src="defaultFlagImgPath + selectedNationality.flag"
-                  :alt="selectedNationality.nombre + 'flag'"
-                  class="select-flag"
-                />
-                {{ selectedNationality.nombre }}
-              </template>
+          <gtt-select :options="countries" v-model="selectedNationality" class="select-countries">
+            <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
+            <span slot="placeholder">Nacionalidad</span>
+            <template v-slot:selectedValue="selectedValue">
+              <img
+                :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
+                :alt="selectedValue.selectedValue.nombre + 'flag'"
+                class="select-flag"
+              />
+              {{ selectedValue.selectedValue.nombre }}
+            </template>
+            <template v-slot:option="option">
+              <img
+                :src="defaultFlagImgPath + option.option.flag"
+                :alt="option.option.nombre + 'flag'"
+                class="select-flag"
+              />
+              {{ option.option.nombre }}
+            </template>
+            <template slot="selectedPlaceholder">
+              <img
+                :src="defaultFlagImgPath + selectedNationality.flag"
+                :alt="selectedNationality.nombre + 'flag'"
+                class="select-flag"
+              />
+              {{ selectedNationality.nombre }}
+            </template>
           </gtt-select>
         </div>
         <div class="form-actions text-right">
@@ -117,9 +105,7 @@
             type="submit"
             @click="activateModal"
             class="lodging-searchButton antonio-regular"
-          >
-            Buscar
-          </button>
+          >Buscar</button>
         </div>
       </div>
     </div>
@@ -134,11 +120,13 @@ import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import moment from "moment";
 import { eventBus } from "../../main";
-import { authSearchRegions, authGetRoomTypes } from "../../utils/auth";
-import {lodgingUtilsMixin} from "../../mixins/lodgingUtilsMixin"
-import {gttIsValid,
-        renderValid,
-        getValid} from '../../utils/validation'
+import {
+  authSearchRegions,
+  authGetRoomTypes,
+  authGetLodgingsAll
+} from "../../utils/auth";
+import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
 export default {
   components: {
@@ -148,30 +136,28 @@ export default {
     GttSelectDate,
     GttModalSearch
   },
-  mixins: [
-    lodgingUtilsMixin
-  ],
+  mixins: [lodgingUtilsMixin],
   async created() {
     this.searchCountriesPlaceholder();
     window.addEventListener("scroll", this.handleScroll);
-    let t = await authGetRoomTypes()
-    this.todosTipo = t.data
+    let t = await authGetRoomTypes();
+    this.todosTipo = t.data;
   },
   destroyed() {
     window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
-    gttValidate(){
+    gttValidate() {
       let validator = [
         {
-          rules: ['required'],
-          name: 'gttDestinyLodging',
+          rules: ["required"],
+          name: "gttDestinyLodging",
           value: this.selectedLodgingDestinyValue,
-          lang: 'es'
+          lang: "es"
         }
-      ]
+      ];
 
-      return validator
+      return validator;
     },
     async loadDestinies() {
       if (this.lodgingOpened == true) {
@@ -182,6 +168,14 @@ export default {
             nombre: item.Nombre,
             regionid: item.RegionId,
             type: "region"
+          });
+        });
+        let l = await authGetLodgingsAll();
+        l.data.forEach(i => {
+          totalResult = totalResult.concat({
+            nombre: i.Nombre,
+            id: i.ProductoId,
+            type: "alojamiento"
           });
         });
         this.destinies = totalResult;
@@ -200,68 +194,146 @@ export default {
       }
     },
     async activateModal() {
-      let iv = gttIsValid(this.gttValidate())
-      if(getValid(iv))
-      {
+      let iv = gttIsValid(this.gttValidate());
+      if (getValid(iv)) {
         this.isModalActive = true;
-        let region = { RegionId: this.selectedLodgingDestinyValue.regionid };
-        let cliente = { ClienteId: localStorage.getItem("cliente") };
-        let searchItem = {
-          Entrada: this.selectedDates.start,
-          Salida: this.selectedDates.end,
-          Region: region,
-          Cliente: cliente
-        };
-        let searchFilters = {
-          Destiny: this.selectedLodgingDestinyValue,
-          Region: { RegionId: this.selectedLodgingDestinyValue.regionid, RegionNombre: this.selectedLodgingDestinyValue.nombre },
-          Cliente: { ClienteId: localStorage.getItem("cliente") },
-          Entrada: this.selectedDates.start,
-          Salida: this.selectedDates.end,
-          Visitantes: this.selectedRoomLayout,
-          Nacionalidad: this.selectedNationality
-        }
-        let resultList = []
-        try {
-          if(searchFilters.Visitantes.adults.value >= searchFilters.Visitantes.kids.value){
-              this.roomComb = this.$helpers.roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
-          }
-          else{
-              this.roomComb = this.$helpers.roomCombination2kids(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
-          }
-          let roomComb2 = this.$helpers.roomCombinationV2(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
-          if(this.roomComb != 'ERROR')
-          {
-            resultList = await this.searchResult(searchItem, this.roomComb, roomComb2)
-            localStorage.setItem(
-              "searchLodgingFilters",
-              JSON.stringify(searchFilters)
-            )
+        if (this.selectedLodgingDestinyValue.type == "region") {
+          let region = { RegionId: this.selectedLodgingDestinyValue.regionid };
+          let cliente = { ClienteId: localStorage.getItem("cliente") };
+          let searchItem = {
+            Entrada: this.selectedDates.start,
+            Salida: this.selectedDates.end,
+            Region: region,
+            Cliente: cliente
+          };
+          let searchFilters = {
+            Destiny: this.selectedLodgingDestinyValue,
+            Region: {
+              RegionId: this.selectedLodgingDestinyValue.regionid,
+              RegionNombre: this.selectedLodgingDestinyValue.nombre
+            },
+            Cliente: { ClienteId: localStorage.getItem("cliente") },
+            Entrada: this.selectedDates.start,
+            Salida: this.selectedDates.end,
+            Visitantes: this.selectedRoomLayout,
+            Nacionalidad: this.selectedNationality
+          };
+          let resultList = [];
+          try {
+            if (
+              searchFilters.Visitantes.adults.value >=
+              searchFilters.Visitantes.kids.value
+            ) {
+              this.roomComb = this.$helpers.roomCombination(
+                searchFilters.Visitantes.adults.value,
+                searchFilters.Visitantes.kids.value || 0
+              );
+            } else {
+              this.roomComb = this.$helpers.roomCombination2kids(
+                searchFilters.Visitantes.adults.value,
+                searchFilters.Visitantes.kids.value || 0
+              );
+            }
+            let roomComb2 = this.$helpers.roomCombinationV2(
+              searchFilters.Visitantes.adults.value,
+              searchFilters.Visitantes.kids.value || 0
+            );
+            if (this.roomComb != "ERROR") {
+              resultList = await this.searchResult(
+                searchItem,
+                this.roomComb,
+                roomComb2
+              );
+              localStorage.setItem(
+                "searchLodgingFilters",
+                JSON.stringify(searchFilters)
+              );
+              this.desactivateModal();
+              this.$router.push({
+                name: "resultLodging",
+                params: {
+                  searchResult: resultList
+                }
+              });
+            } else {
+              this.desactivateModal();
+              this.$toasted.show("Demasiados niños", {
+                type: "error"
+              });
+            }
+          } catch (error) {
+            console.log(error);
             this.desactivateModal();
-            this.$router.push({
-              name: "resultLodging",
-              params: {
-                searchResult: resultList
+            this.$toasted.show(
+              "El servicio no está disponible en estos momentos",
+              {
+                type: "error"
               }
-            });
+            );
           }
-          else{
+        } else if (this.selectedLodgingDestinyValue.type == "alojamiento") {
+          let searchFilters = {
+            Destiny: this.selectedLodgingDestinyValue,
+            NombreHotel: this.selectedLodgingDestinyValue.nombre,
+            Cliente: { ClienteId: localStorage.getItem("cliente") },
+            Entrada: this.selectedDates.start,
+            Salida: this.selectedDates.end,
+            Visitantes: this.selectedRoomLayout,
+            Nacionalidad: this.selectedNationality
+          };
+          try {
+            if (
+              searchFilters.Visitantes.adults.value >=
+              searchFilters.Visitantes.kids.value
+            ) {
+              this.roomComb = this.$helpers.roomCombination(
+                searchFilters.Visitantes.adults.value,
+                searchFilters.Visitantes.kids.value || 0
+              );
+            } else {
+              this.roomComb = this.$helpers.roomCombination2kids(
+                searchFilters.Visitantes.adults.value,
+                searchFilters.Visitantes.kids.value || 0
+              );
+            }
+            if (this.roomComb != "ERROR") {
+              this.goToDetail(
+                searchFilters,
+                this.buildRoomCombo(this.roomComb),
+                this.selectedLodgingDestinyValue.id
+              );
+            } else {
+              this.desactivateModal();
+              this.$toasted.show("Demasiados niños", {
+                type: "error"
+              });
+            }
+          } catch (error) {
+            console.log(error);
             this.desactivateModal();
-            this.$toasted.show("Demasiados niños", {
-              type: "error"
-            });
+            this.$toasted.show(
+              "El servicio no está disponible en estos momentos",
+              {
+                type: "error"
+              }
+            );
           }
-        } catch (error) {
-          console.log(error);
-          this.desactivateModal();
-          this.$toasted.show("El servicio no está disponible en estos momentos", {
-            type: "error"
-          });
         }
+      } else {
+        renderValid(iv, this);
       }
-      else{
-        renderValid(iv, this)
-      }
+    },
+    goToDetail(f, a, id) {
+      localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
+
+      localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
+
+      this.$router.push({
+        name: "lodging-detail",
+        params: {
+          id: id
+        }
+      });
     },
     desactivateModal() {
       this.isModalActive = false;
@@ -293,7 +365,7 @@ export default {
         this.selectedNationality = this.countries[0];
       }
     }
-    },
+  },
   data() {
     return {
       menuLinks: [
@@ -367,7 +439,7 @@ export default {
           nombre: "Estados Unidos",
           flag: "flag_estadosunidos.jpg"
         }
-      ],
+      ]
     };
   }
 };
