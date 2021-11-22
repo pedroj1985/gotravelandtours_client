@@ -14,7 +14,10 @@
                     {{$helpers.traducir(item.marca)}},
                     {{$helpers.traducir($helpers.findTransmissionLocale(item.transmision))}}
                 </div> -->
-        <div class="item-provider hn-bdcn" :class="{viaCar: item.provider == 'Via Car'}">
+        <div
+          class="item-provider hn-bdcn"
+          :class="{ viaCar: item.provider == 'Via Car' }"
+        >
           <img :src="item.providerImage" :alt="item.provider" />
         </div>
         <div class="item-info-icon">
@@ -43,19 +46,16 @@
       <div class="list-item-price">
         <div class="price-wrapper">
           <div class="hn-mdcn better-price">Precio para:</div>
-          <span class="hn-roman total-days font20">{{ totalDays }} día(s) </span>
+          <span class="hn-roman total-days font20"
+            >{{ totalDays }} día(s)
+          </span>
           <span class="hn-roman has-insurance font20">
             <template v-if="item.seguro">
-              <template
-                >({{item.seguro.toLowerCase()}})</template
-              >
+              <template>({{ item.seguro.toLowerCase() }})</template>
             </template>
           </span>
           <div class="price antonio-light">
-            {{ styledPrice(item.precio).intPart }}.<sup>{{
-              styledPrice(item.precio).decimalPart
-            }}</sup>
-            USD
+            {{ styledPrice(item.precio).intPart }}. USD
           </div>
           <div class="details-btn form-actions" v-if="!noDetail">
             <button
@@ -85,87 +85,87 @@
 </template>
 
 <script>
-import RentResultListRow from "./RentResultListRow"
-export default {
-  components: {
-    RentResultListRow
-  },
-  props: {
-    item: Object,
-    totalDays: {
-      type: Number,
-      default: 0
+  import RentResultListRow from "./RentResultListRow";
+  export default {
+    components: {
+      RentResultListRow
     },
-    onlyToSelect: {
-      type: Boolean,
-      default: false
-    },
-    noDetail: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      // isOpen: false,
-      limit: 2
-    };
-  },
-  computed: {
-    filteredItems: function() {
-      return this.item.items.slice(0, this.limit);
-    }
-  },
-  methods: {
-    emitElement(value) {
-      this.$emit("selectedElementEditItem", value);
-    },
-    goDetails(id) {
-      this.$router.push({
-        name: "rent-detail",
-        params: {
-          id: id
-        }
-      });
-    },
-    hasInsurance(tString) {
-      console.log(tString)
-      let t = tString.split(" ").length;
-      return t > 1;
-    },
-    displayTransmission(item) {
-      return item.split(" ")[0].toLowerCase();
-    },
-    displayName(data) {
-      let data_splitted = data.split("-");
-      let sp = data_splitted.slice(1, data_splitted.lenght);
-
-      return sp.join("-");
-    },
-    constructDisplay(d) {
-      let s = "";
-      Object.keys(d).forEach(element => {
-        s = s + " · " + d[element].value + " " + d[element].display;
-      });
-
-      return s.substring(2);
-    },
-    openList() {
-      if (!this.isOpen) {
-        this.limit = this.item.items.lenght;
-      } else {
-        this.limit = 2;
+    props: {
+      item: Object,
+      totalDays: {
+        type: Number,
+        default: 0
+      },
+      onlyToSelect: {
+        type: Boolean,
+        default: false
+      },
+      noDetail: {
+        type: Boolean,
+        default: false
       }
-      this.isOpen = !this.isOpen;
     },
-    styledPrice(number) {
-      let intPart = Math.floor(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+    data() {
+      return {
+        // isOpen: false,
+        limit: 2
+      };
+    },
+    computed: {
+      filteredItems: function() {
+        return this.item.items.slice(0, this.limit);
+      }
+    },
+    methods: {
+      emitElement(value) {
+        this.$emit("selectedElementEditItem", value);
+      },
+      goDetails(id) {
+        this.$router.push({
+          name: "rent-detail",
+          params: {
+            id: id
+          }
+        });
+      },
+      hasInsurance(tString) {
+        console.log(tString);
+        let t = tString.split(" ").length;
+        return t > 1;
+      },
+      displayTransmission(item) {
+        return item.split(" ")[0].toLowerCase();
+      },
+      displayName(data) {
+        let data_splitted = data.split("-");
+        let sp = data_splitted.slice(1, data_splitted.lenght);
 
-      if (decimalPart == 0) decimalPart = "00";
+        return sp.join("-");
+      },
+      constructDisplay(d) {
+        let s = "";
+        Object.keys(d).forEach(element => {
+          s = s + " · " + d[element].value + " " + d[element].display;
+        });
 
-      return { intPart: intPart, decimalPart: decimalPart };
+        return s.substring(2);
+      },
+      openList() {
+        if (!this.isOpen) {
+          this.limit = this.item.items.lenght;
+        } else {
+          this.limit = 2;
+        }
+        this.isOpen = !this.isOpen;
+      },
+      styledPrice(number) {
+        let intPart = Math.ceil(number);
+        let decimalPart = (number - intPart).toFixed(2) * 100;
+
+        if (decimalPart == 0) decimalPart = "00";
+
+        return { intPart: intPart, decimalPart: decimalPart };
+      }
     }
-  }
-}
+  };
 </script>

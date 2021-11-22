@@ -1813,3 +1813,8 @@ button.btn .loading-spinner{
     .balls-loader {
         width: 100px;
     }
+    .icon-loader.lodging-loader-icon{
+        top: 50vh;
+        width: 50px;
+    }
+

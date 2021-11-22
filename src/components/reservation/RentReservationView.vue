@@ -10,7 +10,10 @@
         <div class="item-name hn-bdcn">
           {{ displayName(item.nombre) }}
         </div>
-        <div class="item-provider hn-bdcn" :class="{viaCar: item.provider == 'Via Car'}">
+        <div
+          class="item-provider hn-bdcn"
+          :class="{ viaCar: item.provider == 'Via Car' }"
+        >
           <img :src="item.providerImage" :alt="item.provider" />
         </div>
         <div class="item-info-icon">
@@ -54,10 +57,7 @@
               Fecha de entrega
             </template>
           </GttTwoRowsInfo>
-          <GttTwoRowsInfo
-            class="info-item"
-            :value="getDiff()"
-          >
+          <GttTwoRowsInfo class="info-item" :value="getDiff()">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-calendar-week"></i>
             </template>
@@ -151,8 +151,11 @@
                   <div class="to-uppercase hn-roman gtt-text-color">
                     Detalle de la renta
                   </div>
-                  <div class="ml-auto font24 printer-button" v-if="ordenId != -1 && Voucher"> 
-                     <!-- :class="{divDisabled: !hasVoucher}"> -->
+                  <div
+                    class="ml-auto font24 printer-button"
+                    v-if="ordenId != -1 && Voucher"
+                  >
+                    <!-- :class="{divDisabled: !hasVoucher}"> -->
                     <a :href="UrlVoucher" target="_blank">
                       <i class="mdi mdi-printer"></i>
                     </a>
@@ -188,10 +191,7 @@
                   <div
                     class="to-uppercase hn-roman gtt-text-color flex-right-side font24"
                   >
-                    {{ styledPrice(item.precio).intPart }}.<sup>{{
-                      styledPrice(item.precio).decimalPart
-                    }}</sup>
-                    USD                  
+                    {{ styledPrice(item.precio).intPart }}. USD
                   </div>
                 </div>
               </slot>
@@ -203,262 +203,259 @@
   </div>
 </template>
 <script>
-import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
-import moment from "moment";
-import {voucher} from "../../utils/auth"
+  import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
+  import moment from "moment";
+  import { voucher } from "../../utils/auth";
 
-export default {
-  async created(){
-    this.Voucher = await this.getVoucher()
-    this.UrlVoucher = this.printVoucher()
-  },
-  components: {
-    GttTwoRowsInfo
-  },
-  props: {
-    item: {
-      type: Object,
-      default: null
+  export default {
+    async created() {
+      this.Voucher = await this.getVoucher();
+      this.UrlVoucher = this.printVoucher();
     },
-    can: {
-      type: Boolean,
-      default: true
+    components: {
+      GttTwoRowsInfo
     },
-    ordenId: {
-      default: -1,
-    },
-    hasVoucher: {
-      default: false,
-      type: Boolean
-    }
-  },
-  data() {
-    return {
-      selectedInfo: "info",
-      UrlVoucher: "",
-      Voucher: null
-    };
-  },
-  methods: {
-    getDateEntrega(item) {
-      moment.locale("es");
-      return this.toMoment(item.orderVehiculo.FechaEntrega).format(
-        "DD MMMM YYYY"
-      );
-    },
-    getDateRecogida(item) {
-      moment.locale("es");
-      return this.toMoment(item.orderVehiculo.FechaRecogida).format(
-        "DD MMMM YYYY"
-      );
-    },
-    getDiff(){
-      return this.constructDates(this.item.orderVehiculo.FechaRecogida, this.item.orderVehiculo.FechaEntrega)
-    },
-    constructDates(startDate, endDate) {
-      let start = moment(startDate);
-      let end = moment(endDate);
-      let diff = start.diff(end, "days") * -1
-      let dayNightString = ''
-      if(diff>1)
-        dayNightString = " días" 
-      else
-        dayNightString = " día"      
-      return (
-        diff
-          +
-        dayNightString
-      );
-    },
-    displayIfNoneLugarRecogida(item) {
-      return item.orderVehiculo.LugarRecogida
-        ? item.orderVehiculo.LugarRecogida.nombre
-        : "N/A";
-    },
-    displayIfNoneLugarEntrega(item) {
-      return item.orderVehiculo.LugarEntrega
-        ? item.orderVehiculo.LugarEntrega.nombre
-        : "N/A";
-    },
-    toMoment(date) {
-      return moment(date);
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
+    props: {
+      item: {
+        type: Object,
+        default: null
+      },
+      can: {
+        type: Boolean,
+        default: true
+      },
+      ordenId: {
+        default: -1
+      },
+      hasVoucher: {
+        default: false,
+        type: Boolean
       }
     },
-    openList() {
-      if (!this.isOpen) {
-        this.limit = this.item.items.lenght;
-      } else {
-        this.limit = 2;
-      }
-      this.isOpen = !this.isOpen;
+    data() {
+      return {
+        selectedInfo: "info",
+        UrlVoucher: "",
+        Voucher: null
+      };
     },
-    styledPrice(number) {
-      let intPart = Math.floor(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
-
-      if (decimalPart == 0) decimalPart = "00";
-
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    displayTransmission(item) {
-      return item.split(" ")[0].toLowerCase();
-    },
-    displayName(data) {
-      let data_splitted = data.split("-");
-      if (data_splitted.length == 1) {
-        return data;
-      }
-      let sp = data_splitted.slice(1, data_splitted.lenght);
-
-      return sp.join("-");
-    },
-    async getVoucher(){
-      try{
-        let v = await voucher(this.ordenId)
-        if(this.item.tipo == 'rent')
-        {
-          let r = v.data.find( i => {
-            return i.OrdenVehiculoId == this.item.orderVehiculo.OrdenVehiculoId
-          })
-
-          return r
+    methods: {
+      getDateEntrega(item) {
+        moment.locale("es");
+        return this.toMoment(item.orderVehiculo.FechaEntrega).format(
+          "DD MMMM YYYY"
+        );
+      },
+      getDateRecogida(item) {
+        moment.locale("es");
+        return this.toMoment(item.orderVehiculo.FechaRecogida).format(
+          "DD MMMM YYYY"
+        );
+      },
+      getDiff() {
+        return this.constructDates(
+          this.item.orderVehiculo.FechaRecogida,
+          this.item.orderVehiculo.FechaEntrega
+        );
+      },
+      constructDates(startDate, endDate) {
+        let start = moment(startDate);
+        let end = moment(endDate);
+        let diff = start.diff(end, "days") * -1;
+        let dayNightString = "";
+        if (diff > 1) dayNightString = " días";
+        else dayNightString = " día";
+        return diff + dayNightString;
+      },
+      displayIfNoneLugarRecogida(item) {
+        return item.orderVehiculo.LugarRecogida
+          ? item.orderVehiculo.LugarRecogida.nombre
+          : "N/A";
+      },
+      displayIfNoneLugarEntrega(item) {
+        return item.orderVehiculo.LugarEntrega
+          ? item.orderVehiculo.LugarEntrega.nombre
+          : "N/A";
+      },
+      toMoment(date) {
+        return moment(date);
+      },
+      selectInfo(section) {
+        if (this.selectedInfo == section) {
+          this.selectedInfo = "";
+        } else {
+          this.selectedInfo = section;
         }
-        return null
+      },
+      openList() {
+        if (!this.isOpen) {
+          this.limit = this.item.items.lenght;
+        } else {
+          this.limit = 2;
+        }
+        this.isOpen = !this.isOpen;
+      },
+      styledPrice(number) {
+        let intPart = Math.floor(number);
+        let decimalPart = (number - intPart).toFixed(2) * 100;
+
+        if (decimalPart == 0) decimalPart = "00";
+
+        return { intPart: intPart, decimalPart: decimalPart };
+      },
+      displayTransmission(item) {
+        return item.split(" ")[0].toLowerCase();
+      },
+      displayName(data) {
+        let data_splitted = data.split("-");
+        if (data_splitted.length == 1) {
+          return data;
+        }
+        let sp = data_splitted.slice(1, data_splitted.lenght);
+
+        return sp.join("-");
+      },
+      async getVoucher() {
+        try {
+          let v = await voucher(this.ordenId);
+          if (this.item.tipo == "rent") {
+            let r = v.data.find(i => {
+              return (
+                i.OrdenVehiculoId == this.item.orderVehiculo.OrdenVehiculoId
+              );
+            });
+
+            return r;
+          }
+          return null;
+        } catch (e) {
+          console.log(e);
+          return null;
+        }
+      },
+      printVoucher() {
+        return this.Voucher ? this.Voucher.UrlVoucher : "";
       }
-      catch(e){
-        console.log(e)
-        return null
-      }
-    },
-    printVoucher(){
-      return this.Voucher?this.Voucher.UrlVoucher:''
     }
-  }
-};
+  };
 </script>
 <style scoped>
-.info-item {
-  margin-bottom: 10px;
-}
-.btn-cart {
-  margin-right: 5px;
-  width: 50px;
-}
-.children-wrapper {
-  border-bottom: 1px solid #c4c4c4;
-}
-.item-children-header {
-  padding-bottom: 5px;
-  display: flex;
-}
-.item-children-content {
-  padding-right: 60px;
-  padding-left: 60px;
-}
-.item-children-content-info {
-  padding-bottom: 30px;
-  /* font-size: 14px; */
-}
-.item-children-content-info p {
-  margin-bottom: 5px;
-}
-.item-children-content pre {
-  font-size: 16px;
-  color: #6d6d6d;
-  white-space: pre-wrap;
-}
-.item-children {
-  /* display: flex; */
-}
-.item-children-name {
-  margin-right: auto;
-  color: #6d6d6d;
-  font-size: 20px;
-  width: 20%;
-}
-.item-children-section {
-  color: #6d6d6d;
-  font-size: 24px;
-  display: flex;
-}
-
-.item-children-section-item {
-  padding-right: 25px;
-  align-self: center;
-  font-size: 30px !important;
-}
-.item-children-section-icon {
-  font-size: 30px !important;
-  color: #212f3d;
-  align-self: center;
-}
-.item-children-right-part {
-  margin-left: auto;
-  display: flex;
-}
-.item-children-price {
-  padding-right: 60px;
-  color: #6d6d6d;
-  font-size: 24px;
-}
-.item-children-info-btn {
-  font-size: 24px;
-  color: #212f3d;
-  padding-right: 20px;
-}
-.item-children-info-btn button {
-  border: none;
-  background-color: transparent;
-}
-.item-children-info-btn button:hover {
-  cursor: pointer;
-}
-.item-children-info-btn button:focus {
-  border: none;
-  outline: none;
-}
-.item-children-name,
-.item-children-section,
-.item-children-price,
-.item-children-info-btn {
-  align-self: center;
-}
-.selected {
-  color: #c4c4c4;
-}
-.item-children-reserve button {
-  font-size: 24px;
-}
-.printer-button a{
-  color: #212f3d;
-}
-.printer-button a:hover{
-  color: #0056b3;
-}
-.divDisabled{
-  pointer-events:none;
-  color: #6d6d6d;
-}
-@media (max-width: 1440px) {
-  .item-children-info-btn {
-    font-size: 18px;
+  .info-item {
+    margin-bottom: 10px;
+  }
+  .btn-cart {
+    margin-right: 5px;
+    width: 50px;
+  }
+  .children-wrapper {
+    border-bottom: 1px solid #c4c4c4;
+  }
+  .item-children-header {
+    padding-bottom: 5px;
+    display: flex;
+  }
+  .item-children-content {
+    padding-right: 60px;
+    padding-left: 60px;
+  }
+  .item-children-content-info {
+    padding-bottom: 30px;
+    /* font-size: 14px; */
+  }
+  .item-children-content-info p {
+    margin-bottom: 5px;
+  }
+  .item-children-content pre {
+    font-size: 16px;
+    color: #6d6d6d;
+    white-space: pre-wrap;
+  }
+  .item-children {
+    /* display: flex; */
   }
   .item-children-name {
-    font-size: 12px;
+    margin-right: auto;
+    color: #6d6d6d;
+    font-size: 20px;
+    width: 20%;
   }
   .item-children-section {
     color: #6d6d6d;
-    font-size: 18px;
+    font-size: 24px;
     display: flex;
   }
-  .item-children-content-info {
-    font-size: 12px;
+
+  .item-children-section-item {
+    padding-right: 25px;
+    align-self: center;
+    font-size: 30px !important;
   }
-}
+  .item-children-section-icon {
+    font-size: 30px !important;
+    color: #212f3d;
+    align-self: center;
+  }
+  .item-children-right-part {
+    margin-left: auto;
+    display: flex;
+  }
+  .item-children-price {
+    padding-right: 60px;
+    color: #6d6d6d;
+    font-size: 24px;
+  }
+  .item-children-info-btn {
+    font-size: 24px;
+    color: #212f3d;
+    padding-right: 20px;
+  }
+  .item-children-info-btn button {
+    border: none;
+    background-color: transparent;
+  }
+  .item-children-info-btn button:hover {
+    cursor: pointer;
+  }
+  .item-children-info-btn button:focus {
+    border: none;
+    outline: none;
+  }
+  .item-children-name,
+  .item-children-section,
+  .item-children-price,
+  .item-children-info-btn {
+    align-self: center;
+  }
+  .selected {
+    color: #c4c4c4;
+  }
+  .item-children-reserve button {
+    font-size: 24px;
+  }
+  .printer-button a {
+    color: #212f3d;
+  }
+  .printer-button a:hover {
+    color: #0056b3;
+  }
+  .divDisabled {
+    pointer-events: none;
+    color: #6d6d6d;
+  }
+  @media (max-width: 1440px) {
+    .item-children-info-btn {
+      font-size: 18px;
+    }
+    .item-children-name {
+      font-size: 12px;
+    }
+    .item-children-section {
+      color: #6d6d6d;
+      font-size: 18px;
+      display: flex;
+    }
+    .item-children-content-info {
+      font-size: 12px;
+    }
+  }
 </style>

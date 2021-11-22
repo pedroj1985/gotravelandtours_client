@@ -1,36 +1,31 @@
 export const reusableMethodsMixin = {
-    methods: {
-        constructSpacedVal(f, s, separator=' '){
-            return `${f}${separator}${s}`
-        },
-        calculatePrice(value){
-            this.priceTotal = value.reduce(
-                (total, item) => {
-                    if(item.tipo == 'rent'){
-                        return total+item.precio
-                    }
-                    if(item.tipo == 'lodging')
-                    {
-                        return total+item.total
-                    }
-                }, 0
-            )
-        },
-        styledPrice(number){
-            let intPart = Math.floor(number)
-            let decimalPart = (number - intPart).toFixed(2) * 100
+  methods: {
+    constructSpacedVal(f, s, separator = " ") {
+      return `${f}${separator}${s}`;
+    },
+    calculatePrice(value) {
+      this.priceTotal = value.reduce((total, item) => {
+        if (item.tipo == "rent") {
+          return total + item.precio;
+        }
+        if (item.tipo == "lodging") {
+          return total + item.total;
+        }
+      }, 0);
+    },
+    styledPrice(number) {
+      let intPart = Math.ceil(number);
+      let decimalPart = (number - intPart).toFixed(2) * 100;
 
-            if(decimalPart == 0)
-                decimalPart = '00'
+      if (decimalPart == 0) decimalPart = "00";
 
-            return {intPart: intPart,
-                    decimalPart: decimalPart}
-        },
-        overflowText(text, l = 30){
-            if(text.length > l){
-                return `${text.substring(0, l)}...`
-            }
-            return text
-        },
+      return { intPart: intPart, decimalPart: decimalPart };
+    },
+    overflowText(text, l = 30) {
+      if (text.length > l) {
+        return `${text.substring(0, l)}...`;
+      }
+      return text;
     }
-}
+  }
+};

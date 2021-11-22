@@ -156,20 +156,23 @@ export default {
     async btnSearch() {
       this.loading = true;
       try {
-        await this.sR();
+        let r = await this.sR();
+        if (r.length > 0) {
+          this.$emit("searched", {
+            result: r,
+            filters: {
+              inDate: this.dateIn,
+              outDate: this.dateOut,
+              selectedRoomLayout: this.selectedRoomLayout,
+              totalRooms: this.totalRooms
+            }
+          });
+        } else {
+          this.$emit("errorC");
+        }
       } catch (e) {
         console.log(e);
       }
-
-      this.$emit("searched", {
-        result: this.roomsResult,
-        filters: {
-          inDate: this.dateIn,
-          outDate: this.dateOut,
-          selectedRoomLayout: this.selectedRoomLayout,
-          totalRooms: this.totalRooms
-        }
-      });
     },
     generateRooms() {
       let i = [];
@@ -186,71 +189,85 @@ export default {
       return i;
     },
     async sR() {
-      this.roomsResult = [];
+      let roomsResult = [];
       let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;
       let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId);
-      await Promise.all(
-        rooms.data.map(async j => {
-          listaPlanesAlimenticios.map(async i => {
-            let pa = await authGetLodgingEatingPlanOne(i.PlanesAlimenticiosId);
-            let noDisp = false;
-            let c = 0;
-            let temp = [];
-            while (!noDisp && c < this.selectedRoomLayout.length) {
-              let el = this.selectedRoomLayout[c];
-              let ca = el.layout.find(p => p.code == "adults").value;
-              let cm = el.layout.find(p => p.code == "kids").value;
-              let so = {
-                Cliente: { ClienteId: localStorage.getItem("cliente") },
-                PlanAlimenticio: { PlanAlimenticioId: i.PlanesAlimenticiosId },
-                Alojamiento: { ProductoId: this.item.lodging.ProductoId },
-                TipoHabitacion: { TipoHabitacionId: ca },
-                CantidadAdultos: ca,
-                CantidadMenores: cm,
-                CantidadInfantes: 0,
-                CantidadHabitaciones: 1,
-                Habitacion: { HabitacionId: j.HabitacionId },
-                Entrada: this.dateIn,
-                Salida: this.dateOut
-              };
-              try {
-                let result = await authGetRoomPrice(so);
-                if (
-                  result.data.length != 0 &&
-                  // && r.data[0].OrdenAlojamientoId != -1
-                  result.data[0].PrecioOrden != 0
-                ) {
-                  temp.push({
-                    habitacion: result.data[0],
-                    CantAdultos: ca,
+      let active_rooms = rooms.data.filter(i => {
+        return i.IsActiva == true;
+      });
+      try {
+        await Promise.all(
+          active_rooms.map(async j => {
+            await Promise.all(
+              listaPlanesAlimenticios.map(async i => {
+                let pa = await authGetLodgingEatingPlanOne(
+                  i.PlanesAlimenticiosId
+                );
+                let noDisp = false;
+                let c = 0;
+                let temp = [];
+                while (!noDisp && c < this.selectedRoomLayout.length) {
+                  let el = this.selectedRoomLayout[c];
+                  let ca = el.layout.find(p => p.code == "adults").value;
+                  let cm = el.layout.find(p => p.code == "kids").value;
+                  let so = {
+                    Cliente: { ClienteId: localStorage.getItem("cliente") },
+                    PlanAlimenticio: {
+                      PlanesAlimenticiosId: i.PlanesAlimenticiosId
+                    },
+                    Alojamiento: { ProductoId: this.item.lodging.ProductoId },
+                    TipoHabitacion: { TipoHabitacionId: ca },
+                    CantidadAdultos: ca,
                     CantidadMenores: cm,
-                    PA: pa.data,
-                    rn: el.room,
-                    id: uuid.v4()
-                  });
-                } else {
-                  noDisp = true;
+                    CantidadInfantes: 0,
+                    CantidadHabitaciones: 1,
+                    Habitacion: { HabitacionId: j.HabitacionId },
+                    Entrada: this.dateIn,
+                    Salida: this.dateOut
+                  };
+                  try {
+                    let result = await authGetRoomPrice(so);
+                    if (
+                      result.data.length != 0 &&
+                      // && r.data[0].OrdenAlojamientoId != -1
+                      result.data[0].PrecioOrden != 0
+                    ) {
+                      temp.push({
+                        habitacion: result.data[0],
+                        CantAdultos: ca,
+                        CantidadMenores: cm,
+                        PA: pa.data,
+                        rn: el.room,
+                        id: uuid.v4()
+                      });
+                    } else {
+                      noDisp = true;
+                    }
+                  } catch (e) {
+                    noDisp = true;
+                    console.log(e);
+                  }
+
+                  c++;
                 }
-              } catch (e) {
-                noDisp = true;
-                console.log(e);
-              }
 
-              c++;
-            }
+                if (!noDisp) {
+                  roomsResult.push({
+                    rO: j,
+                    pA: pa.data,
+                    l: temp
+                  });
+                }
+              })
+            );
+          })
+        );
+      } catch (e) {
+        console.log(e);
+      }
 
-            if (!noDisp) {
-              this.roomsResult.push({
-                rO: j,
-                pA: pa,
-                l: temp
-              });
-            }
-          });
-        })
-      );
       this.loading = false;
-      console.log(this.roomsResult);
+      return roomsResult;
     }
   }
 };

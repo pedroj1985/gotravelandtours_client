@@ -21,10 +21,7 @@ export default {
   },
   props: {
     filters: {
-      type: Object,
-      default() {
-        return {};
-      }
+      type: Object
     }
   }
 };

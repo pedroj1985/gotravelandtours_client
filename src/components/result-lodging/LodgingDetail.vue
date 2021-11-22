@@ -12,6 +12,7 @@
             v-if="isModalLodgingActive"
             @modalCancel="isModalLodgingActive = false"
             @searched="updateResult"
+            @errorC="errorSearch"
             ></GttLodgingDetailNewSearchModal>
         <LightBox :media="imagesTreated" v-if="isModalGalleryActive" @onClosed="isModalGalleryActive = false"></LightBox>
         <NavBar2 :menuLinks="menuLinks"></NavBar2>
@@ -46,7 +47,7 @@
                                 <!-- <button type="button" @click="addToGeneralCart" class=" selected-rooms-btn antonio-regular inverse btn-cart"><i class="mdi mdi-cart"></i></button> -->
                             </template>
                             <div class="total-to-pay font18 flex-right-side to-uppercase hn-bdcn">
-                                Total: {{ styledPrice(totalPay).intPart}}.<sup>{{ styledPrice(totalPay).decimalPart}}</sup> USD
+                                Total: {{ styledPrice(totalPay).intPart}}. USD
                             </div>
                         </div>
                     </div>
@@ -231,6 +232,9 @@
                                         </div>
                                     </div>
                             </div>
+                            <div v-else class="text-center">
+                                Buscando...
+                            </div>
                             <div class="list-item-children">
                                 <ResultListRow2 
                                     v-for="child in roomsResult" 
@@ -241,6 +245,11 @@
                                     @reserveOne="addOneToCart"
                                     >
                                 </ResultListRow2>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div v-if="roomsResult.length == 0" class="text-center gtt-errors mb-2">
+                                No existe disponibilidad
                             </div>
                         </div>
                     </div>
@@ -314,10 +323,12 @@ export default {
         try{
             this.roomsSelecting = true
             await this.sR()
+            if(this.roomsResult.length == 0){
+                this.roomsSelecting = false
+            }
         }
         catch(e){
             console.log(e)
-            console.log('error aqui')
         }
     },
     data(){
@@ -486,14 +497,18 @@ export default {
             })
             this.roomsToReserve.splice(indexR, 1)
 
-            console.log(item)
-            console.log('aqui aqui aqui')
             let index = this.roomSelectedToDis.findIndex(o => {
                 return o == item.rn
             })
             this.roomSelectedToDis.splice(index, 1)
         },
+        errorSearch(){
+            this.roomsResult = []
+            this.roomsSelecting = false
+            this.isModalLodgingActive = false
+        },
         updateResult(r){
+            this.roomsSelecting = true
             this.roomsResult = r.result
             this.inDate = r.filters.inDate
             this.outDate = r.filters.outDate
@@ -567,79 +582,91 @@ export default {
             this.roomsSelecting = true
             this.loading = true
             // await this.searchRooms(this.selectedRoomLayout[0])
-            await this.sR()
+            try{
+                await this.sR()
+            }
+            catch(e){
+                console.log(e)
+            }
         },
         async sR(){
             this.roomsResult = []
             let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios
             let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId)
-            await Promise.all(
-                rooms.data.map( async j => {
-                    listaPlanesAlimenticios.map( async i => {
-                        let pa = await authGetLodgingEatingPlanOne(i.PlanesAlimenticiosId)
-                        let noDisp = false
-                        let c = 0
-                        let temp = []
-                        while(!noDisp && c<this.selectedRoomLayout.length)
-                        {
-                            let el = this.selectedRoomLayout[c]
-                            let ca = el.layout.find(p => p.code=='adults').value
-                            let cm = el.layout.find(p => p.code=='kids').value
-                            let so = {
-                                Cliente: {ClienteId: localStorage.getItem('cliente')},
-                                PlanAlimenticio: {PlanesAlimenticiosId: i.PlanesAlimenticiosId},
-                                Alojamiento: {ProductoId: this.item.lodging.ProductoId},
-                                TipoHabitacion: {TipoHabitacionId: ca},
-                                CantidadAdultos: ca,
-                                CantidadMenores: cm,
-                                CantidadInfantes: 0,
-                                CantidadHabitaciones: 1,
-                                Habitacion: {HabitacionId: j.HabitacionId},
-                                Entrada: this.inDate,
-                                Salida: this.outDate
-                            }
-                            try{
-                                let result = await authGetRoomPrice(so)
-                                if(
-                                    result.data.length != 0 
-                                    // && r.data[0].OrdenAlojamientoId != -1
-                                    && result.data[0].PrecioOrden != 0
-                                ){
-                                    temp.push(
-                                        {
-                                            habitacion: result.data[0],
-                                            CantAdultos: ca,
-                                            CantidadMenores: cm,
-                                            PA: pa.data,
-                                            rn: el.room,
-                                            id: uuid.v4()
-                                        }
-                                    )
+            let active_rooms = rooms.data.filter(i => {
+                return i.IsActiva == true
+            })
+            try{
+                await Promise.all(
+                    active_rooms.map( async j => {
+                       await Promise.all(listaPlanesAlimenticios.map( async i => {
+                            let pa = await authGetLodgingEatingPlanOne(i.PlanesAlimenticiosId)
+                            let noDisp = false
+                            let c = 0
+                            let temp = []
+                            while(!noDisp && c<this.selectedRoomLayout.length)
+                            {
+                                let el = this.selectedRoomLayout[c]
+                                let ca = el.layout.find(p => p.code=='adults').value
+                                let cm = el.layout.find(p => p.code=='kids').value
+                                let so = {
+                                    Cliente: {ClienteId: localStorage.getItem('cliente')},
+                                    PlanAlimenticio: {PlanesAlimenticiosId: i.PlanesAlimenticiosId},
+                                    Alojamiento: {ProductoId: this.item.lodging.ProductoId},
+                                    TipoHabitacion: {TipoHabitacionId: ca},
+                                    CantidadAdultos: ca,
+                                    CantidadMenores: cm,
+                                    CantidadInfantes: 0,
+                                    CantidadHabitaciones: 1,
+                                    Habitacion: {HabitacionId: j.HabitacionId},
+                                    Entrada: this.inDate,
+                                    Salida: this.outDate
                                 }
-                                else{
+                                try{
+                                    let result = await authGetRoomPrice(so)
+                                    if(
+                                        result.data.length != 0 
+                                        // && r.data[0].OrdenAlojamientoId != -1
+                                        && result.data[0].PrecioOrden != 0
+                                    ){
+                                        temp.push(
+                                            {
+                                                habitacion: result.data[0],
+                                                CantAdultos: ca,
+                                                CantidadMenores: cm,
+                                                PA: pa.data,
+                                                rn: el.room,
+                                                id: uuid.v4()
+                                            }
+                                        )
+                                    }
+                                    else{
+                                        noDisp = true
+                                    }
+                                }
+                                catch(e){
                                     noDisp = true
                                 }
-                            }
-                            catch(e){
-                                noDisp = true
-                                console.log(e)
+
+                                c++
                             }
 
-                            c++
-                        }
-
-                        if(!noDisp){
-                            this.roomsResult.push(
-                                {
-                                    rO: j,
-                                    pA: pa.data,
-                                    l: temp
-                                }
-                            )
-                        }
+                            if(!noDisp){
+                                this.roomsResult.push(
+                                    {
+                                        rO: j,
+                                        pA: pa.data,
+                                        l: temp
+                                    }
+                                )
+                            }
+                        }))
                     })
-                })
-            )
+                )
+            }
+            catch(e){
+                console.log(e)
+            }
             this.loading = false
         },
         async searchRooms(room){
@@ -649,8 +676,11 @@ export default {
             let ca = room.layout.find(p => p.code=='adults').value
             let cm = room.layout.find(p => p.code=='kids').value
             let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId)
+            let active_rooms = rooms.data.filter(i => {
+                return i.IsActiva == true
+            })
             await Promise.all(
-                rooms.data.map( async j => {
+                active_rooms.map( async j => {
                     await Promise.all(
                         listaPlanesAlimenticios.map( async i => {
                             let pa = await authGetLodgingEatingPlanOne(i.PlanesAlimenticiosId)
@@ -699,7 +729,7 @@ export default {
             this.loading = false
         },
         styledPrice(number){
-            let intPart = Math.floor(number)
+            let intPart = Math.ceil(number)
             let decimalPart = Math.round((number - intPart) * 100);
 
             if(decimalPart == 0)

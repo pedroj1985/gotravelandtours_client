@@ -56,34 +56,34 @@
                             </slot>
                         </div> -->
           <div class="item-children-reserve form-actions">
-              <template v-if="!onlyToSelect">
-                <button
-                  type="submit"
-                  class="antonio-regular inverse btn-cart"
-                  :disabled="diffDays"
-                  :class="{disabled: diffDays}"
-                  @click="addToCartAndNotifyIt"
-                >
-                  <i class="mdi mdi-cart"></i>
-                </button>
-                <button
-                  type="submit"
-                  class="antonio-regular"
-                  :disabled="diffDays"
-                  :class="{disabled: diffDays}"
-                  @click="addToCartAndGoTo"
-                >
-                  Reservar
-                </button>
-              </template>
-                <button
-                  v-else
-                  type="submit"
-                  class="antonio-regular"
-                  @click="emitElement"
-                >
-                  Seleccionar
-                </button>
+            <template v-if="!onlyToSelect">
+              <button
+                type="submit"
+                class="antonio-regular inverse btn-cart"
+                :disabled="diffDays"
+                :class="{ disabled: diffDays }"
+                @click="addToCartAndNotifyIt"
+              >
+                <i class="mdi mdi-cart"></i>
+              </button>
+              <button
+                type="submit"
+                class="antonio-regular"
+                :disabled="diffDays"
+                :class="{ disabled: diffDays }"
+                @click="addToCartAndGoTo"
+              >
+                Reservar
+              </button>
+            </template>
+            <button
+              v-else
+              type="submit"
+              class="antonio-regular"
+              @click="emitElement"
+            >
+              Seleccionar
+            </button>
           </div>
         </div>
       </div>
@@ -111,190 +111,194 @@
 </template>
 
 <script>
-// import {authReserve} from '../../utils/auth'
-import {eventDiffDays} from '../../main'
-import {verifyDifferentsDates} from '../../utils/utils'
+  // import {authReserve} from '../../utils/auth'
+  import { eventDiffDays } from "../../main";
+  import { verifyDifferentsDates } from "../../utils/utils";
 
-export default {
-  created() {
-    this.filters = JSON.parse(localStorage.getItem("searchRentFilters"));
-    eventDiffDays.$on('diffDays', (i)=>{
-      this.diffDays = i
-    })
-  },
-  mounted(){
-      verifyDifferentsDates({FechaRecogida: this.child.orderVehiculo.FechaRecogida,
-                              FechaEntrega: this.child.orderVehiculo.FechaEntrega})
-  },
-  data() {
-    return {
-      selectedInfo: "",
-      filters: null,
-      diffDays: false
-    };
-  },
-  props: {
-    child: Object,
-    onlyToSelect: {
-      type: Boolean,
-      default: false
-    }
-  },
-  methods: {
-    addToCartAndGoTo() {
-      this.addToCart();
-      this.$router.push({
-        name: "reservation"
+  export default {
+    created() {
+      this.filters = JSON.parse(localStorage.getItem("searchRentFilters"));
+      eventDiffDays.$on("diffDays", i => {
+        this.diffDays = i;
       });
     },
-    addToCartAndNotifyIt() {
-      this.addToCart();
-      verifyDifferentsDates({FechaRecogida: this.child.orderVehiculo.FechaRecogida, 
-                             FechaEntrega: this.child.orderVehiculo.FechaEntrega})
-      this.$toasted.show(
-        "Elemento agregado con éxito a su carrito de compra.",
-        {
-          type: "success"
+    mounted() {
+      verifyDifferentsDates({
+        FechaRecogida: this.child.orderVehiculo.FechaRecogida,
+        FechaEntrega: this.child.orderVehiculo.FechaEntrega
+      });
+    },
+    data() {
+      return {
+        selectedInfo: "",
+        filters: null,
+        diffDays: false
+      };
+    },
+    props: {
+      child: Object,
+      onlyToSelect: {
+        type: Boolean,
+        default: false
+      }
+    },
+    methods: {
+      addToCartAndGoTo() {
+        this.addToCart();
+        this.$router.push({
+          name: "reservation"
+        });
+      },
+      addToCartAndNotifyIt() {
+        this.addToCart();
+        verifyDifferentsDates({
+          FechaRecogida: this.child.orderVehiculo.FechaRecogida,
+          FechaEntrega: this.child.orderVehiculo.FechaEntrega
+        });
+        this.$toasted.show(
+          "Elemento agregado con éxito a su carrito de compra.",
+          {
+            type: "success"
+          }
+        );
+      },
+      emitElement() {
+        this.$emit("selectedElementEditRow", this.child);
+      },
+      addToCart() {
+        // let vo = this.child.orderVehiculo;
+
+        // let arrLPRA = new Array();
+        // vo.ListaPreciosRentaAutos.forEach(item => {
+        //   item.PrecioRentaAutos = {
+        //     PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
+        //   };
+        //   arrLPRA.push({
+        //     PrecioRentaAutos: {
+        //       PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
+        //     }
+        //   });
+        // });
+        // vo.ListaPreciosRentaAutos = arrLPRA;
+
+        this.$helpers.shoppingCartAdd(this.child);
+        this.$eventCartBus.$emit("updateCart");
+      },
+      styledPrice(number) {
+        let intPart = Math.ceil(number);
+        let decimalPart = Math.round((number - intPart) * 100);
+
+        if (decimalPart == 0) decimalPart = "00";
+
+        return { intPart: intPart, decimalPart: decimalPart };
+      },
+      selectInfo(section) {
+        if (this.selectedInfo == section) {
+          this.selectedInfo = "";
+        } else {
+          this.selectedInfo = section;
         }
-      );
-    },
-    emitElement(){
-      this.$emit('selectedElementEditRow', this.child)
-    },
-    addToCart() {
-      // let vo = this.child.orderVehiculo;
-
-      // let arrLPRA = new Array();
-      // vo.ListaPreciosRentaAutos.forEach(item => {
-      //   item.PrecioRentaAutos = {
-      //     PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
-      //   };
-      //   arrLPRA.push({
-      //     PrecioRentaAutos: {
-      //       PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
-      //     }
-      //   });
-      // });
-      // vo.ListaPreciosRentaAutos = arrLPRA;
-
-      this.$helpers.shoppingCartAdd(this.child);
-      this.$eventCartBus.$emit("updateCart");
-    },
-    styledPrice(number) {
-      let intPart = Math.floor(number);
-      let decimalPart = Math.round((number - intPart) * 100);
-
-      if (decimalPart == 0) decimalPart = "00";
-
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
       }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>
-.btn-cart {
-  margin-right: 5px;
-  width: 50px;
-}
-.children-wrapper {
-  border-bottom: 1px solid #c4c4c4;
-}
-.item-children-header {
-  padding-bottom: 5px;
-  display: flex;
-}
-.item-children-content {
-  padding-right: 60px;
-  padding-left: 60px;
-}
-.item-children-content-info {
-  padding-bottom: 30px;
-  font-size: 14px;
-}
-.item-children-content pre {
-  font-size: 16px;
-  color: #6d6d6d;
-  white-space: pre-wrap;
-}
-.item-children {
-  /* display: flex; */
-}
-.item-children-name {
-  margin-right: auto;
-  color: #6d6d6d;
-  font-size: 20px;
-  width: 20%;
-}
-.item-children-section {
-  color: #6d6d6d;
-  font-size: 24px;
-  display: flex;
-}
-
-.item-children-section-item {
-  padding-right: 25px;
-  align-self: center;
-  font-size: 30px;
-}
-.item-children-section-icon {
-  font-size: 30px;
-  color: #212f3d;
-  align-self: center;
-}
-.item-children-right-part {
-  margin-left: auto;
-  display: flex;
-}
-.item-children-price {
-  padding-right: 60px;
-  color: #6d6d6d;
-  font-size: 24px;
-}
-.item-children-info-btn {
-  font-size: 24px;
-  color: #212f3d;
-  padding-right: 20px;
-}
-.item-children-info-btn button {
-  border: none;
-  background-color: transparent;
-}
-.item-children-info-btn button:hover {
-  cursor: pointer;
-}
-.item-children-info-btn button:focus {
-  border: none;
-  outline: none;
-}
-.item-children-name,
-.item-children-section,
-.item-children-price,
-.item-children-info-btn {
-  align-self: center;
-}
-.selected {
-  color: #c4c4c4;
-}
-
-@media (max-width: 1440px) {
-  .item-children-info-btn {
-    font-size: 18px;
+  .btn-cart {
+    margin-right: 5px;
+    width: 50px;
+  }
+  .children-wrapper {
+    border-bottom: 1px solid #c4c4c4;
+  }
+  .item-children-header {
+    padding-bottom: 5px;
+    display: flex;
+  }
+  .item-children-content {
+    padding-right: 60px;
+    padding-left: 60px;
+  }
+  .item-children-content-info {
+    padding-bottom: 30px;
+    font-size: 14px;
+  }
+  .item-children-content pre {
+    font-size: 16px;
+    color: #6d6d6d;
+    white-space: pre-wrap;
+  }
+  .item-children {
+    /* display: flex; */
   }
   .item-children-name {
-    font-size: 12px;
+    margin-right: auto;
+    color: #6d6d6d;
+    font-size: 20px;
+    width: 20%;
   }
   .item-children-section {
     color: #6d6d6d;
-    font-size: 18px;
+    font-size: 24px;
     display: flex;
   }
-}
+
+  .item-children-section-item {
+    padding-right: 25px;
+    align-self: center;
+    font-size: 30px;
+  }
+  .item-children-section-icon {
+    font-size: 30px;
+    color: #212f3d;
+    align-self: center;
+  }
+  .item-children-right-part {
+    margin-left: auto;
+    display: flex;
+  }
+  .item-children-price {
+    padding-right: 60px;
+    color: #6d6d6d;
+    font-size: 24px;
+  }
+  .item-children-info-btn {
+    font-size: 24px;
+    color: #212f3d;
+    padding-right: 20px;
+  }
+  .item-children-info-btn button {
+    border: none;
+    background-color: transparent;
+  }
+  .item-children-info-btn button:hover {
+    cursor: pointer;
+  }
+  .item-children-info-btn button:focus {
+    border: none;
+    outline: none;
+  }
+  .item-children-name,
+  .item-children-section,
+  .item-children-price,
+  .item-children-info-btn {
+    align-self: center;
+  }
+  .selected {
+    color: #c4c4c4;
+  }
+
+  @media (max-width: 1440px) {
+    .item-children-info-btn {
+      font-size: 18px;
+    }
+    .item-children-name {
+      font-size: 12px;
+    }
+    .item-children-section {
+      color: #6d6d6d;
+      font-size: 18px;
+      display: flex;
+    }
+  }
 </style>

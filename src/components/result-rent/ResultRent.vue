@@ -30,13 +30,19 @@
             style="width: 5rem; height: 5rem;"
             class="loading-spinner"
             label="Text Centered"
-          ></b-spinner> -->
+          ></b-spinner>-->
           <div class="loader">
             <div class="balls-loader">
-              <img src="../../../public/img/preloadSERVICIOrenta_bolas_verde.svg" alt="bolas cargando">
+              <img
+                src="../../../public/img/preloadSERVICIOrenta_bolas_verde.svg"
+                alt="bolas cargando"
+              />
             </div>
             <div class="icon-loader">
-              <img src="../../../public/img/preloadSERVICIOrenta_icono_verde.svg" alt="auto cargando">
+              <img
+                src="../../../public/img/preloadSERVICIOrenta_icono_verde.svg"
+                alt="auto cargando"
+              />
             </div>
           </div>
         </div>
@@ -58,7 +64,7 @@ import {
   authGetImage,
   authSearchProvider
 } from "../../utils/auth";
-import _ from "lodash"
+import _ from "lodash";
 
 export default {
   mixins: [cleanVoMixin],
@@ -78,16 +84,24 @@ export default {
     if (rt) {
       let temp = this.$route.params["searchResult"];
       this.resultTotal = temp.length;
-      temp = _.orderBy(temp, function(o){
-        return o.precio
-      },'asc')
+      temp = _.orderBy(
+        temp,
+        function(o) {
+          return o.precio;
+        },
+        "asc"
+      );
       this.createList(temp);
     } else {
       let temp = await this.searchResult();
       this.resultTotal = temp.length;
-      temp = _.orderBy(temp, function(o){
-        return o.precio
-      },'asc')
+      temp = _.orderBy(
+        temp,
+        function(o) {
+          return o.precio;
+        },
+        "asc"
+      );
       this.createList(temp);
     }
   },
@@ -109,40 +123,44 @@ export default {
         };
         let resultList = [];
         let { data } = await authSearchCars(searchItem);
-        console.log(data)
-        console.log('bla bla bla')
         await Promise.all(
-          data.filter(j => {return j.ValorSobreprecioAplicado > 0}).map( async (item) => {
-            let image = await authGetImage(item.Vehiculo.ProductoId);
-            let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-            let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
-            resultList.push({
-              nombre: item.Vehiculo.Nombre,
-              tipo: "rent",
-              id: item.Vehiculo.ProductoId,
-              plazas: item.Vehiculo.CantidadPlazas,
-              descripcion: item.Vehiculo.Descripcion,
-              cancelation: item.Vehiculo.DescripcionCorta,
-              transmision: item.Vehiculo.TipoTransmision,
-              modeloId: item.Vehiculo.ModeloId,
-              marca: marca.data.Nombre,
-              marcaid: marca.data.MarcaId,
-              precio: item.PrecioOrden,
-              seguro: item.Vehiculo.TieneSeguro,
-              distribuidor: item.Distribuidor.Nombre,
-              distribuidorId: item.Distribuidor.DistribuidorId,
-              imagen: image.data.ImageContent,
-              provider: provider.data.Nombre,
-              providerImage: provider.data.ImageContent,
-              orderVehiculo: item
-            });
-            this.cleanVO(
-              item,
-              this.filter.pickUpPlace,
-              this.filter.deliveryPlace
-            );
+          data
+            .filter(j => {
+              return j.ValorSobreprecioAplicado > 0;
             })
-        )
+            .map(async item => {
+              let image = await authGetImage(item.Vehiculo.ProductoId);
+              let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+              let provider = await authSearchProvider(
+                item.Vehiculo.ProveedorId
+              );
+              resultList.push({
+                nombre: item.Vehiculo.Nombre,
+                tipo: "rent",
+                id: item.Vehiculo.ProductoId,
+                plazas: item.Vehiculo.CantidadPlazas,
+                descripcion: item.Vehiculo.Descripcion,
+                cancelation: item.Vehiculo.DescripcionCorta,
+                transmision: item.Vehiculo.TipoTransmision,
+                modeloId: item.Vehiculo.ModeloId,
+                marca: marca.data.Nombre,
+                marcaid: marca.data.MarcaId,
+                precio: item.PrecioOrden,
+                seguro: item.Vehiculo.TieneSeguro,
+                distribuidor: item.Distribuidor.Nombre,
+                distribuidorId: item.Distribuidor.DistribuidorId,
+                imagen: image.data.ImageContent,
+                provider: provider.data.Nombre,
+                providerImage: provider.data.ImageContent,
+                orderVehiculo: item
+              });
+              this.cleanVO(
+                item,
+                this.filter.pickUpPlace,
+                this.filter.deliveryPlace
+              );
+            })
+        );
         return resultList;
       } catch (error) {
         this.$toasted.show("El servicio no está disponible en estos momentos", {

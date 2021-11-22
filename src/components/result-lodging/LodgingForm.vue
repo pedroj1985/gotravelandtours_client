@@ -6,7 +6,7 @@
       </div>
       <div slot="searching-text" class="searching-text">
         <span class="antonio-light">Buscando disponibilidad de</span>
-        <span class="antonio-bold text-highlight">alojamientos</span>
+        <span class="antonio-bold text-highlight pl-1">alojamientos</span>
         <span class="antonio-light">
           en
           <span v-if="selectedLodgingDestinyValue">
@@ -28,31 +28,40 @@
         <div v-if="selectedRoomLayout">para {{ constructDisplay(selectedRoomLayout) }}</div>
       </div>
     </GttModalSearch>
-    <gtt-select
-      :openedLodging.sync="lodgingOpened"
-      @click.native="loadDestinies"
-      v-model="selectedLodgingDestinyValue"
-      :options="destinies"
-    >
-      <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-      <span slot="placeholder">Destino</span>
-      <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
-      <template v-slot:option="option">{{ option.option.nombre }}</template>
-      <template v-slot:selectedValue="selectedValue">{{ selectedValue.selectedValue.nombre }}</template>
-    </gtt-select>
-    <gtt-select-date v-model="selectedArriveDate" :mode="'single'">
-      <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-      <span slot="placeholder">Fecha de entrada</span>
-    </gtt-select-date>
-    <gtt-select-date v-model="selectedDepartureDate" :mode="'single'">
-      <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-      <span slot="placeholder">Fecha de salida</span>
-    </gtt-select-date>
+    <div ref="gttDestinyLodging">
+      <gtt-select
+        :openedLodging.sync="lodgingOpened"
+        @click.native="loadDestinies"
+        v-model="selectedLodgingDestinyValue"
+        :options="destinies"
+      >
+        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+        <span slot="placeholder" class="required-field">Destino</span>
+        <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
+        <template v-slot:option="option">{{ option.option.nombre }}</template>
+        <template v-slot:selectedValue="selectedValue">{{ selectedValue.selectedValue.nombre }}</template>
+        <span slot="error" class="gtt-errors"></span>
+      </gtt-select>
+    </div>
+    <div ref="gttStartDate">
+      <gtt-select-date v-model="selectedArriveDate" :mode="'single'">
+        <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+        <span slot="placeholder" class="required-field">Fecha de entrada</span>
+        <span slot="error" class="gtt-errors"></span>
+      </gtt-select-date>
+    </div>
+    <div ref="gttEndDate">
+      <gtt-select-date v-model="selectedDepartureDate" :mode="'single'">
+        <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+        <span slot="placeholder" class="required-field">Fecha de salida</span>
+        <span slot="error" class="gtt-errors"></span>
+      </gtt-select-date>
+    </div>
     <gtt-select-form :options="roomLayout" v-model="selectedRoomLayout">
       <span slot="iconSelectedValue">
         <i class="mdi mdi-account"></i>
       </span>
-      <span slot="placeholder">Visitantes</span>
+      <span slot="placeholder" class="required-field">Visitantes</span>
     </gtt-select-form>
     <!-- <gtt-select-form :options="rooms" v-model="selectedRooms">
             <span slot="iconSelectedValue"><i class="mdi mdi-bunk-bed"></i></span>
@@ -103,6 +112,7 @@ import {
   authGetLodgingsAll
 } from "../../utils/auth";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import moment from "moment";
 
 export default {
@@ -116,11 +126,21 @@ export default {
   watch: {
     propNationality: function(sn) {
       this.selectedNationality = sn;
+    },
+    propArriveDate(i) {
+      this.selectedArriveDate = new Date(i);
+    },
+    propDepartureDate(i) {
+      this.selectedDepartureDate = new Date(i);
+    },
+    propLodgingDestinyValue(i) {
+      this.selectedLodgingDestinyValue = i;
     }
   },
   async created() {
     let t = await authGetRoomTypes();
     this.todosTipo = t.data;
+    this.selectedRoomLayout = this.propRoomLayout;
   },
   methods: {
     constructDate(date) {
@@ -151,129 +171,157 @@ export default {
         }
       });
     },
+    gttValidate() {
+      let validator = [
+        {
+          rules: ["required"],
+          name: "gttDestinyLodging",
+          value: this.selectedLodgingDestinyValue,
+          lang: "es"
+        },
+        {
+          rules: ["required", "dateAfter:selectedArriveDate"],
+          name: "gttEndDate",
+          value: this.selectedDepartureDate,
+          lang: "es"
+        },
+        {
+          rules: ["required"],
+          name: "gttStartDate",
+          value: this.selectedArriveDate,
+          lang: "es"
+        }
+      ];
+
+      return validator;
+    },
     async activateModal() {
-      this.isModalActive = true;
-      if (this.selectedLodgingDestinyValue.type == "region") {
-        let region = { RegionId: this.selectedLodgingDestinyValue.regionid };
-        let cliente = { ClienteId: localStorage.getItem("cliente") };
-        let searchItem = {
-          Entrada: this.selectedArriveDate,
-          Salida: this.selectedDepartureDate,
-          Region: region,
-          Cliente: cliente
-        };
-        let searchFilters = {
-          Destiny: this.selectedLodgingDestinyValue,
-          Region: {
-            RegionId: this.selectedLodgingDestinyValue.regionid,
-            RegionNombre: this.selectedLodgingDestinyValue.nombre
-          },
-          Cliente: { ClienteId: localStorage.getItem("cliente") },
-          Entrada: this.selectedArriveDate,
-          Salida: this.selectedDepartureDate,
-          Visitantes: this.selectedRoomLayout,
-          Nacionalidad: this.selectedNationality
-        };
-        let resultList = [];
-        try {
-          if (
-            searchFilters.Visitantes.adults.value >=
-            searchFilters.Visitantes.kids.value
-          ) {
-            this.roomComb = this.$helpers.roomCombination(
+      let iv = gttIsValid(this.gttValidate(), this);
+      if (getValid(iv)) {
+        this.isModalActive = true;
+        if (this.selectedLodgingDestinyValue.type == "region") {
+          let region = { RegionId: this.selectedLodgingDestinyValue.regionid };
+          let cliente = { ClienteId: localStorage.getItem("cliente") };
+          let searchItem = {
+            Entrada: this.selectedArriveDate,
+            Salida: this.selectedDepartureDate,
+            Region: region,
+            Cliente: cliente
+          };
+          let searchFilters = {
+            Destiny: this.selectedLodgingDestinyValue,
+            Region: {
+              RegionId: this.selectedLodgingDestinyValue.regionid,
+              RegionNombre: this.selectedLodgingDestinyValue.nombre
+            },
+            Cliente: { ClienteId: localStorage.getItem("cliente") },
+            Entrada: this.selectedArriveDate,
+            Salida: this.selectedDepartureDate,
+            Visitantes: this.selectedRoomLayout,
+            Nacionalidad: this.selectedNationality
+          };
+          let resultList = [];
+          try {
+            if (
+              searchFilters.Visitantes.adults.value >=
+              searchFilters.Visitantes.kids.value
+            ) {
+              this.roomComb = this.$helpers.roomCombination(
+                searchFilters.Visitantes.adults.value,
+                searchFilters.Visitantes.kids.value || 0
+              );
+            } else {
+              this.roomComb = this.$helpers.roomCombination2kids(
+                searchFilters.Visitantes.adults.value,
+                searchFilters.Visitantes.kids.value || 0
+              );
+            }
+            let roomComb2 = this.$helpers.roomCombinationV2(
               searchFilters.Visitantes.adults.value,
               searchFilters.Visitantes.kids.value || 0
             );
-          } else {
-            this.roomComb = this.$helpers.roomCombination2kids(
-              searchFilters.Visitantes.adults.value,
-              searchFilters.Visitantes.kids.value || 0
-            );
-          }
-          let roomComb2 = this.$helpers.roomCombinationV2(
-            searchFilters.Visitantes.adults.value,
-            searchFilters.Visitantes.kids.value || 0
-          );
-          if (this.roomComb != "ERROR") {
-            resultList = await this.searchResult(
-              searchItem,
-              this.roomComb,
-              roomComb2
-            );
-            localStorage.setItem(
-              "searchLodgingFilters",
-              JSON.stringify(searchFilters)
-            );
+            if (this.roomComb != "ERROR") {
+              resultList = await this.searchResult(
+                searchItem,
+                this.roomComb,
+                roomComb2
+              );
+              localStorage.setItem(
+                "searchLodgingFilters",
+                JSON.stringify(searchFilters)
+              );
+              this.desactivateModal();
+              this.$router.push({
+                name: "lodgingResultHolder",
+                params: {
+                  searchResult: resultList
+                }
+              });
+            } else {
+              this.desactivateModal();
+              this.$toasted.show("Demasiados niños", {
+                type: "error"
+              });
+            }
+          } catch (error) {
             this.desactivateModal();
-            this.$router.push({
-              name: "lodgingResultHolder",
-              params: {
-                searchResult: resultList
+            this.$toasted.show(
+              "El servicio no está disponible en estos momentos",
+              {
+                type: "error"
               }
-            });
-          } else {
-            this.desactivateModal();
-            this.$toasted.show("Demasiados niños", {
-              type: "error"
-            });
+            );
           }
-        } catch (error) {
-          console.log(error);
-          this.desactivateModal();
-          this.$toasted.show(
-            "El servicio no está disponible en estos momentos",
-            {
-              type: "error"
+        } else if (this.selectedLodgingDestinyValue.type == "alojamiento") {
+          let searchFilters = {
+            Destiny: this.selectedLodgingDestinyValue,
+            NombreHotel: this.selectedLodgingDestinyValue.nombre,
+            Cliente: { ClienteId: localStorage.getItem("cliente") },
+            Entrada: this.selectedArriveDate,
+            Salida: this.selectedDepartureDate,
+            Visitantes: this.selectedRoomLayout,
+            Nacionalidad: this.selectedNationality
+          };
+          try {
+            if (
+              searchFilters.Visitantes.adults.value >=
+              searchFilters.Visitantes.kids.value
+            ) {
+              this.roomComb = this.$helpers.roomCombination(
+                searchFilters.Visitantes.adults.value,
+                searchFilters.Visitantes.kids.value || 0
+              );
+            } else {
+              this.roomComb = this.$helpers.roomCombination2kids(
+                searchFilters.Visitantes.adults.value,
+                searchFilters.Visitantes.kids.value || 0
+              );
             }
-          );
-        }
-      } else if (this.selectedLodgingDestinyValue.type == "alojamiento") {
-        let searchFilters = {
-          Destiny: this.selectedLodgingDestinyValue,
-          NombreHotel: this.selectedLodgingDestinyValue.nombre,
-          Cliente: { ClienteId: localStorage.getItem("cliente") },
-          Entrada: this.selectedArriveDate,
-          Salida: this.selectedDepartureDate,
-          Visitantes: this.selectedRoomLayout,
-          Nacionalidad: this.selectedNationality
-        };
-        try {
-          if (
-            searchFilters.Visitantes.adults.value >=
-            searchFilters.Visitantes.kids.value
-          ) {
-            this.roomComb = this.$helpers.roomCombination(
-              searchFilters.Visitantes.adults.value,
-              searchFilters.Visitantes.kids.value || 0
-            );
-          } else {
-            this.roomComb = this.$helpers.roomCombination2kids(
-              searchFilters.Visitantes.adults.value,
-              searchFilters.Visitantes.kids.value || 0
-            );
-          }
-          if (this.roomComb != "ERROR") {
-            this.goToDetail(
-              searchFilters,
-              this.buildRoomCombo(this.roomComb),
-              this.selectedLodgingDestinyValue.id
-            );
-          } else {
-            this.desactivateModal();
-            this.$toasted.show("Demasiados niños", {
-              type: "error"
-            });
-          }
-        } catch (error) {
-          console.log(error);
-          this.desactivateModal();
-          this.$toasted.show(
-            "El servicio no está disponible en estos momentos",
-            {
-              type: "error"
+            if (this.roomComb != "ERROR") {
+              this.goToDetail(
+                searchFilters,
+                this.buildRoomCombo(this.roomComb),
+                this.selectedLodgingDestinyValue.id
+              );
+            } else {
+              this.desactivateModal();
+              this.$toasted.show("Demasiados niños", {
+                type: "error"
+              });
             }
-          );
+          } catch (error) {
+            console.log(error);
+            this.desactivateModal();
+            this.$toasted.show(
+              "El servicio no está disponible en estos momentos",
+              {
+                type: "error"
+              }
+            );
+          }
         }
+      } else {
+        renderValid(iv, this);
       }
     },
     desactivateModal() {
@@ -342,9 +390,9 @@ export default {
   data() {
     return {
       selectedLodgingDestinyValue: this.propLodgingDestinyValue,
-      selectedArriveDate: this.propArriveDate,
-      selectedDepartureDate: this.propDepartureDate,
-      selectedRoomLayout: this.propRoomLayout,
+      selectedArriveDate: new Date(moment(this.propArriveDate)),
+      selectedDepartureDate: new Date(moment(this.propDepartureDate)),
+      selectedRoomLayout: null,
       selectedNationality: this.propNationality,
       roomComb: null,
       todosTipo: [],

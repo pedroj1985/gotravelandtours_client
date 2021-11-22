@@ -35,7 +35,7 @@
           <span class="c-space">
             <i class="mdi mdi-map-marker"></i>
           </span>
-          {{item.location}}
+          {{ item.location }}
         </div>
         <div class="item-map-link" v-if="item.mapLink">
           <span class="c-space">
@@ -98,7 +98,9 @@
                 <i class="mdi mdi-clipboard-text"></i>
               </button>
             </div>
-            <div class="item-children-name hn-bdcn">{{item.reservedRooms.name}}</div>
+            <div class="item-children-name hn-bdcn">
+              {{ item.reservedRooms.name }}
+            </div>
             <div class="item-children-right-part" v-if="can">
               <!-- <div class="item-children-price hn-roman">
                                 <slot name="itemChildrenPriceSlot" v-bind:child="child">
@@ -124,11 +126,19 @@
             </div>
           </div>
           <div class="item-children-content hn-roman">
-            <div class="item-children-content-info font18" v-if="selectedInfo == 'info'">
+            <div
+              class="item-children-content-info font18"
+              v-if="selectedInfo == 'info'"
+            >
               <slot name="itemContentInfoSlot" v-bind:child="item">
                 <div class="flex-wrapper">
-                  <div class="to-uppercase hn-roman gtt-text-color">Desglose del alojamiento</div>
-                  <div class="ml-auto font24 printer-button" v-if="ordenId != -1 && this.Voucher">
+                  <div class="to-uppercase hn-roman gtt-text-color">
+                    Desglose del alojamiento
+                  </div>
+                  <div
+                    class="ml-auto font24 printer-button"
+                    v-if="ordenId != -1 && this.Voucher"
+                  >
                     <!-- :class="{divDisabled: !hasVoucher}"> -->
                     <a :href="UrlVoucher" target="_blank">
                       <i class="mdi mdi-printer"></i>
@@ -142,20 +152,14 @@
                   :key="i.id"
                 >
                   <div class="to-left">
-                    Hab. {{pos + 1}}, {{i.tipoHabitacion}} adulto(s)
-                    <template
-                      v-if="i.cantidadMenoresPorHabitacion > 0"
-                    >y {{i.cantidadMenoresPorHabitacion}} niño(s)</template>
+                    Hab. {{ pos + 1 }}, {{ i.tipoHabitacion }} adulto(s)
+                    <template v-if="i.cantidadMenoresPorHabitacion > 0"
+                      >y {{ i.cantidadMenoresPorHabitacion }} niño(s)</template
+                    >
                     <template v-else>sin niños</template>
                   </div>
                   <div class="to-right">
-                    {{ styledPrice(i.price.value).intPart }}.
-                    <sup>
-                      {{
-                      styledPrice(i.price.value).decimalPart
-                      }}
-                    </sup>
-                    USD
+                    {{ styledPrice(i.price.value).intPart }}. USD
                   </div>
                 </div>
                 <!-- <p class="gtt-text-color general-text-opt">
@@ -169,15 +173,17 @@
                 </p>-->
                 <br />
                 <div class="tab-precio flex-wrapper">
-                  <div class="to-uppercase hn-roman gtt-text-color flex-left-side">Precio total</div>
-                  <div class="to-uppercase hn-roman gtt-text-color flex-right-side font24">
-                    {{ styledPrice(item.reservedRooms.combinacion.total).intPart }}.
-                    <sup>
-                      {{
-                      styledPrice(item.reservedRooms.combinacion.total).decimalPart
-                      }}
-                    </sup>
-                    USD
+                  <div
+                    class="to-uppercase hn-roman gtt-text-color flex-left-side"
+                  >
+                    Precio total
+                  </div>
+                  <div
+                    class="to-uppercase hn-roman gtt-text-color flex-right-side font24"
+                  >
+                    {{
+                      styledPrice(item.reservedRooms.combinacion.total).intPart
+                    }}. USD
                   </div>
                 </div>
               </slot>
@@ -190,214 +196,214 @@
 </template>
 
 <script>
-import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
-import Slick from "vue-slick-carousel";
-import moment from "moment";
+  import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
+  import Slick from "vue-slick-carousel";
+  import moment from "moment";
 
-export default {
-  created() {
-    console.log(this.item);
-    console.log("info-hotel");
-  },
-  components: {
-    Slick,
-    GttTwoRowsInfo
-  },
-  props: {
-    item: {
-      type: Object,
-      default: null
+  export default {
+    created() {
+      console.log(this.item);
+      console.log("info-hotel");
     },
-    can: {
-      type: Boolean,
-      default: false
+    components: {
+      Slick,
+      GttTwoRowsInfo
     },
-    ordenId: {
-      default: -1
-    },
-    hasVoucher: {
-      default: false,
-      type: Boolean
-    }
-  },
-  data() {
-    return {
-      selectedInfo: "info",
-      pos: 1
-    };
-  },
-  methods: {
-    getVisitantes(item) {
-      let totalA = 0;
-      let totalN = 0;
-
-      item.reservedRooms.combinacion.listado.forEach(i => {
-        totalA = totalA + i.cantidad * i.tipoHabitacion;
-        totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion;
-      });
-
-      return `${totalA} Adulto(s) · ${totalN} Niño(s)`;
-    },
-    getHabitaciones(item) {
-      let totalR = 0;
-
-      item.reservedRooms.combinacion.listado.forEach(i => {
-        totalR = totalR + i.cantidad;
-      });
-
-      return `${totalR} Habitación(es)`;
-    },
-    addPos() {
-      this.pos = this.pos + 1;
-      return this.pos;
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
+    props: {
+      item: {
+        type: Object,
+        default: null
+      },
+      can: {
+        type: Boolean,
+        default: false
+      },
+      ordenId: {
+        default: -1
+      },
+      hasVoucher: {
+        default: false,
+        type: Boolean
       }
     },
-    toMoment(date) {
-      return moment(date);
+    data() {
+      return {
+        selectedInfo: "info",
+        pos: 1
+      };
     },
-    getDateEntrada(item) {
-      moment.locale("es");
-      return this.toMoment(item.entrada).format("DD MMMM YYYY");
-    },
-    getDateSalida(item) {
-      moment.locale("es");
-      return this.toMoment(item.salida).format("DD MMMM YYYY");
-    },
-    styledPrice(number) {
-      let intPart = Math.floor(number);
-      let decimalPart = Math.round((number - intPart) * 100);
+    methods: {
+      getVisitantes(item) {
+        let totalA = 0;
+        let totalN = 0;
 
-      if (decimalPart == 0) decimalPart = "00";
+        item.reservedRooms.combinacion.listado.forEach(i => {
+          totalA = totalA + i.cantidad * i.tipoHabitacion;
+          totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion;
+        });
 
-      return { intPart: intPart, decimalPart: decimalPart };
+        return `${totalA} Adulto(s) · ${totalN} Niño(s)`;
+      },
+      getHabitaciones(item) {
+        let totalR = 0;
+
+        item.reservedRooms.combinacion.listado.forEach(i => {
+          totalR = totalR + i.cantidad;
+        });
+
+        return `${totalR} Habitación(es)`;
+      },
+      addPos() {
+        this.pos = this.pos + 1;
+        return this.pos;
+      },
+      selectInfo(section) {
+        if (this.selectedInfo == section) {
+          this.selectedInfo = "";
+        } else {
+          this.selectedInfo = section;
+        }
+      },
+      toMoment(date) {
+        return moment(date);
+      },
+      getDateEntrada(item) {
+        moment.locale("es");
+        return this.toMoment(item.entrada).format("DD MMMM YYYY");
+      },
+      getDateSalida(item) {
+        moment.locale("es");
+        return this.toMoment(item.salida).format("DD MMMM YYYY");
+      },
+      styledPrice(number) {
+        let intPart = Math.ceil(number);
+        let decimalPart = Math.round((number - intPart) * 100);
+
+        if (decimalPart == 0) decimalPart = "00";
+
+        return { intPart: intPart, decimalPart: decimalPart };
+      }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>
-.info-item {
-  margin-bottom: 10px;
-}
-.btn-cart {
-  margin-right: 5px;
-  width: 50px;
-}
-.children-wrapper {
-  border-bottom: 1px solid #c4c4c4;
-}
-.item-children-header {
-  padding-bottom: 5px;
-  display: flex;
-}
-.item-children-content {
-  padding-right: 60px;
-  padding-left: 60px;
-}
-.item-children-content-info {
-  padding-bottom: 30px;
-  /* font-size: 14px; */
-}
-.item-children-content-info p {
-  margin-bottom: 5px;
-}
-.item-children-content pre {
-  font-size: 16px;
-  color: #6d6d6d;
-  white-space: pre-wrap;
-}
-.item-children {
-  /* display: flex; */
-}
-.item-children-name {
-  margin-right: auto;
-  color: #6d6d6d;
-  font-size: 20px;
-  width: 20%;
-}
-.item-children-section {
-  color: #6d6d6d;
-  font-size: 24px;
-  display: flex;
-}
-
-.item-children-section-item {
-  padding-right: 25px;
-  align-self: center;
-  font-size: 30px !important;
-}
-.item-children-section-icon {
-  font-size: 30px !important;
-  color: #212f3d;
-  align-self: center;
-}
-.item-children-right-part {
-  margin-left: auto;
-  display: flex;
-}
-.item-children-price {
-  padding-right: 60px;
-  color: #6d6d6d;
-  font-size: 24px;
-}
-.item-children-info-btn {
-  font-size: 24px;
-  color: #212f3d;
-  padding-right: 20px;
-}
-.item-children-info-btn button {
-  border: none;
-  background-color: transparent;
-}
-.item-children-info-btn button:hover {
-  cursor: pointer;
-}
-.item-children-info-btn button:focus {
-  border: none;
-  outline: none;
-}
-.item-children-name,
-.item-children-section,
-.item-children-price,
-.item-children-info-btn {
-  align-self: center;
-}
-.selected {
-  color: #c4c4c4;
-}
-.item-children-reserve button {
-  font-size: 24px;
-}
-.printer-button a {
-  color: #212f3d;
-}
-.printer-button a:hover {
-  color: #0056b3;
-}
-.divDisabled {
-  pointer-events: none;
-  color: #6d6d6d;
-}
-@media (max-width: 1440px) {
-  .item-children-info-btn {
-    font-size: 18px;
+  .info-item {
+    margin-bottom: 10px;
+  }
+  .btn-cart {
+    margin-right: 5px;
+    width: 50px;
+  }
+  .children-wrapper {
+    border-bottom: 1px solid #c4c4c4;
+  }
+  .item-children-header {
+    padding-bottom: 5px;
+    display: flex;
+  }
+  .item-children-content {
+    padding-right: 60px;
+    padding-left: 60px;
+  }
+  .item-children-content-info {
+    padding-bottom: 30px;
+    /* font-size: 14px; */
+  }
+  .item-children-content-info p {
+    margin-bottom: 5px;
+  }
+  .item-children-content pre {
+    font-size: 16px;
+    color: #6d6d6d;
+    white-space: pre-wrap;
+  }
+  .item-children {
+    /* display: flex; */
   }
   .item-children-name {
-    font-size: 12px;
+    margin-right: auto;
+    color: #6d6d6d;
+    font-size: 20px;
+    width: 20%;
   }
   .item-children-section {
     color: #6d6d6d;
-    font-size: 18px;
+    font-size: 24px;
     display: flex;
   }
-  .item-children-content-info {
-    font-size: 12px;
+
+  .item-children-section-item {
+    padding-right: 25px;
+    align-self: center;
+    font-size: 30px !important;
   }
-}
+  .item-children-section-icon {
+    font-size: 30px !important;
+    color: #212f3d;
+    align-self: center;
+  }
+  .item-children-right-part {
+    margin-left: auto;
+    display: flex;
+  }
+  .item-children-price {
+    padding-right: 60px;
+    color: #6d6d6d;
+    font-size: 24px;
+  }
+  .item-children-info-btn {
+    font-size: 24px;
+    color: #212f3d;
+    padding-right: 20px;
+  }
+  .item-children-info-btn button {
+    border: none;
+    background-color: transparent;
+  }
+  .item-children-info-btn button:hover {
+    cursor: pointer;
+  }
+  .item-children-info-btn button:focus {
+    border: none;
+    outline: none;
+  }
+  .item-children-name,
+  .item-children-section,
+  .item-children-price,
+  .item-children-info-btn {
+    align-self: center;
+  }
+  .selected {
+    color: #c4c4c4;
+  }
+  .item-children-reserve button {
+    font-size: 24px;
+  }
+  .printer-button a {
+    color: #212f3d;
+  }
+  .printer-button a:hover {
+    color: #0056b3;
+  }
+  .divDisabled {
+    pointer-events: none;
+    color: #6d6d6d;
+  }
+  @media (max-width: 1440px) {
+    .item-children-info-btn {
+      font-size: 18px;
+    }
+    .item-children-name {
+      font-size: 12px;
+    }
+    .item-children-section {
+      color: #6d6d6d;
+      font-size: 18px;
+      display: flex;
+    }
+    .item-children-content-info {
+      font-size: 12px;
+    }
+  }
 </style>

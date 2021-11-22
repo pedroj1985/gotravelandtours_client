@@ -2,24 +2,26 @@
   <div id="lodging-form">
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
       <div slot="image">
-        <img src="img/icopaq_renta_color.svg" alt="" />
+        <img src="img/icopaq_renta_color.svg" alt />
       </div>
       <div slot="searching-text" class="searching-text">
-        <span class="antonio-light">Buscando disponibilidad de </span
-        ><span class="antonio-bold text-highlight">autos en renta</span>
-        <span class="antonio-light"
-          > en
-          <span v-if="selectedPickUpPlace">{{
+        <span class="antonio-light">Buscando disponibilidad de</span>
+        <span class="antonio-bold text-highlight pl-1">autos en renta</span>
+        <span class="antonio-light">
+          en
+          <span v-if="selectedPickUpPlace">
+            {{
             selectedPickUpPlace.nombre
-          }}</span
-          ><span v-else>cualquier lugar</span></span
-        >
+            }}
+          </span>
+          <span v-else>cualquier lugar</span>
+        </span>
       </div>
       <div slot="searching-fields" class="searching-fields">
         <div v-if="selectedPickUpDate && selectedDeliveryDate">
           entre el {{ constructDate(selectedPickUpDate) }} y el
           {{ constructDate(selectedDeliveryDate) }} ({{
-            calculateNights(selectedDeliveryDate, selectedPickUpDate)
+          calculateNights(selectedDeliveryDate, selectedPickUpDate)
           }}
           días)
         </div>
@@ -34,18 +36,16 @@
       v-model="selectedPickUpPlace"
     >
       <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-      <span slot="placeholder"> Punto de recogida</span>
+      <span slot="placeholder">Punto de recogida</span>
       <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
-      <template v-slot:option="option">
-        {{ option.option.nombre }}
-      </template>
+      <template v-slot:option="option">{{ option.option.nombre }}</template>
       <template v-slot:selectedValue="selectedValue">
-        <span id="selectedPickUp">{{
+        <span id="selectedPickUp">
+          {{
           overflowText(selectedValue.selectedValue.nombre, 21)
-        }}</span>
-        <b-tooltip target="selectedPickUp" triggers="hover">
-          {{ selectedValue.selectedValue.nombre }}
-        </b-tooltip>
+          }}
+        </span>
+        <b-tooltip target="selectedPickUp" triggers="hover">{{ selectedValue.selectedValue.nombre }}</b-tooltip>
       </template>
     </gtt-select>
     <gtt-select
@@ -55,48 +55,41 @@
       v-model="selectedDeliveryPlace"
     >
       <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-      <span slot="placeholder"> Punto de entrega</span>
+      <span slot="placeholder">Punto de entrega</span>
       <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
-      <template v-slot:option="option">
-        {{ option.option.nombre }}
-      </template>
+      <template v-slot:option="option">{{ option.option.nombre }}</template>
       <template v-slot:selectedValue="selectedValue">
-        <span id="selectedDelivery">{{
+        <span id="selectedDelivery">
+          {{
           overflowText(selectedValue.selectedValue.nombre, 21)
-        }}</span>
-        <b-tooltip target="selectedDelivery" triggers="hover">
-          {{ selectedValue.selectedValue.nombre }}
-        </b-tooltip>
+          }}
+        </span>
+        <b-tooltip
+          target="selectedDelivery"
+          triggers="hover"
+        >{{ selectedValue.selectedValue.nombre }}</b-tooltip>
       </template>
     </gtt-select>
     <div ref="gttPickUpDate">
       <gtt-select-date v-model="selectedPickUpDate" :mode="'single'">
         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-        <span slot="placeholder" class="required-field">
-          Fecha de recogida
-        </span>
+        <span slot="placeholder" class="required-field">Fecha de recogida</span>
       </gtt-select-date>
     </div>
     <div ref="gttDeliveryDate">
       <gtt-select-date v-model="selectedDeliveryDate" :mode="'single'">
         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-        <span slot="placeholder" class="required-field">
-          Fecha de entrega
-        </span>
-        <span slot="error"> </span>
+        <span slot="placeholder" class="required-field">Fecha de entrega</span>
+        <span slot="error"></span>
       </gtt-select-date>
     </div>
     <div ref="gttTransmision">
       <gtt-select :options="transmissionTypes()" v-model="selectedTransmissionType">
         <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-        <span slot="placeholder" class="required-field"> Tipo de transmisión</span>
+        <span slot="placeholder" class="required-field">Tipo de transmisión</span>
         <span slot="selectedPlaceholder">¿Qué transmisión desea?</span>
-        <template v-slot:selectedValue="selectedValue">
-          {{ selectedValue.selectedValue.display }}
-        </template>
-        <template v-slot:option="option">
-          {{ option.option.display }}
-        </template>
+        <template v-slot:selectedValue="selectedValue">{{ selectedValue.selectedValue.display }}</template>
+        <template v-slot:option="option">{{ option.option.display }}</template>
       </gtt-select>
     </div>
     <gtt-select
@@ -108,18 +101,14 @@
       :nullable="true"
     >
       <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
-      <span slot="placeholder"> Categoría</span>
+      <span slot="placeholder">Categoría</span>
       <span slot="selectedPlaceholder">¿Cómo desea el auto?</span>
-      <template v-slot:option="option">
-        {{ option.option.nombre }}
-      </template>
-      <template v-slot:selectedValue="selectedValue">
-        {{ selectedValue.selectedValue.nombre }}
-      </template>
+      <template v-slot:option="option">{{ option.option.nombre }}</template>
+      <template v-slot:selectedValue="selectedValue">{{ selectedValue.selectedValue.nombre }}</template>
     </gtt-select>
     <gtt-select :options="countries" v-model="selectedNationality">
       <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-      <span slot="placeholder"> Nacionalidad</span>
+      <span slot="placeholder">Nacionalidad</span>
       <template v-slot:selectedValue="selectedValue">
         <img
           :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
@@ -146,9 +135,7 @@
       </template>
     </gtt-select>
     <div class="form-actions lodging-form-search-btn">
-      <button @click="activateModal" type="submit" class="antonio-regular">
-        Buscar
-      </button>
+      <button @click="activateModal" type="submit" class="antonio-regular">Buscar</button>
     </div>
   </div>
 </template>
@@ -165,9 +152,13 @@ import {
   authSearchProvider
 } from "../../utils/auth";
 import GttModalSearch from "../custom-elements/GttModalSearch";
-import { constructDate, calculateNights, transmissionTypes } from "../../utils/utils";
+import {
+  constructDate,
+  calculateNights,
+  transmissionTypes
+} from "../../utils/utils";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
-import {cleanVoMixin} from "../../mixins/cleanVoMixin"
+import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 import moment from "moment";
 
 export default {
@@ -214,15 +205,15 @@ export default {
       this.selectedNationality = sn;
     },
     selectedPickUpPlace: function(val) {
-      this.selectedDeliveryPlace = val
+      this.selectedDeliveryPlace = val;
     }
   },
   // mounted(){
   //     this.gttValidate()
   // },
   methods: {
-    transmissionTypes(){
-      return transmissionTypes
+    transmissionTypes() {
+      return transmissionTypes;
     },
     gttValidate() {
       let validator = [
@@ -258,7 +249,10 @@ export default {
           //     deliveryPlace: this.selectedDeliveryPlace,
           // }
           let marca = null;
-          if (this.selectedCarCategory || this.selectedCarCategory != "ALL_ITEMS") {
+          if (
+            this.selectedCarCategory ||
+            this.selectedCarCategory != "ALL_ITEMS"
+          ) {
             marca = {
               MarcaId: this.selectedCarCategory.marcaid,
               Nombre: this.selectedCarCategory.nombre
@@ -278,32 +272,38 @@ export default {
           let resultList = [];
           let { data } = await authSearchCars(searchItem);
           await Promise.all(
-            data.filter(j => {return j.ValorSobreprecioAplicado > 0}).map(async (item) => {
-              let image = await authGetImage(item.Vehiculo.ProductoId);
-              let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-              let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
-              resultList.push({
-                nombre: item.Vehiculo.Nombre,
-                tipo: "rent",
-                id: item.Vehiculo.ProductoId,
-                plazas: item.Vehiculo.CantidadPlazas,
-                descripcion: item.Vehiculo.Descripcion,
-                cancelation: item.Vehiculo.DescripcionCorta,
-                transmision: item.Vehiculo.TipoTransmision,
-                modeloId: item.Vehiculo.ModeloId,
-                seguro: item.Vehiculo.TieneSeguro,
-                marca: marca.data.Nombre,
-                precio: item.PrecioOrden,
-                distribuidor: item.Distribuidor.Nombre,
-                distribuidorId: item.Distribuidor.DistribuidorId,
-                imagen: image.data.ImageContent,
-                provider: provider.data.Nombre,
-                providerImage: provider.data.ImageContent,
-                orderVehiculo: item
-              });
-              this.cleanVO(item);
-            })
-          )
+            data
+              .filter(j => {
+                return j.ValorSobreprecioAplicado > 0;
+              })
+              .map(async item => {
+                let image = await authGetImage(item.Vehiculo.ProductoId);
+                let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+                let provider = await authSearchProvider(
+                  item.Vehiculo.ProveedorId
+                );
+                resultList.push({
+                  nombre: item.Vehiculo.Nombre,
+                  tipo: "rent",
+                  id: item.Vehiculo.ProductoId,
+                  plazas: item.Vehiculo.CantidadPlazas,
+                  descripcion: item.Vehiculo.Descripcion,
+                  cancelation: item.Vehiculo.DescripcionCorta,
+                  transmision: item.Vehiculo.TipoTransmision,
+                  modeloId: item.Vehiculo.ModeloId,
+                  seguro: item.Vehiculo.TieneSeguro,
+                  marca: marca.data.Nombre,
+                  precio: item.PrecioOrden,
+                  distribuidor: item.Distribuidor.Nombre,
+                  distribuidorId: item.Distribuidor.DistribuidorId,
+                  imagen: image.data.ImageContent,
+                  provider: provider.data.Nombre,
+                  providerImage: provider.data.ImageContent,
+                  orderVehiculo: item
+                });
+                this.cleanVO(item);
+              })
+          );
           this.desactivateModal();
           let filtersToStorage = {
             marca: this.selectedCarCategory,
@@ -334,7 +334,7 @@ export default {
             }
           });
         } catch (error) {
-          console.log(error)
+          console.log(error);
           this.desactivateModal();
           this.$toasted.show(
             "El servicio no está disponible en estos momentos",

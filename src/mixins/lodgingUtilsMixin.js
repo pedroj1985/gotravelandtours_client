@@ -375,8 +375,6 @@ export const lodgingUtilsMixin = {
                                             display = display+`${element.cantidad}x${element.tipoHabitacionNombre} | `
                                         });
                                         let planA = await authGetLodgingEatingPlanOne(lpa.PlanesAlimenticiosId)
-                                        console.log(planA)
-                                        console.log('plan aqui')
                                         listadoPrecios.push({
                                             name: j.Nombre,
                                             habitacion: j,
@@ -393,19 +391,8 @@ export const lodgingUtilsMixin = {
                                 })
                             )
                     }
-                        // if(listadoPrecios.length > 0)
-                        // {
-                        //     habitaciones.push({
-                        //         habitacion: j,
-                        //         name: j.Nombre,
-                        //         preciosActualizados: _.orderBy(listadoPrecios, function(e){
-                        //             return e.combinacion.total
-                        //         }, 'asc')
-                        //     })
-                        // }
                     })
                 )
-                // if(habitaciones.length != 0){
                     let ro = {
                         tipo: 'lodging',
                         entrada: searchItem.Entrada,
@@ -433,6 +420,58 @@ export const lodgingUtilsMixin = {
             return _.orderBy(resultList, function(e){
                 return e.habitaciones[0].combinacion.total
             }, 'asc')
+        },
+        visitantesToAcomodation(visitantes){
+            let result = []
+            visitantes.forEach(i => {
+                let a = i.layout.find(j => {
+                    return j.code == 'adults'
+                })
+                let k = i.layout.find(j => {
+                    return j.code == 'kids'
+                })
+                let tipoHab = ''
+                switch (a.value) {
+                    case 1:
+                        tipoHab = 'Sencilla'
+                        break;
+                    case 2:
+                        tipoHab = 'Doble'
+                        break;
+                    default:
+                        tipoHab = 'Triple'
+                        break;
+                }
+                let obj = {
+                    adults: a.value,
+                    kids: k.value,
+                    habId: a.value,
+                    hab: tipoHab,
+                    code: `${tipoHab}-${k.value}`
+                }
+                result.push(obj)
+            })
+
+            result = _.groupBy(result, function(i){
+                return i.code
+            })
+
+            let temp = []
+            Object.entries(result).forEach(([k,v]) => {
+                temp.push(
+                    {
+                        hab: v[0].hab,
+                        code: k,
+                        habId: v[0].habId,
+                        kids: v[0].kids,
+                        adults: v[0].adults,
+                        cantidad: v.length
+                    }
+                )
+            })
+            result = temp
+            return result
+
         }
     }
 }

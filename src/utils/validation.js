@@ -48,7 +48,7 @@ function passes(ruleName, value, vueInstance = null) {
 
   switch (splittedRuleName[0]) {
     case "required":
-      result = { ruleName: ruleName, passes: value?true:false };
+      result = { ruleName: ruleName, passes: value ? true : false };
       break;
     case "dateAfter":
       result = {
@@ -80,17 +80,19 @@ function translateMessage(ruleName, lang) {
 export function renderValid(Validator, vueInstance) {
   Validator.forEach(element => {
     let ref = vueInstance.$refs[element.name];
-    console.log(ref)
     ref.querySelector(".gtt-errors").innerHTML = "";
-    element.messages.forEach(item => {
-      let div = ref.querySelector(".gtt-errors");
-      div.innerHTML += item + "<br>";
-    });
+    if (!element.isValid) {
+      element.messages.forEach(item => {
+        let div = ref.querySelector(".gtt-errors");
+        div.innerHTML += item + "<br>";
+      });
+    }
   });
 }
 
 function dateAfter(date, dateToCompare, vueInstance = null) {
   if (vueInstance) {
+    console.log(date);
     let d = vueInstance[dateToCompare];
     return moment(date) > moment(d);
   }

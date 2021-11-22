@@ -20,69 +20,92 @@
               <span>{{ filterData.name }}</span>
             </div>
             <div class="d-flex">
-              <gtt-select
-                :openedLodging.sync="lodgingOpened"
-                @click.native="loadDestinies"
-                v-model="selectedDestiny"
-                :options="destinies"
-              >
-                <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-                <span slot="placeholder" class="required-field">Destino o Alojamiento</span>
-                <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
-                <template v-slot:option="option">
-                  {{
-                  option.option.nombre
-                  }}
-                </template>
-                <template v-slot:selectedValue="selectedValue">
-                  {{
-                  selectedValue.selectedValue.nombre
-                  }}
-                </template>
-                <!-- <span slot="error" class="gtt-errors"></span> -->
-              </gtt-select>
-              <GttSelectDate :mode="'single'" v-model="dateIn" class="room-form-item">
-                <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                <span slot="placeholder">Fecha de entrada</span>
-              </GttSelectDate>
-              <GttSelectDate :mode="'single'" v-model="dateOut" class="room-form-item">
-                <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                <span slot="placeholder">Fecha de salida</span>
-              </GttSelectDate>
-              <GttSelectForm2
-                :options="roomLayout"
-                class="room-form-item"
-                v-model="visitantes"
-                :rooms="totalRooms.value"
-                @roomAdded="addRoom"
-                @roomRemoved="removeRoom"
-              >
-                <span slot="iconSelectedValue">
-                  <i class="mdi mdi-account"></i>
-                </span>
-                <span slot="placeholder">Visitantes</span>
-              </GttSelectForm2>
-              <GttSelect :options="roomsOpt" v-model="totalRooms" class="room-form-item last">
-                <i slot="iconSelectedValue" class="mdi mdi-bed"></i>
-                <span slot="placeholder">Habitaciones</span>
-                <template v-slot:option="option">
-                  {{
-                  option.option.display
-                  }}
-                </template>
-                <template v-slot:selectedValue="selectedValue">
-                  {{
-                  selectedValue.selectedValue.display
-                  }}
-                </template>
-              </GttSelect>
+              <b-row>
+                <b-col cols="12">
+                  <div ref="gttLodging">
+                    <gtt-select
+                      :openedLodging.sync="lodgingOpened"
+                      @click.native="loadDestinies"
+                      v-model="selectedDestiny"
+                      :options="destinies"
+                    >
+                      <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+                      <span slot="placeholder" class="required-field">Destino o Alojamiento</span>
+                      <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
+                      <template v-slot:option="option">
+                        {{
+                        option.option.nombre
+                        }}
+                      </template>
+                      <template v-slot:selectedValue="selectedValue">
+                        {{
+                        selectedValue.selectedValue.nombre
+                        }}
+                      </template>
+                      <span slot="error" class="gtt-errors"></span>
+                    </gtt-select>
+                  </div>
+                </b-col>
+                <b-col cols="6">
+                  <div ref="gttStartDate">
+                    <GttSelectDate :mode="'single'" v-model="dateIn" class="room-form-item">
+                      <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                      <span slot="placeholder" class="required-field">Fecha de entrada</span>
+                    </GttSelectDate>
+                  </div>
+                </b-col>
+                <b-col cols="6">
+                  <div ref="gttEndDate">
+                    <GttSelectDate :mode="'single'" v-model="dateOut" class="room-form-item">
+                      <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
+                      <span slot="placeholder" class="required-field">Fecha de salida</span>
+                    </GttSelectDate>
+                  </div>
+                </b-col>
+                <b-col cols="6">
+                  <GttSelectForm2
+                    :options="roomLayout"
+                    class="room-form-item"
+                    v-model="visitantes"
+                    :rooms="totalRooms.value"
+                    @roomAdded="addRoom"
+                    @roomRemoved="removeRoom"
+                  >
+                    <span slot="iconSelectedValue">
+                      <i class="mdi mdi-account"></i>
+                    </span>
+                    <span slot="placeholder" class="required-field">Visitantes</span>
+                  </GttSelectForm2>
+                </b-col>
+                <b-col cols="6">
+                  <GttSelect
+                    :options="roomsOpt"
+                    v-model="totalRooms"
+                    class="room-form-item last"
+                    :isDisabled="disableByRegion"
+                  >
+                    <i slot="iconSelectedValue" class="mdi mdi-bed"></i>
+                    <span slot="placeholder">Habitaciones</span>
+                    <template v-slot:option="option">
+                      {{
+                      option.option.display
+                      }}
+                    </template>
+                    <template v-slot:selectedValue="selectedValue">
+                      {{
+                      selectedValue.selectedValue.display
+                      }}
+                    </template>
+                  </GttSelect>
+                </b-col>
+              </b-row>
             </div>
 
             <div class="selects-inline">
-              <b-form-checkbox
+              <!-- <b-form-checkbox
                 id="checkbox-same-car"
                 v-model="useSameItem"
-              >{{ $helpers.traducir("sameLodging") }}</b-form-checkbox>
+              >{{ $helpers.traducir("sameLodging") }}</b-form-checkbox>-->
               <div class="form-actions text-right ml-auto">
                 <button
                   type="submit"
@@ -109,6 +132,7 @@ import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttSelectForm2 from "../custom-elements/GttSelectForm2";
 import moment from "moment";
 import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
+import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import {
@@ -126,7 +150,16 @@ export default {
     GttSelectDate,
     GttSelectForm2
   },
-  mixins: [reusableMethodsMixin],
+  mixins: [reusableMethodsMixin, lodgingUtilsMixin],
+  watch: {
+    selectedDestiny(item) {
+      if (item.type == "region") {
+        this.disableByRegion = true;
+      } else {
+        this.disableByRegion = false;
+      }
+    }
+  },
   created() {
     this.item = this.filterData.item;
     if (this.filterData.needPre)
@@ -140,6 +173,11 @@ export default {
       };
     }
     this.roomsOpt = this.generateRooms();
+    this.selectedDestiny = {
+      nombre: this.item.lodging.Nombre,
+      id: this.item.lodging.ProductoId,
+      type: "alojamiento"
+    };
   },
   data() {
     return {
@@ -170,7 +208,8 @@ export default {
       habitaciones: this.filterData.propHabitaciones,
       lodgingOpened: false,
       destinies: [],
-      selectedDestiny: null
+      selectedDestiny: null,
+      disableByRegion: false
     };
   },
   props: {
@@ -261,24 +300,30 @@ export default {
         this.visitantes = a;
       }
     },
-    // gttValidate() {
-    //   let validator = [
-    //     {
-    //       rules: ["required", "dateAfter:selectedPickUpDate"],
-    //       name: "gttDeliveryDate",
-    //       value: this.selectedDeliveryDate,
-    //       lang: "es"
-    //     },
-    //     {
-    //       rules: ["required"],
-    //       name: "gttPickUpDate",
-    //       value: this.selectedPickUpDate,
-    //       lang: "es"
-    //     }
-    //   ];
+    gttValidate() {
+      let validator = [
+        {
+          rules: ["required"],
+          name: "gttLodging",
+          value: this.selectedDestiny,
+          lang: "es"
+        },
+        {
+          rules: ["required"],
+          name: "gttStartDate",
+          value: this.dateIn,
+          lang: "es"
+        },
+        {
+          rules: ["required", "dateAfter:dateIn"],
+          name: "gttEndDate",
+          value: this.dateOut,
+          lang: "es"
+        }
+      ];
 
-    //   return validator;
-    // },
+      return validator;
+    },
     handleSelected(value) {
       this.edited(value);
     },
@@ -293,7 +338,6 @@ export default {
             type: "error"
           });
         }
-        console.log(fr);
       });
     },
     edited(value) {
@@ -306,11 +350,9 @@ export default {
     },
     async editVehiculoOrder(item) {},
     async searchResult() {
-      this.isReserving = true;
-      if (this.useSameItem) {
-        console.log(this.item);
-        // await this.searchResultSameItem();
-      } else {
+      let iv = gttIsValid(this.gttValidate(), this);
+      if (getValid(iv)) {
+        this.isReserving = true;
         let totalA = 0;
         let totalK = 0;
         this.visitantes.forEach(i => {
@@ -339,26 +381,55 @@ export default {
             value: totalK
           }
         };
-        let searchFilters = {
-          // Destiny: this.selectedLodgingDestinyValue,
-          Region: {
-            RegionId: this.item.lodging.PuntoInteres.RegionId,
-            RegionNombre: this.item.lodging.PuntoInteres.Nombre
-          },
-          Cliente: { ClienteId: localStorage.getItem("cliente") },
-          Entrada: this.dateIn,
-          Salida: this.dateOut,
-          Visitantes: sl
-        };
-        localStorage.setItem(
-          "searchLodgingFilters",
-          JSON.stringify(searchFilters)
-        );
-        this.$helpers.shoppingCartRemoveOne(this.item.uID);
-        this.$eventCartBus.$emit("updateCart");
-        this.$router.push({
-          name: "resultLodging"
-        });
+
+        if (this.selectedDestiny.type == "alojamiento") {
+          let r = this.visitantesToAcomodation(this.visitantes);
+          let searchFilters = {
+            Destiny: this.selectedDestiny,
+            Cliente: { ClienteId: localStorage.getItem("cliente") },
+            Entrada: this.dateIn,
+            Salida: this.dateOut,
+            Visitantes: sl
+          };
+          localStorage.setItem(
+            "searchLodgingFilters",
+            JSON.stringify(searchFilters)
+          );
+          localStorage.setItem("searchLodgingAcomodation", JSON.stringify(r));
+
+          this.$helpers.shoppingCartRemoveOne(this.item.uID);
+          this.$eventCartBus.$emit("updateCart");
+
+          this.$router.push({
+            name: "lodging-detail",
+            params: {
+              id: this.selectedDestiny.id
+            }
+          });
+        } else {
+          let searchFilters = {
+            Destiny: this.selectedDestiny,
+            Region: {
+              RegionId: this.selectedDestiny.regionid,
+              RegionNombre: this.selectedDestiny.nombre
+            },
+            Cliente: { ClienteId: localStorage.getItem("cliente") },
+            Entrada: this.dateIn,
+            Salida: this.dateOut,
+            Visitantes: sl
+          };
+          localStorage.setItem(
+            "searchLodgingFilters",
+            JSON.stringify(searchFilters)
+          );
+          this.$helpers.shoppingCartRemoveOne(this.item.uID);
+          this.$eventCartBus.$emit("updateCart");
+          this.$router.push({
+            name: "resultLodging"
+          });
+        }
+      } else {
+        renderValid(iv, this);
       }
     },
     async sR() {
@@ -474,6 +545,6 @@ export default {
 }
 
 .c-modal .c-form {
-  width: 50vw;
+  width: 30vw;
 }
 </style>
