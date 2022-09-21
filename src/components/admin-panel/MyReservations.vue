@@ -66,7 +66,7 @@
                 locale="es"
                 :input-props="{
                   placeholder: 'Fecha de Inicio',
-                  readonly: true
+                  readonly: true,
                 }"
               />
             </div>
@@ -84,7 +84,7 @@
                 locale="es"
                 :input-props="{
                   placeholder: 'Fecha de cierre',
-                  readonly: true
+                  readonly: true,
                 }"
               />
             </div>
@@ -99,7 +99,7 @@
     </div>
     <div id="r-results">
       <div id="r-header" class="flex-wrapper hn-roman pb-15">
-        Se encontraron {{ totalItems }} reservaciones
+        Se encontraron {{ totalItems }} reservaciones en estas fechas
       </div>
       <div id="r-table">
         <b-table
@@ -151,16 +151,16 @@ export default {
   },
   props: {
     user: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   methods: {
     goDetails(item) {
       this.$router.push({
         name: "reservation-detail",
         params: {
-          id: item.ordenId
-        }
+          id: item.ordenId,
+        },
       });
     },
     getOthers(event, page) {
@@ -173,11 +173,19 @@ export default {
     constructFilterObj() {
       this.filters.Nombre = this.filtroNombreOrden;
       this.filters.NumeroOrden = this.filtroNumeroOrden;
-      this.filters.Estados = this.filtroEstado.map(item => {
+      this.filters.Estados = this.filtroEstado.map((item) => {
         return item.value;
       });
-      this.filters.FechaI = this.toMoment(this.filtroFechaInicio);
-      this.filters.FechaF = this.toMoment(this.filtroFechaFin);
+      /*  this.filters.FechaI = new Date("2022-01-01").toISOString().split("T")[0]; */
+
+      /* this.filters.FechaI = this.toMoment(this.filtroFechaInicio); */
+      this.filters.FechaI = this.filtroFechaInicio.toISOString().split("T")[0];
+      /* this.filters.FechaF = new Date(Date.now()).toISOString().split("T")[0]; */
+      if (this.filters.FechaF) {
+        console.log("hay fecha fin ");
+        this.filters.FechaF = this.toMoment(this.filtroFechaFin);
+      }
+
       this.filters.ClienteId = this.user.clienteId;
     },
     traducir(item) {
@@ -187,11 +195,16 @@ export default {
       return moment(date);
     },
     async search() {
-      this.constructFilterObj();
-      this.searching = true;
-      this.totalItems = await this.searchOrdersCount(this.filters);
-      this.items = await this.searchOrders(this.filters);
-      this.searching = false;
+      if (this.filtroEstado.length == 0) {
+        alert("Debe introducir un estado");
+      } else {
+        this.constructFilterObj();
+        this.searching = true;
+        /* TODO filter */
+        this.totalItems = await this.searchOrdersCount(this.filters);
+        this.items = await this.searchOrders(this.filters);
+        this.searching = false;
+      }
     },
     async searchOrdersCount(filters) {
       let { data } = await authGetOrdersCount(filters);
@@ -199,20 +212,26 @@ export default {
       return data;
     },
     async searchOrders(filters) {
-      let { data } = await authGetOrders(filters);
-      console.log(data);
-
-      return data.map(item => {
-        return {
-          númeroOrden: item.NumeroOrden,
-          nombreOrden: item.NombreOrden,
-          fechaInicio: this.toMoment(item.FechaInicio).format("DD/MM/YYYY"),
-          fechaFin: this.toMoment(item.FechaFin).format("DD/MM/YYYY"),
-          fechaCreación: this.toMoment(item.FechaCreacion).format("DD/MM/YYYY"),
-          ordenId: item.OrdenId,
-          estado: item.Estado
-        };
-      });
+      try {
+        console.log("filtros", filters);
+        let { data } = await authGetOrders(filters);
+        console.log(data);
+        return data.map((item) => {
+          return {
+            númeroOrden: item.NumeroOrden,
+            nombreOrden: item.NombreOrden,
+            fechaInicio: this.toMoment(item.FechaInicio).format("DD/MM/YYYY"),
+            fechaFin: this.toMoment(item.FechaFin).format("DD/MM/YYYY"),
+            fechaCreación: this.toMoment(item.FechaCreacion).format(
+              "DD/MM/YYYY"
+            ),
+            ordenId: item.OrdenId,
+            estado: item.Estado,
+          };
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     rowClass(item, type) {
       if (!item || type !== "row") return;
@@ -221,7 +240,7 @@ export default {
       if (item.estado === "Open") return "r-table-open";
       if (item.estado === "Closed") return "r-table-close";
       if (item.estado === "Pending") return "r-table-pending";
-    }
+    },
   },
   data() {
     return {
@@ -229,49 +248,71 @@ export default {
       searching: false,
       totalItems: 0,
       filters: {
+        IsRiesgo: null,
+        TipoServicio: 0,
         col: 0,
         pageIndex: 1,
-        pageSize: 10
+        pageSize: 20,
       },
       estados: [
         {
           value: "Open",
-          name: this.traducir("Open")
+          name: this.traducir("Open"),
         },
         {
           value: "Confirmed",
-          name: this.traducir("Confirmed")
+          name: this.traducir("Confirmed"),
         },
         {
           value: "Accepted",
-          name: this.traducir("Accepted")
+          name: this.traducir("Accepted"),
         },
         {
           value: "Rejected",
-          name: this.traducir("Rejected")
+          name: this.traducir("Rejected"),
         },
         {
           value: "Autorized",
-          name: this.traducir("Autorized")
+          name: this.traducir("Autorized"),
         },
         {
           value: "Closed",
-          name: this.traducir("Closed")
+          name: this.traducir("Closed"),
         },
         {
           value: "Pending",
-          name: this.traducir("Pending")
+          name: this.traducir("Pending"),
         },
       ],
-      fields: ["númeroOrden", "nombreOrden", "fechaCreación", "fechaInicio", "fechaFin", "estado"],
+      fields: [
+        "númeroOrden",
+        "nombreOrden",
+        "fechaCreación",
+        "fechaInicio",
+        "fechaFin",
+        "estado",
+      ],
       items: [],
       filtroNombreOrden: "",
       filtroNumeroOrden: "",
-      filtroEstado: [],
-      filtroFechaInicio: null,
-      filtroFechaFin: null
+      filtroEstado: [
+        {
+          name: "Abierta",
+          value: "Open",
+        },
+        { value: "Confirmed", name: "Confirmada" },
+        { value: "Pending", name: "Pendiente" },
+        { value: "Rejected", name: "Rechazada" },
+      ],
+      /* filtroFechaInicio: new Date(Date.now() - 1440 * 60 * 60000), */
+      filtroFechaInicio: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() - 2,
+        1
+      ),
+      filtroFechaFin: "",
     };
-  }
+  },
 };
 </script>
 

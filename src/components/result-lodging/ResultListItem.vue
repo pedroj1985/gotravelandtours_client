@@ -88,9 +88,12 @@
           <div class="hn-mdcn">{{ constructDisplay(filters.Visitantes) }}</div>
           <div class="price antonio-light">
             {{
-              styledPrice(getMinPrice(item.habitaciones).combinacion.total)
-                .intPart
-            }}. USD
+              styledPrice(
+                getMinPrice(item.habitaciones).combinacion.listado[0]
+                  .precioObjOne.PrecioOrden
+              ).intPart
+            }}
+            USD
           </div>
           <div class="details-btn form-actions">
             <button @click="goToDetail" type="submit" class="antonio-regular">
@@ -118,7 +121,7 @@
         class="mdi"
         :class="{
           'mdi-chevron-double-down': !isOpen,
-          'mdi-chevron-double-up': isOpen
+          'mdi-chevron-double-up': isOpen,
         }"
       ></i>
     </div>
@@ -126,88 +129,96 @@
 </template>
 
 <script>
-  import Slick from "vue-slick-carousel";
-  import ResultListRow from "./ResultListRow";
-  import _ from "lodash";
-  export default {
-    created() {},
-    components: {
-      Slick,
-      ResultListRow
+import Slick from "vue-slick-carousel";
+import ResultListRow from "./ResultListRow";
+import _ from "lodash";
+export default {
+  created() {},
+  components: {
+    Slick,
+    ResultListRow,
+  },
+  props: {
+    item: Object,
+    filters: Object,
+    todosTipo: Array,
+  },
+  data() {
+    return {
+      isOpen: false,
+      limit: 2,
+    };
+  },
+  computed: {
+    filteredItems: function() {
+      return this.item.habitaciones.slice(0, this.limit);
     },
-    props: {
-      item: Object,
-      filters: Object,
-      todosTipo: Array
+  },
+  methods: {
+    goToDetail() {
+      let f = this.filters;
+      let a = this.item.acomodation;
+      let id = this.item.lodging.ProductoId;
+
+      localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
+
+      localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
+
+      this.$router.push({
+        name: "lodging-detail",
+        params: {
+          id: id,
+        },
+      });
     },
-    data() {
-      return {
-        isOpen: false,
-        limit: 2
-      };
-    },
-    computed: {
-      filteredItems: function() {
-        return this.item.habitaciones.slice(0, this.limit);
+    addToCart(i, cant) {
+      i.combinacion.listado[0].precioObjOne.OrdenAlojamientoId = 0;
+      if (cant > 1) {
+        i.combinacion.listado[0].precioObjOne.CantidadHabitaciones = cant;
+        i.combinacion.total = i.combinacion.total * cant;
+        i.combinacion.listado[0].precioObjOne["sameRoom"] = true;
+      } else {
+        i.combinacion.listado[0].precioObjOne["sameRoom"] = false;
       }
+      this.item["reservedRooms"] = i;
+      this.$helpers.shoppingCartAdd(this.item);
+      this.$eventCartBus.$emit("updateCart");
     },
-    methods: {
-      goToDetail() {
-        let f = this.filters;
-        let a = this.item.acomodation;
-        let id = this.item.lodging.ProductoId;
+    reserve(i, cant) {
+      this.addToCart(i, cant);
+      this.$router.push({
+        name: "reservation",
+      });
+    },
+    getMinPrice(array) {
+      return _.minBy(array, function(e) {
+        return e.combinacion.listado[0].precioObjOne.PrecioOrden;
+      });
+    },
+    constructDisplay(d) {
+      let s = "";
+      Object.keys(d).forEach((element) => {
+        s = s + " · " + d[element].value + " " + d[element].display;
+      });
 
-        localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
-
-        localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
-
-        this.$router.push({
-          name: "lodging-detail",
-          params: {
-            id: id
-          }
-        });
-      },
-      addToCart(i) {
-        this.item["reservedRooms"] = i;
-        this.$helpers.shoppingCartAdd(this.item);
-        this.$eventCartBus.$emit("updateCart");
-      },
-      reserve(i) {
-        this.addToCart(i);
-        this.$router.push({
-          name: "reservation"
-        });
-      },
-      getMinPrice(array) {
-        return _.minBy(array, function(e) {
-          return e.combinacion.total;
-        });
-      },
-      constructDisplay(d) {
-        let s = "";
-        Object.keys(d).forEach(element => {
-          s = s + " · " + d[element].value + " " + d[element].display;
-        });
-
-        return s.substring(2);
-      },
-      openList() {
-        if (!this.isOpen) {
-          this.limit = this.item.habitaciones.length;
-        } else {
-          this.limit = 2;
-        }
-        this.isOpen = !this.isOpen;
-      },
-      styledPrice(number) {
-        let intPart = Math.ceil(number);
-        let decimalPart = Math.round((number - intPart) * 100);
-
-        if (decimalPart == 0) decimalPart = "00";
-
-        return { intPart: intPart, decimalPart: decimalPart };
+      return s.substring(2);
+    },
+    openList() {
+      if (!this.isOpen) {
+        this.limit = this.item.habitaciones.length;
+      } else {
+        this.limit = 2;
       }
-    }
-  };
+      this.isOpen = !this.isOpen;
+    },
+    styledPrice(number) {
+      let intPart = Math.ceil(number);
+      let decimalPart = Math.round((number - intPart) * 100);
+
+      if (decimalPart == 0) decimalPart = "00";
+
+      return { intPart: intPart, decimalPart: decimalPart };
+    },
+  },
+};
 </script>

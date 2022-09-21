@@ -13,7 +13,7 @@ export function calculateNights(min, max) {
 
 export function constructDisplay(d) {
   let s = "";
-  Object.keys(d).forEach(element => {
+  Object.keys(d).forEach((element) => {
     s = s + " · " + d[element].value + " " + d[element].display;
   });
 
@@ -24,7 +24,7 @@ export function verifyDifferentsDates(itemToCompare, tipo = "rent") {
   let lcart = localStorage.getItem("gttCart");
   console.log(JSON.parse(lcart));
   if (lcart) {
-    let list = JSON.parse(lcart).filter(i => {
+    let list = JSON.parse(lcart).filter((i) => {
       return i.tipo == tipo;
     });
     eventDiffDays.$emit("diffDays", checkDifferentDates(itemToCompare, list));
@@ -36,17 +36,17 @@ export function verifyDifferentsDatesNoCartReturnBoolean(itemToCompare, list) {
 }
 
 export function checkDifferentDates(item, list) {
-  let listDates = list.map(i => {
+  let listDates = list.map((i) => {
     if (i.tipo == "rent") {
       return {
         end: i.orderVehiculo.FechaEntrega,
-        start: i.orderVehiculo.FechaRecogida
+        start: i.orderVehiculo.FechaRecogida,
       };
     }
     if (i.tipo == "lodging") {
       return {
         end: i.salida,
-        start: i.entrada
+        start: i.entrada,
       };
     }
   });
@@ -96,10 +96,10 @@ export function hasInsurance(text) {
 export const transmissionTypes = [
   {
     nombre: "Automatico",
-    display: "Automático"
+    display: "Automático",
   },
   {
     nombre: "Manual",
-    display: "Manual"
-  }
+    display: "Manual",
+  },
 ];

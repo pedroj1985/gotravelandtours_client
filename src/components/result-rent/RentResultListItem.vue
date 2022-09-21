@@ -55,7 +55,7 @@
             </template>
           </span>
           <div class="price antonio-light">
-            {{ styledPrice(item.precio).intPart }}. USD
+            {{ styledPrice(item.precio).intPart }} USD
           </div>
           <div class="details-btn form-actions" v-if="!noDetail">
             <button
@@ -85,87 +85,87 @@
 </template>
 
 <script>
-  import RentResultListRow from "./RentResultListRow";
-  export default {
-    components: {
-      RentResultListRow
+import RentResultListRow from "./RentResultListRow";
+export default {
+  components: {
+    RentResultListRow,
+  },
+  props: {
+    item: Object,
+    totalDays: {
+      type: Number,
+      default: 0,
     },
-    props: {
-      item: Object,
-      totalDays: {
-        type: Number,
-        default: 0
-      },
-      onlyToSelect: {
-        type: Boolean,
-        default: false
-      },
-      noDetail: {
-        type: Boolean,
-        default: false
+    onlyToSelect: {
+      type: Boolean,
+      default: false,
+    },
+    noDetail: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      // isOpen: false,
+      limit: 2,
+    };
+  },
+  computed: {
+    filteredItems: function() {
+      return this.item.items.slice(0, this.limit);
+    },
+  },
+  methods: {
+    emitElement(value) {
+      this.$emit("selectedElementEditItem", value);
+    },
+    goDetails(id) {
+      this.$router.push({
+        name: "rent-detail",
+        params: {
+          id: id,
+        },
+      });
+    },
+    hasInsurance(tString) {
+      console.log(tString);
+      let t = tString.split(" ").length;
+      return t > 1;
+    },
+    displayTransmission(item) {
+      return item.split(" ")[0].toLowerCase();
+    },
+    displayName(data) {
+      let data_splitted = data.split("-");
+      let sp = data_splitted.slice(1, data_splitted.lenght);
+
+      return sp.join("-");
+    },
+    constructDisplay(d) {
+      let s = "";
+      Object.keys(d).forEach((element) => {
+        s = s + " · " + d[element].value + " " + d[element].display;
+      });
+
+      return s.substring(2);
+    },
+    openList() {
+      if (!this.isOpen) {
+        this.limit = this.item.items.lenght;
+      } else {
+        this.limit = 2;
       }
+      this.isOpen = !this.isOpen;
     },
-    data() {
-      return {
-        // isOpen: false,
-        limit: 2
-      };
+    styledPrice(number) {
+      let intPart = Math.ceil(number);
+      let decimalPart = (number - intPart).toFixed(2) * 100;
+
+      if (decimalPart == 0) decimalPart = "00";
+
+      return { intPart: intPart, decimalPart: decimalPart };
     },
-    computed: {
-      filteredItems: function() {
-        return this.item.items.slice(0, this.limit);
-      }
-    },
-    methods: {
-      emitElement(value) {
-        this.$emit("selectedElementEditItem", value);
-      },
-      goDetails(id) {
-        this.$router.push({
-          name: "rent-detail",
-          params: {
-            id: id
-          }
-        });
-      },
-      hasInsurance(tString) {
-        console.log(tString);
-        let t = tString.split(" ").length;
-        return t > 1;
-      },
-      displayTransmission(item) {
-        return item.split(" ")[0].toLowerCase();
-      },
-      displayName(data) {
-        let data_splitted = data.split("-");
-        let sp = data_splitted.slice(1, data_splitted.lenght);
-
-        return sp.join("-");
-      },
-      constructDisplay(d) {
-        let s = "";
-        Object.keys(d).forEach(element => {
-          s = s + " · " + d[element].value + " " + d[element].display;
-        });
-
-        return s.substring(2);
-      },
-      openList() {
-        if (!this.isOpen) {
-          this.limit = this.item.items.lenght;
-        } else {
-          this.limit = 2;
-        }
-        this.isOpen = !this.isOpen;
-      },
-      styledPrice(number) {
-        let intPart = Math.ceil(number);
-        let decimalPart = (number - intPart).toFixed(2) * 100;
-
-        if (decimalPart == 0) decimalPart = "00";
-
-        return { intPart: intPart, decimalPart: decimalPart };
-      }
-    }
-  };
+  },
+};
 </script>

@@ -1,11 +1,26 @@
 import { helpers } from "./helpers";
 import moment from "moment";
+import { ValidationObserver } from "vee-validate";
 
 export function gttIsValid(Validator, vueInstance = null) {
+
+  console.log(Validator);
+  console.log(vueInstance);
+  if (Validator.length == 8 && vueInstance.$children.length == 4) {
+    Validator.pop();
+    Validator.pop();
+    Validator.pop();
+  }
+
+
   return Validator.map(element => {
+
     let passesArray = element.rules.map(item => {
-      return passes(item, element.value, vueInstance);
+
+
+      return passes(item, element.value, element);
     });
+
     let p = passesArray.filter(item => {
       return item.passes == false;
     });
@@ -45,11 +60,50 @@ export function getValid(val) {
 function passes(ruleName, value, vueInstance = null) {
   let result = {};
   let splittedRuleName = ruleName.split(":");
-
   switch (splittedRuleName[0]) {
     case "required":
-      result = { ruleName: ruleName, passes: value ? true : false };
+      if (typeof value === "object") {
+        if (value == null) {
+          result = { ruleName: ruleName, passes: false };
+          return result;
+        }
+
+        if (value.length === undefined) {
+          result = { ruleName: ruleName, passes: true };
+        }
+        else {
+          if (true) {
+
+          }
+          result = { ruleName: ruleName, passes: false };
+        }
+      } else {
+
+        if (vueInstance.name == "gttLlegada" || vueInstance.name == "gttSalida") {
+          let param = value.split("-")
+          if (param[0].length > 1 && param[1].length > 1 && param[2].length > 1) {
+            let a = parseInt(param[2], 10)
+
+            if (isNaN(a)) {
+              result = { ruleName: ruleName, passes: false };
+            }
+            else {
+              result = { ruleName: ruleName, passes: true };
+            }
+
+          }
+          else {
+            result = { ruleName: ruleName, passes: false };
+          }
+        }
+        else {
+          result = { ruleName: ruleName, passes: value ? true : false };
+        }
+
+      }
+
       break;
+
     case "dateAfter":
       result = {
         ruleName: splittedRuleName[0],
@@ -57,7 +111,6 @@ function passes(ruleName, value, vueInstance = null) {
       };
       break;
   }
-
   return result;
 }
 
@@ -78,11 +131,26 @@ function translateMessage(ruleName, lang) {
 }
 
 export function renderValid(Validator, vueInstance) {
+
   Validator.forEach(element => {
     let ref = vueInstance.$refs[element.name];
+
+    if (ref == null) {
+
+      vueInstance.$children.forEach(
+        child => {
+          if (child.$refs[element.name]) ref = child.$refs[element.name]
+        }
+      )
+
+    }
+
+
     ref.querySelector(".gtt-errors").innerHTML = "";
     if (!element.isValid) {
+
       element.messages.forEach(item => {
+
         let div = ref.querySelector(".gtt-errors");
         div.innerHTML += item + "<br>";
       });
@@ -92,7 +160,6 @@ export function renderValid(Validator, vueInstance) {
 
 function dateAfter(date, dateToCompare, vueInstance = null) {
   if (vueInstance) {
-    console.log(date);
     let d = vueInstance[dateToCompare];
     return moment(date) > moment(d);
   }

@@ -125,7 +125,7 @@
                 27,
                 28,
                 29,
-                30
+                30,
               ]"
               :search="false"
             >
@@ -240,407 +240,406 @@
 </template>
 
 <script>
-  import GttSelect from "../custom-elements/GttSelect";
-  import GttSelectDate from "../custom-elements/GttSelectDate";
-  import GttModalSearch from "../custom-elements/GttModalSearch";
-  import moment from "moment";
-  import {
-    constructDate,
-    calculateNights,
-    transmissionTypes,
-    hasInsurance
-  } from "../../utils/utils";
-  import {
-    authSearchPuntosInteres,
-    authSearchMarcas,
-    authSearchCars,
-    authGetImage,
-    authSearchProvider,
-    authSearchMarca
-  } from "../../utils/auth";
-  import { gttIsValid, renderValid, getValid } from "../../utils/validation";
-  import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import GttSelect from "../custom-elements/GttSelect";
+import GttSelectDate from "../custom-elements/GttSelectDate";
+import GttModalSearch from "../custom-elements/GttModalSearch";
+import moment from "moment";
+import {
+  constructDate,
+  calculateNights,
+  transmissionTypes,
+  hasInsurance,
+} from "../../utils/utils";
+import {
+  authSearchPuntosInteres,
+  authSearchMarcas,
+  authSearchCars,
+  authGetImage,
+  authSearchProvider,
+  authSearchMarca,
+} from "../../utils/auth";
+import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 
-  export default {
-    components: {
-      GttSelect,
-      GttSelectDate,
-      GttModalSearch
+export default {
+  components: {
+    GttSelect,
+    GttSelectDate,
+    GttModalSearch,
+  },
+  mixins: [cleanVoMixin],
+  created() {
+    this.searchCountriesPlaceholder();
+  },
+  mounted() {
+    this.gttValidate();
+  },
+  watch: {
+    selectedPickUpPlace: function(val) {
+      this.selectedDeliveryPlace = val;
+      console.log(this.selectedDeliveryPlace);
     },
-    mixins: [cleanVoMixin],
-    created() {
-      this.searchCountriesPlaceholder();
-    },
-    mounted() {
-      this.gttValidate();
-    },
-    watch: {
-      selectedPickUpPlace: function(val) {
-        this.selectedDeliveryPlace = val;
-        console.log(this.selectedDeliveryPlace);
-      },
-      selectedEnd(item) {
-        let n = moment(this.selectedEnd).diff(this.selectedStart, "days");
+    selectedEnd(item) {
+      let n = moment(this.selectedEnd).diff(this.selectedStart, "days");
 
-        this.selectedNights = n;
-      },
-      selectedStart(item) {
-        let n = moment(this.selectedEnd).diff(this.selectedStart, "days");
-
-        this.selectedNights = n;
-      },
-      selectedNights(item) {
-        this.selectedEnd = new Date(
-          moment(this.selectedStart).add(item, "days")
-        );
-      }
+      this.selectedNights = n;
     },
-    methods: {
-      transmissionTypes() {
-        return transmissionTypes;
-      },
-      gttValidate() {
-        let validator = [
-          {
-            rules: ["required"],
-            name: "gttTransmision",
-            value: this.selectedTransmissionType,
-            lang: "es"
-          },
-          {
-            rules: ["required"],
-            name: "gttStartDate",
-            value: this.selectedStart,
-            lang: "es"
-          },
-          {
-            rules: ["required", "dateAfter:selectedStart"],
-            name: "gttEndDate",
-            value: this.selectedEnd,
-            lang: "es"
+    selectedStart(item) {
+      let n = moment(this.selectedEnd).diff(this.selectedStart, "days");
+
+      this.selectedNights = n;
+    },
+    selectedNights(item) {
+      this.selectedEnd = new Date(moment(this.selectedStart).add(item, "days"));
+    },
+  },
+  methods: {
+    transmissionTypes() {
+      return transmissionTypes;
+    },
+    gttValidate() {
+      let validator = [
+        {
+          rules: ["required"],
+          name: "gttTransmision",
+          value: this.selectedTransmissionType,
+          lang: "es",
+        },
+        {
+          rules: ["required"],
+          name: "gttStartDate",
+          value: this.selectedStart,
+          lang: "es",
+        },
+        {
+          rules: ["required", "dateAfter:selectedStart"],
+          name: "gttEndDate",
+          value: this.selectedEnd,
+          lang: "es",
+        },
+      ];
+
+      return validator;
+    },
+    async activateModal() {
+      let iv = gttIsValid(this.gttValidate());
+      if (getValid(iv)) {
+        try {
+          this.isModalActive = true;
+          // let otherData = {
+          //     pickUpPlace: this.selectedPickUpPlace,
+          //     deliveryPlace: this.selectedDeliveryPlace,
+          // }
+          let marca = null;
+          if (
+            this.selectedCarCategory ||
+            this.selectedCarCategory != "ALL_ITEMS"
+          ) {
+            marca = {
+              MarcaId: this.selectedCarCategory.marcaid,
+              Nombre: this.selectedCarCategory.nombre,
+            };
+          } else {
+            marca = undefined;
           }
-        ];
-
-        return validator;
-      },
-      async activateModal() {
-        let iv = gttIsValid(this.gttValidate());
-        if (getValid(iv)) {
-          try {
-            this.isModalActive = true;
-            // let otherData = {
-            //     pickUpPlace: this.selectedPickUpPlace,
-            //     deliveryPlace: this.selectedDeliveryPlace,
-            // }
-            let marca = null;
-            if (
-              this.selectedCarCategory ||
-              this.selectedCarCategory != "ALL_ITEMS"
-            ) {
-              marca = {
-                MarcaId: this.selectedCarCategory.marcaid,
-                Nombre: this.selectedCarCategory.nombre
-              };
-            } else {
-              marca = undefined;
+          let cliente = { ClienteId: localStorage.getItem("cliente") };
+          let transmissionType = this.selectedTransmissionType.nombre;
+          let searchItem = {
+            FechaRecogida: moment(this.selectedStart).format("YYYY-MM-D"),
+            FechaEntrega: moment(this.selectedEnd).format("YYYY-MM-D"),
+            Marca: marca,
+            TipoTransmision: transmissionType,
+            Cliente: cliente,
+          };
+          let resultList = [];
+          let { data } = await authSearchCars(searchItem);
+          await Promise.all(
+            data
+              .filter((j) => {
+                return j.ValorSobreprecioAplicado > 0;
+              })
+              .map(async (item) => {
+                let image = await authGetImage(item.Vehiculo.ProductoId);
+                let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+                let provider = await authSearchProvider(
+                  item.Vehiculo.ProveedorId
+                );
+                resultList.push({
+                  nombre: item.Vehiculo.Nombre,
+                  tipo: "rent",
+                  id: item.Vehiculo.ProductoId,
+                  plazas: item.Vehiculo.CantidadPlazas,
+                  descripcion: item.Vehiculo.Descripcion,
+                  cancelation: item.Vehiculo.DescripcionCorta,
+                  seguro: item.Vehiculo.TieneSeguro,
+                  transmision: item.Vehiculo.TipoTransmision,
+                  modeloId: item.Vehiculo.ModeloId,
+                  marca: marca.data.Nombre,
+                  marcaid: marca.data.MarcaId,
+                  precio: item.PrecioOrden,
+                  distribuidor: item.Distribuidor.Nombre,
+                  distribuidorId: item.Distribuidor.DistribuidorId,
+                  imagen: image.data.ImageContent,
+                  provider: provider.data.Nombre,
+                  providerImage: provider.data.ImageContent,
+                  orderVehiculo: item,
+                });
+                this.cleanVO(item);
+              })
+          );
+          // for (let item of data) {
+          //   let image = await authGetImage(item.Vehiculo.ProductoId);
+          //   let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+          //   let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
+          //   resultList.push({
+          //     nombre: item.Vehiculo.Nombre,
+          //     tipo: "rent",
+          //     id: item.Vehiculo.ProductoId,
+          //     plazas: item.Vehiculo.CantidadPlazas,
+          //     descripcion: item.Vehiculo.Descripcion,
+          //     cancelation: item.Vehiculo.DescripcionCorta,
+          //     seguro: item.Vehiculo.TieneSeguro,
+          //     transmision: item.Vehiculo.TipoTransmision,
+          //     modeloId: item.Vehiculo.ModeloId,
+          //     marca: marca.data.Nombre,
+          //     marcaid: marca.data.MarcaId,
+          //     precio: item.PrecioOrden,
+          //     distribuidor: item.Distribuidor.Nombre,
+          //     distribuidorId: item.Distribuidor.DistribuidorId,
+          //     imagen: image.data.ImageContent,
+          //     provider: provider.data.Nombre,
+          //     providerImage: provider.data.ImageContent,
+          //     orderVehiculo: item
+          //   });
+          //   this.cleanVO(item);
+          // }
+          this.desactivateModal();
+          let filtersToStorage = {
+            marca: this.selectedCarCategory,
+            transmision: this.selectedTransmissionType,
+            pickUpPlace: this.selectedPickUpPlace,
+            deliveryPlace: this.selectedDeliveryPlace,
+            pickUpDate: this.selectedStart,
+            deliveryDate: this.selectedEnd,
+            nationality: this.selectedNationality,
+          };
+          localStorage.setItem(
+            "searchRentFilters",
+            JSON.stringify(filtersToStorage)
+          );
+          this.$router.push({
+            name: "resultRent",
+            params: {
+              searchResult: resultList,
+            },
+          });
+        } catch (error) {
+          console.log(error);
+          this.desactivateModal();
+          this.$toasted.show(
+            "El servicio no está disponible en estos momentos",
+            {
+              type: "error",
             }
-            let cliente = { ClienteId: localStorage.getItem("cliente") };
-            let transmissionType = this.selectedTransmissionType.nombre;
-            let searchItem = {
-              FechaRecogida: moment(this.selectedStart).format("YYYY-MM-D"),
-              FechaEntrega: moment(this.selectedEnd).format("YYYY-MM-D"),
-              Marca: marca,
-              TipoTransmision: transmissionType,
-              Cliente: cliente
-            };
-            let resultList = [];
-            let { data } = await authSearchCars(searchItem);
-            await Promise.all(
-              data
-                .filter(j => {
-                  return j.ValorSobreprecioAplicado > 0;
-                })
-                .map(async item => {
-                  let image = await authGetImage(item.Vehiculo.ProductoId);
-                  let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-                  let provider = await authSearchProvider(
-                    item.Vehiculo.ProveedorId
-                  );
-                  resultList.push({
-                    nombre: item.Vehiculo.Nombre,
-                    tipo: "rent",
-                    id: item.Vehiculo.ProductoId,
-                    plazas: item.Vehiculo.CantidadPlazas,
-                    descripcion: item.Vehiculo.Descripcion,
-                    cancelation: item.Vehiculo.DescripcionCorta,
-                    seguro: item.Vehiculo.TieneSeguro,
-                    transmision: item.Vehiculo.TipoTransmision,
-                    modeloId: item.Vehiculo.ModeloId,
-                    marca: marca.data.Nombre,
-                    marcaid: marca.data.MarcaId,
-                    precio: item.PrecioOrden,
-                    distribuidor: item.Distribuidor.Nombre,
-                    distribuidorId: item.Distribuidor.DistribuidorId,
-                    imagen: image.data.ImageContent,
-                    provider: provider.data.Nombre,
-                    providerImage: provider.data.ImageContent,
-                    orderVehiculo: item
-                  });
-                  this.cleanVO(item);
-                })
-            );
-            // for (let item of data) {
-            //   let image = await authGetImage(item.Vehiculo.ProductoId);
-            //   let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-            //   let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
-            //   resultList.push({
-            //     nombre: item.Vehiculo.Nombre,
-            //     tipo: "rent",
-            //     id: item.Vehiculo.ProductoId,
-            //     plazas: item.Vehiculo.CantidadPlazas,
-            //     descripcion: item.Vehiculo.Descripcion,
-            //     cancelation: item.Vehiculo.DescripcionCorta,
-            //     seguro: item.Vehiculo.TieneSeguro,
-            //     transmision: item.Vehiculo.TipoTransmision,
-            //     modeloId: item.Vehiculo.ModeloId,
-            //     marca: marca.data.Nombre,
-            //     marcaid: marca.data.MarcaId,
-            //     precio: item.PrecioOrden,
-            //     distribuidor: item.Distribuidor.Nombre,
-            //     distribuidorId: item.Distribuidor.DistribuidorId,
-            //     imagen: image.data.ImageContent,
-            //     provider: provider.data.Nombre,
-            //     providerImage: provider.data.ImageContent,
-            //     orderVehiculo: item
-            //   });
-            //   this.cleanVO(item);
-            // }
-            this.desactivateModal();
-            let filtersToStorage = {
-              marca: this.selectedCarCategory,
-              transmision: this.selectedTransmissionType,
-              pickUpPlace: this.selectedPickUpPlace,
-              deliveryPlace: this.selectedDeliveryPlace,
-              pickUpDate: this.selectedStart,
-              deliveryDate: this.selectedEnd,
-              nationality: this.selectedNationality
-            };
-            localStorage.setItem(
-              "searchRentFilters",
-              JSON.stringify(filtersToStorage)
-            );
-            this.$router.push({
-              name: "resultRent",
-              params: {
-                searchResult: resultList
-              }
-            });
-          } catch (error) {
-            console.log(error);
-            this.desactivateModal();
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        } else {
-          renderValid(iv, this);
+          );
         }
-      },
-      desactivateModal() {
-        this.isModalActive = false;
-      },
-      constructDate(date) {
-        return constructDate(date);
-      },
-      calculateNights(min, max) {
-        return calculateNights(min, max);
-      },
-      hasInsurance(text) {
-        return hasInsurance(text);
-      },
-      overflowText(text, l = 30) {
-        if (text.length > l) {
-          return `${text.substring(0, l)}...`;
-        }
-        return text;
-      },
-      searchCountriesPlaceholder() {
-        let usa = this.countries.find(el => {
-          return el.nombre == "Estados Unidos";
-        });
-
-        if (usa) {
-          this.selectedNationality = usa;
-        } else {
-          this.selectedNationality = this.countries[0];
-        }
-      },
-      async loadMarcas() {
-        if (this.categoriesOpened == true) {
-          try {
-            let { data } = await authSearchMarcas();
-            let totalResult = [];
-            data.forEach(item => {
-              totalResult = totalResult.concat({
-                nombre: item.Nombre,
-                marcaid: item.MarcaId,
-                type: "marca"
-              });
-            });
-            this.carsCategories = totalResult;
-          } catch (error) {
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        }
-      },
-      async loadPickUpPlaces() {
-        if (this.pickUpOpened == true) {
-          try {
-            let { data } = await authSearchPuntosInteres();
-            let totalResult = [];
-            data.forEach(item => {
-              totalResult = totalResult.concat({
-                nombre: item.Nombre,
-                regionid: item.RegionId,
-                puntointeresid: item.PuntoInteresId,
-                type: "punto-interes"
-              });
-            });
-            this.pickUpDeliveryOptions = totalResult;
-          } catch (error) {
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        }
-      },
-      async loadDeliveryPlaces() {
-        if (this.deliveryOpened == true) {
-          try {
-            let { data } = await authSearchPuntosInteres();
-            let totalResult = [];
-            data.forEach(item => {
-              totalResult = totalResult.concat({
-                nombre: item.Nombre,
-                regionid: item.RegionId,
-                puntointeresid: item.PuntoInteresId,
-                type: "punto-interes"
-              });
-            });
-            this.pickUpDeliveryOptions = totalResult;
-          } catch (error) {
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        }
-      },
-      constructDisplayNights(n) {
-        if (n == 1) {
-          return `1 día`;
-        }
-        return `${n} días`;
+      } else {
+        renderValid(iv, this);
       }
     },
-    data() {
-      return {
-        pickUpOpened: false,
-        deliveryOpened: false,
-        categoriesOpened: false,
-        countriesOpened: false,
-        isModalActive: false,
-        defaultFlagImgPath: "img/flags/",
-        selectedStart: new Date(moment()),
-        selectedEnd: new Date(moment().add(1, "days")),
-        selectedNights: 1,
-        selectedPickUpPlace: null,
-        selectedDeliveryPlace: null,
-        selectedCarCategory: "",
-        selectedNationality: null,
-        selectedTransmissionType: null,
-        countries: [
-          {
-            nombre: "Afganistán",
-            flag: "flag_afganistan.jpg"
-          },
-          {
-            nombre: "Albania",
-            flag: "flag_albania.jpg"
-          },
-          {
-            nombre: "Alemania",
-            flag: "flag_alemania.jpg"
-          },
-          {
-            nombre: "Estados Unidos",
-            flag: "flag_estadosunidos.jpg"
-          }
-        ],
-        carsCategories: [],
-        // transmissionTypes: [
-        //   {
-        //     nombre: "Automatico",
-        //     display: "Automático"
-        //   },
-        //   {
-        //     nombre: "Manual",
-        //     display: "Manual"
-        //   },
-        //   {
-        //     nombre: "Automatico S/Seguro",
-        //     display: "Automático S/Seguro"
-        //   },
-        //   {
-        //     nombre: "Manual S/Seguro",
-        //     display: "Manual S/Seguro"
-        //   }
-        // ],
-        pickUpDeliveryOptions: []
-      };
-    }
-  };
+    desactivateModal() {
+      this.isModalActive = false;
+    },
+    constructDate(date) {
+      return constructDate(date);
+    },
+    calculateNights(min, max) {
+      return calculateNights(min, max);
+    },
+    hasInsurance(text) {
+      return hasInsurance(text);
+    },
+    overflowText(text, l = 30) {
+      if (text.length > l) {
+        return `${text.substring(0, l)}...`;
+      }
+      return text;
+    },
+    searchCountriesPlaceholder() {
+      let usa = this.countries.find((el) => {
+        return el.nombre == "Estados Unidos";
+      });
+
+      if (usa) {
+        this.selectedNationality = usa;
+      } else {
+        this.selectedNationality = this.countries[0];
+      }
+    },
+    async loadMarcas() {
+      if (this.categoriesOpened == true) {
+        try {
+          let { data } = await authSearchMarcas();
+          let totalResult = [];
+          console.log(totalResult);
+          data.forEach((item) => {
+            totalResult = totalResult.concat({
+              nombre: item.Nombre,
+              marcaid: item.MarcaId,
+              type: "marca",
+            });
+          });
+          this.carsCategories = totalResult;
+        } catch (error) {
+          this.$toasted.show(
+            "El servicio no está disponible en estos momentos",
+            {
+              type: "error",
+            }
+          );
+        }
+      }
+    },
+    async loadPickUpPlaces() {
+      if (this.pickUpOpened == true) {
+        try {
+          let { data } = await authSearchPuntosInteres();
+          let totalResult = [];
+          data.forEach((item) => {
+            totalResult = totalResult.concat({
+              nombre: item.Nombre,
+              regionid: item.RegionId,
+              puntointeresid: item.PuntoInteresId,
+              type: "punto-interes",
+            });
+          });
+          this.pickUpDeliveryOptions = totalResult;
+        } catch (error) {
+          this.$toasted.show(
+            "El servicio no está disponible en estos momentos",
+            {
+              type: "error",
+            }
+          );
+        }
+      }
+    },
+    async loadDeliveryPlaces() {
+      if (this.deliveryOpened == true) {
+        try {
+          let { data } = await authSearchPuntosInteres();
+          let totalResult = [];
+          data.forEach((item) => {
+            totalResult = totalResult.concat({
+              nombre: item.Nombre,
+              regionid: item.RegionId,
+              puntointeresid: item.PuntoInteresId,
+              type: "punto-interes",
+            });
+          });
+          this.pickUpDeliveryOptions = totalResult;
+        } catch (error) {
+          this.$toasted.show(
+            "El servicio no está disponible en estos momentos",
+            {
+              type: "error",
+            }
+          );
+        }
+      }
+    },
+    constructDisplayNights(n) {
+      if (n == 1) {
+        return `1 día`;
+      }
+      return `${n} días`;
+    },
+  },
+  data() {
+    return {
+      pickUpOpened: false,
+      deliveryOpened: false,
+      categoriesOpened: false,
+      countriesOpened: false,
+      isModalActive: false,
+      defaultFlagImgPath: "img/flags/",
+      selectedStart: new Date(moment()),
+      selectedEnd: new Date(moment().add(1, "days")),
+      selectedNights: 1,
+      selectedPickUpPlace: null,
+      selectedDeliveryPlace: null,
+      selectedCarCategory: "",
+      selectedNationality: null,
+      selectedTransmissionType: null,
+      countries: [
+        {
+          nombre: "Afganistán",
+          flag: "flag_afganistan.jpg",
+        },
+        {
+          nombre: "Albania",
+          flag: "flag_albania.jpg",
+        },
+        {
+          nombre: "Alemania",
+          flag: "flag_alemania.jpg",
+        },
+        {
+          nombre: "Estados Unidos",
+          flag: "flag_estadosunidos.jpg",
+        },
+      ],
+      carsCategories: [],
+      // transmissionTypes: [
+      //   {
+      //     nombre: "Automatico",
+      //     display: "Automático"
+      //   },
+      //   {
+      //     nombre: "Manual",
+      //     display: "Manual"
+      //   },
+      //   {
+      //     nombre: "Automatico S/Seguro",
+      //     display: "Automático S/Seguro"
+      //   },
+      //   {
+      //     nombre: "Manual S/Seguro",
+      //     display: "Manual S/Seguro"
+      //   }
+      // ],
+      pickUpDeliveryOptions: [],
+    };
+  },
+};
 </script>
 
 <style scoped>
+#index-logged-rent-search {
+  width: 100%;
+  position: relative;
+}
+#index-logged-rent-search .home-logged-rent-img img {
+  width: 100%;
+  height: 100%;
+}
+
+.custom-form {
+  padding-bottom: 10px;
+}
+
+.custom-text {
+  text-align: left;
+  margin-left: 30px;
+}
+
+.form-actions {
+  margin-left: auto;
+}
+
+@media (max-width: 1440px) {
   #index-logged-rent-search {
-    width: 100%;
-    position: relative;
+    height: auto;
   }
-  #index-logged-rent-search .home-logged-rent-img img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .custom-form {
-    padding-bottom: 10px;
-  }
-
-  .custom-text {
-    text-align: left;
-    margin-left: 30px;
-  }
-
-  .form-actions {
-    margin-left: auto;
-  }
-
-  @media (max-width: 1440px) {
-    #index-logged-rent-search {
-      height: auto;
-    }
-  }
+}
 </style>

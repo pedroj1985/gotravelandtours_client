@@ -9,7 +9,11 @@ export const reusableMethodsMixin = {
           return total + item.precio;
         }
         if (item.tipo == "lodging") {
-          return total + item.total;
+          let totalItem = 0;
+          item.reservedRooms.map((x) => {
+            total += x.CantidadHabitaciones * x.PrecioOrden;
+          });
+          return total + totalItem;
         }
       }, 0);
     },
@@ -26,6 +30,6 @@ export const reusableMethodsMixin = {
         return `${text.substring(0, l)}...`;
       }
       return text;
-    }
-  }
+    },
+  },
 };

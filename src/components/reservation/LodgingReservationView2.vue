@@ -48,33 +48,25 @@
             <template slot="tr-icon-slot">
               <i class="mdi mdi-calendar"></i>
             </template>
-            <template slot="tr-info-name">
-              Fecha de entrada
-            </template>
+            <template slot="tr-info-name"> Fecha de entrada </template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getDateSalida(item)" class="info-item">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-calendar"></i>
             </template>
-            <template slot="tr-info-name">
-              Fecha de salida
-            </template>
+            <template slot="tr-info-name"> Fecha de salida </template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getVisitantes(item)" class="info-item">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-account"></i>
             </template>
-            <template slot="tr-info-name">
-              Visitantes
-            </template>
+            <template slot="tr-info-name"> Visitantes </template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getHabitaciones(item)" class="info-item">
             <template slot="tr-icon-slot">
               <i class="mdi mdi-bed"></i>
             </template>
-            <template slot="tr-info-name">
-              Habitaciones
-            </template>
+            <template slot="tr-info-name"> Habitaciones </template>
           </GttTwoRowsInfo>
           <!-- <GttTwoRowsInfo
             class="info-item"
@@ -165,7 +157,8 @@
                     <template v-else> sin niños</template>
                   </div>
                   <div class="to-right">
-                    {{ styledPrice(i.PrecioOrden).intPart }}. USD
+                    {{ i.CantidadHabitaciones }} X
+                    {{ styledPrice(i.PrecioOrden).intPart }} USD
                   </div>
                 </div>
                 <!-- <p class="gtt-text-color general-text-opt">
@@ -185,9 +178,15 @@
                     Precio total
                   </div>
                   <div
-                    class="to-uppercase hn-roman gtt-text-color flex-right-side font24"
+                    class="
+                      to-uppercase
+                      hn-roman
+                      gtt-text-color
+                      flex-right-side
+                      font24
+                    "
                   >
-                    {{ styledPrice(item.total).intPart }}. USD
+                    {{ getTotal }} USD
                   </div>
                 </div>
               </slot>
@@ -200,208 +199,214 @@
 </template>
 
 <script>
-  import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
-  import Slick from "vue-slick-carousel";
-  import moment from "moment";
+import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
+import Slick from "vue-slick-carousel";
+import moment from "moment";
 
-  export default {
-    created() {
-      console.log(this.item);
-      console.log("info-hotel");
+export default {
+  created() {},
+  components: {
+    Slick,
+    GttTwoRowsInfo,
+  },
+  props: {
+    item: {
+      type: Object,
+      default: null,
     },
-    components: {
-      Slick,
-      GttTwoRowsInfo
+    can: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-      item: {
-        type: Object,
-        default: null
-      },
-      can: {
-        type: Boolean,
-        default: false
-      },
-      ordenId: {
-        default: -1
-      },
-      hasVoucher: {
-        default: false,
-        type: Boolean
+    ordenId: {
+      default: -1,
+    },
+    hasVoucher: {
+      default: false,
+      type: Boolean,
+    },
+  },
+  data() {
+    return {
+      selectedInfo: "info",
+      pos: 1,
+    };
+  },
+  computed: {
+    // a computed getter
+    getTotal: function() {
+      let total = 0;
+      this.item.reservedRooms.map((x) => {
+        total += x.CantidadHabitaciones * x.PrecioOrden;
+      });
+      return total;
+    },
+  },
+  methods: {
+    getVisitantes(item) {
+      let totalA = 0;
+      let totalN = 0;
+      item.reservedRooms.forEach((i) => {
+        totalA = totalA + i.CantAdulto;
+        totalN = totalN + i.CantNino;
+      });
+
+      return `${totalA} Adulto(s) · ${totalN} Niño(s)`;
+    },
+    getHabitaciones(item) {
+      return `${item.reservedRooms.length} Habitación(es)`;
+    },
+    addPos() {
+      this.pos = this.pos + 1;
+      return this.pos;
+    },
+    selectInfo(section) {
+      if (this.selectedInfo == section) {
+        this.selectedInfo = "";
+      } else {
+        this.selectedInfo = section;
       }
     },
-    data() {
-      return {
-        selectedInfo: "info",
-        pos: 1
-      };
+    toMoment(date) {
+      return moment(date);
     },
-    methods: {
-      getVisitantes(item) {
-        let totalA = 0;
-        let totalN = 0;
+    getDateEntrada(item) {
+      moment.locale("es");
+      return this.toMoment(item.entrada).format("DD MMMM YYYY");
+    },
+    getDateSalida(item) {
+      moment.locale("es");
+      return this.toMoment(item.salida).format("DD MMMM YYYY");
+    },
+    styledPrice(number) {
+      let intPart = Math.ceil(number);
+      let decimalPart = Math.round((number - intPart) * 100);
 
-        item.reservedRooms.forEach(i => {
-          totalA = totalA + i.CantAdulto;
-          totalN = totalN + i.CantNino;
-        });
+      if (decimalPart == 0) decimalPart = "00";
 
-        return `${totalA} Adulto(s) · ${totalN} Niño(s)`;
-      },
-      getHabitaciones(item) {
-        return `${item.reservedRooms.length} Habitación(es)`;
-      },
-      addPos() {
-        this.pos = this.pos + 1;
-        return this.pos;
-      },
-      selectInfo(section) {
-        if (this.selectedInfo == section) {
-          this.selectedInfo = "";
-        } else {
-          this.selectedInfo = section;
-        }
-      },
-      toMoment(date) {
-        return moment(date);
-      },
-      getDateEntrada(item) {
-        moment.locale("es");
-        return this.toMoment(item.entrada).format("DD MMMM YYYY");
-      },
-      getDateSalida(item) {
-        moment.locale("es");
-        return this.toMoment(item.salida).format("DD MMMM YYYY");
-      },
-      styledPrice(number) {
-        let intPart = Math.ceil(number);
-        let decimalPart = Math.round((number - intPart) * 100);
-
-        if (decimalPart == 0) decimalPart = "00";
-
-        return { intPart: intPart, decimalPart: decimalPart };
-      }
-    }
-  };
+      return { intPart: intPart, decimalPart: decimalPart };
+    },
+  },
+};
 </script>
 
 <style>
-  .info-item {
-    margin-bottom: 10px;
-  }
-  .btn-cart {
-    margin-right: 5px;
-    width: 50px;
-  }
-  .children-wrapper {
-    border-bottom: 1px solid #c4c4c4;
-  }
-  .item-children-header {
-    padding-bottom: 5px;
-    display: flex;
-  }
-  .item-children-content {
-    padding-right: 60px;
-    padding-left: 60px;
-  }
-  .item-children-content-info {
-    padding-bottom: 30px;
-    /* font-size: 14px; */
-  }
-  .item-children-content-info p {
-    margin-bottom: 5px;
-  }
-  .item-children-content pre {
-    font-size: 16px;
-    color: #6d6d6d;
-    white-space: pre-wrap;
-  }
-  .item-children {
-    /* display: flex; */
+.info-item {
+  margin-bottom: 10px;
+}
+.btn-cart {
+  margin-right: 5px;
+  width: 50px;
+}
+.children-wrapper {
+  border-bottom: 1px solid #c4c4c4;
+}
+.item-children-header {
+  padding-bottom: 5px;
+  display: flex;
+}
+.item-children-content {
+  padding-right: 60px;
+  padding-left: 60px;
+}
+.item-children-content-info {
+  padding-bottom: 30px;
+  /* font-size: 14px; */
+}
+.item-children-content-info p {
+  margin-bottom: 5px;
+}
+.item-children-content pre {
+  font-size: 16px;
+  color: #6d6d6d;
+  white-space: pre-wrap;
+}
+.item-children {
+  /* display: flex; */
+}
+.item-children-name {
+  margin-right: auto;
+  color: #6d6d6d;
+  font-size: 20px;
+  width: 20%;
+}
+.item-children-section {
+  color: #6d6d6d;
+  font-size: 24px;
+  display: flex;
+}
+
+.item-children-section-item {
+  padding-right: 25px;
+  align-self: center;
+  font-size: 30px !important;
+}
+.item-children-section-icon {
+  font-size: 30px !important;
+  color: #212f3d;
+  align-self: center;
+}
+.item-children-right-part {
+  margin-left: auto;
+  display: flex;
+}
+.item-children-price {
+  padding-right: 60px;
+  color: #6d6d6d;
+  font-size: 24px;
+}
+.item-children-info-btn {
+  font-size: 24px;
+  color: #212f3d;
+  padding-right: 20px;
+}
+.item-children-info-btn button {
+  border: none;
+  background-color: transparent;
+}
+.item-children-info-btn button:hover {
+  cursor: pointer;
+}
+.item-children-info-btn button:focus {
+  border: none;
+  outline: none;
+}
+.item-children-name,
+.item-children-section,
+.item-children-price,
+.item-children-info-btn {
+  align-self: center;
+}
+.selected {
+  color: #c4c4c4;
+}
+.item-children-reserve button {
+  font-size: 24px;
+}
+.printer-button a {
+  color: #212f3d;
+}
+.printer-button a:hover {
+  color: #0056b3;
+}
+.divDisabled {
+  pointer-events: none;
+  color: #6d6d6d;
+}
+@media (max-width: 1440px) {
+  .item-children-info-btn {
+    font-size: 18px;
   }
   .item-children-name {
-    margin-right: auto;
-    color: #6d6d6d;
-    font-size: 20px;
-    width: 20%;
+    font-size: 12px;
   }
   .item-children-section {
     color: #6d6d6d;
-    font-size: 24px;
+    font-size: 18px;
     display: flex;
   }
-
-  .item-children-section-item {
-    padding-right: 25px;
-    align-self: center;
-    font-size: 30px !important;
+  .item-children-content-info {
+    font-size: 12px;
   }
-  .item-children-section-icon {
-    font-size: 30px !important;
-    color: #212f3d;
-    align-self: center;
-  }
-  .item-children-right-part {
-    margin-left: auto;
-    display: flex;
-  }
-  .item-children-price {
-    padding-right: 60px;
-    color: #6d6d6d;
-    font-size: 24px;
-  }
-  .item-children-info-btn {
-    font-size: 24px;
-    color: #212f3d;
-    padding-right: 20px;
-  }
-  .item-children-info-btn button {
-    border: none;
-    background-color: transparent;
-  }
-  .item-children-info-btn button:hover {
-    cursor: pointer;
-  }
-  .item-children-info-btn button:focus {
-    border: none;
-    outline: none;
-  }
-  .item-children-name,
-  .item-children-section,
-  .item-children-price,
-  .item-children-info-btn {
-    align-self: center;
-  }
-  .selected {
-    color: #c4c4c4;
-  }
-  .item-children-reserve button {
-    font-size: 24px;
-  }
-  .printer-button a {
-    color: #212f3d;
-  }
-  .printer-button a:hover {
-    color: #0056b3;
-  }
-  .divDisabled {
-    pointer-events: none;
-    color: #6d6d6d;
-  }
-  @media (max-width: 1440px) {
-    .item-children-info-btn {
-      font-size: 18px;
-    }
-    .item-children-name {
-      font-size: 12px;
-    }
-    .item-children-section {
-      color: #6d6d6d;
-      font-size: 18px;
-      display: flex;
-    }
-    .item-children-content-info {
-      font-size: 12px;
-    }
-  }
+}
 </style>
