@@ -70,42 +70,6 @@ const router = new VueRouter({
   },
 });
 
-const version = JSON.parse(localStorage.getItem("version"));
-
-versionCheck();
-
-async function versionCheck() {
-  if (!version) {
-    const response = await axios.get(
-      "https://admin.gotravelandtours.com/publicEliecer/api/Versions/1"
-    );
-    localStorage.setItem("version", JSON.stringify(response.data));
-    Vue.toasted.show(`Nueva version instalada`);
-  }
-  newVersion();
-  let intervalo = setInterval(newVersion, 1800000);
-}
-
-async function newVersion() {
-  const response = await axios.get(
-    "https://admin.gotravelandtours.com/publicEliecer/api/Versions/1"
-  );
-  const data = response.data;
-  const v = JSON.parse(localStorage.getItem("version"));
-  if (v.VersionName != data.VersionName) {
-    Vue.toasted.show(`Nueva version`, {
-      action: {
-        text: "Actualizar",
-        onClick: (e, toastObject) => {
-          localStorage.setItem("version", JSON.stringify(data));
-          window.location.reload();
-          toastObject.goAway(0);
-        },
-      },
-    });
-  }
-}
-
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (localStorage.getItem("token") == null) {

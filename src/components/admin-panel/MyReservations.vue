@@ -140,6 +140,8 @@
 <script>
 import { authGetOrders, authGetOrdersCount } from "../../utils/auth";
 import moment from "moment";
+import Vue from "vue";
+import axios from "axios";
 
 export default {
   async created() {
@@ -198,6 +200,36 @@ export default {
       if (this.filtroEstado.length == 0) {
         alert("Debe introducir un estado");
       } else {
+        const versionActual = JSON.parse(localStorage.getItem("version"));
+
+        if (!versionActual) {
+          const response = await axios.get(
+            "https://admin.gotravelandtours.com/publicEliecer/api/Versions/1"
+          );
+          localStorage.setItem("version", JSON.stringify(response.data));
+          Vue.toasted.show(`Nueva version instalada`, {
+            duration: 10000,
+          });
+        } else {
+          const response = await axios.get(
+            "https://admin.gotravelandtours.com/publicEliecer/api/Versions/1"
+          );
+          const data = response.data;
+          if (versionActual.VersionName != data.VersionName) {
+            Vue.toasted.show(`Nueva version`, {
+              duration: 99999999,
+              action: {
+                text: "Actualizar",
+                onClick: (e, toastObject) => {
+                  localStorage.setItem("version", JSON.stringify(data));
+                  window.location.reload();
+                  toastObject.goAway(0);
+                },
+              },
+            });
+          }
+        }
+
         this.constructFilterObj();
         this.searching = true;
         /* TODO filter */
