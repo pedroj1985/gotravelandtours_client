@@ -208,7 +208,8 @@ export default {
           );
           localStorage.setItem("version", JSON.stringify(response.data));
           Vue.toasted.show(`Nueva version instalada`, {
-            duration: 10000,
+            fullWidth: true,
+            duration: 86400000,
           });
         } else {
           const response = await axios.get(
@@ -216,16 +217,25 @@ export default {
           );
           const data = response.data;
           if (versionActual.VersionName != data.VersionName) {
-            Vue.toasted.show(`Nueva version`, {
+            Vue.toasted.show(`Nueva version.Actualizar?`, {
               duration: 99999999,
-              action: {
-                text: "Actualizar",
-                onClick: (e, toastObject) => {
-                  localStorage.setItem("version", JSON.stringify(data));
-                  window.location.reload();
-                  toastObject.goAway(0);
+              fullWidth: true,
+              action: [
+                {
+                  text: "Si",
+                  onClick: (e, toastObject) => {
+                    localStorage.setItem("version", JSON.stringify(data));
+                    window.location.reload();
+                    toastObject.goAway(0);
+                  },
                 },
-              },
+                {
+                  text: "No",
+                  onClick: (e, toastObject) => {
+                    toastObject.goAway(0);
+                  },
+                },
+              ],
             });
           }
         }
