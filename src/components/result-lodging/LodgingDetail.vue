@@ -575,6 +575,7 @@ export default {
       this.roomsSelecting = false;
       this.isModalLodgingActive = false;
     },
+
     updateResult(r) {
       this.roomsSelecting = true;
       this.roomsResult = r.result;

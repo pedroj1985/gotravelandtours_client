@@ -311,6 +311,7 @@ export default {
     this.$emit("adminPanelInfo", "reservation-detail");
     let id = this.$route.params.id;
     let { data } = await authGetOrder(id);
+    console.log("Datos orden:", data);
     this.order = data;
     this.clientPasaporte = data.NumeroPasaporte;
     this.numeroOrden = this.order.NumeroOrden;

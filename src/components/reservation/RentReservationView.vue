@@ -217,6 +217,10 @@ export default {
     GttTwoRowsInfo,
   },
   props: {
+    overDay: {
+      type: Number,
+      default: 0,
+    },
     item: {
       type: Object,
       default: null,
@@ -265,7 +269,7 @@ export default {
       let dayNightString = "";
       if (diff > 1) dayNightString = " días";
       else dayNightString = " día";
-      return diff + dayNightString;
+      return this.overDay + diff + dayNightString;
     },
     displayIfNoneLugarRecogida(item) {
       return item.orderVehiculo.LugarRecogida

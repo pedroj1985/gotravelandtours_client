@@ -156,9 +156,17 @@ export function authSearchCars(searchItem) {
   });
 }
 
+export function authUpdateCar(searchItem) {
+  let token = localStorage.getItem("token");
+   console.log(searchItem); 
+  return HTTP.post("/Vehiculoes/CambiarPrecio", searchItem, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export function authGetCar(id) {
   let token = localStorage.getItem("token");
-  resp = HTTP.get("/Vehiculoes/" + id, null, {
+  const resp = HTTP.get("/Vehiculoes/" + id, null, {
     headers: { Authorization: `Bearer ${token}` },
   });
   console.log(resp);
@@ -222,7 +230,6 @@ export function authGetImages(id) {
 
 export function authGetOrders(searchItem) {
   let token = localStorage.getItem("token");
-  console.log("searchParameters", searchItem);
   try {
     return HTTP.post("/Ordens/Buscar", searchItem, {
       headers: { Authorization: `Bearer ${token}` },
@@ -234,11 +241,13 @@ export function authGetOrders(searchItem) {
 
 export function authGetOrdersCount(searchItem) {
   let token = localStorage.getItem("token");
-
+  console.log("parametro", searchItem);
   try {
-    return HTTP.post("/Ordens/Count", searchItem, {
+    const data = HTTP.post("/Ordens/Count", searchItem, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log("response-DATA", data);
+    return data;
   } catch (error) {
     console.log(error);
   }
