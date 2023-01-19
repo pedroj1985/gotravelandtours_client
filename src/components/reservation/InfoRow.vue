@@ -8,25 +8,29 @@
     </div>
 
     <div class="ir-inputs-wrapper general-text-opt">
-      <div ref="gttName" class="cleft flex-wrapper ir-text-input">
+      <div ref="gttName" class="cleft flex-wrapper input-left ir-text-input">
         <div class="input-icon font18">
           <i class="mdi mdi-account"></i>
         </div>
-        <div class="input-two-rows">
-          <div class="ir-info-name font14 required-field">Nombre(s)</div>
+        <div class="input-two-rows ">
+          <div class=" ir-info-name  font14 required-field">Nombre(s)</div>
           <input
             :disabled="!editable"
             type="text"
             :value="name"
             @input="$emit('inputName', $event.target.value)"
-            class="ir-input font18"
+            class="ir-input  font18"
             placeholder="Su(s) nombre(s)"
           />
           <span slot="error" class="gtt-errors"></span>
         </div>
       </div>
 
-      <div ref="gttApellido" class="flex-wrapper ir-text-input" v-if="!onlyOne">
+      <div
+        ref="gttApellido"
+        class="flex-wrapper input-right ir-text-input"
+        v-if="!onlyOne"
+      >
         <div class="input-icon font18">
           <i class="mdi mdi-account"></i>
         </div>
@@ -46,7 +50,7 @@
     </div>
 
     <div class="ir-inputs-wrapper general-text-opt">
-      <div ref="gttPasaporte" class="flex-wrapper ir-text-input">
+      <div ref="gttPasaporte" class="flex-wrapper input-left ir-text-input">
         <div class="input-icon font18">
           <i class="mdi mdi-card-account-details-outline"></i>
         </div>
@@ -64,7 +68,11 @@
         </div>
       </div>
 
-      <div v-if="hasCar" ref="gttNacimiento" class="flex-wrapper ir-text-input">
+      <div
+        v-if="hasCar"
+        ref="gttNacimiento"
+        class="flex-wrapper input-right ir-text-input"
+      >
         <div class="input-icon font18">
           <i class="mdi mdi-card-account-details-outline"></i>
         </div>
@@ -83,8 +91,13 @@
         </div>
       </div>
     </div>
+    <p v-bind:class="[age ? 'show' : 'hide']" class="ir-info-name">
+      * Aviso: Para personas de 21 a 24 años y de 76 a 80 años pagarán una tasa
+      adicional consistente en el 50% del valor del relevo de responsabilidad.
+    </p>
   </div>
 </template>
+
 <script>
 export default {
   props: {
@@ -113,12 +126,42 @@ export default {
       default: true,
     },
   },
+  computed: {
+    age: function() {
+      var temp = this.nacimiento.split("-");
+      var date = new Date(temp[0], temp[1], temp[2]);
+      var cur = new Date();
+      var diff = cur - date;
+      var currentAge = Math.floor(diff / 31557600000);
+      console.log(currentAge);
+      if (
+        (currentAge >= 21 && currentAge <= 24) ||
+        (currentAge >= 76 && currentAge <= 80)
+      ) {
+        return true;
+      }
+      return false;
+    },
+  },
 };
 </script>
 
 <style scoped>
+.show {
+  opacity: 100;
+}
+
+.hide {
+  opacity: 0;
+}
+p.ir-info-name {
+  margin-top: 10px;
+  color: red;
+  font-size: 10px !important;
+}
 .info-row {
   width: 100%;
+  margin-bottom: 10px;
 }
 .input-two-rows {
   width: 100%;
@@ -126,12 +169,19 @@ export default {
 .ir-inputs-wrapper {
   display: flex;
   margin-top: 15px;
+  justify-content: space-between;
 }
 .input-icon {
   align-self: center;
   margin-right: 5px;
 }
-
+.input-left {
+  margin-right: auto;
+  margin-right: 30px;
+}
+.input-right {
+  margin-left: auto;
+}
 .ir-text-input {
   padding-left: 15px;
   padding-right: 15px;
@@ -139,7 +189,6 @@ export default {
   padding-bottom: 10px;
   background-color: white;
   width: 50%;
-  margin-right: 30px;
   border-radius: 10px;
   border: 1px solid #6d6d6d;
 }

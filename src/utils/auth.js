@@ -158,7 +158,7 @@ export function authSearchCars(searchItem) {
 
 export function authUpdateCar(searchItem) {
   let token = localStorage.getItem("token");
-   console.log(searchItem); 
+  console.log(searchItem);
   return HTTP.post("/Vehiculoes/CambiarPrecio", searchItem, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -182,7 +182,7 @@ export function authDeleteCarOrder(id) {
 
 export function authReserve(orden) {
   let token = localStorage.getItem("token");
-  console.log(orden);
+  console.log("orden: ", orden);
   return HTTP.post("/Ordens", orden, {
     headers: { Authorization: `Bearer ${token}` },
   });

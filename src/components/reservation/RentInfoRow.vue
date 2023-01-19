@@ -9,7 +9,7 @@
 
     <div class="ir-inputs-wrapper general-text-opt">
       <div ref="gttPickUp" class="input-left ir-text-input">
-        <div class="ir-info-name font14 required-field">Punto de recogida</div>
+        <div class="ir-info-name font14 required-field">Datos de recogida</div>
 
         <gtt-select
           v-on:input="$emit('inputPickUpPlace', $event)"
@@ -23,7 +23,7 @@
           <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
           <template v-slot:option="option">{{ option.option.nombre }}</template>
           <template v-slot:selectedValue="selectedValue">
-            <span id="selectedPickUp">
+            <span class="wrap" id="selectedPickUp">
               {{ overflowText(selectedValue.selectedValue.nombre) }}
             </span>
             <b-tooltip target="selectedPickUp" triggers="hover">{{
@@ -32,10 +32,23 @@
           </template>
           <span slot="error" class="gtt-errors"></span>
         </gtt-select>
+        <span style="padding: 2px;"> - </span>
+        <div class="container-left">
+          <div class="ir-info-name  font14">
+            Hora de recogida
+          </div>
+          <vue-timepicker
+            :value="pickUp"
+            @input="$emit('inputPickUp', $event)"
+            :disabled="!editable"
+            close-on-complete
+            hide-clear-button
+          />
+        </div>
       </div>
-      <!-- flex-wrapper  -->
+
       <div ref="gttDelivery" class="input-right ir-text-input">
-        <div class="ir-info-name font14 required-field">Punto de entrega</div>
+        <div class="ir-info-name font14 required-field">Datos de entrega</div>
         <gtt-select
           v-on:input="$emit('inputDeliveryPlace', $event)"
           :openedLodging.sync="deliveryOpened"
@@ -46,11 +59,27 @@
 
           <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
           <template v-slot:option="option">{{ option.option.nombre }}</template>
-          <template v-slot:selectedValue="selectedValue">{{
-            overflowText(selectedValue.selectedValue.nombre)
-          }}</template>
+          <template v-slot:selectedValue="selectedValue">
+            <span class="wrap" id="selectedPickUp">
+              {{ overflowText(selectedValue.selectedValue.nombre) }}
+            </span>
+          </template>
           <span slot="error" class="gtt-errors"></span>
         </gtt-select>
+        <span style="padding: 2px;"> - </span>
+
+        <div class="container-left">
+          <div class="ir-info-name  font14">
+            Hora de entrega
+          </div>
+          <vue-timepicker
+            :disabled="!editable"
+            :value="deliver"
+            @input="$emit('inputDeliver', $event)"
+            close-on-complete
+            hide-clear-button
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -64,14 +93,7 @@ import GttModalSearch from "../custom-elements/GttModalSearch";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 
-import {
-  authSearchPuntosInteres,
-  authSearchMarcas,
-  authSearchCars,
-  authGetImage,
-  authSearchProvider,
-  authSearchMarca,
-} from "../../utils/auth";
+import { authSearchPuntosInteres } from "../../utils/auth";
 
 export default {
   created() {
@@ -85,6 +107,18 @@ export default {
       selectedDeliveryPlace: null,
       pickUpDeliveryOptions: [],
     };
+  },
+  props: {
+    deliver: {
+      type: String,
+    },
+    pickUp: {
+      type: String,
+    },
+    editable: {
+      type: Boolean,
+      default: true,
+    },
   },
   components: {
     GttSelect,
@@ -119,26 +153,43 @@ export default {
       }
     },
   },
+
   watch: {
     // cada vez que la pregunta cambie, esta función será ejecutada
-    selectedPickUpPlace: function (newPickUpPlace, oldPickUpPlace) {
-      if (this.selectedDeliveryPlace==null) {
-        this.$emit('inputDeliveryPlace', newPickUpPlace)
-        this.selectedDeliveryPlace = newPickUpPlace
+    selectedPickUpPlace: function(newPickUpPlace, oldPickUpPlace) {
+      if (this.selectedDeliveryPlace == null) {
+        this.$emit("inputDeliveryPlace", newPickUpPlace);
+        this.selectedDeliveryPlace = newPickUpPlace;
       }
-      
-    }
+    },
   },
 };
 </script>
 
 <style scoped>
+.wrap {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.container-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.left {
+  right: 2px;
+}
+.time-picker {
+  height: 100% !important;
+  width: 100%;
+}
 span {
   font-size: 12px;
 }
 
 .info-row {
-  padding-top: 30px;
   width: 100%;
 }
 .input-two-rows {
@@ -146,8 +197,10 @@ span {
 }
 .ir-inputs-wrapper {
   display: flex;
+
   margin-top: 15px;
-  justify-content: space-evenly;
+
+  justify-content: space-between;
 }
 .input-icon {
   align-self: center;
@@ -155,25 +208,43 @@ span {
 }
 
 .gtt__select {
-  width: 100%;
+  width: 160%;
   position: relative;
   margin-bottom: 0px;
+}
+
+.input-left {
+  margin-right: auto;
+  margin-right: 30px;
+}
+.input-right {
+  margin-left: auto;
 }
 
 .ir-text-input {
   padding-left: 15px;
   padding-right: 15px;
-  padding-top: 10px;
+  padding-top: 30px;
   padding-bottom: 10px;
   background-color: white;
-  width: 100%;
-  margin-right: 30px;
+  display: flex;
+  align-items: center;
+  width: 50%;
   border-radius: 10px;
   border: 1px solid #6d6d6d;
+  position: relative;
+}
+.ir-info-name {
+  position: absolute;
+  top: 8px;
 }
 .ir-input {
   border: none;
   width: 100%;
+}
+.time-input {
+  display: flex;
+  justify-content: center;
 }
 .ir-input:focus {
   /* border-bottom: 1px solid #f5f5f5; */

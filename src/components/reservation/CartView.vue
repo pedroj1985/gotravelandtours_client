@@ -187,22 +187,22 @@
                 </InfoRow>
 
                 <RentInfoRow
+                  :pickUp="horaLanding"
+                  :deliver="horaTakeoff"
                   @inputDeliveryPlace="updateDeliveryPlace"
                   @inputPickUpPlace="updatePickUpPlace"
+                  @inputPickUp="updateHoraLanding"
+                  @inputDeliver="updateHoraTakeoff"
                   v-if="checkIfRentExist"
                 >
                 </RentInfoRow>
 
                 <FlightInfoRow
                   class="fir"
-                  :hora_landing="horaLanding"
-                  :hora_takeoff="horaTakeoff"
                   :aerolinea_landing="aerolineaLanding"
                   :aerolinea_takeoff="aerolineaTakeoff"
                   :nvuelo_landing="nvueloLanding"
                   :nvuelo_takeoff="nvueloTakeoff"
-                  @inputHoraLanding="updateHoraLanding"
-                  @inputHoraTakeoff="updateHoraTakeoff"
                   @inputAerolineaLanding="updateAerolineaLanding"
                   @inputAerolineaTakeoff="updateAerolineaTakeoff"
                   @inputNvueloLanding="updateNvueloLanding"
@@ -403,6 +403,7 @@ export default {
     async reserve() {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
+        console.log("valido:", getValid(iv));
         let listaVehiculosOrden = this.getListaVehiculosOrden();
         let listaAlojamientosOrden = this.getListaAlojamientosOrden();
         listaAlojamientosOrden.forEach((ao) => {
@@ -770,7 +771,32 @@ export default {
       this.tempItemToEdit.tipo = item.tipo;
       this.tempItemToEdit.transmision = item.transmision;
     },
+    cleanData(item) {
+      console.log("Item a limpiar: ", item);
+
+      item.ListaPreciosRentaAutos = [
+        {
+          PrecioRentaAutos: {
+            PrecioRentaAutosId:
+              item.ListaPreciosRentaAutos[0].PrecioRentaAutos
+                .PrecioRentaAutosId,
+          },
+        },
+      ];
+      item.Distribuidor = {
+        DistribuidorId: item.Distribuidor.DistribuidorId,
+      };
+      item.Vehiculo = {
+        ProductoId: item.Vehiculo.ProductoId,
+      };
+
+      item.Sobreprecio = {
+        SobreprecioId: item.Sobreprecio.SobreprecioId,
+      };
+      return item;
+    },
   },
+
   watch: {
     /* TODO: actualizar items */
     horaTakeoff: async function(newTime) {
@@ -799,7 +825,9 @@ export default {
           HoraRecogida: this.horaLanding,
         });
         data.FechaEntrega = order.orderVehiculo.FechaEntrega;
-        order.orderVehiculo = data;
+        data.DistribuidorId = order.orderVehiculo.DistribuidorId;
+        let fixData = this.cleanData(data);
+        order.orderVehiculo = fixData;
         order.precio = order.orderVehiculo.PrecioOrden;
         this.tempItemToEdit = {
           uID: order.uID,
@@ -861,7 +889,9 @@ export default {
           HoraRecogida: this.horaLanding,
         });
         data.FechaEntrega = order.orderVehiculo.FechaEntrega;
-        order.orderVehiculo = data;
+        data.DistribuidorId = order.orderVehiculo.DistribuidorId;
+        let fixData = this.cleanData(data);
+        order.orderVehiculo = fixData;
         order.precio = order.orderVehiculo.PrecioOrden;
         this.tempItemToEdit = {
           uID: order.uID,
@@ -931,4 +961,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.create-order-step {
+  padding-right: 20px !important;
+}
+</style>

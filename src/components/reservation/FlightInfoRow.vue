@@ -18,14 +18,6 @@
             Datos del vuelo (llegada)
           </div>
           <div class="flex-wrapper">
-            <vue-timepicker
-              v-model="hl"
-              :disabled="!editable"
-              close-on-complete
-              hide-clear-button
-            >
-            </vue-timepicker>
-            <span>-</span>
             <input
               type="text"
               :value="aerolinea_landing"
@@ -47,14 +39,6 @@
           <span slot="error" class="gtt-errors"></span>
         </div>
       </div>
-      <!-- <div class="input-left flex-wrapper ir-text-input">
-                <div class="input-two-rows">
-                    <div class="ir-info-name font14">
-                        Hora del vuelo (llegada)
-                    </div>
-                    <b-form-timepicker locale="es" placeholder="--:--"></b-form-timepicker>
-                </div>
-            </div> -->
       <div ref="gttSalida" class="input-right flex-wrapper ir-text-input">
         <div class="input-icon font18">
           <i class="mdi mdi-airplane-takeoff"></i>
@@ -64,14 +48,6 @@
             Datos del vuelo (salida)
           </div>
           <div class="flex-wrapper">
-            <vue-timepicker
-              v-model="ht"
-              close-on-complete
-              hide-clear-button
-              :disabled="!editable"
-            >
-            </vue-timepicker>
-            <span>-</span>
             <input
               type="text"
               :value="aerolinea_takeoff"
@@ -178,7 +154,7 @@ export default {
 }
 .ir-input {
   border: none;
-  width: 33%;
+  width: 100%;
   text-align: center;
 }
 .ir-input:focus {

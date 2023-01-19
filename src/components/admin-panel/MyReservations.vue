@@ -261,7 +261,7 @@ export default {
         return data.map((item) => {
           return {
             númeroOrden: item.NumeroOrden,
-            nombreOrden: item.NombreOrden,
+            nombreOrden: item.OrdenNombre,
             fechaInicio: this.toMoment(item.FechaInicio).format("DD/MM/YYYY"),
             fechaFin: this.toMoment(item.FechaFin).format("DD/MM/YYYY"),
             fechaCreación: this.toMoment(item.FechaCreacion).format(
