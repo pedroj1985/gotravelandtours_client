@@ -148,10 +148,10 @@
                 @remove="showDeleteModal"
                 @edit="showEditModal"
               ></LodgingReservationView>
+              <!-- TODO: extra day :overDay="extraDay" -->
               <RentReservationView
                 class="rrv"
                 v-if="order.tipo == 'rent'"
-                :overDay="extraDay"
                 :item="order"
                 @remove="showDeleteModal"
                 @edit="showEditModal"
@@ -193,6 +193,7 @@
                   @inputPickUpPlace="updatePickUpPlace"
                   @inputPickUp="updateHoraLanding"
                   @inputDeliver="updateHoraTakeoff"
+                  :editable="editTime"
                   v-if="checkIfRentExist"
                 >
                 </RentInfoRow>
@@ -213,6 +214,7 @@
               <!-- TODO v-if="checkIfRentExist" revisar que mande el pasaporte a la api -->
               <div class="form-actions text-right">
                 <button
+                  :disabled="!editTime"
                   type="button"
                   @click="reserve"
                   class="reserveButton antonio-regular"
@@ -417,7 +419,11 @@ export default {
             this.clientName,
             this.clienteLastName
           );
-          // TODO fecha nacimiento
+
+          vo.FechaRecogida = vo.FechaRecogida.split("T")[0];
+          vo.FechaInicio = vo.FechaRecogida;
+          vo.FechaEntrega = vo.FechaEntrega.split("T")[0];
+          vo.FechaFin = vo.FechaEntrega;
           vo.FechaNacimiento = this.clienteNacimiento;
           vo.HoraInicio = this.horaLanding;
           vo.HoraFin = this.horaTakeoff;
@@ -624,6 +630,7 @@ export default {
     },
     updateHoraLanding(value) {
       this.horaLanding = value;
+      this.horaTakeoff = value;
     },
     updateHoraTakeoff(value) {
       this.horaTakeoff = value;
@@ -799,8 +806,9 @@ export default {
 
   watch: {
     /* TODO: actualizar items */
-    horaTakeoff: async function(newTime) {
-      if (!newTime.includes("mm") && !newTime.includes("HH")) {
+    /* horaTakeoff: async function(newTime) {
+      this.editTime = false;
+      if (this.horaTakeoff != "" && this.horaLanding != "") {
         let order = {};
         for (const item of this.allTypesOrders) {
           if ("orderVehiculo" in item) {
@@ -809,8 +817,8 @@ export default {
         }
 
         let { data } = await authUpdateCar({
-          FechaRecogida: order.orderVehiculo.FechaRecogida,
-          FechaEntrega: order.orderVehiculo.FechaEntrega,
+          FechaRecogida: order.orderVehiculo.FechaRecogida.split("T")[0],
+          FechaEntrega: order.orderVehiculo.FechaEntrega.split("T")[0],
           Marca: {
             MarcaId: order.marcaid,
             Nombre: order.marca,
@@ -862,9 +870,11 @@ export default {
           this.extraDay = 0;
         }
       }
+      this.editTime = true;
     },
     horaLanding: async function(newTime) {
-      if (!newTime.includes("mm") && !newTime.includes("HH")) {
+      this.editTime = false;
+      if (this.horaTakeoff != "" && this.horaLanding != "") {
         let order = {};
         for (const item of this.allTypesOrders) {
           if ("orderVehiculo" in item) {
@@ -926,7 +936,8 @@ export default {
           this.extraDay = 0;
         }
       }
-    },
+      this.editTime = true;
+    }, */
   },
   data() {
     // TODO agregar al data de cart view el campo pasaporte
@@ -950,7 +961,7 @@ export default {
       horaTakeoff: "",
       aerolineaTakeoff: "",
       nvueloTakeoff: "",
-
+      editTime: true,
       clientPickUpPlace: [],
       clientDeliveryPlace: [],
 

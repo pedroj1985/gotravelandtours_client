@@ -35,12 +35,13 @@
         <span style="padding: 2px;"> - </span>
         <div class="container-left">
           <div class="ir-info-name  font14">
-            Hora de recogida
+            Hora Recogida
           </div>
           <vue-timepicker
             :value="pickUp"
             @input="$emit('inputPickUp', $event)"
             :disabled="!editable"
+            lazy
             close-on-complete
             hide-clear-button
           />
@@ -70,12 +71,13 @@
 
         <div class="container-left">
           <div class="ir-info-name  font14">
-            Hora de entrega
+            Hora Entrega
           </div>
           <vue-timepicker
-            :disabled="!editable"
-            :value="deliver"
+            disabled
+            :value="pickUp"
             @input="$emit('inputDeliver', $event)"
+            lazy
             close-on-complete
             hide-clear-button
           />
@@ -177,6 +179,7 @@ export default {
   align-items: center;
   justify-content: center;
   height: 100%;
+  width: 20%;
 }
 .left {
   right: 2px;
@@ -208,9 +211,11 @@ span {
 }
 
 .gtt__select {
-  width: 160%;
   position: relative;
   margin-bottom: 0px;
+}
+.gtt__toggle {
+  width: 100%;
 }
 
 .input-left {
@@ -229,7 +234,7 @@ span {
   background-color: white;
   display: flex;
   align-items: center;
-  width: 50%;
+  width: 100%;
   border-radius: 10px;
   border: 1px solid #6d6d6d;
   position: relative;
