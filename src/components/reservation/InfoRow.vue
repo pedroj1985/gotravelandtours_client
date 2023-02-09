@@ -91,14 +91,32 @@
         </div>
       </div>
     </div>
-    <p v-bind:class="[age ? 'show' : 'hide']" class="ir-info-name">
-      * Aviso: Para personas de 21 a 24 años y de 76 a 80 años pagarán una tasa
-      adicional consistente en el 50% del valor del relevo de responsabilidad.
+    <p
+      v-if="(age >= 21 && age <= 24) || (age >= 76 && age <= 80)"
+      v-bind:class="[
+        (age >= 21 && age <= 24) || (age >= 76 && age <= 80) ? 'show' : 'hide',
+      ]"
+      class="ir-info-name"
+    >
+      <IconAlert /> Aviso: Para personas de 21 a 24 años y de 76 a 80 años
+      pagarán una tasa adicional consistente en el 50% del valor del relevo de
+      responsabilidad.
+    </p>
+    <p
+      v-else-if="age > 80 || age < 21"
+      v-bind:class="[age > 80 || age < 21 ? 'show' : 'hide']"
+      class="ir-info-name"
+    >
+      <IconAlert />
+      Aviso: No es permitida la renta para personas de edades menores de 21 años
+      o mayores de 80.
     </p>
   </div>
 </template>
 
 <script>
+import IconAlert from "../icons/IconAlert.vue";
+
 export default {
   props: {
     name: {
@@ -133,16 +151,10 @@ export default {
       var cur = new Date();
       var diff = cur - date;
       var currentAge = Math.floor(diff / 31557600000);
-      console.log(currentAge);
-      if (
-        (currentAge >= 21 && currentAge <= 24) ||
-        (currentAge >= 76 && currentAge <= 80)
-      ) {
-        return true;
-      }
-      return false;
+      return currentAge;
     },
   },
+  components: { IconAlert },
 };
 </script>
 
@@ -157,11 +169,11 @@ export default {
 p.ir-info-name {
   margin-top: 10px;
   color: red;
-  font-size: 10px !important;
+  font-size: 14px !important;
 }
 .info-row {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 .input-two-rows {
   width: 100%;

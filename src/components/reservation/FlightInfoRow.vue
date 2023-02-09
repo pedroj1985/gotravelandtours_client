@@ -18,15 +18,21 @@
             Datos del vuelo (llegada)
           </div>
           <div class="flex-wrapper">
-            <input
-              type="text"
-              :value="aerolinea_landing"
-              :disabled="!editable"
-              @input="$emit('inputAerolineaLanding', $event.target.value)"
-              class="ir-input font18"
-              placeholder="AEROLÍNEA"
-            />
-            <span>-</span>
+            <gtt-select :options="airlines" v-model="hl">
+              <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+
+              <span slot="selectedPlaceholder">¿Aerolinea?</span>
+              <template v-slot:option="option">{{
+                option.option.Nombre
+              }}</template>
+              <template v-slot:selectedValue="selectedValue">
+                <span class="wrap" id="selectedPickUp">
+                  {{ selectedValue.selectedValue.Nombre }}
+                </span>
+              </template>
+              <span slot="error" class="gtt-errors"></span>
+            </gtt-select>
+            <span style="padding: 2px;"> - </span>
             <input
               type="text"
               :value="nvuelo_landing"
@@ -48,21 +54,27 @@
             Datos del vuelo (salida)
           </div>
           <div class="flex-wrapper">
-            <input
-              type="text"
-              :value="aerolinea_takeoff"
-              :disabled="!editable"
-              @input="$emit('inputAerolineaTakeoff', $event.target.value)"
-              class="ir-input font18"
-              placeholder="AEROLÍNEA"
-            />
-            <span>-</span>
+            <gtt-select :options="airlines" v-model="ht">
+              <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+
+              <span slot="selectedPlaceholder">¿Aerolinea?</span>
+              <template v-slot:option="option">{{
+                option.option.Nombre
+              }}</template>
+              <template v-slot:selectedValue="selectedValue">
+                <span class="wrap" id="selectedPickUp">
+                  {{ selectedValue.selectedValue.Nombre }}
+                </span>
+              </template>
+              <span slot="error" class="gtt-errors"></span>
+            </gtt-select>
+            <span style="padding: 2px;"> - </span>
             <input
               type="text"
               :value="nvuelo_takeoff"
               :disabled="!editable"
               @input="$emit('inputNvueloTakeoff', $event.target.value)"
-              class="ir-input font18"
+              class="ir-input font14"
               placeholder="No. VUELO"
             />
           </div>
@@ -73,13 +85,25 @@
   </div>
 </template>
 <script>
+import { authGetAirlines } from "../../utils/auth";
+import GttSelect from "../custom-elements/GttSelect.vue";
+
 export default {
+  mounted() {
+    authGetAirlines()
+      .then((json) => {
+        this.airlines = json.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  },
   watch: {
     hl: function(value) {
-      this.$emit("inputHoraLanding", value);
+      this.$emit("inputAerolineaLanding", value.Nombre);
     },
     ht: function(value) {
-      this.$emit("inputHoraTakeoff", value);
+      this.$emit("inputAerolineaTakeoff", value.Nombre);
     },
     hora_landing: function(value) {
       this.hl = value;
@@ -90,6 +114,7 @@ export default {
   },
   data() {
     return {
+      airlines: [],
       hl: "",
       ht: "",
     };
@@ -118,6 +143,7 @@ export default {
       default: true,
     },
   },
+  components: { GttSelect },
 };
 </script>
 <style scoped>
@@ -131,6 +157,7 @@ export default {
 .input-two-rows {
   width: 100%;
 }
+
 .input-icon {
   align-self: center;
   margin-right: 5px;
@@ -152,9 +179,17 @@ export default {
   border-radius: 10px;
   border: 1px solid #6d6d6d;
 }
+.flex-wrapper {
+  display: flex;
+  margin-top: 8px;
+  align-items: center;
+}
+.gtt__select {
+  margin-bottom: 0px;
+}
 .ir-input {
   border: none;
-  width: 100%;
+  width: 35%;
   text-align: center;
 }
 .ir-input:focus {
@@ -168,6 +203,7 @@ export default {
 .ir-input:disabled::placeholder {
   color: #b3b2b2;
 }
+
 @media (max-width: 1440px) {
   .ir-text-wrapper {
     font-size: 12px;
@@ -184,14 +220,5 @@ export default {
   .input-icon {
     font-size: 12px;
   }
-}
-</style>
-<style>
-.vue__time-picker input.disabled {
-  background-color: white;
-  color: #dddddd;
-}
-.vue__time-picker input.disabled::placeholder {
-  color: #dddddd;
 }
 </style>

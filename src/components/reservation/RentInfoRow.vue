@@ -55,6 +55,7 @@
           :openedLodging.sync="deliveryOpened"
           :options="pickUpDeliveryOptions"
           v-model="selectedDeliveryPlace"
+          :isDisabled="true"
         >
           <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
 
@@ -74,8 +75,8 @@
             Hora Entrega
           </div>
           <vue-timepicker
-            disabled
-            :value="pickUp"
+            :disabled="true"
+            :value="deliver"
             @input="$emit('inputDeliver', $event)"
             lazy
             close-on-complete

@@ -39,15 +39,10 @@ export function authGetUser(id) {
 }
 
 export function authLogin(user) {
-  console.log(user);
   return HTTP.post("/Login", user, headers);
 }
 
 export function authRegister(user, head) {
-  console.log("header : ", headers);
-  console.log("user :", user);
-  console.log("head :", head);
-
   return HTTP.post("/Usuarios", user, { headers: head });
 }
 
@@ -150,7 +145,7 @@ export function authSearchProvider(id) {
 
 export function authSearchCars(searchItem) {
   let token = localStorage.getItem("token");
-  console.log(searchItem);
+
   return HTTP.post("/Vehiculoes/BuscarOrden", searchItem, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -158,7 +153,7 @@ export function authSearchCars(searchItem) {
 
 export function authUpdateCar(searchItem) {
   let token = localStorage.getItem("token");
-  console.log(searchItem);
+
   return HTTP.post("/Vehiculoes/CambiarPrecio", searchItem, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -239,9 +234,20 @@ export function authGetOrders(searchItem) {
   }
 }
 
+export function authGetAirlines() {
+  let token = localStorage.getItem("token");
+  try {
+    return HTTP.get("/TipoAerolineas?col=-1", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export function authGetOrdersCount(searchItem) {
   let token = localStorage.getItem("token");
-  console.log("parametro", searchItem);
+
   try {
     const data = HTTP.post("/Ordens/Count", searchItem, {
       headers: { Authorization: `Bearer ${token}` },

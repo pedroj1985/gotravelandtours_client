@@ -30,7 +30,7 @@
                   <span :title="selectedValue">{{ selectedValue }}</span>
                 </slot>
               </template>
-              <span v-else>{{$helpers.traducir("Todos")}}</span>
+              <span v-else>{{ $helpers.traducir("Todos") }}</span>
             </div>
             <div v-else class="bigDown">
               <slot name="selectedPlaceholder"></slot>
@@ -63,7 +63,11 @@
           placeholder="Buscar"
         />
         <ul class="gtt__list_area">
-          <li v-if="nullable" class="gtt__item" @click="setSelectedValue('ALL_ITEMS')">
+          <li
+            v-if="nullable"
+            class="gtt__item"
+            @click="setSelectedValue('ALL_ITEMS')"
+          >
             {{ $helpers.traducir("Todos") }}
           </li>
           <li
@@ -124,10 +128,10 @@ import ClickOutside from "vue-click-outside";
 
 export default {
   directives: {
-    ClickOutside
+    ClickOutside,
   },
-  created(){
-      this.isVisible = this.opened
+  created() {
+    this.isVisible = this.opened;
   },
   mounted() {
     this.popupItem = this.$el;
@@ -139,47 +143,47 @@ export default {
     options: function(val) {
       this.searchResult = val;
     },
-    value: function(val){
-      this.selectedValue = val
-    }
+    value: function(val) {
+      this.selectedValue = val;
+    },
   },
   props: {
     openedLodging: {
-      default: false
+      default: false,
     },
     twoRows: {
-      default: true
+      default: true,
     },
     options: {
-      type: Array
+      type: Array,
     },
     search: {
       type: Boolean,
-      default: false
+      default: false,
     },
     clickable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     opened: {
       type: Boolean,
-      default: false
+      default: false,
     },
     searchFinished: {
       type: Boolean,
-      default: false
+      default: false,
     },
     value: {
-      default: null
+      default: null,
     },
     isDisabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     nullable: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -187,20 +191,19 @@ export default {
       searchResult: [],
       searchQuery: "",
       arrow: true,
-      selectedValue: ""
+      selectedValue: "",
     };
   },
   methods: {
     submitSearch() {
-      let result = this.options.filter(e => {
+      let result = this.options.filter((e) => {
         return e.nombre.toLowerCase().includes(this.searchQuery.toLowerCase());
       });
 
       this.searchResult = result;
     },
     async toggleClicked() {
-      if(this.clickable)
-      {
+      if (this.clickable) {
         this.isVisible = !this.isVisible;
         if (this.isVisible == true) {
           this.emitOpen();
@@ -219,7 +222,7 @@ export default {
       this.emitClose();
     },
     handleFocusOut() {
-      if(!this.opened){
+      if (!this.opened) {
         this.isVisible = false;
         this.emitClose();
       }
@@ -238,8 +241,8 @@ export default {
     },
     emitValue(value) {
       this.$emit("input", value);
-    }
-  }
+    },
+  },
 };
 </script>
 

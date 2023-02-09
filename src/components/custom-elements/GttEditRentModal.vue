@@ -221,6 +221,7 @@ export default {
         };
       },
     },
+    age: Number,
   },
   watch: {
     selectedPickUpPlace: function(val) {
@@ -318,6 +319,7 @@ export default {
           TipoTransmision: transmissionType,
           Cliente: cliente,
           /* TODO: agregar los nuevos campos */
+          EdadCliente: this.age,
           ProductoId: this.filterData.ProductoId,
           DistribuidorId: this.filterData.DistribuidorId,
           HoraEntrega:

@@ -12,6 +12,7 @@
       :filterData="currentFilterData"
       @cancel="closeEditModal"
       @editedItem="editOrder"
+      :age="age"
     ></component>
     <div class="reserve-nav custom-padding">
       <div class="reserve-nav-text hn-bdcn font24 to-uppercase">
@@ -281,7 +282,6 @@ import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 import _ from "lodash";
-import { async } from "q";
 
 export default {
   created() {
@@ -301,6 +301,14 @@ export default {
     GttEditRentModal,
   },
   computed: {
+    age: function() {
+      var temp = this.clienteNacimiento.split("-");
+      var date = new Date(temp[0], temp[1], temp[2]);
+      var cur = new Date();
+      var diff = cur - date;
+      var currentAge = Math.floor(diff / 31557600000);
+      return currentAge;
+    },
     checkIfRentExist() {
       return this.allTypesOrders.some((i) => {
         console.log(i.tipo);
@@ -629,8 +637,8 @@ export default {
       this.clienteNacimiento = value;
     },
     updateHoraLanding(value) {
-      this.horaLanding = value;
       this.horaTakeoff = value;
+      this.horaLanding = value;
     },
     updateHoraTakeoff(value) {
       this.horaTakeoff = value;
@@ -805,8 +813,8 @@ export default {
   },
 
   watch: {
-    /* TODO: actualizar items */
-    /* horaTakeoff: async function(newTime) {
+    /* TODO: edad cliente */
+    /*  horaTakeoff: async function(newTime) {
       this.editTime = false;
       if (this.horaTakeoff != "" && this.horaLanding != "") {
         let order = {};
@@ -819,72 +827,7 @@ export default {
         let { data } = await authUpdateCar({
           FechaRecogida: order.orderVehiculo.FechaRecogida.split("T")[0],
           FechaEntrega: order.orderVehiculo.FechaEntrega.split("T")[0],
-          Marca: {
-            MarcaId: order.marcaid,
-            Nombre: order.marca,
-          },
-          TipoTransmision: order.transmision,
-          Cliente: {
-            ClienteId: localStorage.getItem("cliente"),
-          },
-          ProductoId: order.id,
-          DistribuidorId: order.distribuidorId,
-          HoraEntrega: this.horaTakeoff,
-          HoraRecogida: this.horaLanding,
-        });
-        data.FechaEntrega = order.orderVehiculo.FechaEntrega;
-        data.DistribuidorId = order.orderVehiculo.DistribuidorId;
-        let fixData = this.cleanData(data);
-        order.orderVehiculo = fixData;
-        order.precio = order.orderVehiculo.PrecioOrden;
-        this.tempItemToEdit = {
-          uID: order.uID,
-        };
-        let item = {
-          nI: order,
-          pItemId: order.id,
-          tipo: "rent",
-        };
-
-        this.editOrder(item);
-
-        var leave = new Date("1970-01-01T" + this.horaTakeoff);
-        var arrive = new Date("1970-01-01T" + this.horaLanding);
-        if (leave > arrive) {
-          this.extraDay = 1;
-          this.$toasted.show(
-            "Departure Time is greater than the Arrival Time. An extra day was charged to your vehicle order!",
-            {
-              type: "alert",
-              position: "top-center",
-              duration: null,
-              action: {
-                text: "Close",
-                onClick: (e, toastObject) => {
-                  toastObject.goAway(0);
-                },
-              },
-            }
-          );
-        } else {
-          this.extraDay = 0;
-        }
-      }
-      this.editTime = true;
-    },
-    horaLanding: async function(newTime) {
-      this.editTime = false;
-      if (this.horaTakeoff != "" && this.horaLanding != "") {
-        let order = {};
-        for (const item of this.allTypesOrders) {
-          if ("orderVehiculo" in item) {
-            order = item;
-          }
-        }
-
-        let { data } = await authUpdateCar({
-          FechaRecogida: order.orderVehiculo.FechaRecogida,
-          FechaEntrega: order.orderVehiculo.FechaEntrega,
+          EdadCliente: this.age,
           Marca: {
             MarcaId: order.marcaid,
             Nombre: order.marca,
@@ -938,10 +881,78 @@ export default {
       }
       this.editTime = true;
     }, */
+    horaLanding: async function(newTime) {
+      this.editTime = false;
+      if (this.horaTakeoff != "" && this.horaLanding != "") {
+        let order = {};
+        for (const item of this.allTypesOrders) {
+          if ("orderVehiculo" in item) {
+            order = item;
+          }
+        }
+
+        let { data } = await authUpdateCar({
+          FechaRecogida: order.orderVehiculo.FechaRecogida,
+          FechaEntrega: order.orderVehiculo.FechaEntrega,
+          EdadCliente: this.age,
+          Marca: {
+            MarcaId: order.marcaid,
+            Nombre: order.marca,
+          },
+          TipoTransmision: order.transmision,
+          Cliente: {
+            ClienteId: localStorage.getItem("cliente"),
+          },
+          ProductoId: order.id,
+          DistribuidorId: order.distribuidorId,
+          HoraEntrega: this.horaTakeoff,
+          HoraRecogida: this.horaLanding,
+        });
+        data.FechaEntrega = order.orderVehiculo.FechaEntrega;
+        data.DistribuidorId = order.orderVehiculo.DistribuidorId;
+        let fixData = this.cleanData(data);
+        order.orderVehiculo = fixData;
+        order.precio = order.orderVehiculo.PrecioOrden;
+        this.tempItemToEdit = {
+          uID: order.uID,
+        };
+        let item = {
+          nI: order,
+          pItemId: order.id,
+          tipo: "rent",
+        };
+
+        this.editOrder(item);
+
+        var leave = new Date("1970-01-01T" + this.horaTakeoff);
+        var arrive = new Date("1970-01-01T" + this.horaLanding);
+        if (leave > arrive) {
+          this.extraDay = 1;
+          this.$toasted.show(
+            "Departure Time is greater than the Arrival Time. An extra day was charged to your vehicle order!",
+            {
+              type: "alert",
+              position: "top-center",
+              duration: null,
+              action: {
+                text: "Close",
+                onClick: (e, toastObject) => {
+                  toastObject.goAway(0);
+                },
+              },
+            }
+          );
+        } else {
+          this.extraDay = 0;
+        }
+      }
+      this.editTime = true;
+    },
   },
   data() {
     // TODO agregar al data de cart view el campo pasaporte
     return {
+      edadCliente: 0,
       extraDay: 0,
       deleteModal: false,
       editModal: false,
