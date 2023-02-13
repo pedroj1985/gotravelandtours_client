@@ -311,7 +311,7 @@ export default {
     this.$emit("adminPanelInfo", "reservation-detail");
     let id = this.$route.params.id;
     let { data } = await authGetOrder(id);
-    console.log("Datos orden:", data);
+    console.log("orden: ", data);
     this.order = data;
     this.clientPasaporte = data.NumeroPasaporte;
     this.numeroOrden = this.order.NumeroOrden;
@@ -328,17 +328,18 @@ export default {
       this.clientNacimiento = nacimiento[0];
       this.updateHoraLanding(this.order.ListaVehiculosOrden[0].HoraInicio);
       this.updateHoraTakeoff(this.order.ListaVehiculosOrden[0].HoraFin);
+
       this.updateAerolineaLanding(
-        this.order.ListaVehiculosOrden[0].InformacionLlegada.split(" - ")[0]
+        this.order.ListaVehiculosOrden[0].InformacionLlegada
       );
       this.updateNvueloLanding(
-        this.order.ListaVehiculosOrden[0].InformacionLlegada.split(" - ")[1]
+        this.order.ListaVehiculosOrden[0].NumeroVueloEntrada
       );
       this.updateAerolineaTakeoff(
-        this.order.ListaVehiculosOrden[0].InformacionSalida.split(" - ")[0]
+        this.order.ListaVehiculosOrden[0].InformacionSalida
       );
       this.updateNvueloTakeoff(
-        this.order.ListaVehiculosOrden[0].InformacionSalida.split(" - ")[1]
+        this.order.ListaVehiculosOrden[0].NumeroVueloSalida
       );
     }
   },

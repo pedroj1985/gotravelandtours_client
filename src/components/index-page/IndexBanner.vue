@@ -170,8 +170,6 @@ export default {
                 localStorage.setItem("usuarioObjeto", uEncode);
                 this.loading = false;
                 let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
-                console.log(uS);
-                console.log("aqui qui ");
                 eventBus.$emit("userLogin", uS);
                 updateHeader(localStorage.getItem("token"));
                 this.$eventCartBus.$emit("updateCart");
@@ -209,7 +207,6 @@ export default {
         .catch(({ response }) => {
           this.loading = false;
           const { status } = response;
-          console.log({ status });
           if (status == codes.invalidCredentials) {
             this.$toasted.show(
               `Lo sentimos, usuario y/o contraseña incorrectos.`,

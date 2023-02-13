@@ -18,7 +18,7 @@
             Datos del vuelo (llegada)
           </div>
           <div class="flex-wrapper">
-            <gtt-select :options="airlines" v-model="hl">
+            <gtt-select :clickable="editable" :options="airlines" v-model="hl">
               <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
 
               <span slot="selectedPlaceholder">¿Aerolinea?</span>
@@ -54,7 +54,7 @@
             Datos del vuelo (salida)
           </div>
           <div class="flex-wrapper">
-            <gtt-select :options="airlines" v-model="ht">
+            <gtt-select :clickable="editable" :options="airlines" v-model="ht">
               <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
 
               <span slot="selectedPlaceholder">¿Aerolinea?</span>
@@ -105,11 +105,11 @@ export default {
     ht: function(value) {
       this.$emit("inputAerolineaTakeoff", value.Nombre);
     },
-    hora_landing: function(value) {
-      this.hl = value;
+    aerolinea_landing: function(value) {
+      this.hl = { Nombre: value };
     },
-    hora_takeoff: function(value) {
-      this.ht = value;
+    aerolinea_takeoff: function(value) {
+      this.ht = { Nombre: value };
     },
   },
   data() {

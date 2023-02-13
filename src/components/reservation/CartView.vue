@@ -435,17 +435,10 @@ export default {
           vo.FechaNacimiento = this.clienteNacimiento;
           vo.HoraInicio = this.horaLanding;
           vo.HoraFin = this.horaTakeoff;
-          vo.InformacionLlegada = this.constructSpacedVal(
-            this.aerolineaLanding,
-            this.nvueloLanding,
-            " - "
-          );
-          vo.InformacionSalida = this.constructSpacedVal(
-            this.aerolineaTakeoff,
-            this.nvueloTakeoff,
-            " - "
-          );
-          // TODO datos de transporte a base de datos
+          vo.InformacionLlegada = this.aerolineaLanding;
+          vo.NumeroVueloEntrada = this.nvueloLanding;
+          vo.InformacionSalida = this.aerolineaTakeoff;
+          vo.NumeroVueloSalida = this.nvueloTakeoff;
           vo.LugarRecogida = this.clientPickUpPlace;
           vo.LugarEntrega = this.clientDeliveryPlace;
         });
