@@ -94,15 +94,21 @@
 import NavBar2 from "../shared/NavBar2";
 import { eventBus } from "../../main";
 import Slick from "vue-slick-carousel";
-import { authLogin, updateHeader, authGetUser } from "../../utils/auth";
+import {
+  authLogin,
+  updateHeader,
+  authGetUser,
+  authLog
+} from "../../utils/auth";
 import { authConfig } from "../../../public/js/auth_config";
 import { codes } from "../../utils/codes";
+import moment from "moment";
 
 export default {
   name: "IndexBanner",
   components: {
     NavBar2,
-    Slick,
+    Slick
   },
   data() {
     return {
@@ -115,56 +121,64 @@ export default {
         {
           name: "index",
           displayName: "Inicio",
-          id: "content",
+          id: "content"
         },
         {
           name: "destinies",
           displayName: "Destinos",
-          id: "destinies",
+          id: "destinies"
         },
         {
           name: "services-you-like",
           displayName: "Servicios",
-          id: "services-you-like",
+          id: "services-you-like"
         },
         {
           name: "gtt-packages",
           displayName: "Paquetes",
-          id: "gtt-packages",
+          id: "gtt-packages"
         },
         {
           name: "who-we-are",
           displayName: "GT&T",
-          id: "who-we-are",
-        },
-      ],
+          id: "who-we-are"
+        }
+      ]
     };
   },
   methods: {
     login() {
       let user = {
         usuario: this.username,
-        password: this.password,
+        password: this.password
       };
       this.loading = true;
       authLogin(user)
         .then(({ data }) => {
           const { rol } = data;
+
           if (rol == "Cliente") {
             localStorage.setItem("token", data.token);
             localStorage.setItem("nombre", data.nombre);
             localStorage.setItem("userid", data.Id);
             localStorage.setItem("cliente", data.clienteId);
             localStorage.setItem("fecha_exp", data.fechaF);
+            authLog({
+              Fecha: moment().format(),
+              FuncionCreador: "Login",
+              FuncionParam: JSON.stringify(user),
+              Usuario: data.nombre,
+              Tipo: "Info"
+            });
             authGetUser(data.clienteId)
-              .then((r) => {
+              .then(r => {
                 let u = r.data;
                 let userToSave = {
                   name: data.nombre,
                   clienteId: data.clienteId,
                   clienteNombre: u.Nombre,
                   clienteCorreo: u.Correo,
-                  photo: u.ImageContent,
+                  photo: u.ImageContent
                 };
                 let uEncode = JSON.stringify(userToSave);
                 localStorage.setItem("usuarioObjeto", uEncode);
@@ -180,7 +194,7 @@ export default {
                   "usuarioObjeto",
                   JSON.stringify({
                     name: data.nombre,
-                    clienteId: data.clienteId,
+                    clienteId: data.clienteId
                   })
                 );
                 let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
@@ -193,14 +207,14 @@ export default {
           } else {
             window.location.replace(
               authConfig.externalURL +
-                "?" +
-                authConfig.userParam +
-                "=" +
-                user.usuario +
-                "&" +
-                authConfig.passParam +
-                "=" +
-                user.password
+              "?" +
+              authConfig.userParam +
+              "=" +
+              user.usuario +
+              "&" +
+              authConfig.passParam +
+              "=" +
+              user.password
             );
           }
         })
@@ -208,10 +222,16 @@ export default {
           this.loading = false;
           const { status } = response;
           if (status == codes.invalidCredentials) {
+            authLog({
+              Fecha: moment().format(),
+              FuncionCreador: "Login",
+              Tipo: "Error",
+              FuncionParam: JSON.stringify(user)
+            });
             this.$toasted.show(
               `Lo sentimos, usuario y/o contraseña incorrectos.`,
               {
-                type: "error",
+                type: "error"
               }
             );
             // this.testError = 'Credenciales inválidas'
@@ -233,23 +253,23 @@ export default {
     cleanInputs() {
       this.username = "";
       this.password = "";
-    },
+    }
   },
   created() {
     window.addEventListener("scroll", this.handleScroll);
   },
   destroyed() {
     window.removeEventListener("scroll", this.handleScroll);
-  },
+  }
 };
 </script>
 <style>
 .test-error {
-  color: red;
-  border: 1px solid red;
-  border-radius: 5px;
-  background-color: rgba(255, 0, 0, 0.5);
-  margin-bottom: 5px;
-  padding: 5px;
+    color: red;
+    border: 1px solid red;
+    border-radius: 5px;
+    background-color: rgba(255, 0, 0, 0.5);
+    margin-bottom: 5px;
+    padding: 5px;
 }
 </style>

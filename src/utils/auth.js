@@ -1,13 +1,14 @@
 import axios from "axios";
 
 let headers = {
-  "Content-Type": "application/json",
+  "Content-Type": "application/json"
 };
 export const HTTP = axios.create({
   baseURL: "https://admin.gotravelandtours.com/publicEliecer/api",
   //baseURL: "http://localhost:5000/api",
-  timeout: 60000,
+  timeout: 60000
 });
+
 export function authCheck() {
   if (localStorage.getItem("token") == null) {
     return false;
@@ -34,7 +35,7 @@ export function getUser() {
 export function authGetUser(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/Clientes/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
@@ -49,105 +50,106 @@ export function authRegister(user, head) {
 export function authSearchLodging(searchItem) {
   let token = localStorage.getItem("token");
   return HTTP.post("/Alojamientoes/BuscarOrden", searchItem, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodging(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/Alojamientoes/" + id, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodgings() {
   let token = localStorage.getItem("token");
   return HTTP.get("/Alojamientoes", {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodgingsAll() {
   let token = localStorage.getItem("token");
   return HTTP.get("/Alojamientoes/Todos", {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetRoomPrice(searchRoomPrice) {
   let token = localStorage.getItem("token");
   return HTTP.post("/Alojamientoes/BuscarOrdenPrecio", searchRoomPrice, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchRoomsByLodging(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/Habitacions/Producto/" + id, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetRoomTypes() {
   let token = localStorage.getItem("token");
   return HTTP.get("/TipoHabitacions?col=-1", {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodgingEatingPlan() {
   let token = localStorage.getItem("token");
   return HTTP.get("/PlanesAlimenticios?col=-1", {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
+
 export function authGetLodgingEatingPlanOne(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/PlanesAlimenticios/" + id, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchRegions() {
   let token = localStorage.getItem("token");
   return HTTP.get("/Regions?col=-1", null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchPuntosInteres() {
   let token = localStorage.getItem("token");
   return HTTP.get("/PuntoInteres?col=-1", null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchMarcas() {
   let token = localStorage.getItem("token");
   return HTTP.get("/Marcas?col=-1", null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchMarca(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/Marcas/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchProvider(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/Proveedors/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchCars(searchItem) {
   let token = localStorage.getItem("token");
-
+  console.log(searchItem);
   return HTTP.post("/Vehiculoes/BuscarOrden", searchItem, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
@@ -155,14 +157,14 @@ export function authUpdateCar(searchItem) {
   let token = localStorage.getItem("token");
 
   return HTTP.post("/Vehiculoes/CambiarPrecio", searchItem, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetCar(id) {
   let token = localStorage.getItem("token");
   const resp = HTTP.get("/Vehiculoes/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
   console.log(resp);
   return resp;
@@ -171,41 +173,42 @@ export function authGetCar(id) {
 export function authDeleteCarOrder(id) {
   let token = localStorage.getItem("token");
   return HTTP.delete("/OrdenVehiculoes/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authReserve(orden) {
   let token = localStorage.getItem("token");
-  console.log("orden: ", orden);
   return HTTP.post("/Ordens", orden, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authCreateQbEstimated(orden) {
   let token = localStorage.getItem("token");
   return HTTP.post("/QBIntegracion/createEstimated", orden, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
+
 export function authUpdateQbEstimated(orden) {
   let token = localStorage.getItem("token");
   return HTTP.post("/QBIntegracion/updateEstimated", orden, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
+
 export function authUpdOnlyInDbQbEstimated(orden) {
   let token = localStorage.getItem("token");
   return HTTP.post("/Ordens/UpdEstimated", orden, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authPutReserve(id, orden) {
   let token = localStorage.getItem("token");
   return HTTP.put("/Ordens/" + id, orden, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
@@ -213,13 +216,14 @@ export function authGetImage(id) {
   let token = localStorage.getItem("token");
   return HTTP.post("/AlmacenImagenes/getmain", null, {
     params: { idProducto: id },
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
+
 export function authGetImages(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/AlmacenImagenes/Productos/" + id, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
@@ -227,7 +231,7 @@ export function authGetOrders(searchItem) {
   let token = localStorage.getItem("token");
   try {
     return HTTP.post("/Ordens/Buscar", searchItem, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
   } catch (error) {
     console.log(error);
@@ -238,7 +242,7 @@ export function authGetAirlines() {
   let token = localStorage.getItem("token");
   try {
     return HTTP.get("/TipoAerolineas?col=-1", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
   } catch (error) {
     console.log(error);
@@ -250,7 +254,7 @@ export function authGetOrdersCount(searchItem) {
 
   try {
     const data = HTTP.post("/Ordens/Count", searchItem, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
     console.log("response-DATA", data);
     return data;
@@ -262,15 +266,15 @@ export function authGetOrdersCount(searchItem) {
 export function authGetOrder(id) {
   let token = localStorage.getItem("token");
   return HTTP.get("/Ordens/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function subscribe(email) {
   return HTTP.get("/Usuarios/Mail", null, {
     params: {
-      email: email,
-    },
+      email: email
+    }
   });
 }
 
@@ -286,8 +290,8 @@ export function updateHeader(token) {
   headers = {
     ...headers,
     ...{
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   };
 }
 
@@ -298,3 +302,11 @@ export function closeSession(vueInstance) {
   vueInstance.$eventCartBus.$emit("updateCart");
   vueInstance.$router.push({ name: "index" });
 }
+
+export function authLog(log) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/logs", log, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+

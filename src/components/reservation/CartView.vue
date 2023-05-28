@@ -111,7 +111,7 @@
                     to-uppercase
                     general-text-opt
                   "
-                  >Total a pagar</span
+                >Total a pagar</span
                 >
                 <span class="antonio-light gtt-first-color font48">
                   {{ styledPrice(priceTotal).intPart }} USD
@@ -271,6 +271,7 @@ import {
   authCreateQbEstimated,
   authUpdOnlyInDbQbEstimated,
   authUpdateCar,
+  authLog
 } from "../../utils/auth";
 import GttEditLodgingModal from "../custom-elements/GttEditLodgingModal";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
@@ -282,6 +283,7 @@ import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 import _ from "lodash";
+import moment from "moment";
 
 export default {
   created() {
@@ -298,7 +300,7 @@ export default {
     GttVerificationModal,
     NavBar2,
     GttEditLodgingModal,
-    GttEditRentModal,
+    GttEditRentModal
   },
   computed: {
     age: function() {
@@ -314,7 +316,7 @@ export default {
         console.log(i.tipo);
         return i.tipo == "rent";
       });
-    },
+    }
   },
   methods: {
     gttValidate() {
@@ -323,19 +325,19 @@ export default {
           rules: ["required"],
           name: "gttName",
           value: this.clientName,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttApellido",
           value: this.clienteLastName,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttPasaporte",
           value: this.clientePasaporte,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
@@ -346,7 +348,7 @@ export default {
             this.aerolineaLanding +
             " - " +
             this.nvueloLanding,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
@@ -357,26 +359,26 @@ export default {
             this.aerolineaTakeoff +
             " - " +
             this.nvueloTakeoff,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttNacimiento",
           value: this.clienteNacimiento,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttPickUp",
           value: this.clientPickUpPlace,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttDelivery",
           value: this.clientDeliveryPlace,
-          lang: "es",
-        },
+          lang: "es"
+        }
       ];
 
       return validator;
@@ -413,7 +415,6 @@ export default {
     async reserve() {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
-        console.log("valido:", getValid(iv));
         let listaVehiculosOrden = this.getListaVehiculosOrden();
         let listaAlojamientosOrden = this.getListaAlojamientosOrden();
         listaAlojamientosOrden.forEach((ao) => {
@@ -444,37 +445,81 @@ export default {
         });
         let orden = {
           ListaVehiculosOrden: listaVehiculosOrden,
-          ListaAlojamientoOrden: listaAlojamientosOrden,
+          ListaAlojamientoOrden: listaAlojamientosOrden
         };
         this.fillReserveInfo(orden);
         try {
           this.isReserving = true;
-          // TODO llamada a la api
+
           let ordenSaveIt = await authReserve(orden);
-          let onlyOrdenId = {
+
+          authLog({
             OrdenId: ordenSaveIt.data.OrdenId,
+            FuncionCreador: "CreateOrderComponent",
+            DetalleError: JSON.stringify(ordenSaveIt.data),
+            Fecha: moment().format(),
+            Usuario: ordenSaveIt.data.Creador.Username,
+            Tipo: "Info",
+            FuncionParam: JSON.stringify(orden)
+          });
+          let onlyOrdenId = {
+            OrdenId: ordenSaveIt.data.OrdenId
           };
           try {
-            await authCreateQbEstimated(onlyOrdenId);
+            let createQB = await authCreateQbEstimated(onlyOrdenId);
             onlyOrdenId["EstimatedCreated"] = true;
-            await authUpdOnlyInDbQbEstimated(onlyOrdenId);
+            authLog({
+              OrdenId: ordenSaveIt.data.OrdenId,
+              FuncionCreador: "createEstimateQB",
+              DetalleError: JSON.stringify(createQB.data),
+              Fecha: moment().format(),
+              Usuario: ordenSaveIt.data.Creador.Username,
+              Tipo: "Info",
+              FuncionParam: JSON.stringify(onlyOrdenId)
+            });
+            let updateQB = await authUpdOnlyInDbQbEstimated(onlyOrdenId);
+            authLog({
+              OrdenId: ordenSaveIt.data.OrdenId,
+              FuncionCreador: "updateEstimateQB",
+              DetalleError: JSON.stringify(updateQB.data),
+              Fecha: moment().format(),
+              Usuario: ordenSaveIt.data.Creador.Username,
+              Tipo: "Info",
+              FuncionParam: JSON.stringify(onlyOrdenId)
+            });
           } catch (error) {
-            console.log(error);
+            authLog({
+              OrdenId: ordenSaveIt.data.OrdenId,
+              FuncionCreador: "EstimateQB",
+              DetalleError: JSON.stringify(error),
+              Fecha: moment().format(),
+              Usuario: ordenSaveIt.data.Creador.Username,
+              Tipo: "Error",
+              FuncionParam: JSON.stringify(onlyOrdenId)
+            });
           }
           this.$helpers.shoppingCartDeleteAll();
           this.isReserving = false;
           this.$toasted.show(
             "Orden creada con éxito. A espera de la administración para su aceptación.",
             {
-              type: "success",
+              type: "success"
             }
           );
           this.$eventCartBus.$emit("updateCart");
           this.$router.push({ name: "myreservations" });
         } catch (error) {
+          authLog({
+            FuncionCreador: "CreateOrderComponent",
+            DetalleError: JSON.stringify(error),
+            Fecha: moment().format(),
+            Usuario: orden.Creador.Usuario,
+            Tipo: "Error",
+            FuncionParam: JSON.stringify(orden)
+          });
           this.isReserving = false;
           this.$toasted.show("Ha ocurrido un problema con la orden", {
-            type: "error",
+            type: "error"
           });
         }
       } else {
@@ -484,6 +529,7 @@ export default {
     fillReserveInfo(orden) {
       let dateInterval = this.findDateInterval();
       let id = localStorage.getItem("userid");
+      let user = localStorage.getItem("nombre");
       let clienteid = localStorage.getItem("cliente");
 
       orden.Estado = "Open";
@@ -501,6 +547,7 @@ export default {
       orden.FechaFin = dateInterval.max;
       orden.Creador = {
         UsuarioId: id,
+        Usuario: user
       };
       orden.ClienteId = clienteid;
       orden.CantidadAdulto = 1;
@@ -530,7 +577,7 @@ export default {
           i.reservedRooms.combinacion.listado.map((j) => {
             let po = j.precioObjOne;
             po.Alojamiento = {
-              ProductoId: po.Alojamiento.ProductoId,
+              ProductoId: po.Alojamiento.ProductoId
             };
             po.CantAdulto = j.tipoHabitacion;
             po.OrdenAlojamientoId = 0;
@@ -542,27 +589,27 @@ export default {
             // }
             po.PlanesAlimenticiosId = j.planAlimenticio;
             po.PlanAlimenticio = {
-              PlanesAlimenticiosId: j.planAlimenticio,
+              PlanesAlimenticiosId: j.planAlimenticio
             };
             po.Habitacion = {
-              HabitacionId: po.Habitacion.HabitacionId,
+              HabitacionId: po.Habitacion.HabitacionId
             };
             po.Distribuidor = {
-              DistribuidorId: po.Distribuidor.DistribuidorId,
+              DistribuidorId: po.Distribuidor.DistribuidorId
             };
             po.DistribuidorId = po.Distribuidor.DistribuidorId;
             po.Sobreprecio = {
-              SobreprecioId: po.Sobreprecio.SobreprecioId,
+              SobreprecioId: po.Sobreprecio.SobreprecioId
             };
             po.ListaPrecioAlojamientos = po.ListaPrecioAlojamientos.map(
               (lpa) => {
                 let p = {
                   PrecioAlojamientoId:
-                    lpa.PrecioAlojamiento.PrecioAlojamientoId,
+                  lpa.PrecioAlojamiento.PrecioAlojamientoId
                 };
 
                 return {
-                  PrecioAlojamiento: p,
+                  PrecioAlojamiento: p
                 };
               }
             );
@@ -591,7 +638,7 @@ export default {
 
       return {
         min: this.lodash.min(startDates),
-        max: this.lodash.max(endDates),
+        max: this.lodash.max(endDates)
       };
     },
     calculatePrice(value) {
@@ -687,7 +734,7 @@ export default {
           propCarCategory: {
             marcaid: item.marcaid,
             nombre: item.marca,
-            type: "marca",
+            type: "marca"
           },
           /* TODO: agregar nuevos campos */
           ProductoId: item.id,
@@ -696,7 +743,7 @@ export default {
           HoraRecogida: this.horaLanding,
           propTransmission: transmision,
           id: item.id,
-          name: item.nombre,
+          name: item.nombre
         };
       } else if (item.tipo == "lodging") {
         return {
@@ -706,7 +753,7 @@ export default {
           propDateIn: item.entrada,
           propDateOut: item.salida,
           propVisitantes: item.acomodation || item.roomL,
-          needPre: item.acomodation != null,
+          needPre: item.acomodation != null
         };
       }
     },
@@ -717,7 +764,7 @@ export default {
           !verifyDifferentsDatesNoCartReturnBoolean(
             {
               FechaRecogida: item.nI.orderVehiculo.FechaRecogida,
-              FechaEntrega: item.nI.orderVehiculo.FechaEntrega,
+              FechaEntrega: item.nI.orderVehiculo.FechaEntrega
             },
             this.allTypesOrders.filter((i) => {
               return i.uID != this.tempItemToEdit.uID;
@@ -736,13 +783,13 @@ export default {
           // this.updateCart()
           this.closeEditModal();
           this.$toasted.show("Elemento editado con éxito", {
-            type: "success",
+            type: "success"
           });
         } else {
           this.$toasted.show(
             "Ya tiene un auto reservado dentro de esa misma fecha",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -752,13 +799,13 @@ export default {
       if (o.LugarRecogida) {
         o.LugarRecogida = {
           nombre: o.LugarRecogida.nombre,
-          puntointeresid: o.LugarRecogida.PuntoInteresId,
+          puntointeresid: o.LugarRecogida.PuntoInteresId
         };
       }
       if (o.LugarEntrega) {
         o.LugarEntrega = {
           nombre: o.LugarEntrega.nombre,
-          puntointeresid: o.LugarEntrega.PuntoInteresId,
+          puntointeresid: o.LugarEntrega.PuntoInteresId
         };
       }
     },
@@ -786,23 +833,23 @@ export default {
         {
           PrecioRentaAutos: {
             PrecioRentaAutosId:
-              item.ListaPreciosRentaAutos[0].PrecioRentaAutos
-                .PrecioRentaAutosId,
-          },
-        },
+            item.ListaPreciosRentaAutos[0].PrecioRentaAutos
+              .PrecioRentaAutosId
+          }
+        }
       ];
       item.Distribuidor = {
-        DistribuidorId: item.Distribuidor.DistribuidorId,
+        DistribuidorId: item.Distribuidor.DistribuidorId
       };
       item.Vehiculo = {
-        ProductoId: item.Vehiculo.ProductoId,
+        ProductoId: item.Vehiculo.ProductoId
       };
 
       item.Sobreprecio = {
-        SobreprecioId: item.Sobreprecio.SobreprecioId,
+        SobreprecioId: item.Sobreprecio.SobreprecioId
       };
       return item;
-    },
+    }
   },
 
   watch: {
@@ -890,16 +937,16 @@ export default {
           EdadCliente: this.age,
           Marca: {
             MarcaId: order.marcaid,
-            Nombre: order.marca,
+            Nombre: order.marca
           },
           TipoTransmision: order.transmision,
           Cliente: {
-            ClienteId: localStorage.getItem("cliente"),
+            ClienteId: localStorage.getItem("cliente")
           },
           ProductoId: order.id,
           DistribuidorId: order.distribuidorId,
           HoraEntrega: this.horaTakeoff,
-          HoraRecogida: this.horaLanding,
+          HoraRecogida: this.horaLanding
         });
         data.FechaEntrega = order.orderVehiculo.FechaEntrega;
         data.DistribuidorId = order.orderVehiculo.DistribuidorId;
@@ -907,12 +954,12 @@ export default {
         order.orderVehiculo = fixData;
         order.precio = order.orderVehiculo.PrecioOrden;
         this.tempItemToEdit = {
-          uID: order.uID,
+          uID: order.uID
         };
         let item = {
           nI: order,
           pItemId: order.id,
-          tipo: "rent",
+          tipo: "rent"
         };
 
         this.editOrder(item);
@@ -931,8 +978,8 @@ export default {
                 text: "Close",
                 onClick: (e, toastObject) => {
                   toastObject.goAway(0);
-                },
-              },
+                }
+              }
             }
           );
         } else {
@@ -940,7 +987,7 @@ export default {
         }
       }
       this.editTime = true;
-    },
+    }
   },
   data() {
     // TODO agregar al data de cart view el campo pasaporte
@@ -970,14 +1017,14 @@ export default {
       clientDeliveryPlace: [],
 
       isReserving: false,
-      menuLinks: [],
+      menuLinks: []
     };
-  },
+  }
 };
 </script>
 
 <style scoped>
 .create-order-step {
-  padding-right: 20px !important;
+    padding-right: 20px !important;
 }
 </style>
