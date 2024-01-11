@@ -11,13 +11,8 @@
       <div ref="gttPickUp" class="input-left ir-text-input">
         <div class="ir-info-name font14 required-field">Datos de recogida</div>
 
-        <gtt-select
-          v-on:input="$emit('inputPickUpPlace', $event)"
-          :openedLodging.sync="pickUpOpened"
-          :options="pickUpDeliveryOptions"
-          class="cleft"
-          v-model="selectedPickUpPlace"
-        >
+        <gtt-select v-on:input="$emit('inputPickUpPlace', $event)" :openedLodging.sync="pickUpOpened"
+          :options="pickUpDeliveryOptions" class="cleft" v-model="selectedPickUpPlace">
           <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
 
           <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
@@ -37,26 +32,15 @@
           <div class="ir-info-name  font14">
             Hora Recogida
           </div>
-          <vue-timepicker
-            :value="pickUp"
-            @input="$emit('inputPickUp', $event)"
-            :disabled="!editable"
-            lazy
-            close-on-complete
-            hide-clear-button
-          />
+          <vue-timepicker :value="pickUp" @input="$emit('inputPickUp', $event)" :disabled="!editable" lazy
+            close-on-complete hide-clear-button />
         </div>
       </div>
 
       <div ref="gttDelivery" class="input-right ir-text-input">
         <div class="ir-info-name font14 required-field">Datos de entrega</div>
-        <gtt-select
-          v-on:input="$emit('inputDeliveryPlace', $event)"
-          :openedLodging.sync="deliveryOpened"
-          :options="pickUpDeliveryOptions"
-          v-model="selectedDeliveryPlace"
-          :isDisabled="true"
-        >
+        <gtt-select v-on:input="$emit('inputDeliveryPlace', $event)" :openedLodging.sync="deliveryOpened"
+          :options="pickUpDeliveryOptions" v-model="selectedDeliveryPlace">
           <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
 
           <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
@@ -74,14 +58,8 @@
           <div class="ir-info-name  font14">
             Hora Entrega
           </div>
-          <vue-timepicker
-            :disabled="true"
-            :value="deliver"
-            @input="$emit('inputDeliver', $event)"
-            lazy
-            close-on-complete
-            hide-clear-button
-          />
+          <vue-timepicker :disabled="true" :value="deliver" @input="$emit('inputDeliver', $event)" lazy close-on-complete
+            hide-clear-button />
         </div>
       </div>
     </div>
@@ -159,7 +137,7 @@ export default {
 
   watch: {
     // cada vez que la pregunta cambie, esta función será ejecutada
-    selectedPickUpPlace: function(newPickUpPlace, oldPickUpPlace) {
+    selectedPickUpPlace: function (newPickUpPlace, oldPickUpPlace) {
       if (this.selectedDeliveryPlace == null) {
         this.$emit("inputDeliveryPlace", newPickUpPlace);
         this.selectedDeliveryPlace = newPickUpPlace;
@@ -175,6 +153,7 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
 .container-left {
   display: flex;
   align-items: center;
@@ -182,13 +161,16 @@ export default {
   height: 100%;
   width: 20%;
 }
+
 .left {
   right: 2px;
 }
+
 .time-picker {
   height: 100% !important;
   width: 100%;
 }
+
 span {
   font-size: 12px;
 }
@@ -196,9 +178,11 @@ span {
 .info-row {
   width: 100%;
 }
+
 .input-two-rows {
   width: 100%;
 }
+
 .ir-inputs-wrapper {
   display: flex;
 
@@ -206,6 +190,7 @@ span {
 
   justify-content: space-between;
 }
+
 .input-icon {
   align-self: center;
   margin-right: 5px;
@@ -215,6 +200,7 @@ span {
   position: relative;
   margin-bottom: 0px;
 }
+
 .gtt__toggle {
   width: 100%;
 }
@@ -223,6 +209,7 @@ span {
   margin-right: auto;
   margin-right: 30px;
 }
+
 .input-right {
   margin-left: auto;
 }
@@ -240,39 +227,49 @@ span {
   border: 1px solid #6d6d6d;
   position: relative;
 }
+
 .ir-info-name {
   position: absolute;
   top: 8px;
 }
+
 .ir-input {
   border: none;
   width: 100%;
 }
+
 .time-input {
   display: flex;
   justify-content: center;
 }
+
 .ir-input:focus {
   /* border-bottom: 1px solid #f5f5f5; */
   outline: none;
 }
+
 .ir-input:disabled {
   background-color: rgb(255, 255, 255);
   color: #b3b2b2;
 }
+
 @media (max-width: 1440px) {
   .ir-text-wrapper {
     font-size: 12px;
   }
+
   .ir-inputs-wrapper {
     margin-top: 10px;
   }
+
   .ir-info-name {
     font-size: 10px;
   }
+
   .ir-input {
     font-size: 12px;
   }
+
   .input-icon {
     font-size: 12px;
   }
