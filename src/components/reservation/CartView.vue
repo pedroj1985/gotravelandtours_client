@@ -577,7 +577,7 @@ export default {
         const orderData = {
           OrdenId: order.OrdenId,
           EstadoHotetec: Cupest,
-          NumeroConfirmacionHoteteck: res.data.Locata[0]
+          NumeroConfirmacionHotetec: res.data.Locata[0]
         };
         const orderStatus = {
           OrdenId: order.OrdenId,
