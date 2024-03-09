@@ -271,7 +271,10 @@ import {
   authCreateQbEstimated,
   authUpdOnlyInDbQbEstimated,
   authUpdateCar,
-  authLog
+  authLog,
+  hotetecBlockProduct,
+  hotetecCloseReserve,
+  hotetecUpdateDataOnGtt, authUpdateStatus
 } from "../../utils/auth";
 import GttEditLodgingModal from "../custom-elements/GttEditLodgingModal";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
@@ -312,7 +315,7 @@ export default {
       return currentAge;
     },
     checkIfRentExist() {
-      return this.allTypesOrders.some((i) => {
+      return this.allTypesOrders.some(i => {
         console.log(i.tipo);
         return i.tipo == "rent";
       });
@@ -338,8 +341,8 @@ export default {
           name: "gttPasaporte",
           value: this.clientePasaporte,
           lang: "es"
-        },
-        {
+        }
+        /* {
           rules: ["required"],
           name: "gttLlegada",
           value:
@@ -378,7 +381,7 @@ export default {
           name: "gttDelivery",
           value: this.clientDeliveryPlace,
           lang: "es"
-        }
+        }*/
       ];
 
       return validator;
@@ -386,13 +389,13 @@ export default {
     constructSpacedVal(f, s, separator = " ") {
       let splittedName = f.split(" ");
       let name = splittedName
-        .map((i) => {
+        .map(i => {
           return _.capitalize(i);
         })
         .join(" ");
       let splittedLastName = s.split(" ");
       let lastname = splittedLastName
-        .map((i) => {
+        .map(i => {
           return _.capitalize(i);
         })
         .join(" ");
@@ -406,24 +409,41 @@ export default {
       }
     },
     deleteItem(id) {
-      this.$helpers.shoppingCartRemoveOne(id);
-      this.updateCart();
-      this.$eventCartBus.$emit("updateCart");
-      this.tempItemToDelete = null;
-      this.deleteModal = false;
+      if (this.tempItemToDelete.tipo === "lodging") {
+        const unblockRequest = this.tempItemToDelete.reservedRooms
+          .unblockRequest;
+        hotetecBlockProduct(unblockRequest)
+          .then(res => {
+            if (res) {
+              this.$helpers.shoppingCartRemoveOne(id);
+              this.updateCart();
+              this.$eventCartBus.$emit("updateCart");
+            }
+          })
+          .finally(() => {
+            this.tempItemToDelete = null;
+            this.deleteModal = false;
+          });
+      } else {
+        this.$helpers.shoppingCartRemoveOne(id);
+        this.updateCart();
+        this.$eventCartBus.$emit("updateCart");
+        this.tempItemToDelete = null;
+        this.deleteModal = false;
+      }
     },
     async reserve() {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         let listaVehiculosOrden = this.getListaVehiculosOrden();
         let listaAlojamientosOrden = this.getListaAlojamientosOrden();
-        listaAlojamientosOrden.forEach((ao) => {
+        listaAlojamientosOrden.forEach(ao => {
           ao.NombreCliente = this.constructSpacedVal(
             this.clientName,
             this.clienteLastName
           );
         });
-        listaVehiculosOrden.forEach((vo) => {
+        listaVehiculosOrden.forEach(vo => {
           vo.NombreCliente = this.constructSpacedVal(
             this.clientName,
             this.clienteLastName
@@ -487,6 +507,16 @@ export default {
               Tipo: "Info",
               FuncionParam: JSON.stringify(onlyOrdenId)
             });
+            let createInHotetec = await this.createOrderInHotelect(onlyOrdenId);
+            authLog({
+              OrdenId: ordenSaveIt.data.OrdenId,
+              FuncionCreador: "createInHotetec",
+              DetalleError: JSON.stringify(updateQB.data),
+              Fecha: moment().format(),
+              Usuario: ordenSaveIt.data.Creador.Username,
+              Tipo: "Info",
+              FuncionParam: JSON.stringify(onlyOrdenId)
+            });
           } catch (error) {
             authLog({
               OrdenId: ordenSaveIt.data.OrdenId,
@@ -526,6 +556,40 @@ export default {
         renderValid(iv, this);
       }
     },
+    async createOrderInHotelect(order) {
+      const userData = JSON.parse(localStorage.getItem("usuarioObjeto"));
+      let closeReserve = {};
+      closeReserve.Accion = "F";
+      closeReserve.Codtou = "HTT";
+      closeReserve.Refage = "17162";
+      closeReserve.Ideses = localStorage.getItem("currentHotelecIds");
+      let person = {};
+      person.Id = "1";
+      person.Nombre = userData.name;
+      person.Tel = "4545454545";
+      person.Mai = userData.clienteCorreo;
+      person.Priape = userData.clienteNombre;
+      closeReserve.Percon = person;
+      try {
+        const res = await hotetecCloseReserve(closeReserve);
+        localStorage.removeItem("currentHotelecIds");
+        const Cupest = res.data.Cupest;
+        const orderData = {
+          OrdenId: order.OrdenId,
+          EstadoHotetec: Cupest,
+          NumeroConfirmacionHoteteck: res.data.Locata[0]
+        };
+        const orderStatus = {
+          OrdenId: order.OrdenId,
+          Estado: "Confirmed"
+        };
+        await hotetecUpdateDataOnGtt(orderData);
+        await authUpdateStatus(orderStatus);
+      } catch (error) {
+        console.log(error);
+        localStorage.removeItem("currentHotelecIds");
+      }
+    },
     fillReserveInfo(orden) {
       let dateInterval = this.findDateInterval();
       let id = localStorage.getItem("userid");
@@ -558,10 +622,10 @@ export default {
     },
     getListaVehiculosOrden() {
       let lvo = this.allTypesOrders
-        .filter((item) => {
+        .filter(item => {
           return item.tipo == "rent";
         })
-        .map((i) => {
+        .map(i => {
           return i.orderVehiculo;
         });
 
@@ -570,12 +634,14 @@ export default {
     getListaAlojamientosOrden() {
       let lao = [];
       this.allTypesOrders
-        .filter((item) => {
+        .filter(item => {
           return item.tipo == "lodging";
         })
-        .map((i) => {
-          i.reservedRooms.combinacion.listado.map((j) => {
+        .map(i => {
+          const habitacionId = i.reservedRooms.habitacion.HabitacionId;
+          i.reservedRooms.combinacion.listado.map(j => {
             let po = j.precioObjOne;
+            console.log("precio object", po);
             po.Alojamiento = {
               ProductoId: po.Alojamiento.ProductoId
             };
@@ -592,7 +658,7 @@ export default {
               PlanesAlimenticiosId: j.planAlimenticio
             };
             po.Habitacion = {
-              HabitacionId: po.Habitacion.HabitacionId
+              HabitacionId: habitacionId
             };
             po.Distribuidor = {
               DistribuidorId: po.Distribuidor.DistribuidorId
@@ -601,18 +667,15 @@ export default {
             po.Sobreprecio = {
               SobreprecioId: po.Sobreprecio.SobreprecioId
             };
-            po.ListaPrecioAlojamientos = po.ListaPrecioAlojamientos.map(
-              (lpa) => {
-                let p = {
-                  PrecioAlojamientoId:
-                  lpa.PrecioAlojamiento.PrecioAlojamientoId
-                };
+            po.ListaPrecioAlojamientos = po.ListaPrecioAlojamientos.map(lpa => {
+              let p = {
+                PrecioAlojamientoId: lpa.PrecioAlojamiento.PrecioAlojamientoId
+              };
 
-                return {
-                  PrecioAlojamiento: p
-                };
-              }
-            );
+              return {
+                PrecioAlojamiento: p
+              };
+            });
             for (let index = 0; index < j.cantidad; index++) {
               lao.push(po);
             }
@@ -625,7 +688,7 @@ export default {
       let startDates = [];
       let endDates = [];
 
-      this.allTypesOrders.forEach((item) => {
+      this.allTypesOrders.forEach(item => {
         if (item.tipo == "rent") {
           startDates.push(item.orderVehiculo.FechaRecogida);
           endDates.push(item.orderVehiculo.FechaEntrega);
@@ -722,7 +785,7 @@ export default {
     },
     constructFilterDataObj(item) {
       if (item.tipo == "rent") {
-        let transmision = transmissionTypes.find((i) => {
+        let transmision = transmissionTypes.find(i => {
           return i.nombre == item.transmision;
         });
 
@@ -766,7 +829,7 @@ export default {
               FechaRecogida: item.nI.orderVehiculo.FechaRecogida,
               FechaEntrega: item.nI.orderVehiculo.FechaEntrega
             },
-            this.allTypesOrders.filter((i) => {
+            this.allTypesOrders.filter(i => {
               return i.uID != this.tempItemToEdit.uID;
             })
           )
@@ -833,8 +896,7 @@ export default {
         {
           PrecioRentaAutos: {
             PrecioRentaAutosId:
-            item.ListaPreciosRentaAutos[0].PrecioRentaAutos
-              .PrecioRentaAutosId
+            item.ListaPreciosRentaAutos[0].PrecioRentaAutos.PrecioRentaAutosId
           }
         }
       ];
@@ -1025,6 +1087,6 @@ export default {
 
 <style scoped>
 .create-order-step {
-    padding-right: 20px !important;
+  padding-right: 20px !important;
 }
 </style>

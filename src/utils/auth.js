@@ -81,6 +81,51 @@ export function authGetRoomPrice(searchRoomPrice) {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
+export function hotetecOpenSession() {
+  let token = localStorage.getItem("token");
+  return HTTP.post(
+    "/ApiDisponibilidadHotetec/SesionAbrirPeticion",
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+}
+export function hotetecStateSession(idSession) {
+  let token = localStorage.getItem("token");
+  return HTTP.post(
+    "/ApiDisponibilidadHotetec/SesionEstado",
+    { ideses: idSession },
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+}
+
+export function hotetecBlockProduct(blockProduct) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/ApiDisponibilidadHotetec/Bloqueo", blockProduct, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+export function hotetecCloseReserve(reserveData) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/ApiDisponibilidadHotetec/ReservaCerrar", reserveData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+export function hotetecCancelReserve(reserveData) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/ApiDisponibilidadHotetec/CancelarReserva", reserveData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+export function hotetecUpdateDataOnGtt(reserveData) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/OrdenAlojamientoes/UpdateDatosHotetec", reserveData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
 
 export function authSearchRoomsByLodging(id) {
   let token = localStorage.getItem("token");
@@ -180,6 +225,12 @@ export function authDeleteCarOrder(id) {
 export function authReserve(orden) {
   let token = localStorage.getItem("token");
   return HTTP.post("/Ordens", orden, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+export function authUpdateStatus(orderStatus) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/Ordens/CambiarEstado", orderStatus, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
@@ -309,4 +360,3 @@ export function authLog(log) {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
-

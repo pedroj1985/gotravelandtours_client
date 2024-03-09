@@ -49,10 +49,47 @@ export const helpers = {
       localStorage.setItem("gttCart", JSON.stringify([value]));
     }
   },
+  generatePassageList(combination) {
+    let totalA = 0;
+    let totalN = 0;
+
+    combination.listado.forEach(i => {
+      totalA = totalA + i.cantidad * i.tipoHabitacion;
+      totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion;
+    });
+
+    let list = [];
+    let adl = [];
+    let nin = [];
+
+    for (let i = 0; i < totalA; i++) {
+      adl.push({
+        Id: i + 1,
+        Fecnac: this.generateDateOFBirth(Math.floor(Math.random() * 40) + 20)
+      });
+    }
+
+    for (let i = 0; i < totalN; i++) {
+      nin.push({
+        Id: i + 1,
+        Fecnac: this.generateDateOFBirth(Math.floor(Math.random() * 6) + 1)
+      });
+    }
+
+    return { Adl: adl, Nin: nin };
+  },
+  generateDateOFBirth(years) {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let day = Math.floor(Math.random() * 28) + 1;
+
+    return `${day}/${month}/${year - years}`;
+  },
   shoppingCartRemoveOne(uID) {
     if (localStorage.getItem("gttCart")) {
       let temp = JSON.parse(localStorage.getItem("gttCart"));
-      let tempWithoutElement = temp.filter((item) => {
+      let tempWithoutElement = temp.filter(item => {
         return item.uID != uID;
       });
       localStorage.setItem("gttCart", JSON.stringify(tempWithoutElement));
@@ -87,13 +124,13 @@ export const helpers = {
   habitacionPorCantidadPersonas(cantidadAdultos, todosTiposHabitaciones) {
     switch (cantidadAdultos) {
       case 1:
-        return todosTiposHabitaciones.find((i) => i.Nombre == "Sencilla");
+        return todosTiposHabitaciones.find(i => i.Nombre == "Sencilla");
       case 2:
-        return todosTiposHabitaciones.find((i) => i.Nombre == "Doble");
+        return todosTiposHabitaciones.find(i => i.Nombre == "Doble");
       case 3:
-        return todosTiposHabitaciones.find((i) => i.Nombre == "Triple");
+        return todosTiposHabitaciones.find(i => i.Nombre == "Triple");
       default:
-        return todosTiposHabitaciones.find((i) => i.Nombre == "Familiar");
+        return todosTiposHabitaciones.find(i => i.Nombre == "Familiar");
     }
   },
   toFixed(number, decimals) {
@@ -126,7 +163,7 @@ export const helpers = {
         sencillas: tSencillas,
         kids: kids,
         kids2Room: true,
-        totalkids2RoomFill: totalDoblesKids,
+        totalkids2RoomFill: totalDoblesKids
       };
 
       return result;
@@ -148,7 +185,7 @@ export const helpers = {
       dobles: d,
       triples: 0,
       sencillas: s,
-      kids: kids,
+      kids: kids
     };
 
     return result;
@@ -162,26 +199,26 @@ export const helpers = {
         result = {
           dobles: Math.floor(adults / 2),
           triples: 0,
-          sencillas: 0,
+          sencillas: 0
         };
       } else if (adults % 2 == 1) {
         result = {
           dobles: Math.floor(adults / 2) - 1,
           triples: 1,
-          sencillas: 0,
+          sencillas: 0
         };
       } else if (adults % 2 == 3) {
         result = {
           dobles: Math.floor(adults / 2),
           triples: 1,
-          sencillas: 0,
+          sencillas: 0
         };
       }
     } else {
       result = {
         dobles: 0,
         triples: 0,
-        sencillas: 1,
+        sencillas: 1
       };
     }
 
@@ -195,12 +232,12 @@ export const helpers = {
         dobles: tDobles,
         triples: 0,
         sencillas: tSencillas,
-        kids: kids,
+        kids: kids
       };
     }
 
     result["kids2Room"] = false;
 
     return result;
-  },
+  }
 };

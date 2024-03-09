@@ -18,8 +18,8 @@
           <div class="item-children-name hn-roman">
             <slot name="itemChildrenNameSlot" v-bind:child="child">
               <span class="font16" @click="selectInfo('roomLayout')">{{
-                child.name
-              }}</span>
+                  child.name
+                }}</span>
               <!-- <span class="dist">{{child.combinacion.display}}</span> -->
             </slot>
           </div>
@@ -66,7 +66,7 @@
                 {{
                   styledPrice(
                     child.combinacion.listado[0].precioObjOne.PrecioOrden *
-                      amoung
+                    amoung
                   ).intPart
                 }}
                 USD
@@ -132,7 +132,7 @@
                 >
                   <div class="flex-wrapper">
                     <span class="flex-left-side"
-                      >{{ distribution.tipoHabitacionNombre }} x{{
+                    >{{ distribution.tipoHabitacionNombre }} x{{
                         distribution.cantidad
                       }}</span
                     >
@@ -154,14 +154,20 @@
 
 <script>
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
-import { authGetRoomTypes } from "../../utils/auth";
+import {
+  authGetRoomPrice,
+  authGetRoomTypes, authLog,
+  hotetecBlockProduct
+} from "../../utils/auth";
+import { helpers } from "@/utils/helpers";
+
 export default {
   mixins: [lodgingUtilsMixin],
   data() {
     return {
       amoung: 1,
       selectedInfo: "",
-      todosTiposHabitaciones: [],
+      todosTiposHabitaciones: []
     };
   },
   async created() {
@@ -169,11 +175,65 @@ export default {
     this.todosTiposHabitaciones = tth.data;
   },
   props: {
-    child: Object,
+    child: Object
   },
   methods: {
-    addToCart() {
-      this.$emit("listReserve", this.child, this.amoung);
+    async addToCart() {
+      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      const hotelectData = await this.checkIsAvailable(this.child);
+      this.child.hotelectData = hotelectData;
+      console.log("hotelectData", hotelectData);
+      let { Adl, Nin } = helpers.generatePassageList(this.child.combinacion);
+      let allIds = [];
+      Adl.forEach(adult => {
+        allIds.push(adult.Id);
+      });
+      Nin.forEach(minor => {
+        allIds.push(minor.Id);
+      });
+
+      let blockProduct = {
+        Accion: "A",
+        Codtou: "HTT",
+        Ideses: currentHotelec,
+        Pasage: { Adl, Nin },
+        Bloser: {
+          Id: 1,
+          Dissmo: [
+            {
+              Pasid: allIds,
+              Id: this.child.hotelectData.HotetecInfoHabId,
+              Numuni: this.amoung.toString()
+            }
+          ]
+        }
+      };
+
+      let unblockProduct = {
+        Accion: "E",
+        Codtou: "HTT",
+        Ideses: currentHotelec,
+        Pasage: { Adl, Nin },
+        Bloser: {
+          Id: 1,
+          Dissmo: [
+            {
+              Pasid: allIds,
+              Id: this.child.hotelectData.HotetecInfoHabId,
+              Numuni: this.amoung.toString()
+            }
+          ]
+        }
+      };
+
+      console.log("blockProduct", this.child);
+
+      hotetecBlockProduct(blockProduct).then(res => {
+        if (res.data.Tiperr === null) {
+          this.child["unblockRequest"] = unblockProduct;
+          this.$emit("listReserve", this.child, this.amoung);
+        }
+      });
     },
     async reserve() {
       this.$emit("reserve", this.child, this.amoung);
@@ -197,18 +257,17 @@ export default {
         this.selectedInfo = section;
       }
     },
-
     findPrecio(item, listadoPrecios) {
       let tipoHabitacion = this.habitacionPorCantidadPersonas(
         item.CantAdult,
         this.todosTiposHabitaciones
       );
-      let r = listadoPrecios.find((i) => {
+      let r = listadoPrecios.find(i => {
         return i.tipoHabitacion == tipoHabitacion.TipoHabitacionId;
       });
       return r.price;
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -225,37 +284,46 @@ export default {
   margin-right: 5px;
   width: 50px;
 }
+
 .children-wrapper {
   border-bottom: 1px solid #c4c4c4;
 }
+
 .item-children-header {
   padding-bottom: 5px;
   display: flex;
 }
+
 .item-children-content {
   padding-right: 230px;
   padding-left: 60px;
 }
+
 .item-children-content pre {
   font-size: 16px;
   color: #6d6d6d;
   white-space: pre-wrap;
 }
+
 .item-children {
   /* display: flex; */
 }
+
 .item-children-name {
   /* margin-right: auto; */
   color: #6d6d6d;
   font-size: 16px;
   width: 35%;
 }
+
 .item-children-name span:hover {
   cursor: pointer;
 }
+
 .dist {
   font-size: 12px;
 }
+
 .item-children-section {
   color: #6d6d6d;
   font-size: 24px;
@@ -267,42 +335,51 @@ export default {
   align-self: center;
   font-size: 30px !important;
 }
+
 .item-children-section-icon {
   font-size: 30px !important;
   color: #212f3d;
   align-self: center;
 }
+
 .item-children-right-part {
   margin-left: auto;
   display: flex;
 }
+
 .item-children-price {
   padding-right: 60px;
   color: #6d6d6d;
   font-size: 18px;
 }
+
 .item-children-info-btn {
   font-size: 24px;
   color: #212f3d;
   padding-right: 20px;
 }
+
 .item-children-info-btn button {
   border: none;
   background-color: transparent;
 }
+
 .item-children-info-btn button:hover {
   cursor: pointer;
 }
+
 .item-children-info-btn button:focus {
   border: none;
   outline: none;
 }
+
 .item-children-name,
 .item-children-section,
 .item-children-price,
 .item-children-info-btn {
   align-self: center;
 }
+
 .selected {
   color: #c4c4c4;
 }
@@ -318,9 +395,11 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
 .gtt__form {
   display: inline-flex;
 }
+
 .ir-input {
   width: 30px;
   height: 30px;
