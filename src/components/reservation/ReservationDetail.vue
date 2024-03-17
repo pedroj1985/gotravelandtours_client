@@ -105,7 +105,7 @@
                   to-uppercase
                   general-text-opt
                 "
-                >Total a pagar</span
+              >Total a pagar</span
               >
               <span class="antonio-light gtt-first-color font48">
                 {{ styledPrice(priceTotal).intPart }} USD
@@ -132,7 +132,7 @@
             <span
               class="to-uppercase ml-auto font18 state-label"
               :class="'state-' + state.toLowerCase()"
-              >{{ $helpers.traducir(state) }}</span
+            >{{ $helpers.traducir(state) }}</span
             >
           </div>
           <div
@@ -228,14 +228,14 @@
               </button>
             </div>
             <div
-              v-if="state == 'Open'"
+              v-if="state == 'Open' || state == 'Confirmed'"
               id="reservation-cancelation-info"
               class="hn-roman font14 gtt-first-color pl-30 pb-15"
             >
               <span
-                >Si cambias de planes, puedes
+              >Si cambias de planes, puedes
                 <span class="cancelate-button" @click="showCancelationModal"
-                  >CANCELAR</span
+                >CANCELAR</span
                 >
                 esta reservación.</span
               >
@@ -246,7 +246,7 @@
               style="color: #ff0000"
             >
               <span
-                >Si los datos introducidos no son correctos, nuestra agencia no
+              >Si los datos introducidos no son correctos, nuestra agencia no
                 se hace responsable de las consecuencias que esto traiga para la
                 correcta realización del servicio o los servicios</span
               >
@@ -267,6 +267,11 @@ import {
   authPutReserve,
   authDeleteCarOrder,
   authUpdateQbEstimated,
+  hotetecStateSession,
+  hotetecOpenSession,
+  hotetecCancelReserve,
+  authUpdateStatus,
+  hotetecUpdateDataOnGtt
 } from "../../utils/auth";
 
 import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
@@ -288,23 +293,23 @@ export default {
     FlightInfoRow,
     GttVerificationModal,
     GttEditRentModal,
-    LodgingReservationView2,
+    LodgingReservationView2
   },
   computed: {
     checkIfRentExist() {
-      return this.allTypesOrders.some((i) => {
+      return this.allTypesOrders.some(i => {
         return i.tipo == "rent";
       });
     },
     getTotal() {
-      return (item) => {
+      return item => {
         let total = 0;
-        item.reservedRooms.map((x) => {
+        item.reservedRooms.map(x => {
           total += x.CantidadHabitaciones * x.PrecioOrden;
         });
         return total;
       };
-    },
+    }
   },
   mixins: [reusableMethodsMixin],
   async created() {
@@ -369,7 +374,7 @@ export default {
       state: "",
       isReserving: false,
       somethingChanged: false,
-      tempIdToDelete: -1,
+      tempIdToDelete: -1
     };
   },
   methods: {
@@ -382,9 +387,9 @@ export default {
           !verifyDifferentsDatesNoCartReturnBoolean(
             {
               FechaRecogida: item.nI.orderVehiculo.FechaRecogida,
-              FechaEntrega: item.nI.orderVehiculo.FechaEntrega,
+              FechaEntrega: item.nI.orderVehiculo.FechaEntrega
             },
-            this.allTypesOrders.filter((i) => {
+            this.allTypesOrders.filter(i => {
               return (
                 i.orderVehiculo.OrdenVehiculoId !=
                 this.tempItemToEdit.orderVehiculo.OrdenVehiculoId
@@ -408,7 +413,7 @@ export default {
           this.$toasted.show(
             "Ya tiene un auto reservado dentro de esa misma fecha",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -418,13 +423,13 @@ export default {
       if (o.LugarRecogida) {
         o.LugarRecogida = {
           nombre: o.LugarRecogida.nombre,
-          puntointeresid: o.LugarRecogida.PuntoInteresId,
+          puntointeresid: o.LugarRecogida.PuntoInteresId
         };
       }
       if (o.LugarEntrega) {
         o.LugarEntrega = {
           nombre: o.LugarEntrega.nombre,
-          puntointeresid: o.LugarEntrega.PuntoInteresId,
+          puntointeresid: o.LugarEntrega.PuntoInteresId
         };
       }
     },
@@ -459,7 +464,7 @@ export default {
     },
     constructFilterDataObj(item) {
       if (item.tipo == "rent") {
-        let transmision = transmissionTypes.find((i) => {
+        let transmision = transmissionTypes.find(i => {
           return i.nombre == item.transmision;
         });
 
@@ -471,12 +476,12 @@ export default {
           propCarCategory: {
             marcaid: item.marcaid,
             nombre: item.marca,
-            type: "marca",
+            type: "marca"
           },
           propTransmission: transmision,
           id: item.id,
           orderId: item.orderVehiculo.OrdenVehiculoId,
-          name: item.nombre,
+          name: item.nombre
         };
       }
     },
@@ -486,16 +491,19 @@ export default {
           rules: ["required"],
           name: "gttName",
           value: this.clientName,
-          lang: "es",
-        },
+          lang: "es"
+        }
       ];
 
       return validator;
     },
     async cancelateOrder() {
+      if (this.state === "Confirmed") {
+        return this.cancelOnHotetec();
+      }
       let listaVehiculosOrden = this.getListaVehiculosOrden();
 
-      listaVehiculosOrden.forEach((vo) => {
+      listaVehiculosOrden.forEach(vo => {
         this.cleanVO(vo);
       });
       try {
@@ -505,15 +513,71 @@ export default {
           this.order
         );
         this.$toasted.show("Orden cancelada con éxito.", {
-          type: "success",
+          type: "success"
         });
         this.$router.push({ name: "myreservations" });
       } catch (error) {
         this.isReserving = false;
         console.log(error);
         this.$toasted.show("Ha ocurrido un problema con la orden", {
-          type: "error",
+          type: "error"
         });
+      }
+    },
+    cancelOnHotetec: async function() {
+      await this.$helpers.shoppingCartDeleteAll(true);
+      this.$eventCartBus.$emit("updateCart");
+      try {
+        const response = await hotetecOpenSession();
+        if (response && response.data && response.data.Ideses) {
+          const currentHotelec = response.data.Ideses;
+          let cancelHotetecReserve = {};
+          cancelHotetecReserve.Accion = "C";
+          cancelHotetecReserve.Codtou = "HTT";
+          cancelHotetecReserve.Locata = this.order.NumeroConfirmacionHotetec;
+          cancelHotetecReserve.Ideses = currentHotelec;
+
+          hotetecCancelReserve(cancelHotetecReserve)
+            .then(async res => {
+              if (!res.data.Coderr) {
+                const orderData = {
+                  OrdenId: this.order.OrdenId,
+                  EstadoHotetec: "Cancel",
+                  NumeroConfirmacionHotetec: this.order
+                    .NumeroConfirmacionHotetec
+                };
+                const orderStatus = {
+                  OrdenId: this.order.OrdenId,
+                  Estado: "Cancel"
+                };
+                try {
+                  await hotetecUpdateDataOnGtt(orderData);
+                  await authUpdateStatus(orderStatus);
+                  this.$toasted.show("Orden cancelada con éxito.", {
+                    type: "success"
+                  });
+                  this.$router.push({ name: "myreservations" });
+                } catch (error) {
+                  console.log(error);
+                }
+              } else {
+                this.$toasted.show(res.data.Txterr, {
+                  type: "error"
+                });
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.cancelationModal = false;
+            });
+        }
+      } catch (error) {
+        console.error(
+          "Error occurred while fetching or processing data:",
+          error.message
+        );
       }
     },
     showCancelationModal() {
@@ -579,7 +643,7 @@ export default {
             lodging: i[0].Alojamiento,
             images: [images.data.ImageContent],
             total: total,
-            reservedRooms: i,
+            reservedRooms: i
           };
 
           this.allTypesOrders.push(temp);
@@ -609,18 +673,18 @@ export default {
             imagen: image.data.ImageContent,
             provider: provider.data.Nombre,
             providerImage: provider.data.ImageContent,
-            orderVehiculo: item,
+            orderVehiculo: item
           };
           if (temp.orderVehiculo.LugarRecogida) {
             temp.orderVehiculo.LugarRecogida = {
               nombre: temp.orderVehiculo.LugarRecogida.Nombre,
-              puntointeresid: temp.orderVehiculo.LugarRecogida.PuntoInteresId,
+              puntointeresid: temp.orderVehiculo.LugarRecogida.PuntoInteresId
             };
           }
           if (temp.orderVehiculo.LugarEntrega) {
             temp.orderVehiculo.LugarEntrega = {
               nombre: temp.orderVehiculo.LugarEntrega.Nombre,
-              puntointeresid: temp.orderVehiculo.LugarEntrega.PuntoInteresId,
+              puntointeresid: temp.orderVehiculo.LugarEntrega.PuntoInteresId
             };
           }
 
@@ -630,10 +694,10 @@ export default {
     },
     getListaVehiculosOrden() {
       let lvo = this.allTypesOrders
-        .filter((item) => {
+        .filter(item => {
           return item.tipo == "rent";
         })
-        .map((i) => {
+        .map(i => {
           return i.orderVehiculo;
         });
 
@@ -642,35 +706,35 @@ export default {
     cleanVO(order) {
       order.DistribuidorId = order.Distribuidor.DistribuidorId;
       order.Distribuidor = {
-        DistribuidorId: order.Distribuidor.DistribuidorId,
+        DistribuidorId: order.Distribuidor.DistribuidorId
       };
       order.Vehiculo = {
-        ProductoId: order.Vehiculo.ProductoId,
+        ProductoId: order.Vehiculo.ProductoId
       };
       order.Sobreprecio = {
-        SobreprecioId: order.Sobreprecio.SobreprecioId,
+        SobreprecioId: order.Sobreprecio.SobreprecioId
       };
       if (order.LugarRecogida) {
         order.LugarRecogida = {
           nombre: order.LugarRecogida.nombre,
-          PuntoInteresId: order.LugarRecogida.puntointeresid,
+          PuntoInteresId: order.LugarRecogida.puntointeresid
         };
       }
       if (order.LugarEntrega) {
         order.LugarEntrega = {
           nombre: order.LugarEntrega.nombre,
-          PuntoInteresId: order.LugarEntrega.puntointeresid,
+          PuntoInteresId: order.LugarEntrega.puntointeresid
         };
       }
       let arrLPRA = new Array();
-      order.ListaPreciosRentaAutos.forEach((item) => {
+      order.ListaPreciosRentaAutos.forEach(item => {
         item.PrecioRentaAutos = {
-          PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId,
+          PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
         };
         arrLPRA.push({
           PrecioRentaAutos: {
-            PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId,
-          },
+            PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
+          }
         });
       });
       order.ListaPreciosRentaAutos = arrLPRA;
@@ -679,10 +743,10 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         let listaVehiculosOrden = this.getListaVehiculosOrden();
-        listaVehiculosOrden.forEach((vo) => {
+        listaVehiculosOrden.forEach(vo => {
           vo.NombreCliente = this.clientName
             .split(" ")
-            .map((i) => {
+            .map(i => {
               return _.capitalize(i);
             })
             .join(" ");
@@ -713,7 +777,7 @@ export default {
             this.order
           );
           let onlyOrdenId = {
-            OrdenId: ordenSaveIt.data.OrdenId,
+            OrdenId: ordenSaveIt.data.OrdenId
           };
           try {
             await authUpdateQbEstimated(onlyOrdenId);
@@ -722,14 +786,14 @@ export default {
           }
           this.isReserving = false;
           this.$toasted.show("Orden editada con éxito.", {
-            type: "success",
+            type: "success"
           });
           this.$router.push({ name: "myreservations" });
         } catch (error) {
           this.isReserving = false;
           console.log(error);
           this.$toasted.show("Ha ocurrido un problema con la orden", {
-            type: "error",
+            type: "error"
           });
         }
       } else {
@@ -737,7 +801,7 @@ export default {
       }
     },
     deleteItem(i) {
-      this.allTypesOrders = this.allTypesOrders.filter((item) => {
+      this.allTypesOrders = this.allTypesOrders.filter(item => {
         return item.id != i.id;
       });
       this.calculatePrice(this.allTypesOrders);
@@ -750,14 +814,14 @@ export default {
       let startDates = [];
       let endDates = [];
 
-      this.allTypesOrders.forEach((item) => {
+      this.allTypesOrders.forEach(item => {
         startDates.push(item.orderVehiculo.FechaRecogida);
         endDates.push(item.orderVehiculo.FechaEntrega);
       });
 
       return {
         min: this.lodash.min(startDates),
-        max: this.lodash.max(endDates),
+        max: this.lodash.max(endDates)
       };
     },
     fillReserveInfo(orden, lvo = [], lao = [], lalo = [], lto = []) {
@@ -765,13 +829,13 @@ export default {
 
       orden.NombreClienteFinal = this.clientName
         .split(" ")
-        .map((i) => {
+        .map(i => {
           return _.capitalize(i);
         })
         .join(" ");
       orden.NombreOrden = this.clientName
         .split(" ")
-        .map((i) => {
+        .map(i => {
           return _.capitalize(i);
         })
         .join(" ");
@@ -786,8 +850,8 @@ export default {
       orden.ListaActividadOrden = lao;
       orden.ListaAlojamientoOrden = lalo;
       orden.ListaTrasladoOrden = lto;
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -796,10 +860,12 @@ export default {
   text-decoration-line: underline;
   color: #bcd01d;
 }
+
 .cancelate-button:hover {
   cursor: pointer;
   color: rgba(188, 208, 29, 0.7);
 }
+
 .state-label {
   border-radius: 5px;
   padding: 5px;
@@ -809,15 +875,19 @@ export default {
 .state-pending {
   background: #c88d00;
 }
+
 .state-open {
   background: #0000ff;
 }
+
 .state-confirmed {
   background: #307000;
 }
+
 .state-rejected {
   background: #ff0000;
 }
+
 .state-closed {
   background: #212f3d;
 }

@@ -2,6 +2,7 @@ import { es } from "../lang/es";
 import { en } from "../lang/en";
 import { uuid } from "vue-uuid";
 import lodash from "lodash";
+import { hotetecBlockProduct } from "@/utils/auth";
 
 export const helpers = {
   traducir: (data, locale = "es") => {
@@ -107,7 +108,21 @@ export const helpers = {
   //     // localStorage.setItem("gttCart", JSON.stringify(tempWithoutElement));
   //   }
   // },
-  shoppingCartDeleteAll() {
+  async shoppingCartDeleteAll(cancelBefore = false) {
+    if (cancelBefore) {
+      let temp = JSON.parse(localStorage.getItem("gttCart")) || [];
+      for (const tempElement of temp) {
+        if (tempElement.tipo == "lodging") {
+          const unblockRequest = tempElement.reservedRooms.unblockRequest;
+          try {
+            await hotetecBlockProduct(unblockRequest);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+      localStorage.removeItem("currentHotelecIds");
+    }
     localStorage.removeItem("gttCart");
   },
   orderList(list) {

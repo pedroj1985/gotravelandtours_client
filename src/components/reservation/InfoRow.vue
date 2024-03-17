@@ -67,6 +67,23 @@
           <span slot="error" class="gtt-errors"></span>
         </div>
       </div>
+      <div v-if="!hasCar" ref="gttPhone" class="flex-wrapper input-right ir-text-input">
+        <div class="input-icon font18">
+          <i class="mdi mdi-card-account-details-outline"></i>
+        </div>
+        <div class="input-two-rows">
+          <div class="ir-info-name font14 required-field">Teléfono</div>
+          <input
+            type="text"
+            :disabled="!editable"
+            :value="phone"
+            @input="$emit('inputPhone', $event.target.value)"
+            class="ir-input font18"
+            placeholder="# Teléfono"
+          />
+          <span slot="error" class="gtt-errors"></span>
+        </div>
+      </div>
 
       <div
         v-if="hasCar"
@@ -127,6 +144,9 @@ export default {
       default: "",
     },
     pasaporte: {
+      type: String,
+    },
+    phone: {
       type: String,
     },
     hasCar: {

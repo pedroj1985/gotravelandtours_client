@@ -236,7 +236,59 @@ export default {
       });
     },
     async reserve() {
-      this.$emit("reserve", this.child, this.amoung);
+      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      const hotelectData = await this.checkIsAvailable(this.child);
+      this.child.hotelectData = hotelectData;
+      console.log("hotelectData", hotelectData);
+      let { Adl, Nin } = helpers.generatePassageList(this.child.combinacion);
+      let allIds = [];
+      Adl.forEach(adult => {
+        allIds.push(adult.Id);
+      });
+      Nin.forEach(minor => {
+        allIds.push(minor.Id);
+      });
+
+      let blockProduct = {
+        Accion: "A",
+        Codtou: "HTT",
+        Ideses: currentHotelec,
+        Pasage: { Adl, Nin },
+        Bloser: {
+          Id: 1,
+          Dissmo: [
+            {
+              Pasid: allIds,
+              Id: this.child.hotelectData.HotetecInfoHabId,
+              Numuni: this.amoung.toString()
+            }
+          ]
+        }
+      };
+
+      let unblockProduct = {
+        Accion: "E",
+        Codtou: "HTT",
+        Ideses: currentHotelec,
+        Pasage: { Adl, Nin },
+        Bloser: {
+          Id: 1,
+          Dissmo: [
+            {
+              Pasid: allIds,
+              Id: this.child.hotelectData.HotetecInfoHabId,
+              Numuni: this.amoung.toString()
+            }
+          ]
+        }
+      };
+
+      hotetecBlockProduct(blockProduct).then(res => {
+        if (res.data.Tiperr === null) {
+          this.child["unblockRequest"] = unblockProduct;
+          this.$emit("reserve", this.child, this.amoung);
+        }
+      });
     },
     // TODO validar valor del numero mayot que 0
     validate() {

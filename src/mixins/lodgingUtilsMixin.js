@@ -277,6 +277,7 @@ export const lodgingUtilsMixin = {
         HotelecSessionExpired = !response.data.Infses;
       }
       if (!currentHotelec || HotelecSessionExpired) {
+        await this.$helpers.shoppingCartDeleteAll(true);
         try {
           const response = await hotetecOpenSession();
           if (response && response.data && response.data.Ideses) {

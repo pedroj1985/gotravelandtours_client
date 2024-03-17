@@ -178,11 +178,13 @@
                   :name="clientName"
                   :lastname="clienteLastName"
                   :pasaporte="clientePasaporte"
+                  :phone="clientePhone"
                   :nacimiento="clienteNacimiento"
                   :hasCar="checkIfRentExist"
                   @inputName="updateName"
                   @inputLastname="updateLastname"
                   @inputPasaporte="updatePasaporte"
+                  @inputPhone="updatePhone"
                   @inputNacimiento="updateNacimiento"
                 >
                 </InfoRow>
@@ -340,6 +342,12 @@ export default {
           rules: ["required"],
           name: "gttPasaporte",
           value: this.clientePasaporte,
+          lang: "es"
+        },
+        {
+          rules: ["required"],
+          name: "gttPhone",
+          value: this.clientePhone,
           lang: "es"
         }
         /* {
@@ -566,7 +574,7 @@ export default {
       let person = {};
       person.Id = "1";
       person.Nombre = userData.name;
-      person.Tel = "4545454545";
+      person.Tel = this.clientePhone;
       person.Mai = userData.clienteCorreo;
       person.Priape = userData.clienteNombre;
       closeReserve.Percon = person;
@@ -603,6 +611,7 @@ export default {
       );
       //TODO agregado numero de pasaporte a la orden
       orden.NumeroPasaporte = this.clientePasaporte;
+      orden.NumeroTelefono = this.clientePhone;
       orden.NombreOrden = this.constructSpacedVal(
         this.clientName,
         this.clienteLastName
@@ -735,6 +744,9 @@ export default {
     },
     updatePasaporte(value) {
       this.clientePasaporte = value;
+    },
+    updatePhone(value) {
+      this.clientePhone = value;
     },
     updateNacimiento(value) {
       this.clienteNacimiento = value;
@@ -1067,6 +1079,7 @@ export default {
       clientName: "",
       clienteLastName: "",
       clientePasaporte: "",
+      clientePhone: "",
       clienteNacimiento: "",
       horaLanding: "",
       aerolineaLanding: "",
