@@ -344,12 +344,14 @@ export const lodgingUtilsMixin = {
                             HotetecIdeses: currentHotelec,
                             Habitacion: { HabitacionId: j.HabitacionId },
                             Entrada: searchItem.Entrada,
+                            IsSinContrato: i.IsSinContrato,
                             Salida: searchItem.Salida
                           };
                           try {
                             let precioA = await authGetRoomPrice(
                               roomPriceSearchObj
                             );
+
                             if (
                               precioA.data.length != 0 &&
                               // && precioA.data[0].OrdenAlojamientoId != -1
@@ -357,12 +359,12 @@ export const lodgingUtilsMixin = {
                             ) {
                               hotelecData = {
                                 HotetecInfoHabId:
-                                precioA.data[0].HotetecInfoHabId,
+                                  precioA.data[0].HotetecInfoHabId,
                                 HotetecInfoHotelId:
-                                precioA.data[0].HotetecInfoHotelId,
+                                  precioA.data[0].HotetecInfoHotelId,
                                 HotetecIdeses: precioA.data[0].HotetecIdeses,
                                 HotetecIsAvailable:
-                                precioA.data[0].HotetecIsAvailable
+                                  precioA.data[0].HotetecIsAvailable
                               };
                               if (hotelecData.HotetecIsAvailable) {
                                 temp.push({
@@ -409,6 +411,7 @@ export const lodgingUtilsMixin = {
                         planAlimenticioNombre: planA.data.Nombre,
                         planAlimenticio: lpa.PlanesAlimenticiosId,
                         hotelectData: hotelecData,
+                        IsSinContrato: i.IsSinContrato,
                         combinacion: {
                           total: totalPrice,
                           display: display,
@@ -503,26 +506,19 @@ export const lodgingUtilsMixin = {
         CantidadInfantes: 0,
         CantidadHabitaciones: 1,
         HotetecIdeses: currentHotelec,
+        IsSinContrato: room.IsSinContrato,
         Habitacion: { HabitacionId: roomId },
         Entrada: startDate,
         Salida: endDate
       };
       try {
-        let precioA = await authGetRoomPrice(
-          roomPriceSearchObj
-        );
-        if (
-          precioA.data.length != 0 &&
-          precioA.data[0].PrecioOrden != 0
-        ) {
+        let precioA = await authGetRoomPrice(roomPriceSearchObj);
+        if (precioA.data.length != 0 && precioA.data[0].PrecioOrden != 0) {
           hotelecData = {
-            HotetecInfoHabId:
-            precioA.data[0].HotetecInfoHabId,
-            HotetecInfoHotelId:
-            precioA.data[0].HotetecInfoHotelId,
+            HotetecInfoHabId: precioA.data[0].HotetecInfoHabId,
+            HotetecInfoHotelId: precioA.data[0].HotetecInfoHotelId,
             HotetecIdeses: precioA.data[0].HotetecIdeses,
-            HotetecIsAvailable:
-            precioA.data[0].HotetecIsAvailable
+            HotetecIsAvailable: precioA.data[0].HotetecIsAvailable
           };
         }
       } catch (e) {
