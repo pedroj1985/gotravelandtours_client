@@ -111,7 +111,7 @@
                     to-uppercase
                     general-text-opt
                   "
-                >Total a pagar</span
+                  >Total a pagar</span
                 >
                 <span class="antonio-light gtt-first-color font48">
                   {{ styledPrice(priceTotal).intPart }} USD
@@ -276,7 +276,8 @@ import {
   authLog,
   hotetecBlockProduct,
   hotetecCloseReserve,
-  hotetecUpdateDataOnGtt, authUpdateStatus
+  hotetecUpdateDataOnGtt,
+  authUpdateStatus
 } from "../../utils/auth";
 import GttEditLodgingModal from "../custom-elements/GttEditLodgingModal";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
@@ -670,21 +671,28 @@ export default {
               HabitacionId: habitacionId
             };
             po.Distribuidor = {
-              DistribuidorId: po.Distribuidor.DistribuidorId
+              DistribuidorId: po.Distribuidor
+                ? po.Distribuidor.DistribuidorId
+                : 46
             };
-            po.DistribuidorId = po.Distribuidor.DistribuidorId;
+            po.DistribuidorId = po.Distribuidor
+              ? po.Distribuidor.DistribuidorId
+              : 46;
             po.Sobreprecio = {
               SobreprecioId: po.Sobreprecio.SobreprecioId
             };
-            po.ListaPrecioAlojamientos = po.ListaPrecioAlojamientos.map(lpa => {
-              let p = {
-                PrecioAlojamientoId: lpa.PrecioAlojamiento.PrecioAlojamientoId
-              };
+            po.ListaPrecioAlojamientos = [];
+            if (po.ListaPrecioAlojamientos) {
+              po.ListaPrecioAlojamientos.map(lpa => {
+                let p = {
+                  PrecioAlojamientoId: lpa.PrecioAlojamiento.PrecioAlojamientoId
+                };
 
-              return {
-                PrecioAlojamiento: p
-              };
-            });
+                return {
+                  PrecioAlojamiento: p
+                };
+              });
+            }
             for (let index = 0; index < j.cantidad; index++) {
               lao.push(po);
             }
@@ -908,7 +916,7 @@ export default {
         {
           PrecioRentaAutos: {
             PrecioRentaAutosId:
-            item.ListaPreciosRentaAutos[0].PrecioRentaAutos.PrecioRentaAutosId
+              item.ListaPreciosRentaAutos[0].PrecioRentaAutos.PrecioRentaAutosId
           }
         }
       ];
