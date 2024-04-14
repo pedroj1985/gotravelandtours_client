@@ -3,9 +3,9 @@
       <IndexLoggedBanner></IndexLoggedBanner>
       <IndexLoggedHotels></IndexLoggedHotels>
       <IndexLoggedRent></IndexLoggedRent>
-      <IndexLoggedTransfer></IndexLoggedTransfer>
+<!--      <IndexLoggedTransfer></IndexLoggedTransfer>
       <IndexLoggedDestinies></IndexLoggedDestinies>
-      <IndexLoggedExcursion></IndexLoggedExcursion>
+      <IndexLoggedExcursion></IndexLoggedExcursion>-->
   </div>
 </template>
 

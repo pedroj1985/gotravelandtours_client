@@ -5,7 +5,7 @@
         <div class="home-banner-register">
             <div class="form-register-container">
                 <div class="form-logo">
-                    <img src="img/logo_gtt_color.svg" alt="go travel and tours">
+                    <img src="img/logo_colibri_colored.png" alt="Colibri Viajes">
                     <hr>
                     <div class="form-inicio-sesion-text antonio-bold">Registro</div>
                 </div>

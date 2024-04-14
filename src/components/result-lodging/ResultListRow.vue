@@ -18,8 +18,8 @@
           <div class="item-children-name hn-roman">
             <slot name="itemChildrenNameSlot" v-bind:child="child">
               <span class="font16" @click="selectInfo('roomLayout')">{{
-                  child.name
-                }}</span>
+                child.name
+              }}</span>
               <!-- <span class="dist">{{child.combinacion.display}}</span> -->
             </slot>
           </div>
@@ -66,7 +66,7 @@
                 {{
                   styledPrice(
                     child.combinacion.listado[0].precioObjOne.PrecioOrden *
-                    amoung
+                      amoung
                   ).intPart
                 }}
                 USD
@@ -103,12 +103,18 @@
             <div class="item-children-reserve form-actions">
               <button
                 type="submit"
+                :disabled="disabled"
                 class="antonio-regular inverse btn-cart"
                 @click="addToCart"
               >
                 <i class="mdi mdi-cart"></i>
               </button>
-              <button type="submit" class="antonio-regular" @click="reserve">
+              <button
+                type="submit"
+                :disabled="disabled"
+                class="antonio-regular"
+                @click="reserve"
+              >
                 Reservar
               </button>
             </div>
@@ -132,7 +138,7 @@
                 >
                   <div class="flex-wrapper">
                     <span class="flex-left-side"
-                    >{{ distribution.tipoHabitacionNombre }} x{{
+                      >{{ distribution.tipoHabitacionNombre }} x{{
                         distribution.cantidad
                       }}</span
                     >
@@ -156,7 +162,8 @@
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import {
   authGetRoomPrice,
-  authGetRoomTypes, authLog,
+  authGetRoomTypes,
+  authLog,
   hotetecBlockProduct
 } from "../../utils/auth";
 import { helpers } from "@/utils/helpers";
@@ -175,14 +182,15 @@ export default {
     this.todosTiposHabitaciones = tth.data;
   },
   props: {
-    child: Object
+    child: Object,
+    disabled: Boolean
   },
   methods: {
     async addToCart() {
+      this.$emit("loading", true);
       let currentHotelec = localStorage.getItem("currentHotelecIds");
       const hotelectData = await this.checkIsAvailable(this.child);
       this.child.hotelectData = hotelectData;
-      console.log("hotelectData", hotelectData);
       let { Adl, Nin } = helpers.generatePassageList(this.child.combinacion);
       let allIds = [];
       Adl.forEach(adult => {
@@ -228,18 +236,22 @@ export default {
 
       console.log("blockProduct", this.child);
 
-      hotetecBlockProduct(blockProduct).then(res => {
-        if (res.data.Tiperr === null) {
-          this.child["unblockRequest"] = unblockProduct;
-          this.$emit("listReserve", this.child, this.amoung);
-        }
-      });
+      hotetecBlockProduct(blockProduct)
+        .then(res => {
+          if (res.data.Tiperr === null) {
+            this.child["unblockRequest"] = unblockProduct;
+            this.$emit("listReserve", this.child, this.amoung);
+          }
+        })
+        .finally(() => {
+          this.$emit("loading", false);
+        });
     },
     async reserve() {
+      this.$emit("loading", true);
       let currentHotelec = localStorage.getItem("currentHotelecIds");
       const hotelectData = await this.checkIsAvailable(this.child);
       this.child.hotelectData = hotelectData;
-      console.log("hotelectData", hotelectData);
       let { Adl, Nin } = helpers.generatePassageList(this.child.combinacion);
       let allIds = [];
       Adl.forEach(adult => {
@@ -283,12 +295,16 @@ export default {
         }
       };
 
-      hotetecBlockProduct(blockProduct).then(res => {
-        if (res.data.Tiperr === null) {
-          this.child["unblockRequest"] = unblockProduct;
-          this.$emit("reserve", this.child, this.amoung);
-        }
-      });
+      hotetecBlockProduct(blockProduct)
+        .then(res => {
+          if (res.data.Tiperr === null) {
+            this.child["unblockRequest"] = unblockProduct;
+            this.$emit("reserve", this.child, this.amoung);
+          }
+        })
+        .finally(() => {
+          this.$emit("loading", false);
+        });
     },
     // TODO validar valor del numero mayot que 0
     validate() {

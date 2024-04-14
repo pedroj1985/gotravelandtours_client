@@ -4,8 +4,8 @@
       <router-link to="/" id="logo_link">
         <img
           class="logo"
-          src="img/logo_gtt_blanco.svg"
-          alt="Go Travel and Tours"
+          src="img/logo_colibri_white.png"
+          alt="Colibri Viajes"
         />
       </router-link>
       <div class="right-side-navbar">

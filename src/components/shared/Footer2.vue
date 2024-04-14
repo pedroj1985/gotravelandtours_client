@@ -2,12 +2,12 @@
     <div id="footer2">
         <div class="footer2-container hn-roman custom-margin">
             <div class="left-part">
-                <img src="img/logo_gtt_blanco.svg" alt="">
-                <div class="all-rights">© 2020 Go Travel & Tours. Todos los derechos reservados. <a href="#">Términos de uso </a>|
+                <img src="img/logo_colibri_white.png" alt="">
+                <div class="all-rights">© 2020 Colibri Viajes. Todos los derechos reservados. <a href="#">Términos de uso </a>|
                                                                                                  <a href="#">Declaración de privacidad y Cookies </a>|
                                                                                                  <a href="#">Mapa del Sitio</a></div>
-                <div class="no-honoraries">Go Travel & Tours no cobra honorarios por sus servicios a los usuarios del sitio</div>
-                <div class="no-responsability">Go Travel & Tours no se responsabiliza del contenido de sitios web externos.</div>
+                <div class="no-honoraries">Colibri Viajes no cobra honorarios por sus servicios a los usuarios del sitio</div>
+                <div class="no-responsability">Colibri Viajes no se responsabiliza del contenido de sitios web externos.</div>
             </div>
             <div class="right-part">
                 <a href="#" class="mdi mdi-twitter"></a>

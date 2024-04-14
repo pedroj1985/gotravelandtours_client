@@ -108,7 +108,9 @@
         v-for="child in filteredItems"
         :key="child.id"
         :child="child"
+        :disabled="disabledItems"
         @listReserve="addToCart"
+        @loading="onLoading"
         @reserve="reserve"
       ></ResultListRow>
     </div>
@@ -147,6 +149,7 @@ export default {
     return {
       isOpen: false,
       limit: 2,
+      disabledItems: false
     };
   },
   computed: {
@@ -155,6 +158,9 @@ export default {
     },
   },
   methods: {
+    blockingOthers(status) {
+      this.disabledItems = status;
+    },
     goToDetail() {
       let f = this.filters;
       let a = this.item.acomodation;
@@ -170,6 +176,9 @@ export default {
           id: id,
         },
       });
+    },
+    onLoading(value) {
+      this.disabledItems = value;
     },
     addToCart(i, cant) {
       i.combinacion.listado[0].precioObjOne.OrdenAlojamientoId = 0;

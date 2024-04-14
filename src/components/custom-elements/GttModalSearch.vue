@@ -20,7 +20,7 @@
         </div>
         <div class="modal-row c-modal-bottom">
           <div class="first-column">
-            <img class="modal-logo" src="img/logo_gtt_color.svg" alt="" />
+            <img class="modal-logo" src="img/logo_colibri_colored.png" alt="" />
           </div>
           <div class="second-column">
             <slot name="searching-fields"></slot>

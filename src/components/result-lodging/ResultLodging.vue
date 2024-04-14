@@ -246,7 +246,7 @@
             displayName: "renta de autos",
             id: "index-logged-rent-wrapper"
           },
-          {
+/*          {
             name: "transfer",
             displayName: "traslados",
             id: "index-logged-transfer"
@@ -255,7 +255,7 @@
             name: "excursions",
             displayName: "Excursiones y actividades",
             id: "index-logged-excursion"
-          }
+          }*/
         ]
       };
     }

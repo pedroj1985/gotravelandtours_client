@@ -41,7 +41,7 @@
     <div class="home-banner-login">
       <div class="form-login-container">
         <div class="form-logo">
-          <img src="img/logo_gtt_color.svg" alt="go travel and tours" />
+          <img src="img/logo_colibri_colored.png" alt="Colibri Viajes" />
           <hr />
           <div class="form-inicio-sesion-text antonio-bold">
             inicio de sesión para agencias
