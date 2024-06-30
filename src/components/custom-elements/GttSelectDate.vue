@@ -116,7 +116,13 @@ export default {
     };
   },
   watch: {
-    dates: function(val) {
+    dates: function(val, oldVal) {
+      if (val && val !== oldVal) {
+        this.isVisible = false
+      }
+      if (!val) {
+        this.$emit("input", this.minDate);
+      }
       this.$emit("input", val);
     },
     value: function(){

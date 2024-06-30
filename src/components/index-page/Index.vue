@@ -1,10 +1,6 @@
 <template>
   <div id="content">
     <IndexBanner @userLogin="emitUserLogin"></IndexBanner>
-<!--    <Destinies></Destinies>-->
-    <IndexServices></IndexServices>
-<!--    <IndexPackages></IndexPackages>
-    <IndexOtherServices></IndexOtherServices>-->
     <IndexWhoAreWe></IndexWhoAreWe>
   </div>
 </template>

@@ -81,6 +81,13 @@ export function authGetRoomPrice(searchRoomPrice) {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
+
+export function getPackages(searchRoomPrice) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/Paquetes/BuscarOrden", searchRoomPrice, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
 export function hotetecOpenSession() {
   let token = localStorage.getItem("token");
   return HTTP.post(

@@ -1,11 +1,11 @@
 <template>
     <div id="index-logged-rent-wrapper">
         <IndexLoggedRentSearch></IndexLoggedRentSearch>
-        <div id="rent-carousel-wrapper">
+<!--        <div id="rent-carousel-wrapper">
             <div class="carousel-absolute">
                 <IndexLoggedRentCarousel></IndexLoggedRentCarousel>
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 

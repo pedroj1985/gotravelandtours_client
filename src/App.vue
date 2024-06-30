@@ -6,7 +6,7 @@
       :itemsInCart="itemsInCart"
     ></NavBar1>
     <router-view></router-view>
-    <IndexOffers></IndexOffers>
+<!--    <IndexOffers></IndexOffers>-->
     <Footer1></Footer1>
     <Footer2></Footer2>
   </div>

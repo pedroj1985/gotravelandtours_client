@@ -128,10 +128,6 @@
         padding-right: 15px;
     }
 
-    #logo_link{
-        height: 22.5px;
-        margin-top: -10px;
-    }
 
     .logo{
         height: 30px;
@@ -202,7 +198,7 @@
     .form-logo hr{
         margin-top: 3px;
         margin-bottom: 6px;
-        width: 213px;
+        width: 100%;
     }
 
     .form-inicio-sesion-text{

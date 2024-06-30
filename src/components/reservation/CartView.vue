@@ -100,6 +100,37 @@
                     </div>
                   </div>
                 </template>
+                <template v-if="item.tipo == 'pakage'">
+                  <div class="img-wrapper">
+                    <img :src="item.images[0]" :alt="item.name" />
+                  </div>
+                  <div class="reserve-card-info pad-5 bg-white">
+                    <div
+                      class="
+                        reserve-card-item-name
+                        hn-roman
+                        font14
+                        gtt-text-color
+                      "
+                    >
+                      {{ item.name }}
+                    </div>
+                    <div
+                      class="
+                        reserve-card-item-price
+                        hn-roman
+                        font16
+                        gtt-text-color
+                      "
+                    >
+                      {{
+                        styledPrice(item.reservedRooms.combinacion.total)
+                          .intPart
+                      }}
+                      USD
+                    </div>
+                  </div>
+                </template>
               </div>
               <div class="reserve-total-to-pay">
                 <span
@@ -319,7 +350,6 @@ export default {
     },
     checkIfRentExist() {
       return this.allTypesOrders.some(i => {
-        console.log(i.tipo);
         return i.tipo == "rent";
       });
     }
@@ -792,7 +822,6 @@ export default {
       this.tempItemToEdit = null;
     },
     showEditModal(item) {
-      console.log(item);
       if (item.tipo == "rent") {
         this.currentModalComponent = "GttEditRentModal";
         this.currentFilterData = this.constructFilterDataObj(item);
@@ -910,8 +939,6 @@ export default {
       this.tempItemToEdit.transmision = item.transmision;
     },
     cleanData(item) {
-      console.log("Item a limpiar: ", item);
-
       item.ListaPreciosRentaAutos = [
         {
           PrecioRentaAutos: {

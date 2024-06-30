@@ -124,23 +124,8 @@ export default {
           id: "content"
         },
         {
-          name: "destinies",
-          displayName: "Destinos",
-          id: "destinies"
-        },
-        {
-          name: "services-you-like",
-          displayName: "Servicios",
-          id: "services-you-like"
-        },
-        {
-          name: "gtt-packages",
-          displayName: "Paquetes",
-          id: "gtt-packages"
-        },
-        {
           name: "who-we-are",
-          displayName: "GT&T",
+          displayName: "Colibri viajes",
           id: "who-we-are"
         }
       ]
