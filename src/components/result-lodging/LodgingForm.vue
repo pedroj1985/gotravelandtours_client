@@ -67,7 +67,7 @@
             <span slot="iconSelectedValue"><i class="mdi mdi-bunk-bed"></i></span>
             <span slot="placeholder">Habitaciones</span>
     </gtt-select-form>-->
-    <gtt-select :options="countries" v-model="selectedNationality">
+    <!-- <gtt-select :options="countries" v-model="selectedNationality">
       <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
       <span slot="placeholder">Nacionalidad</span>
       <template v-slot:selectedValue="selectedValue">
@@ -94,7 +94,7 @@
         />
         {{ selectedNationality.nombre }}
       </template>
-    </gtt-select>
+    </gtt-select> -->
     <div class="form-actions lodging-form-search-btn">
       <button type="submit" class="antonio-regular" @click="activateModal">Buscar</button>
     </div>

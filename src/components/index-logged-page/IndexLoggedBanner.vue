@@ -527,7 +527,7 @@ export default {
       selectedEndDate: new Date(moment().add(7, "days")),
       selectedNationality: null,
       destinies: [],
-      selectedNights: 1,
+      selectedNights: 3,
       roomComb: null,
       roomLayout: [
         {

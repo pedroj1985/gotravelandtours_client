@@ -5,7 +5,6 @@
       :propArriveDate="filters.Entrada"
       :propDepartureDate="filters.Salida"
       :propRoomLayout="filters.Visitantes"
-      :propNationality="filters.Nacionalidad"
     ></LodgingForm>
     <OtherFilters></OtherFilters>
   </div>

@@ -112,7 +112,7 @@
               <button
                 type="submit"
                 :disabled="disabled"
-                class="antonio-regular"
+                class="antonio-regular btn-reservar"
                 @click="reserve"
               >
                 Reservar
@@ -351,6 +351,10 @@ export default {
 .btn-cart {
   margin-right: 5px;
   width: 50px;
+}
+
+.btn-reservar {
+  font-size: 22px;
 }
 
 .children-wrapper {

@@ -816,8 +816,6 @@ export default {
 }
 .lodging-detail-wrapper .left-side {
   top: 135px;
-  position: -webkit-sticky; /* Safari */
-  position: sticky;
 }
 .check-sp {
   margin-right: 10px;
