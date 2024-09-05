@@ -241,11 +241,11 @@
             displayName: "alojamientos",
             id: "home-logged-banner"
           },
-          {
+/*           {
             name: "car-rent",
             displayName: "renta de autos",
             id: "index-logged-rent-wrapper"
-          },
+          }, */
 /*          {
             name: "transfer",
             displayName: "traslados",

@@ -6,7 +6,7 @@
       :propDepartureDate="filters.Salida"
       :propRoomLayout="filters.Visitantes"
     ></LodgingForm>
-    <OtherFilters></OtherFilters>
+    <!-- <OtherFilters></OtherFilters> -->
   </div>
 </template>
 

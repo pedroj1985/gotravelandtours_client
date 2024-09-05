@@ -10,7 +10,7 @@
     >
       <div class="image-review">
         <img src="img/home_carrusel_01.jpg" alt="playa" />
-        <div class="review custom-margin">
+        <!-- <div class="review custom-margin">
           <div class="home-banner-title antonio-bold">
             península de Hicacos "Varadero"
           </div>
@@ -26,13 +26,19 @@
             <i class="mdi mdi-weather-sunny"></i
             ><span class="home-grade">32°C</span>
           </div>
-        </div>
+        </div> -->
       </div>
       <div>
         <img src="img/home_carrusel_02.jpg" alt="hotel" />
       </div>
       <div>
         <img src="img/home_carrusel_03.jpg" alt="habana" />
+      </div>
+      <div>
+        <img src="img/home_carrusel_04.jpg" alt="habana" />
+      </div>
+      <div>
+        <img src="img/home_carrusel_05.jpg" alt="habana" />
       </div>
     </Slick>
     <div class="navs-wrapper">

@@ -203,7 +203,7 @@
               <div class="gtt-first-color font18 pl-15 pb-15">
                 Habitaciones y disponibilidad
               </div>
-              <div
+              <!-- <div
                 class="flex-wrapper rooms-disponibility-form pl-15 pr-15"
                 @click="openModal"
               >
@@ -280,7 +280,7 @@
                     Buscar
                   </button>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="rooms-result" v-if="roomsSelecting">
               <div
@@ -448,11 +448,11 @@ export default {
           displayName: "alojamientos",
           id: "home-logged-banner",
         },
-        {
+/*         {
           name: "car-rent",
           displayName: "renta de autos",
           id: "index-logged-rent-wrapper",
-        },
+        }, */
 /*        {
           name: "transfer",
           displayName: "traslados",
