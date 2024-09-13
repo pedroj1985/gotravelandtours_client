@@ -6,7 +6,7 @@ let headers = {
 export const HTTP = axios.create({
   baseURL: "https://admin.gotravelandtours.com/publicEliecer/api",
   //baseURL: "http://192.168.1.7:5000/api",
-  timeout: 60000
+  timeout: 120000
 });
 
 export function authCheck() {

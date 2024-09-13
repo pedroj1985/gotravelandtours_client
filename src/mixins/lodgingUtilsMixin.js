@@ -8,9 +8,25 @@ import {
   hotetecOpenSession,
   hotetecStateSession
 } from "../utils/auth";
+import { openDB } from 'idb';
 import _ from "lodash";
 
 export const lodgingUtilsMixin = {
+  data() {
+    return {
+      db: null,
+      db_name: 'searchResult',
+      items: [],
+    };
+  },
+  async created() {
+    this.db = await openDB(this.db_name, 1, {
+      upgrade(db) {
+        db.createObjectStore('items', { keyPath: 'id', autoIncrement: true });
+      }
+    });
+    this.items = await this.getAllItemsIndexedDB();
+  },
   methods: {
     roomCombination(adults, kids = 0) {
       let result = null;
@@ -270,6 +286,7 @@ export const lodgingUtilsMixin = {
       return false;
     },
     async searchResult(searchItem, combination, combinationV2 = null) {
+      this.clearAllItemsIndexedDB();
       let currentHotelec = localStorage.getItem("currentHotelecIds");
       let HotelecSessionExpired = false;
       if (currentHotelec) {
@@ -453,6 +470,10 @@ export const lodgingUtilsMixin = {
         return i.habitaciones.length > 0;
       });
 
+      if (resultList.length) {
+        this.addItemIndexedDB(resultList);
+      }
+
       if (!currentHotelec) {
         try {
           const response = await hotetecOpenSession();
@@ -525,6 +546,36 @@ export const lodgingUtilsMixin = {
         console.log(e);
       }
       return hotelecData;
+    },
+    async addItemIndexedDB(record) {
+      const tx = this.db.transaction('items', 'readwrite');
+      const store = tx.objectStore('items');
+      console.log('store', store);
+      await store.add(record);
+      this.items = await this.getAllItemsIndexedDB();
+    },
+    async getAllItemsIndexedDB() {
+      const tx = this.db.transaction('items', 'readonly');
+      const store = tx.objectStore('items');
+      return await store.getAll();
+    },
+    async deleteItemIndexedDB(key) {
+      const tx = this.db.transaction('items', 'readwrite');
+      const store = tx.objectStore('items');
+      store.delete(key);
+    },
+    async clearAllItemsIndexedDB() {
+      const tx = this.db.transaction('items', 'readwrite');
+      const store = tx.objectStore('items');
+      const request = store.clear();
+
+      request.onsuccess = () => {
+        console.log('Todos los datos han sido eliminados del object store.');
+      };
+
+      request.onerror = (event) => {
+        console.error('Error al eliminar los datos del object store:', event);
+      };
     },
     visitantesToAcomodation(visitantes) {
       let result = [];
