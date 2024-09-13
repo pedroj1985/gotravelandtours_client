@@ -162,6 +162,13 @@ export function authGetLodgingEatingPlanOne(id) {
   });
 }
 
+export function authGetHotelList() {
+  let token = localStorage.getItem("token");
+  return HTTP.get("/Alojamientoes/GetHotelList", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
 export function authSearchRegions() {
   let token = localStorage.getItem("token");
   return HTTP.get("/Regions?col=-1", null, {

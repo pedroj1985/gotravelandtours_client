@@ -109,7 +109,8 @@ import GttModalSearch from "../custom-elements/GttModalSearch";
 import {
   authSearchRegions,
   authGetRoomTypes,
-  authGetLodgingsAll
+  authGetLodgingsAll,
+  authGetHotelList
 } from "../../utils/auth";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
@@ -338,11 +339,19 @@ export default {
             type: "region"
           });
         });
-        let l = await authGetLodgingsAll();
+        /* let l = await authGetLodgingsAll();
         l.data.forEach(i => {
           totalResult = totalResult.concat({
             nombre: i.Nombre,
             id: i.ProductoId,
+            type: "alojamiento"
+          });
+        }); */
+        let l = await authGetHotelList();
+        l.data.forEach(i => {
+          totalResult = totalResult.concat({
+            nombre: i.Nombre,
+            id: i.IdObjeto,
             type: "alojamiento"
           });
         });

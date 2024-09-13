@@ -203,7 +203,8 @@ import { eventBus } from "../../main";
 import {
   authSearchRegions,
   authGetRoomTypes,
-  authGetLodgingsAll
+  authGetLodgingsAll,
+  authGetHotelList
 } from "../../utils/auth";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
@@ -233,7 +234,7 @@ export default {
     minEndDate() {
       let minEndDate = moment().add(7, "days").format("YYYY-MM-DD");
       if (this.selectedStartDate) {
-        minEndDate = moment(this.selectedStartDate).add(4, "days").format("YYYY-MM-DD");
+        minEndDate = moment(this.selectedStartDate).add(this.selectedNights, "days").format("YYYY-MM-DD");
       }
       return minEndDate;
     }
@@ -248,9 +249,9 @@ export default {
       this.selectedNights = n;
     },
     selectedStartDate(item) {
-      this.selectedEndDate = moment(item).add(4, "days").toDate();
-      let n = moment(this.selectedEndDate).diff(this.selectedStartDate, "days");
       this.selectedNights = 3;
+      this.selectedEndDate = moment(item).add(this.selectedNights, "days").toDate();
+      let n = moment(this.selectedEndDate).diff(this.selectedStartDate, "days");
     },
     selectedNights(item) {
       this.selectedEndDate = new Date(
@@ -294,11 +295,19 @@ export default {
             type: "region"
           });
         });
-        let l = await authGetLodgingsAll();
+        /* let l = await authGetLodgingsAll();
         l.data.forEach(i => {
           totalResult = totalResult.concat({
             nombre: i.Nombre,
             id: i.ProductoId,
+            type: "alojamiento"
+          });
+        }); */
+        let l = await authGetHotelList();
+        l.data.forEach(i => {
+          totalResult = totalResult.concat({
+            nombre: i.Nombre,
+            id: i.IdObjeto,
             type: "alojamiento"
           });
         });

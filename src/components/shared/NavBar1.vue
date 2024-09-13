@@ -26,11 +26,11 @@
               Mis reservas <i class="mdi mdi-timetable"></i>
             </router-link>
           </div>
-          <div class="bills hn-roman">
+          <!-- <div class="bills hn-roman">
             <a href="#"
               >Mis facturas <i class="mdi mdi-file-document-outline"></i
             ></a>
-          </div>
+          </div> -->
           <div class="shopping-cart">
             <router-link :to="{ name: 'reservation' }">
               <div class="shopping-cart-wrapper">
@@ -45,9 +45,9 @@
         <div id="language_selector">
           <i class="mdi mdi-web"></i><span class="l_letters hn-roman">ES</span>
         </div>
-        <div class="search" v-if="isUserLogged">
+        <!-- <div class="search" v-if="isUserLogged">
           <i class="mdi mdi-magnify"></i>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

@@ -140,7 +140,8 @@ import {
   authGetLodgingEatingPlanOne,
   authGetRoomPrice,
   authSearchRegions,
-  authGetLodgingsAll
+  authGetLodgingsAll,
+  authGetHotelList
 } from "../../utils/auth";
 import _ from "lodash";
 
@@ -514,11 +515,19 @@ export default {
             type: "region"
           });
         });
-        let l = await authGetLodgingsAll();
+        /* let l = await authGetLodgingsAll();
         l.data.forEach(i => {
           totalResult = totalResult.concat({
             nombre: i.Nombre,
             id: i.ProductoId,
+            type: "alojamiento"
+          });
+        }); */
+        let l = await authGetHotelList();
+        l.data.forEach(i => {
+          totalResult = totalResult.concat({
+            nombre: i.Nombre,
+            id: i.IdObjeto,
             type: "alojamiento"
           });
         });

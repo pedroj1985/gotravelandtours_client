@@ -666,6 +666,7 @@ export default {
       let active_rooms = rooms.data.filter((i) => {
         return i.IsActiva == true;
       });
+      console.info([listaPlanesAlimenticios, rooms, active_rooms])
       try {
         await Promise.all(
           active_rooms.map(async (j) => {
