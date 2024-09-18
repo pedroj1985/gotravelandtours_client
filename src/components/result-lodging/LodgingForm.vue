@@ -200,8 +200,8 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         this.isModalActive = true;
-        if (this.selectedLodgingDestinyValue.type == "region") {
-          let region = { RegionId: this.selectedLodgingDestinyValue.regionid };
+        if (this.selectedLodgingDestinyValue.type == "RGN") {
+          let region = { RegionId: this.selectedLodgingDestinyValue.id };
           let cliente = { ClienteId: localStorage.getItem("cliente") };
           let searchItem = {
             Entrada: this.selectedArriveDate,
@@ -212,7 +212,7 @@ export default {
           let searchFilters = {
             Destiny: this.selectedLodgingDestinyValue,
             Region: {
-              RegionId: this.selectedLodgingDestinyValue.regionid,
+              RegionId: this.selectedLodgingDestinyValue.id,
               RegionNombre: this.selectedLodgingDestinyValue.nombre
             },
             Cliente: { ClienteId: localStorage.getItem("cliente") },
@@ -273,7 +273,7 @@ export default {
               }
             );
           }
-        } else if (this.selectedLodgingDestinyValue.type == "alojamiento") {
+        } else if (this.selectedLodgingDestinyValue.type == "HTL") {
           let searchFilters = {
             Destiny: this.selectedLodgingDestinyValue,
             NombreHotel: this.selectedLodgingDestinyValue.nombre,
@@ -330,15 +330,15 @@ export default {
     },
     async loadDestinies() {
       if (this.lodgingOpened == true) {
-        let { data } = await authSearchRegions();
+        //let { data } = await authSearchRegions();
         let totalResult = [];
-        data.forEach(item => {
+        /* data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             regionid: item.RegionId,
             type: "region"
           });
-        });
+        }); */
         /* let l = await authGetLodgingsAll();
         l.data.forEach(i => {
           totalResult = totalResult.concat({
@@ -352,7 +352,7 @@ export default {
           totalResult = totalResult.concat({
             nombre: i.Nombre,
             id: i.IdObjeto,
-            type: "alojamiento"
+            type: i.TipoObjeto
           });
         });
         this.destinies = totalResult;

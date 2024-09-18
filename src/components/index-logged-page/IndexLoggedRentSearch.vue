@@ -508,7 +508,7 @@ export default {
           data.forEach((item) => {
             totalResult = totalResult.concat({
               nombre: item.Nombre,
-              regionid: item.RegionId,
+              regionid: item.id,
               puntointeresid: item.PuntoInteresId,
               type: "punto-interes",
             });
@@ -532,7 +532,7 @@ export default {
           data.forEach((item) => {
             totalResult = totalResult.concat({
               nombre: item.Nombre,
-              regionid: item.RegionId,
+              regionid: item.id,
               puntointeresid: item.PuntoInteresId,
               type: "punto-interes",
             });

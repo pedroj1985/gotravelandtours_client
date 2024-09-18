@@ -154,7 +154,7 @@ export default {
   mixins: [reusableMethodsMixin, lodgingUtilsMixin],
   watch: {
     selectedDestiny(item) {
-      if (item.type == "region") {
+      if (item.type == "RGN") {
         this.disableByRegion = true;
       } else {
         this.disableByRegion = false;
@@ -176,8 +176,8 @@ export default {
     this.roomsOpt = this.generateRooms();
     this.selectedDestiny = {
       nombre: this.item.lodging.Nombre,
-      id: this.item.lodging.ProductoId,
-      type: "alojamiento"
+      id: this.item.lodging.IdObjeto,
+      type: this.item.lodging.TipoObjeto
     };
   },
   data() {
@@ -383,7 +383,7 @@ export default {
           }
         };
 
-        if (this.selectedDestiny.type == "alojamiento") {
+        if (this.selectedDestiny.type == "HTL") {
           let r = this.visitantesToAcomodation(this.visitantes);
           let searchFilters = {
             Destiny: this.selectedDestiny,
@@ -411,7 +411,7 @@ export default {
           let searchFilters = {
             Destiny: this.selectedDestiny,
             Region: {
-              RegionId: this.selectedDestiny.regionid,
+              RegionId: this.selectedDestiny.id,
               RegionNombre: this.selectedDestiny.nombre
             },
             Cliente: { ClienteId: localStorage.getItem("cliente") },
@@ -506,21 +506,21 @@ export default {
     },
     async loadDestinies() {
       if (this.lodgingOpened == true) {
-        let { data } = await authSearchRegions();
+        //let { data } = await authSearchRegions();
         let totalResult = [];
-        data.forEach(item => {
+        /* data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             regionid: item.RegionId,
-            type: "region"
+            type: "RGN"
           });
-        });
+        }); */
         /* let l = await authGetLodgingsAll();
         l.data.forEach(i => {
           totalResult = totalResult.concat({
             nombre: i.Nombre,
             id: i.ProductoId,
-            type: "alojamiento"
+            type: "HTL"
           });
         }); */
         let l = await authGetHotelList();
@@ -528,7 +528,7 @@ export default {
           totalResult = totalResult.concat({
             nombre: i.Nombre,
             id: i.IdObjeto,
-            type: "alojamiento"
+            type: "HTL"
           });
         });
         this.destinies = totalResult;
