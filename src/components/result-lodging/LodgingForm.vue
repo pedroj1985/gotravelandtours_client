@@ -165,6 +165,8 @@ export default {
 
       localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
 
+      this.$router.go(0);
+
       this.$router.push({
         name: "lodging-detail",
         params: {
