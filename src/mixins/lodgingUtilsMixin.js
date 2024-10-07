@@ -314,154 +314,157 @@ export const lodgingUtilsMixin = {
       let { data } = await authSearchLodging(searchItem);
       await Promise.all(
         data.map(async i => {
-          let rooms = await authSearchRoomsByLodging(i.Alojamiento.ProductoId);
-          let img = await authGetImage(i.Alojamiento.ProductoId);
-          let fullLodging = await authGetLodging(i.Alojamiento.ProductoId);
-          // let tipo = this.habitacionPorCantidadPersonas(this.selectedRoomLayout.adults.value)
-          // let habitaciones = []
-          let listadoPrecios = [];
-          await Promise.all(
-            rooms.data.map(async j => {
-              let todasCombinaciones = j.ListaCombinacionesDisponibles;
-              let puedeAcomodarse = this.existenCombinacionesEnHabitacion(
-                resultadoAcomodacion,
-                todasCombinaciones
-              );
-              if (puedeAcomodarse) {
-                await Promise.all(
-                  fullLodging.data.ListaPlanesAlimenticios.map(async lpa => {
-                    let r = resultadoAcomodacion;
-                    console.log("resultado acomodacion", r);
-                    let listadoPorTipo = [];
-                    let temp = [];
-                    let hotelecData = null;
-                    let noPrice = false;
-                    await Promise.all(
-                      r.map(async k => {
-                        for (let index = 0; index < k.cantidad; index++) {
-                          let ca = 1;
-                          if (k.hab == "Doble") ca = 2;
-                          else if (k.hab == "Triple") ca = 3;
-                          let roomPriceSearchObj = {
-                            Cliente: {
-                              ClienteId: localStorage.getItem("cliente")
-                            },
-                            PlanAlimenticio: {
-                              PlanesAlimenticiosId: lpa.PlanesAlimenticiosId
-                            },
-                            Alojamiento: {
-                              ProductoId: i.Alojamiento.ProductoId
-                            },
-                            TipoHabitacion: { TipoHabitacionId: k.habId },
-                            CantidadAdultos: ca,
-                            CantidadMenores: k.kids,
-                            CantidadInfantes: 0,
-                            CantidadHabitaciones: 1,
-                            HotetecIdeses: currentHotelec,
-                            Habitacion: { HabitacionId: j.HabitacionId },
-                            Entrada: searchItem.Entrada,
-                            IsSinContrato: i.IsSinContrato,
-                            Salida: searchItem.Salida
-                          };
-                          try {
-                            let precioA = await authGetRoomPrice(
-                              roomPriceSearchObj
-                            );
+          if (i.ReferenciaHotetecId !== null) {
+            let rooms = await authSearchRoomsByLodging(i.Alojamiento.ProductoId);
+            let img = await authGetImage(i.Alojamiento.ProductoId);
+            let fullLodging = await authGetLodging(i.Alojamiento.ProductoId);
+            // let tipo = this.habitacionPorCantidadPersonas(this.selectedRoomLayout.adults.value)
+            // let habitaciones = []
+            let listadoPrecios = [];
+            await Promise.all(
+              rooms.data.map(async j => {
+                let todasCombinaciones = j.ListaCombinacionesDisponibles;
+                let puedeAcomodarse = this.existenCombinacionesEnHabitacion(
+                  resultadoAcomodacion,
+                  todasCombinaciones
+                );
+                if (puedeAcomodarse) {
+                  await Promise.all(
+                    fullLodging.data.ListaPlanesAlimenticios.map(async lpa => {
+                      let r = resultadoAcomodacion;
+                      console.log("resultado acomodacion", r);
+                      let listadoPorTipo = [];
+                      let temp = [];
+                      let hotelecData = null;
+                      let noPrice = false;
+                      await Promise.all(
+                        r.map(async k => {
+                          for (let index = 0; index < k.cantidad; index++) {
+                            let ca = 1;
+                            if (k.hab == "Doble") ca = 2;
+                            else if (k.hab == "Triple") ca = 3;
+                            let roomPriceSearchObj = {
+                              Cliente: {
+                                ClienteId: localStorage.getItem("cliente")
+                              },
+                              PlanAlimenticio: {
+                                PlanesAlimenticiosId: lpa.PlanesAlimenticiosId
+                              },
+                              Alojamiento: {
+                                ProductoId: i.Alojamiento.ProductoId
+                              },
+                              TipoHabitacion: { TipoHabitacionId: k.habId },
+                              CantidadAdultos: ca,
+                              CantidadMenores: k.kids,
+                              CantidadInfantes: 0,
+                              CantidadHabitaciones: 1,
+                              HotetecIdeses: currentHotelec,
+                              Habitacion: { HabitacionId: j.HabitacionId },
+                              Entrada: searchItem.Entrada,
+                              IsSinContrato: i.IsSinContrato,
+                              Salida: searchItem.Salida
+                            };
+                            try {
+                              let precioA = await authGetRoomPrice(
+                                roomPriceSearchObj
+                              );
 
-                            if (
-                              precioA.data.length != 0 &&
-                              // && precioA.data[0].OrdenAlojamientoId != -1
-                              precioA.data[0].PrecioOrden != 0
-                            ) {
-                              hotelecData = {
-                                HotetecInfoHabId:
-                                  precioA.data[0].HotetecInfoHabId,
-                                HotetecInfoHotelId:
-                                  precioA.data[0].HotetecInfoHotelId,
-                                HotetecIdeses: precioA.data[0].HotetecIdeses,
-                                HotetecIsAvailable:
-                                  precioA.data[0].HotetecIsAvailable
-                              };
-                              if (hotelecData.HotetecIsAvailable) {
-                                temp.push({
-                                  cantidad: 1,
-                                  precioObjOne: precioA.data[0] || -1,
-                                  price: {
-                                    value: precioA.data[0].PrecioOrden,
-                                    currency: "USD"
-                                  },
-                                  tipoHabitacion: k.habId,
-                                  tipoHabitacionNombre: k.hab,
-                                  cantidadMenoresPorHabitacion: k.kids,
-                                  planAlimenticio: lpa.PlanesAlimenticiosId
-                                });
+                              if (
+                                precioA.data.length != 0 &&
+                                // && precioA.data[0].OrdenAlojamientoId != -1
+                                precioA.data[0].PrecioOrden != 0
+                              ) {
+                                hotelecData = {
+                                  HotetecInfoHabId:
+                                    precioA.data[0].HotetecInfoHabId,
+                                  HotetecInfoHotelId:
+                                    precioA.data[0].HotetecInfoHotelId,
+                                  HotetecIdeses: precioA.data[0].HotetecIdeses,
+                                  HotetecIsAvailable:
+                                    precioA.data[0].HotetecIsAvailable
+                                };
+                                if (hotelecData.HotetecIsAvailable) {
+                                  temp.push({
+                                    cantidad: 1,
+                                    precioObjOne: precioA.data[0] || -1,
+                                    price: {
+                                      value: precioA.data[0].PrecioOrden,
+                                      currency: "USD"
+                                    },
+                                    tipoHabitacion: k.habId,
+                                    tipoHabitacionNombre: k.hab,
+                                    cantidadMenoresPorHabitacion: k.kids,
+                                    planAlimenticio: lpa.PlanesAlimenticiosId
+                                  });
+                                }
+                              } else {
+                                noPrice = true;
                               }
-                            } else {
+                            } catch (e) {
                               noPrice = true;
                             }
-                          } catch (e) {
-                            noPrice = true;
                           }
-                        }
-                      })
-                    );
-                    if (!noPrice) {
-                      listadoPorTipo = temp;
-                    }
-                    if (listadoPorTipo.length != 0) {
-                      let totalPrice = 0;
-                      let display = "";
-                      listadoPorTipo.forEach(element => {
-                        totalPrice = totalPrice + element.price.value;
-                        display =
-                          display +
-                          `${element.cantidad}x${element.tipoHabitacionNombre} | `;
-                      });
-                      let planA = await authGetLodgingEatingPlanOne(
-                        lpa.PlanesAlimenticiosId
+                        })
                       );
-                      listadoPrecios.push({
-                        name: j.Nombre,
-                        habitacion: j,
-                        planAlimenticioCodigo: planA.data.Codigo,
-                        planAlimenticioNombre: planA.data.Nombre,
-                        planAlimenticio: lpa.PlanesAlimenticiosId,
-                        hotelectData: hotelecData,
-                        IsSinContrato: i.IsSinContrato,
-                        combinacion: {
-                          total: totalPrice,
-                          display: display,
-                          listado: listadoPorTipo
-                        }
-                      });
-                    }
-                    console.log("listado por tipo", listadoPorTipo);
-                  })
-                );
-              }
-            })
-          );
-          let ro = {
-            tipo: "lodging",
-            entrada: searchItem.Entrada,
-            salida: searchItem.Salida,
-            name: fullLodging.data.Nombre,
-            stars: fullLodging.data.NumeroEstrellas,
-            location: fullLodging.data.Direccion,
-            images: [img.data.ImageContent],
-            acomodation: resultadoAcomodacion,
-            habitaciones: _.orderBy(
-              listadoPrecios,
-              function(e) {
-                return e.combinacion.total;
-              },
-              "asc"
-            ),
-            planesAlimenticios: fullLodging.data.ListaPlanesAlimenticios,
-            lodging: i.Alojamiento
-          };
-          resultList.push(ro);
-          // }
+                      if (!noPrice) {
+                        listadoPorTipo = temp;
+                      }
+                      if (listadoPorTipo.length != 0) {
+                        let totalPrice = 0;
+                        let display = "";
+                        listadoPorTipo.forEach(element => {
+                          totalPrice = totalPrice + element.price.value;
+                          display =
+                            display +
+                            `${element.cantidad}x${element.tipoHabitacionNombre} | `;
+                        });
+                        let planA = await authGetLodgingEatingPlanOne(
+                          lpa.PlanesAlimenticiosId
+                        );
+                        listadoPrecios.push({
+                          name: j.Nombre,
+                          habitacion: j,
+                          planAlimenticioCodigo: planA.data.Codigo,
+                          planAlimenticioNombre: planA.data.Nombre,
+                          planAlimenticio: lpa.PlanesAlimenticiosId,
+                          hotelectData: hotelecData,
+                          IsSinContrato: i.IsSinContrato,
+                          combinacion: {
+                            total: totalPrice,
+                            display: display,
+                            listado: listadoPorTipo
+                          }
+                        });
+                      }
+                      console.log("listado por tipo", listadoPorTipo);
+                    })
+                  );
+                }
+              })
+            );
+            let ro = {
+              tipo: "lodging",
+              entrada: searchItem.Entrada,
+              salida: searchItem.Salida,
+              name: fullLodging.data.Nombre,
+              stars: fullLodging.data.NumeroEstrellas,
+              location: fullLodging.data.Direccion,
+              images: [img.data.ImageContent],
+              acomodation: resultadoAcomodacion,
+              habitaciones: _.orderBy(
+                listadoPrecios,
+                function(e) {
+                  return e.combinacion.total;
+                },
+                "asc"
+              ),
+              planesAlimenticios: fullLodging.data.ListaPlanesAlimenticios,
+              lodging: i.Alojamiento
+            };
+            resultList.push(ro);
+            // }
+          }
+
         })
       );
 
