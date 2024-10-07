@@ -207,8 +207,7 @@ export const lodgingUtilsMixin = {
         });
       });
       result = temp;
-      console.log(result);
-      console.log("result");
+      console.log("result", result);
       return result;
     },
     buildRoomIdCombo(roomLayout) {

@@ -44,9 +44,9 @@ export default {
     };
   },
   created() {
-    // setTimeout(()=>{
-    //     this.$emit('searchingFinished',false)
-    // },2000)
+    setTimeout(()=>{
+        this.$emit('searchingFinished',false)
+    },3600)
   },
 };
 </script>

@@ -165,14 +165,24 @@ export default {
 
       localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
 
-      this.$router.go(0);
+      const currentRoute = this.$route;
 
-      this.$router.push({
-        name: "lodging-detail",
-        params: {
-          id: id
-        }
-      });
+      if (currentRoute.params.id === id) {
+        this.$router.push({
+          name: "lodging-detail",
+          params: {
+            id: id
+          }
+        });
+      } else {
+        this.$router.go(0);
+        this.$router.push({
+          name: "lodging-detail",
+          params: {
+            id: id
+          }
+        });
+      }
     },
     gttValidate() {
       let validator = [
@@ -276,6 +286,7 @@ export default {
             );
           }
         } else if (this.selectedLodgingDestinyValue.type == "HTL") {
+          console.log("HTL");
           let searchFilters = {
             Destiny: this.selectedLodgingDestinyValue,
             NombreHotel: this.selectedLodgingDestinyValue.nombre,
