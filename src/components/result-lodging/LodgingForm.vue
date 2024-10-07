@@ -167,7 +167,7 @@ export default {
 
       const currentRoute = this.$route;
 
-      if (currentRoute.params.id === id) {
+      if (currentRoute.params.id !== id) {
         this.$router.push({
           name: "lodging-detail",
           params: {
@@ -212,6 +212,7 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         this.isModalActive = true;
+        console.log('selectedLodgingDestinyValue', this.selectedLodgingDestinyValue);
         if (this.selectedLodgingDestinyValue.type == "RGN") {
           let region = { RegionId: this.selectedLodgingDestinyValue.id };
           let cliente = { ClienteId: localStorage.getItem("cliente") };
