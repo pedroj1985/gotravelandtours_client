@@ -161,13 +161,13 @@ export default {
       return s.substring(2);
     },
     goToDetail(f, a, id) {
+      const currentRoute = this.$route;
+
       localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
 
       localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
 
-      const currentRoute = this.$route;
-
-      if (currentRoute.params.id !== id) {
+      if (currentRoute.params.id != parseInt(id)) {
         this.$router.push({
           name: "lodging-detail",
           params: {
@@ -212,7 +212,6 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         this.isModalActive = true;
-        console.log('selectedLodgingDestinyValue', this.selectedLodgingDestinyValue);
         if (this.selectedLodgingDestinyValue.type == "RGN") {
           let region = { RegionId: this.selectedLodgingDestinyValue.id };
           let cliente = { ClienteId: localStorage.getItem("cliente") };
@@ -255,6 +254,7 @@ export default {
               searchFilters.Visitantes.kids.value || 0
             );
             if (this.roomComb != "ERROR") {
+              console.log('resultList');
               resultList = await this.searchResult(
                 searchItem,
                 this.roomComb,
@@ -264,6 +264,7 @@ export default {
                 "searchLodgingFilters",
                 JSON.stringify(searchFilters)
               );
+              console.log('desactivateModal');
               this.desactivateModal();
               this.$router.push({
                 name: "lodgingResultHolder",

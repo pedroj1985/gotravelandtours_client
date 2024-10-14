@@ -26,7 +26,7 @@
       <div class="col-md-3 col-sm-5 left-side-wrapper">
         <div class="left-side">
           <div class="lodging-form">
-            <LodgingForm
+            <LodgingForm ref="lodgingForm"
               :propLodgingDestinyValue="filters.Destiny"
               :propArriveDate="filters.Entrada"
               :propDepartureDate="filters.Salida"
@@ -391,37 +391,6 @@ export default {
   },
   async created() {
     await this.initializeData();
-    // this.roomsOpt = this.generateRooms()
-    /* this.totalRooms = {
-      value: 1,
-      display: "1 habitación",
-    };
-    let f = JSON.parse(localStorage.getItem("searchLodgingFilters"));
-    this.filters = f;
-
-    let a = JSON.parse(localStorage.getItem("searchLodgingAcomodation"));
-    this.fillRoomLayout(a);
-
-    this.inDate = new Date(this.filters.Entrada);
-    this.outDate = new Date(this.filters.Salida);
-    let id = this.$route.params.id;
-    let { data } = await authGetLodging(id);
-    // let img = await authGetImage(id)
-    let imgs = await authGetImages(id);
-    let imgs_array = imgs.data.map((i) => i.ImageContent);
-    this.item = {
-      images: imgs_array,
-      lodging: data,
-    };
-    try {
-      this.roomsSelecting = true;
-      await this.sR();
-      if (this.roomsResult.length == 0) {
-        this.roomsSelecting = false;
-      }
-    } catch (e) {
-      console.log(e);
-    } */
   },
   data() {
     return {
@@ -531,6 +500,7 @@ export default {
         if (this.roomsResult.length == 0) {
           this.roomsSelecting = false;
         }
+        this.$refs.lodgingForm.desactivateModal();
         this.$emit('searchingFinished',false)
       } catch (e) {
         console.log(e);
