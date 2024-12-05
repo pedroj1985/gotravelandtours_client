@@ -1,7 +1,7 @@
 <template>
   <div class="selected-room flex-wrapper">
     <div class="room-name">
-      {{ item.habitacion.Habitacion.Nombre }} (
+      {{ item.name }} (
       <AdultsKidsIcons
         :adults="item.CantAdultos"
         :kids="item.CantidadMenores"

@@ -21,7 +21,7 @@
 
 <style>
     .list-item{
-        margin-bottom: 50px;
+        margin-bottom: 20px;
         position: relative;
     }
 </style>

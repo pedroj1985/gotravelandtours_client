@@ -30,7 +30,7 @@ export default {
 
 <style>
 .list-item {
-  margin-bottom: 50px;
+  margin-bottom: 15px;
   position: relative;
 }
 </style>

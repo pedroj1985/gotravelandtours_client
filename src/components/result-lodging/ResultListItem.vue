@@ -16,7 +16,11 @@
             v-for="destinyImage in item.images"
             :key="destinyImage"
           >
-            <img v-bind:src="destinyImage" alt />
+            <img v-if="destinyImage" v-bind:src="destinyImage" alt />
+            <img v-else
+                src="../../../public/img/icopaq_alojamiento_black.svg"
+                alt="alojamiento"
+            />
           </div>
         </Slick>
       </div>
@@ -84,9 +88,9 @@
       </div>
       <div class="list-item-price">
         <div class="price-wrapper">
-          <div class="hn-mdcn better-price">Mejor precio para:</div>
+          <!-- <div class="hn-mdcn better-price">Mejor precio para:</div> -->
           <div class="hn-mdcn">{{ constructDisplay(filters.Visitantes) }}</div>
-          <div class="price antonio-light">
+          <!-- <div class="price antonio-light">
             {{
               styledPrice(
                 getMinPrice(item.habitaciones).combinacion.listado[0]
@@ -94,16 +98,16 @@
               ).intPart
             }}
             USD
-          </div>
+          </div> -->
           <div class="details-btn form-actions">
             <button @click="goToDetail" type="submit" class="antonio-regular">
-              Ver detalles
+              Ver ofertas
             </button>
           </div>
         </div>
       </div>
     </div>
-    <div class="list-item-children">
+    <!-- <div class="list-item-children">
       <ResultListRow
         v-for="child in filteredItems"
         :key="child.id"
@@ -113,7 +117,7 @@
         @loading="onLoading"
         @reserve="reserve"
       ></ResultListRow>
-    </div>
+    </div> -->
     <div
       class="open-close-button"
       @click="openList"

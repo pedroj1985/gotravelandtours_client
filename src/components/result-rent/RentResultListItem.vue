@@ -63,7 +63,7 @@
               @click="goDetails(item.id)"
               class="antonio-regular"
             >
-              Ver detalles
+              Ver ofertas
             </button>
           </div>
         </div>

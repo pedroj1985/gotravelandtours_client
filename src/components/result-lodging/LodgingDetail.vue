@@ -341,6 +341,8 @@ import {
   authSearchRoomsByLodging,
   authGetRoomPrice,
   authGetLodgingEatingPlanOne,
+  hotetecOpenSession,
+  hotetecStateSession
 } from "../../utils/auth";
 import Slick from "vue-slick-carousel";
 import GttSelectDate from "../custom-elements/GttSelectDate";
@@ -389,9 +391,9 @@ export default {
     await this.initializeData();
     next();
   },
-  async created() {
+  /* async created() {
     await this.initializeData();
-  },
+  }, */
   data() {
     return {
       item: null,
@@ -485,6 +487,7 @@ export default {
       this.outDate = new Date(this.filters.Salida);
       let id = this.$route.params.id;
       let { data } = await authGetLodging(id);
+      console.info('dataDetail', data);
       // let img = await authGetImage(id)
       let imgs = await authGetImages(id);
       let imgs_array = imgs.data.map((i) => i.ImageContent);
@@ -612,7 +615,7 @@ export default {
     },
     addToGeneralCart() {
       let listado = [];
-      this.roomsToReserve.forEach((i) => {
+      this.roomsToReserve.forEach((i) => {console.log('-- romsreserve --', i);
         listado.push({
           precioObjOne: i.habitacion,
           tipoHabitacion: i.habitacion.TipoHabitacion.TipoHabitacionId,
@@ -662,15 +665,17 @@ export default {
         name: "reservation",
       });
     },
-    addOneToCart(item) {
+    addOneToCart(item) {console.info('item5', item);
       this.roomsToReserve.push(item);
       this.roomSelectedToDis.push(item.rn);
     },
     async addToCart(item) {
+      console.log('item5', item);
       item.l.forEach((i) => {
         this.roomsToReserve.push(i);
         this.roomSelectedToDis.push(i.rn);
       });
+      console.info([this.roomsToReserve, this.roomSelectedToDis]);
       // this.roomsSelecting = false
       // this.refreshLayout()
     },
@@ -685,69 +690,106 @@ export default {
       }
     },
     async sR() {
+      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      let HotelecSessionExpired = false;
+      //let PlanesAlimenticiosIds = [];
+
+      if (currentHotelec) {
+        const response = await hotetecStateSession(currentHotelec);
+        HotelecSessionExpired = !response.data.Infses;
+      }
+      if (!currentHotelec || HotelecSessionExpired) {
+        // await this.$helpers.shoppingCartDeleteAll(true);
+        try {
+          const response = await hotetecOpenSession();
+          if (response && response.data && response.data.Ideses) {
+            currentHotelec = response.data.Ideses;
+            localStorage.setItem("currentHotelecIds", currentHotelec);
+          }
+        } catch (error) {
+          console.error(
+            "Error occurred while fetching or processing data:",
+            error.message
+          );
+        }
+      }
+
       this.roomsResult = [];
       let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;
       let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId);
       let active_rooms = rooms.data.filter((i) => {
         return i.IsActiva == true;
       });
-      console.info([listaPlanesAlimenticios, rooms, active_rooms])
+      // console.info('allData', [listaPlanesAlimenticios, rooms, active_rooms])
       try {
+
         await Promise.all(
           active_rooms.map(async (j) => {
+            console.log('--- j ---', j);
             await Promise.all(
               listaPlanesAlimenticios.map(async (i) => {
-                let pa = await authGetLodgingEatingPlanOne(
-                  i.PlanesAlimenticiosId
-                );
-                let noDisp = false;
-                let c = 0;
-                let temp = [];
-                while (!noDisp && c < this.selectedRoomLayout.length) {
-                  let el = this.selectedRoomLayout[c];
-                  let ca = el.layout.find((p) => p.code == "adults").value;
-                  let cm = el.layout.find((p) => p.code == "kids").value;
-                  let so = {
-                    Cliente: { ClienteId: localStorage.getItem("cliente") },
-                    PlanAlimenticio: {
-                      PlanesAlimenticiosId: i.PlanesAlimenticiosId,
-                    },
-                    Alojamiento: { ProductoId: this.item.lodging.ProductoId },
-                    TipoHabitacion: { TipoHabitacionId: ca },
-                    CantidadAdultos: ca,
-                    CantidadMenores: cm,
-                    CantidadInfantes: 0,
-                    CantidadHabitaciones: 1,
-                    Habitacion: { HabitacionId: j.HabitacionId },
-                    Entrada: this.inDate,
-                    Salida: this.outDate,
-                  };
-                  try {
-                    let result = await authGetRoomPrice(so);
-                    if (
-                      result.data.length != 0 &&
-                      // && r.data[0].OrdenAlojamientoId != -1
-                      result.data[0].PrecioOrden != 0
-                    ) {
-                      temp.push({
-                        habitacion: result.data[0],
-                        CantAdultos: ca,
-                        CantidadMenores: cm,
-                        PA: pa.data,
-                        rn: el.room,
-                        id: uuid.v4(),
-                      });
-                    } else {
+                console.log('--- i ---', i);
+                //if (!PlanesAlimenticiosIds.includes(i.PlanesAlimenticiosId)) {
+                  let pa = await authGetLodgingEatingPlanOne(
+                    i.PlanesAlimenticiosId
+                  );
+                  let noDisp = false;
+                  let c = 0;
+                  let temp = [];
+                  while (!noDisp && c < this.selectedRoomLayout.length) {
+                    let el = this.selectedRoomLayout[c];
+                    let ca = el.layout.find((p) => p.code == "adults").value;
+                    let cm = el.layout.find((p) => p.code == "kids").value;
+                    let so = {
+                      Cliente: { ClienteId: localStorage.getItem("cliente") },
+                      PlanAlimenticio: {
+                        PlanesAlimenticiosId: i.PlanesAlimenticiosId,
+                      },
+                      Alojamiento: { ProductoId: this.item.lodging.ProductoId },
+                      TipoHabitacion: { TipoHabitacionId: ca },
+                      CantidadAdultos: ca,
+                      CantidadMenores: cm,
+                      CantidadInfantes: 0,
+                      CantidadHabitaciones: 1,
+                      HotetecIdeses: currentHotelec,
+                      IsSinContrato: true,
+                      Habitacion: { HabitacionId: j.HabitacionId },
+                      Entrada: this.inDate,
+                      Salida: this.outDate,
+                    };
+                    try {
+                      let precioA = await authGetRoomPrice(so);
+                      let data = precioA.data[0];
+                      data.TipoHabitacion = so.TipoHabitacion;
+                      console.info('precioData', data);
+                      if (
+                        precioA.data.length != 0 &&
+                        // && r.data[0].OrdenAlojamientoId != -1
+                        data.PrecioOrden != 0 &&
+                        data.HotetecIsAvailable === true
+                      ) {
+                        temp.push({
+                          name: j.Nombre,
+                          habitacion: data || -1,
+                          CantAdultos: ca,
+                          CantidadMenores: cm,
+                          PA: pa.data,
+                          rn: el.room,
+                          id: uuid.v4(),
+                        });
+                      } else {
+                        noDisp = true;
+                      }
+                    } catch (e) {
                       noDisp = true;
                     }
-                  } catch (e) {
-                    noDisp = true;
-                  }
 
-                  c++;
-                }
+                    c++;
+                  }
+                //}
 
                 if (!noDisp) {
+                  console.info('roomsResult', [j, pa.data, temp]);
                   this.roomsResult.push({
                     rO: j,
                     pA: pa.data,
