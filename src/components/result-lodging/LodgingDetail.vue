@@ -59,7 +59,12 @@
                 >
                   Reservar
                 </button>
-                <!-- <button type="button" @click="addToGeneralCart" class=" selected-rooms-btn antonio-regular inverse btn-cart"><i class="mdi mdi-cart"></i></button> -->
+                <!-- <button
+                  type="button"
+                  @click="addToGeneralCart"
+                  class=" selected-rooms-btn antonio-regular inverse btn-cart">
+                  <i class="mdi mdi-cart"></i>
+                </button> -->
               </template>
               <div
                 class="total-to-pay font18 flex-right-side to-uppercase hn-bdcn"
@@ -342,7 +347,8 @@ import {
   authGetRoomPrice,
   authGetLodgingEatingPlanOne,
   hotetecOpenSession,
-  hotetecStateSession
+  hotetecStateSession,
+  hotetecBlockProduct
 } from "../../utils/auth";
 import Slick from "vue-slick-carousel";
 import GttSelectDate from "../custom-elements/GttSelectDate";
@@ -358,8 +364,10 @@ import AdultsKidsIcons from "./AdultsKidsIcons";
 import LodgingForm from "./LodgingForm";
 import NavBar2 from "../shared/NavBar2";
 import LightBox from "vue-image-lightbox";
+import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 
 export default {
+  mixins: [lodgingUtilsMixin],
   components: {
     Slick,
     GttSelectDate,
@@ -413,6 +421,7 @@ export default {
       loading: false,
       roomsResult: [],
       roomSelectedToDis: [],
+      amoung: 1,
       roomLayout: [
         {
           code: "adults",
@@ -603,7 +612,6 @@ export default {
       this.roomsSelecting = false;
       this.isModalLodgingActive = false;
     },
-
     updateResult(r) {
       this.roomsSelecting = true;
       this.roomsResult = r.result;
@@ -613,9 +621,9 @@ export default {
       this.totalRooms = r.filters.totalRooms;
       this.isModalLodgingActive = false;
     },
-    addToGeneralCart() {
+    async addToGeneralCart() {
       let listado = [];
-      this.roomsToReserve.forEach((i) => {console.log('-- romsreserve --', i);
+      this.roomsToReserve.forEach((i) => {console.info('----- i ---------', i);
         listado.push({
           precioObjOne: i.habitacion,
           tipoHabitacion: i.habitacion.TipoHabitacion.TipoHabitacionId,
@@ -626,14 +634,89 @@ export default {
           },
           // TODO cantidad
           cantidad: i.habitacion.CantidadHabitaciones,
+          HabitacionId: i.habitacion.HotetecInfoHabId
+          ,
         });
       });
+
       let total = _.sumBy(this.roomsToReserve, (j) => {
         return (
           j.habitacion.PrecioOrden *
           this.roomsToReserve[0].habitacion.CantidadHabitaciones
         );
       });
+
+      /* this.roomsToReserve.combinacion = {
+        listado: listado,
+        total: total,
+      };
+      this.roomsToReserve.planAlimenticio = listado[0].planAlimenticio;
+      this.roomsToReserve.habitacion = {
+        ProductoId: this.item.lodging.ProductoId,
+        HabitacionId: listado[0].HabitacionId,
+      };
+      this.roomsToReserve.IsSinContrato = listado[0].precioObjOne.IsSinContrato;
+
+      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      //const hotelectData = await this.checkIsAvailable(this.roomsToReserve);
+      //this.roomsToReserve.hotelectData = hotelectData;
+
+      let { Adl, Nin } = this.$helpers.generatePassageList(this.roomsToReserve.combinacion);
+      let allIds = [];
+      Adl.forEach(adult => {
+        allIds.push(adult.Id);
+      });
+      Nin.forEach(minor => {
+        allIds.push(minor.Id);
+      });
+
+      let blockProduct = {
+        Accion: "A",
+        Codtou: "HTT",
+        Ideses: currentHotelec,
+        Pasage: { Adl, Nin },
+        Bloser: {
+          Id: 1,
+          Dissmo: [
+            {
+              Pasid: allIds,
+              Id: 1,//this.roomsToReserve.hotelectData.HotetecInfoHabId,
+              Numuni: this.amoung.toString()
+            }
+          ]
+        }
+      };
+
+      let unblockProduct = {
+        Accion: "E",
+        Codtou: "HTT",
+        Ideses: currentHotelec,
+        Pasage: { Adl, Nin },
+        Bloser: {
+          Id: 1,
+          Dissmo: [
+            {
+              Pasid: allIds,
+              Id: 1,//this.roomsToReserve.hotelectData.HotetecInfoHabId,
+              Numuni: this.amoung.toString()
+            }
+          ]
+        }
+      };
+
+      hotetecBlockProduct(blockProduct)
+        .then(res => {
+          if (res.data.Tiperr === null) {
+            this.roomsToReserve["unblockRequest"] = unblockProduct;
+            this.$emit("listReserve", this.roomsToReserve, this.amoung);
+          }
+        })
+        .finally(() => {
+          this.$emit("loading", false);
+        });
+
+      console.log('-- this.roomsToReserve --', this.roomsToReserve); */
+
       let l = {
         tipo: "lodging",
         entrada: this.inDate,
@@ -659,13 +742,13 @@ export default {
       this.roomsToReserve = [];
       this.roomsResult = [];
     },
-    reserve() {
-      this.addToGeneralCart();
+    async reserve() {
+      await this.addToGeneralCart();
       this.$router.push({
         name: "reservation",
       });
     },
-    addOneToCart(item) {console.info('item5', item);
+    addOneToCart(item) {console.info('item4', item);
       this.roomsToReserve.push(item);
       this.roomSelectedToDis.push(item.rn);
     },

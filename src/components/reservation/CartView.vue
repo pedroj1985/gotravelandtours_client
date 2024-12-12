@@ -448,7 +448,7 @@ export default {
       }
     },
     deleteItem(id) {
-      if (this.tempItemToDelete.tipo === "lodging") {
+      /* if (this.tempItemToDelete.tipo === "lodging") {
         const unblockRequest = this.tempItemToDelete.reservedRooms
           .unblockRequest;
         hotetecBlockProduct(unblockRequest)
@@ -463,13 +463,13 @@ export default {
             this.tempItemToDelete = null;
             this.deleteModal = false;
           });
-      } else {
+      } else { */
         this.$helpers.shoppingCartRemoveOne(id);
         this.updateCart();
         this.$eventCartBus.$emit("updateCart");
         this.tempItemToDelete = null;
         this.deleteModal = false;
-      }
+      //}
     },
     async reserve() {
       let iv = gttIsValid(this.gttValidate(), this);

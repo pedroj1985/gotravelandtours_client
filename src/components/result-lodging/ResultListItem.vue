@@ -101,7 +101,7 @@
           </div> -->
           <div class="details-btn form-actions">
             <button @click="goToDetail" type="submit" class="antonio-regular">
-              Ver ofertas
+              Ver disponibilidad
             </button>
           </div>
         </div>
