@@ -252,6 +252,7 @@ export default {
       this.selectedNights = 3;
       this.selectedEndDate = moment(item).add(this.selectedNights, "days").toDate();
       let n = moment(this.selectedEndDate).diff(this.selectedStartDate, "days");
+      this.selectedNights = n;
     },
     selectedNights(item) {
       this.selectedEndDate = new Date(

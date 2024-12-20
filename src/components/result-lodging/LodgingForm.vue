@@ -44,14 +44,20 @@
       </gtt-select>
     </div>
     <div ref="gttStartDate">
-      <gtt-select-date v-model="selectedArriveDate" :mode="'single'">
+      <gtt-select-date
+        v-model="selectedArriveDate"
+        :min-date="minArriveDate"
+        :mode="'single'">
         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
         <span slot="placeholder" class="required-field">Fecha de entrada</span>
         <span slot="error" class="gtt-errors"></span>
       </gtt-select-date>
     </div>
     <div ref="gttEndDate">
-      <gtt-select-date v-model="selectedDepartureDate" :mode="'single'">
+      <gtt-select-date
+        v-model="selectedDepartureDate"
+        :min-date="minDepartureDate"
+        :mode="'single'">
         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
         <span slot="placeholder" class="required-field">Fecha de salida</span>
         <span slot="error" class="gtt-errors"></span>
@@ -124,18 +130,46 @@ export default {
     GttSelectForm,
     GttModalSearch
   },
+  computed: {
+    minArriveDate() {
+      return moment().add(4, "days").format("YYYY-MM-DD");
+    },
+    minDepartureDate() {
+      let minDepartureDate = moment().add(7, "days").format("YYYY-MM-DD");
+      if (this.selectedArriveDate) {
+        minDepartureDate = moment(this.selectedArriveDate).add(this.selectedNights, "days").format("YYYY-MM-DD");
+      }
+      return minDepartureDate;
+    }
+  },
   watch: {
     propNationality: function(sn) {
       this.selectedNationality = sn;
     },
-    propArriveDate(i) {
-      this.selectedArriveDate = new Date(i);
+    selectedArriveDate(i) {
+      this.selectedNights = 3;
+      this.selectedDepartureDate = moment(i).add(this.selectedNights, "days").toDate();
+      let n = moment(this.selectedDepartureDate).diff(this.selectedArriveDate, "days");
+      this.selectedNights = n;
+      //return new Date(i);
     },
-    propDepartureDate(i) {
-      this.selectedDepartureDate = new Date(i);
+    selectedDepartureDate(i) {
+      let n = moment(this.selectedDepartureDate).diff(
+          this.selectedArriveDate,
+          "days"
+        );
+
+        this.selectedNights = n;
+
+      //return new Date(i);
     },
-    propLodgingDestinyValue(i) {
-      this.selectedLodgingDestinyValue = i;
+    selectedNights(i) {
+      this.selectedDepartureDate = new Date(
+        moment(this.selectedArriveDate).add(i, "days")
+      );
+    },
+    selectedLodgingDestinyValue(i) {
+      return i;
     }
   },
   async created() {
@@ -396,7 +430,7 @@ export default {
     },
     propDepartureDate: {
       default: function() {
-        return moment().add(1, "days");
+        return moment().add(3, "days");
       }
     },
     propRoomLayout: {
@@ -413,11 +447,12 @@ export default {
   },
   data() {
     return {
-      selectedLodgingDestinyValue: this.propLodgingDestinyValue,
+      selectedLodgingDestinyValue:  this.propLodgingDestinyValue,
       selectedArriveDate: new Date(moment(this.propArriveDate)),
       selectedDepartureDate: new Date(moment(this.propDepartureDate)),
       selectedRoomLayout: null,
       selectedNationality: this.propNationality,
+      selectedNights: 3,
       roomComb: null,
       todosTipo: [],
       isModalActive: false,
