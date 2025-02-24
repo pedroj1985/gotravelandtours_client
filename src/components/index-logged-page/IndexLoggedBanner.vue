@@ -223,6 +223,7 @@ export default {
     window.addEventListener("scroll", this.handleScroll);
     let t = await authGetRoomTypes();
     this.todosTipo = t.data;
+    await this.clearSerchResults();
   },
   destroyed() {
     window.removeEventListener("scroll", this.handleScroll);
@@ -331,8 +332,9 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         this.isModalActive = true;
+        await this.clearSerchResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
-          console.log('selectedLodgingDestinyValue', this.selectedLodgingDestinyValue);
+          console.log('RGN', this);
           let region = {
             RegionId: this.selectedLodgingDestinyValue.id
           };
@@ -409,6 +411,7 @@ export default {
             );
           }
         } else if (this.selectedLodgingDestinyValue.type == "HTL") {
+          console.log('HTL', this);
           let searchFilters = {
             Destiny: this.selectedLodgingDestinyValue,
             NombreHotel: this.selectedLodgingDestinyValue.nombre,

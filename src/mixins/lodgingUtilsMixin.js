@@ -11,21 +11,22 @@ import {
 import { openDB } from 'idb';
 import _ from "lodash";
 
+const dbPromise = openDB('searchResultDB', 1, {
+  upgrade(db) {
+    if (!db.objectStoreNames.contains('searchResults')) {
+      db.createObjectStore('searchResults', { keyPath: 'id', autoIncrement: true });
+    }
+  },
+});
+
 export const lodgingUtilsMixin = {
   data() {
     return {
-      db: null,
+      /* db: null,
       db_name: 'searchResult',
-      items: [],
+      items: [],*/
+      //hasSearchResults: false,
     };
-  },
-  async created() {
-    this.db = await openDB(this.db_name, 1, {
-      upgrade(db) {
-        db.createObjectStore('items', { keyPath: 'id', autoIncrement: true });
-      }
-    });
-    this.items = await this.getAllItemsIndexedDB();
   },
   methods: {
     roomCombination(adults, kids = 0) {
@@ -136,8 +137,6 @@ export const lodgingUtilsMixin = {
         let k = roomLayout.kids;
         this.recursiveBuildRoom(result, k);
       }
-
-      console.log(result);
       console.log("version2");
     },
     buildRoomCombo(roomLayout) {
@@ -283,8 +282,18 @@ export const lodgingUtilsMixin = {
 
       return false;
     },
+    async openIndexDBConnection() {
+      this.db = await openDB(this.db_name, 1, {
+        upgrade(db) {
+          if (!db.objectStoreNames.contains('items')) {
+            db.createObjectStore('items', { keyPath: 'id', autoIncrement: true });
+          }
+        }
+      });
+      console.info('opennnnnnnDB');
+    },
     async searchResult(searchItem, combination, combinationV2 = null) {
-      this.clearAllItemsIndexedDB();
+
       let currentHotelec = localStorage.getItem("currentHotelecIds");
       let HotelecSessionExpired = false;
 
@@ -479,8 +488,8 @@ export const lodgingUtilsMixin = {
         return i.habitaciones.length > 0;
       }); */
 
-      if (resultList.length) {
-        this.addItemIndexedDB(resultList);
+      if (resultList.length > 0) {
+        this.saveSearchResult(resultList);
       }
 
       if (!currentHotelec) {
@@ -509,84 +518,78 @@ export const lodgingUtilsMixin = {
       //   "asc"
       // );
     },
-    async checkIsAvailable(room) {
-      const currentHotelec = localStorage.getItem("currentHotelecIds");
-      let hotelecData = null;
-      let ca = 1;
-      const roomType = room.combinacion.listado[0].tipoHabitacionNombre;
-      const roomTypeId = room.combinacion.listado[0].tipoHabitacion;
-      const planAlimenticio = room.planAlimenticio;
-      const productId = room.habitacion.ProductoId;
-      const roomId = room.habitacion.HabitacionId;
-      const kids = room.combinacion.listado[0].cantidadMenoresPorHabitacion;
-      const startDate = room.combinacion.listado[0].precioObjOne.FechaInicio;
-      const endDate = room.combinacion.listado[0].precioObjOne.FechaFin;
-      if (roomType == "Doble") ca = 2;
-      else if (roomType == "Triple") ca = 3;
-      let roomPriceSearchObj = {
-        Cliente: {
-          ClienteId: localStorage.getItem("cliente")
-        },
-        PlanAlimenticio: {
-          PlanesAlimenticiosId: planAlimenticio
-        },
-        Alojamiento: {
-          ProductoId: productId
-        },
-        TipoHabitacion: { TipoHabitacionId: roomTypeId },
-        CantidadAdultos: ca,
-        CantidadMenores: kids,
-        CantidadInfantes: 0,
-        CantidadHabitaciones: 1,
-        HotetecIdeses: currentHotelec,
-        IsSinContrato: room.IsSinContrato,
-        Habitacion: { HabitacionId: roomId },
-        Entrada: startDate,
-        Salida: endDate
-      };
-      try {
-        let precioA = await authGetRoomPrice(roomPriceSearchObj);
-        if (precioA.data.length != 0 && precioA.data[0].PrecioOrden != 0) {
-          hotelecData = {
-            HotetecInfoHabId: precioA.data[0].HotetecInfoHabId,
-            HotetecInfoHotelId: precioA.data[0].HotetecInfoHotelId,
-            HotetecIdeses: precioA.data[0].HotetecIdeses,
-            HotetecIsAvailable: precioA.data[0].HotetecIsAvailable
-          };
-        }
-      } catch (e) {
-        console.log(e);
+    async searchPreviousResult() {
+      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      let HotelecSessionExpired = false;
+
+      if (currentHotelec) {
+        const response = await hotetecStateSession(currentHotelec);
+        HotelecSessionExpired = !response.data.Infses;
       }
-      return hotelecData;
+      if (!currentHotelec || HotelecSessionExpired) {
+        // await this.$helpers.shoppingCartDeleteAll(true);
+        try {
+          const response = await hotetecOpenSession();
+          if (response && response.data && response.data.Ideses) {
+            currentHotelec = response.data.Ideses;
+            localStorage.setItem("currentHotelecIds", currentHotelec);
+          }
+        } catch (error) {
+          console.error(
+            "Error occurred while fetching or processing data:",
+            error.message
+          );
+        }
+      }
+      let resultList = [];
+      if (!currentHotelec) {
+        try {
+          const response = await hotetecOpenSession();
+          if (response && response.data && response.data.Ideses) {
+            currentHotelec = response.data.Ideses;
+            localStorage.setItem("currentHotelecIds", currentHotelec);
+          }
+        } catch (error) {
+          console.error(
+            "Error occurred while fetching or processing data:",
+            error.message
+          );
+        }
+      }
+      return await this.getSearchResults();
     },
-    async addItemIndexedDB(record) {
-      const tx = this.db.transaction('items', 'readwrite');
-      const store = tx.objectStore('items');
-      await store.add(record);
-      this.items = await this.getAllItemsIndexedDB();
+    async saveSearchResult(result) {
+      const db = await dbPromise;
+      const tx = db.transaction('searchResults', 'readwrite');
+      const store = tx.objectStore('searchResults');
+      await store.add(result);
+      await tx.done;
     },
-    async getAllItemsIndexedDB() {
-      const tx = this.db.transaction('items', 'readonly');
-      const store = tx.objectStore('items');
-      return await store.getAll();
-    },
-    async deleteItemIndexedDB(key) {
-      const tx = this.db.transaction('items', 'readwrite');
-      const store = tx.objectStore('items');
-      store.delete(key);
-    },
-    async clearAllItemsIndexedDB() {
-      const tx = this.db.transaction('items', 'readwrite');
-      const store = tx.objectStore('items');
-      const request = store.clear();
+    async performSearch(query) {
+      // Simula una búsqueda (puedes reemplazar esto con una llamada API real)
+      this.searchResult = { query, results: ['Result 1', 'Result 2', 'Result 3'] };
 
-      request.onsuccess = () => {
-        console.log('Todos los datos han sido eliminados del object store.');
-      };
-
-      request.onerror = (event) => {
-        console.error('Error al eliminar los datos del object store:', event);
-      };
+      // Guarda el resultado en IndexedDB
+      await this.saveSearchResult(this.searchResult);
+    },
+    async getSearchResults() {
+      const db = await dbPromise;
+      const tx = db.transaction('searchResults', 'readonly');
+      const store = tx.objectStore('searchResults');
+      const results = await store.getAll();
+      await tx.done;
+      return results[0];
+    },
+    async clearSerchResults() {
+      const db = await dbPromise;
+      const tx = db.transaction('searchResults', 'readwrite');
+      const store = tx.objectStore('searchResults');
+      await store.clear();
+      await tx.done;
+    },
+    async deleteDataBase() {
+      const db = await dbPromise;
+      await db.delete();
     },
     visitantesToAcomodation(visitantes) {
       let result = [];

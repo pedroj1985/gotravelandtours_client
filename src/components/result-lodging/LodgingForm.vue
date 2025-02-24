@@ -102,7 +102,19 @@
       </template>
     </gtt-select> -->
     <div class="form-actions lodging-form-search-btn">
-      <button type="submit" class="antonio-regular" @click="activateModal">Buscar</button>
+      <button
+        v-if="hasSearchResults"
+        type="submit"
+        class="antonio-regular regresar"
+        @click="returnToPreviousSearch">
+        Regresar
+      </button>
+      <button
+        type="submit"
+        class="antonio-regular"
+        @click="activateModal">
+        Buscar
+      </button>
     </div>
   </div>
 </template>
@@ -140,18 +152,28 @@ export default {
         minDepartureDate = moment(this.selectedArriveDate).add(this.selectedNights, "days").format("YYYY-MM-DD");
       }
       return minDepartureDate;
-    }
+    },
   },
   watch: {
     propNationality: function(sn) {
       this.selectedNationality = sn;
     },
+    propArriveDate(i) {
+      this.selectedArriveDate = new Date(i);
+    },
+    propDepartureDate(i) {
+      this.selectedDepartureDate = new Date(i);
+    },
+    propLodgingDestinyValue(i) {
+      this.selectedLodgingDestinyValue = i;
+    },
     selectedArriveDate(i) {
-      this.selectedNights = 3;
-      this.selectedDepartureDate = moment(i).add(this.selectedNights, "days").toDate();
-      let n = moment(this.selectedDepartureDate).diff(this.selectedArriveDate, "days");
-      this.selectedNights = n;
-      //return new Date(i);
+      if (moment(i).isAfter(this.selectedDepartureDate)) {
+        this.selectedNights = 3;
+        this.selectedDepartureDate = moment(i).add(this.selectedNights, "days").toDate();
+        let n = moment(this.selectedDepartureDate).diff(this.selectedArriveDate, "days");
+        this.selectedNights = n;
+      }
     },
     selectedDepartureDate(i) {
       let n = moment(this.selectedDepartureDate).diff(
@@ -169,6 +191,7 @@ export default {
       );
     },
     selectedLodgingDestinyValue(i) {
+      console.info('watch', i);
       return i;
     }
   },
@@ -176,6 +199,11 @@ export default {
     let t = await authGetRoomTypes();
     this.todosTipo = t.data;
     this.selectedRoomLayout = this.propRoomLayout;
+    this.getSearchResults().then(res => {
+      if (res.length > 0 && this.$route.name === 'lodging-detail') {
+        this.hasSearchResults = true;
+      }
+    });
   },
   methods: {
     constructDate(date) {
@@ -242,11 +270,41 @@ export default {
 
       return validator;
     },
+    async returnToPreviousSearch() {
+      let searchFilters = {
+        Destiny: this.selectedLodgingDestinyValue,
+        Region: {
+          RegionId: this.selectedLodgingDestinyValue.id,
+          RegionNombre: this.selectedLodgingDestinyValue.nombre
+        },
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: this.selectedArriveDate,
+        Salida: this.selectedDepartureDate,
+        Visitantes: this.selectedRoomLayout,
+        Nacionalidad: this.selectedNationality
+      };
+
+      let resultList = await this.searchPreviousResult();
+      localStorage.setItem(
+        "searchLodgingFilters",
+        JSON.stringify(searchFilters)
+      );
+      console.log('desactivateModal');
+      this.desactivateModal();
+      this.$router.push({
+        name: "lodgingResultHolder",
+        params: {
+          searchResult: resultList
+        }
+      });
+    },
     async activateModal() {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         this.isModalActive = true;
+        await this.clearSerchResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
+          console.info('RGN', this);
           let region = { RegionId: this.selectedLodgingDestinyValue.id };
           let cliente = { ClienteId: localStorage.getItem("cliente") };
           let searchItem = {
@@ -288,7 +346,6 @@ export default {
               searchFilters.Visitantes.kids.value || 0
             );
             if (this.roomComb != "ERROR") {
-              console.log('resultList');
               resultList = await this.searchResult(
                 searchItem,
                 this.roomComb,
@@ -322,7 +379,6 @@ export default {
             );
           }
         } else if (this.selectedLodgingDestinyValue.type == "HTL") {
-          console.log("HTL");
           let searchFilters = {
             Destiny: this.selectedLodgingDestinyValue,
             NombreHotel: this.selectedLodgingDestinyValue.nombre,
@@ -455,6 +511,7 @@ export default {
       selectedNights: 3,
       roomComb: null,
       todosTipo: [],
+      hasSearchResults: false,
       isModalActive: false,
       lodgingOpened: false,
       destinies: [],
@@ -507,9 +564,10 @@ export default {
 .lodging-form-search-btn {
   text-align: right;
 }
-</style>
-<style>
 #lodging-form .gtt__toggle {
   margin-bottom: 15px;
+}
+.antonio-regular.regresar {
+  margin-right: 14px;
 }
 </style>

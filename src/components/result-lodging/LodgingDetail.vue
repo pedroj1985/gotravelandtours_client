@@ -402,6 +402,12 @@ export default {
   /* async created() {
     await this.initializeData();
   }, */
+  /* async mounted() {
+    if (window.indexedDB) {
+      const items = this.getSearchResults();
+      console.log('window.indexedDB', items);
+    }
+  }, */
   data() {
     return {
       item: null,

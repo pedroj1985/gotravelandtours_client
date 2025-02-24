@@ -126,7 +126,8 @@
       if (f) {
         this.filters = JSON.parse(f);
       }
-      if (
+      console.info('second', this);
+      /* if (
         this.filters.Visitantes.adults.value >=
         this.filters.Visitantes.kids.value
       )
@@ -139,11 +140,11 @@
           this.filters.Visitantes.adults.value,
           this.filters.Visitantes.kids.value || 0
         );
-      }
-      this.roomComb2 = this.$helpers.roomCombinationV2(
+      } */
+      /* this.roomComb2 = this.$helpers.roomCombinationV2(
         this.filters.Visitantes.adults.value,
         this.filters.Visitantes.kids.value || 0
-      );
+      ); */
       let r = this.$route.params["searchResult"];
       if (r) {
         let temp = r;
