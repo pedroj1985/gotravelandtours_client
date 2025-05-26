@@ -311,7 +311,7 @@ import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { transmissionTypes } from "../../utils/utils";
 import GttEditRentModal from "../custom-elements/GttEditRentModal";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
-import { enumTypeService } from "../../utils/constant";
+import { paymentData } from "../../utils/constant";
 
 import { PaymentLinkRequest } from "../../utils/paymentLinkRequest";
 import { ClientRequest } from "../../utils/clientRequest";
@@ -336,7 +336,6 @@ export default {
         this.order = {}; // Limpiar la orden después de enviar el enlace
         this.ordenAlojamiento = {}; // Limpiar la orden de alojamiento después de enviar el enlace
         this.orderIndex = -1; // Reiniciar el índice de orden
-        this.local_data = {};
       }
     }
   },
@@ -373,6 +372,10 @@ export default {
     await this.preproccesingLists(this.order.ListaAlojamientoOrden, "lodging");
     this.calculatePrice(this.allTypesOrders);
     this.updateName(this.order.NombreClienteFinal);
+
+    if (!this.tropiPayToken) {
+      this.getTropiPayToken();
+    }
     /*
       TODO Validar si se puede dividir
     */
@@ -934,10 +937,10 @@ export default {
       });
       let isPaid = false;
       switch (type) {
-        /* case enumTypeService.vehicle:
+        /* case paymentData.vehicle:
           let vehicleOrder = {
             IsPagado: !order.IsPagado,
-            FormaPago: !order.IsPagado ? enumTypeService.EXT : null,
+            FormaPago: !order.IsPagado ? paymentData.paymentMethod.EXT : null,
             OrdenVehiculoId: order.OrdenVehiculoId
           };
           this.externalServices.confirmExernalPaymentVehicle(vehicleOrder)
@@ -949,19 +952,19 @@ export default {
               console.error('Error confirming external payment for vehicle:', error);
             });
           break; */
-        case enumTypeService.accomodation:
+        case paymentData.accomodation:
           if (!room.IsPagado) {
             isPaid = true;
             let payData = {
               CantidadHabitaciones: room.CantidadHabitaciones,
               IsPagado: !room.IsPagado,
-              FormaPago: enumTypeService.EXT,
+              FormaPago: paymentData.paymentMethod.EXT,
               OrdenAlojamientoId: room.OrdenAlojamientoId
             };
             updateIsPagadoAlojamiento(payData)
               .then((v) => {
                 this.allTypesOrders[this.orderIndex].reservedRooms[idx].IsPagado = true;
-                this.allTypesOrders[this.orderIndex].reservedRooms[idx].FormaPago = enumTypeService.EXT;
+                this.allTypesOrders[this.orderIndex].reservedRooms[idx].FormaPago = paymentData.paymentMethod.EXT;
               })
               .catch((error) => {
                 console.error('Error confirming external payment for accommodation:', error);
@@ -978,10 +981,10 @@ export default {
           }
           this.closeModal();
         break;
-        /* case enumTypeService.activity:
+        /* case paymentData.activity:
           let activityOrder = {
             IsPagado: !order.IsPagado,
-            FormaPago: !order.IsPagado ? enumTypeService.EXT : null,
+            FormaPago: !order.IsPagado ? paymentData.paymentMethod.EXT : null,
             OrdenActividadId: order.OrdenActividadId
           };
           this.externalServices.confirmExernalPaymentActivity(activityOrder)
@@ -993,10 +996,10 @@ export default {
               console.error('Error confirming external payment for activity:', error);
             });
           break;
-        case enumTypeService.service:
+        case paymentData.service:
           let serviceOrder = {
             IsPagado: !order.IsPagado,
-            FormaPago: !order.IsPagado ? enumTypeService.EXT : null,
+            FormaPago: !order.IsPagado ? paymentData.paymentMethod.EXT : null,
             OrdenServicioAdicionalId: order.OrdenServicioAdicionalId
           };
           this.externalServices.confirmExernalPaymentService(serviceOrder)
@@ -1008,10 +1011,10 @@ export default {
               console.error('Error confirming external payment for service:', error);
             });
           break;
-        case enumTypeService.transportation:
+        case paymentData.transportation:
           let t = {
             IsPagado: !order.IsPagado,
-            FormaPago: !order.IsPagado ? enumTypeService.EXT : null,
+            FormaPago: !order.IsPagado ? paymentData.paymentMethod.EXT : null,
             OrdenTrasladoId: order.OrdenTrasladoId
           };
           this.externalServices.confirmExernalPaymentTransfer(t)
@@ -1051,24 +1054,24 @@ export default {
       }); */
 
       switch (type) {
-        /*case enumTypeService.vehicle:
+        /*case paymentData.vehicle:
           id = order.OrdenVehiculoId
           description = 'Rent the ' + order.Vehiculo.Nombre + ' from ' + fi + ' to ' + ff
           break;*/
-        case enumTypeService.accomodation:
+        case paymentData.accomodation:
           id = order.OrdenAlojamientoId
           description = order.Alojamiento.Nombre + '-' + order.Habitacion.Nombre + '-'
             + order.TipoHabitacion.Nombre + ' reservation ' + ' from ' + fi + ' to ' + ff
           break;
-        /*case enumTypeService.activity:
+        /*case paymentData.activity:
           id = order.OrdenActividadId
           description = order.Actividad.Nombre + ' for the day ' + fi
           break;
-        case enumTypeService.service:
+        case paymentData.service:
           id = order.OrdenServicioAdicionalId
           description = order.ServicioAdicional.Nombre + ' from ' + fi + ' to ' + ff
           break;
-        case enumTypeService.transportation:
+        case paymentData.transportation:
           id = order.OrdenTrasladoId
           description = order.Traslado.Nombre + ' from ' + order.PuntoOrigen.Nombre + ' to ' + order.PuntoOrigen.PuntoDestino + ' for the day ' + fi
           break;*/
@@ -1077,7 +1080,7 @@ export default {
       }
       let typeCode = ''
       let typeLabel = ''
-      enumTypeService.productTypeFilter.forEach((item) => {
+      paymentData.productTypeFilter.forEach((item) => {
         if (item.value === type) {
           typeCode = item.id
           typeLabel = item.label
@@ -1085,7 +1088,7 @@ export default {
       });
 
       let request = new PaymentLinkRequest();
-      let price = order.CurrencyUsada === enumTypeService.currency[1].code
+      let price = order.CurrencyUsada === paymentData.currency[1].code
         ? parseInt(order.PrecioOrdenTasa + '00')
         : parseInt(order.PrecioOrden + '00');
       request.amount = price;
@@ -1121,101 +1124,35 @@ export default {
       request.urlNotification = 'https://admin.gotravelandtours.com/publicEliecer/api/ApiTropiPay/Callback/' + typeCode + '/' + id;
       request.urlSuccess = 'https://admin.gotravelandtours.com/#/payment-success?amount=' + order.PrecioOrden + '&currency=' + order.CurrencyUsada + '&description=' + encodeURIComponent(description);
       request.urlFailed = 'https://admin.gotravelandtours.com/#/payment-error?amount=' + order.PrecioOrden + '&currency=' + order.CurrencyUsada + '&description=' + encodeURIComponent(description);
+      request.access_token = this.tropiPayToken;
 
-      /* request = {
-        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJlbnQiOm51bGwsImNyZWRlbnRpYWxJZCI6NDcwNjA2LCJjcmVkZW50aWFsTmFtZSI6IjU1YzRhNzc3Yzc4NzYyZTNmYWE5OGJkYmU0ZjhhYjNkIiwiaWQiOiI4ZWYxZmQ4MC01MzQ0LTExZWYtOTk2OS1iZGQ2NDc0ZDk0ZWEiLCJpYXQiOjE3NDgyMTczMzUsImV4cCI6MTc0ODIyNDUzNX0.ViJYAapzF_EgzMLDBXfsI1bNv1ZHAyVStVKGcSRINvk",
-        "amount": 19200,
-        "concept": "Rent a Accommodation",
-        "currency": "USD",
-        "TipoOrden": "AL",
-        "OrdenProductoId": 2715,
-        "EnviarLinkDePago": false,
-        "description": "HOTEL COPACABANA-STANDARD - STANDARD-Sencilla reservation  from 09/04/25 to 12/04/25",
-        "directPayment": false,
-        "expirationDays": 1,
-        "client": {
-            "address": "Cuba",
-            "name": "Sistema",
-            "lastName": "Sistema",
-            "email": "eliecer@gotravelandtours.com",
-            "phone": "123",
-            "termsAndConditions": "true"
-        },
-        "favorite": true,
-        "lang": "es",
-        "paymentMethods": [],
-        "reasonId": 0,
-        "reference": "carvel_viajes_colibri",
-        "serviceDate": "2025-05-25T17:55:35-06:00",
-        "singleUse": true,
-        "urlNotification": "https://admin.gotravelandtours.com/publicEliecer/api/ApiTropiPay/Callback/AL/2715",
-        "urlSuccess": "https://admin.gotravelandtours.com/#/payment-success?amount=192&currency=USD&description=HOTEL%20COPACABANA-STANDARD%20-%20STANDARD-Sencilla%20reservation%20%20from%2009%2F04%2F25%20to%2012%2F04%2F25",
-        "urlFailed": "https://admin.gotravelandtours.com/#/payment-error?amount=192&currency=USD&description=HOTEL%20COPACABANA-STANDARD%20-%20STANDARD-Sencilla%20reservation%20%20from%2009%2F04%2F25%20to%2012%2F04%2F25"
-      }; */
-      getTropiPayToken()
-        .then((res) => {
-          request.access_token = res.data.access_token;
-          generatePaymentPage(request)
-            .then((v) => {
-              if (!sendPaymentLInk) {
-                if (v && v.shortUrl) {
-                  window.open(v.shortUrl, '_blank');
-                } else {
-                  this.$toasted.show('No se pudo obtener el enlace de pago de TropiPay.', {
-                    type: 'error'
-                  });
-                }
-              } else {
-                if (this.email === '') {
-                  this.$toasted.show('Correo electrónico no proporcionado. El enlace de pago se abrirá en una nueva pestaña.', {
-                    type: 'info',
-                    duration: 5000
-                  });
-                  window.open(v.shortUrl, '_blank');
-                } else if (this.email !== '') {
-                  this.$toasted.show(`Enlace de pago enviado a ${this.email}: ${v.shortUrl}`, {
-                    type: 'info',
-                    duration: 5000
-                  });
-                }
-              }
-              this.isOpenModalToPay = false;
-            })
-            .catch((error) => {
-              if (window) {
-                window.close();
-              }
-              console.log('Error al generar el link de pago:', error);
-              this.$toasted.show('Error al generar el link de pago.', {
+      generatePaymentPage(request)
+        .then((v) => {
+          let shortUrl = v.data.shortUrl || v.shortUrl;
+          if (!sendPaymentLInk) {
+            if (shortUrl) {
+              window.open(shortUrl, '_blank');
+            } else {
+              this.$toasted.show('No se pudo obtener el enlace de pago de TropiPay.', {
                 type: 'error'
               });
-            });
-        })
-        .catch((error) => {
-          console.error('Error fetching TropiPay token:', error);
-          this.$toasted.show('Error al obtener el token de TropiPay.', {
-            type: 'error'
-          });
-        });
-      /* generatePaymentPage(request)
-        .then((v) => {
-          if (!sendPaymentLInk) {
-            window.open(v.shortUrl, '_blank');
+            }
           } else {
             if (this.email === '') {
               this.$toasted.show('Correo electrónico no proporcionado. El enlace de pago se abrirá en una nueva pestaña.', {
                 type: 'info',
                 duration: 5000
               });
-              window.open(v.shortUrl, '_blank');
+              window.open(shortUrl, '_blank');
             } else if (this.email !== '') {
-              this.$toasted.show(`Enlace de pago enviado a ${this.email}: ${v.shortUrl}`, {
+              this.$toasted.show(`Enlace de pago enviado a ${this.email}: ${shortUrl}`, {
                 type: 'info',
                 duration: 5000
               });
             }
           }
           this.isOpenModalToPay = false;
+          this.$eventCartBus.$emit('updateCart');
         })
         .catch((error) => {
           if (window) {
@@ -1225,26 +1162,19 @@ export default {
           this.$toasted.show('Error al generar el link de pago.', {
             type: 'error'
           });
-        }); */
-      /* this.externalServicesSubscription.add(this.externalServices.getTtpPaymentLink(request)
-      .subscribe(
-        (v: TtpPaymentLinkResponse) => {
-          this.localService.loading.next('end');
-          if (email === '') {
-            window.open(v.shortUrl, '_blank');
-          } else {
-            this._snackBar.open('Email Sent', 'X', {
-              duration: 5000,
-              panelClass: ['success-dialog']
-            });
-          }
-        },
-        (error: any) => {
-          this.localService.loading.next('end');
-          console.log('error');
-        }
-      ));
-      } */
+        });
+    },
+    getTropiPayToken(){
+      getTropiPayToken()
+        .then((res) => {
+          this.tropiPayToken = res.data.access_token;
+      })
+      .catch((error) => {
+        console.error('Error fetching TropiPay token:', error);
+        this.$toasted.show('Error al obtener el token de TropiPay.', {
+          type: 'error'
+        });
+      });
     },
     validateEmail() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -160,15 +160,15 @@
                     <span v-if="room.IsPagado" class="paid-status">
                       <i class="mdi mdi-check-circle"></i> Pagado
                     </span>
-                    <span v-if="room.IsPagado && room.FormaPago" class="payment-method">
-                      <i class="mdi mdi-credit-card"></i> {{ room.FormaPago }}
-                    </span>
                     <span v-else class="unpaid-status">
                       <i class="mdi mdi-alert-circle"></i> No pagado
                     </span>
+                    <span v-if="room.IsPagado && room.FormaPago" class="payment-method">
+                      <i class="mdi mdi-cash-multiple"></i> {{ room.FormaPago }}
+                    </span>
                   </div>
                   <div class="to-right">
-                    <div class="details-btn" ><!-- v-if="state == 'Confirmed'" -->
+                    <div class="details-btn" v-if="state == 'Confirmed'">
                       <button
                         type="button"
                         class="payment-btn antonio-regular"

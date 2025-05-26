@@ -1,11 +1,14 @@
 
-export const enumTypeService = {
+export const paymentData = {
   accomodation: 'lodging',
   vehicle: 'rent',
   activity: 'activity',
   service: 'service',
   transportation: 'transportation',
-  EXT: 'EXT',
+  paymentMethod: {
+    EXT: 'EXT',
+    TROPIPAY: 'Tropipay',
+  },
   currency: [
     { code: "USD", label: "Dólar estadounidense" },
     { code: "CUP", label: "Peso cubano" },
@@ -21,7 +24,7 @@ export const enumTypeService = {
   ]
 }
 
-/*export const enumTypeServiceLabel = {
+/*export const paymentDataLabel = {
   accomodation: 'Accommodation',
   vehicle: 'Vehicle',
   activity: 'Activity',
@@ -30,7 +33,7 @@ export const enumTypeService = {
   EXT: 'EXT',
 }
 
-export const enumTypeServiceIcon = {
+export const paymentDataIcon = {
   accomodation: 'hotel',
   vehicle: 'car',
   activity: 'activity',
@@ -39,7 +42,7 @@ export const enumTypeServiceIcon = {
   EXT: 'EXT',
 }
 
-export const enumTypeServiceColor = {
+export const paymentDataColor = {
   accomodation: '#FFB800',
   vehicle: '#FFB800',
   activity: '#FFB800',
@@ -48,7 +51,7 @@ export const enumTypeServiceColor = {
   EXT: '#FFB800',
 }
 
-export const enumTypeServiceColorHover = {
+export const paymentDataColorHover = {
   accomodation: '#FFB800',
   vehicle: '#FFB800',
   activity: '#FFB800',
