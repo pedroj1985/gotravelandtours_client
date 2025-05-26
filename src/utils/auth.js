@@ -115,21 +115,66 @@ export function hotetecBlockProduct(blockProduct) {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
+
 export function hotetecCloseReserve(reserveData) {
   let token = localStorage.getItem("token");
   return HTTP.post("/ApiDisponibilidadHotetec/ReservaCerrar", reserveData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
+
 export function hotetecCancelReserve(reserveData) {
   let token = localStorage.getItem("token");
   return HTTP.post("/ApiDisponibilidadHotetec/CancelarReserva", reserveData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
+
 export function hotetecUpdateDataOnGtt(reserveData) {
   let token = localStorage.getItem("token");
   return HTTP.post("/OrdenAlojamientoes/UpdateDatosHotetec", reserveData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+export function updateIsPagadoAlojamiento(payData) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/OrdenAlojamientoes/UpdateIsPagado", payData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+/* export function updateIsPagadoActividad(payData) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/OrdenActividad/UpdateIsPagado", payData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+ */
+export function updateIsPagadoVehiculo(payData) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/OrdenVehiculoes/UpdateIsPagado", payData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+/* export function updateIsPagadoTraslado(payData) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/OrdenTraslado/UpdateIsPagado", payData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+} */
+
+export function getTropiPayToken() {
+  let token = localStorage.getItem("token");
+  return HTTP.get("/ApiTropiPay/GetToken", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+export function generatePaymentPage(paymentData) {
+  let token = localStorage.getItem("token");
+  return HTTP.post("/ApiTropiPay/GenerarPaginaPago", paymentData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }

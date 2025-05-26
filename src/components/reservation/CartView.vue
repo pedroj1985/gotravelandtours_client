@@ -305,7 +305,7 @@ import {
   authUpdOnlyInDbQbEstimated,
   authUpdateCar,
   authLog,
-  hotetecBlockProduct,
+  /* hotetecBlockProduct, */
   hotetecCloseReserve,
   hotetecUpdateDataOnGtt,
   authUpdateStatus
@@ -630,6 +630,8 @@ export default {
       }
     },
     fillReserveInfo(orden) {
+      /* console.info('thisOrdennnnn', this);
+      console.info('fillReserveInfo', orden); */
       let dateInterval = this.findDateInterval();
       let id = localStorage.getItem("userid");
       let user = localStorage.getItem("nombre");
@@ -651,14 +653,29 @@ export default {
       orden.FechaFin = dateInterval.max;
       orden.Creador = {
         UsuarioId: id,
-        Usuario: user
+        Username: user
       };
       orden.ClienteId = clienteid;
-      orden.CantidadAdulto = 1;
-      orden.CantidadNino = 0;
-      orden.CantidadInfante = 0;
-      orden.isActive = true;
+      const ordenData = orden.ListaAlojamientoOrden.reduce(
+        (acc, alojamiento) => {
+          acc.CantidadAdulto += alojamiento.CantAdulto || 0;
+          acc.CantidadNino += alojamiento.CantNino || 0;
+          acc.CantidadInfante += alojamiento.CantInfante || 0;
+          return acc;
+        },
+        { CantidadAdulto: 0, CantidadNino: 0, CantidadInfante: 0 }
+      );
+
+      orden.CantidadAdulto = ordenData.CantidadAdulto;
+      orden.CantidadNino = ordenData.CantidadNino;
+      orden.CantidadInfante = ordenData.CantidadInfante;
+      orden.IsActive = true;
       orden.PrecioGeneralOrden = this.priceTotal;
+      orden.Notas = "";
+      orden.PrecioGeneralOrdenTasa = orden.PrecioGeneralOrden;
+      orden.EstadoHotetec = "Blocked";
+      orden.IntercomConferceNumber = orden.NumeroTelefono;
+      //console.info('orden--End-->', orden);
     },
     getListaVehiculosOrden() {
       let lvo = this.allTypesOrders
@@ -678,32 +695,39 @@ export default {
           return item.tipo == "lodging";
         })
         .map(i => {
-          const habitacionId = i.reservedRooms.habitacion.HabitacionId;
+          //const habitacionId = i.reservedRooms.habitacion.HabitacionId;
           i.reservedRooms.combinacion.listado.map(j => {
             let po = j.precioObjOne;
             console.log("precio object", po);
             po.Alojamiento = {
-              ProductoId: po.Alojamiento.ProductoId
+              ProductoId: po.Alojamiento.ProductoId,
+              Nombre: i.name,
+              SKU: j.Habitacion.SKU,
             };
-            po.CantAdulto = j.tipoHabitacion;
+            po.FechaInicio = po.FechaInicio.split('T')[0];
+            po.FechaFin = po.FechaFin.split('T')[0];
+            po.Checkin = po.Checkin.split('T')[0];
+            po.Checkout = po.Checkout.split('T')[0];
+            /* po.CantAdulto = j.tipoHabitacion; */
             po.OrdenAlojamientoId = 0;
             po.CantNino = j.cantidadMenoresPorHabitacion;
             po.CantInfante = 0;
-            // po.PlanesAlimenticiosId = i.reservedRooms.planAlimenticio
-            // po.PlanAlimenticio = {
-            //   PlanesAlimenticiosId: i.reservedRooms.planAlimenticio
-            // }
-            po.PlanesAlimenticiosId = j.planAlimenticio;
+            /* po.DescripcionServicio = po.Alojamiento.Descripcion;
+            po.PlanesAlimenticiosId = i.reservedRooms.planAlimenticio
             po.PlanAlimenticio = {
-              PlanesAlimenticiosId: j.planAlimenticio
-            };
+              PlanesAlimenticiosId: i.reservedRooms.planAlimenticio
+            } */
+            po.PlanesAlimenticiosId = j.planAlimenticio.PlanesAlimenticiosId;
+            po.PlanAlimenticio = j.planAlimenticio;
             po.Habitacion = {
-              HabitacionId: habitacionId
+              HabitacionId: j.Habitacion.HabitacionId,
+              Nombre: j.Habitacion.Nombre,
             };
             po.Distribuidor = {
               DistribuidorId: po.Distribuidor
                 ? po.Distribuidor.DistribuidorId
-                : 46
+                : 46,
+              Nombre: "Hotetec",
             };
             po.DistribuidorId = po.Distribuidor
               ? po.Distribuidor.DistribuidorId
@@ -711,6 +735,8 @@ export default {
             po.Sobreprecio = {
               SobreprecioId: po.Sobreprecio.SobreprecioId
             };
+            po.HotetecIdeses = po.DisponibilidadHotelRespuesta.Ideses;
+            po.EstadoHotetec = "Blocked";
             po.ListaPrecioAlojamientos = [];
             if (po.ListaPrecioAlojamientos) {
               po.ListaPrecioAlojamientos.map(lpa => {
@@ -736,13 +762,15 @@ export default {
       let endDates = [];
 
       this.allTypesOrders.forEach(item => {
+        let fechaEntrada = item.entrada.split("T")[0];
+        let FechaFin = item.salida.split("T")[0];
         if (item.tipo == "rent") {
           startDates.push(item.orderVehiculo.FechaRecogida);
           endDates.push(item.orderVehiculo.FechaEntrega);
         }
         if (item.tipo == "lodging") {
-          startDates.push(item.entrada);
-          endDates.push(item.salida);
+          startDates.push(fechaEntrada);
+          endDates.push(FechaFin);
         }
       });
 

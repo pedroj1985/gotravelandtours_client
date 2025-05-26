@@ -184,8 +184,13 @@ export default {
   },
   methods: {
     addToCart() {
-      console.log(this.child);
+      // const Habitacion = this.child.rO;
       this.child.l[0].habitacion.CantidadHabitaciones = this.amoung;
+      /* this.child.l.forEach((i) => {console.log('i-child', i);
+        //i.habitacion.CantidadHabitaciones = 30;console.log('i-habitacion', Habitacion);
+        i.Habitacion = Habitacion;
+      });
+      console.log('child', this.child); */
       this.$emit("listReserve", this.child);
     },
     addToCartOneRoom(one) {

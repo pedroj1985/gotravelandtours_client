@@ -348,12 +348,12 @@ import {
   authGetLodgingEatingPlanOne,
   hotetecOpenSession,
   hotetecStateSession,
-  hotetecBlockProduct
+  //hotetecBlockProduct
 } from "../../utils/auth";
 import Slick from "vue-slick-carousel";
-import GttSelectDate from "../custom-elements/GttSelectDate";
+/* import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttSelect from "../custom-elements/GttSelect";
-import GttSelectForm2 from "../custom-elements/GttSelectForm2";
+import GttSelectForm2 from "../custom-elements/GttSelectForm2"; */
 import GttLodgingDetailNewSearchModal from "../custom-elements/GttLodgingDetailNewSearchModal";
 import ResultListRow2 from "../result-lodging/ResultListRow2";
 import moment from "moment";
@@ -370,9 +370,9 @@ export default {
   mixins: [lodgingUtilsMixin],
   components: {
     Slick,
-    GttSelectDate,
+    /* GttSelectDate,
     GttSelect,
-    GttSelectForm2,
+    GttSelectForm2, */
     ResultListRow2,
     SelectedRoom,
     AdultsKidsIcons,
@@ -634,14 +634,15 @@ export default {
           precioObjOne: i.habitacion,
           tipoHabitacion: i.habitacion.TipoHabitacion.TipoHabitacionId,
           cantidadMenoresPorHabitacion: i.CantidadMenores,
-          planAlimenticio: i.PA.PlanesAlimenticiosId,
+          planAlimenticioId: i.PA.PlanesAlimenticiosId,
+          planAlimenticio: i.PA,
           price: {
             value: i.habitacion.PrecioOrden,
           },
+          HabitacionId: i.Habitacion.HabitacionId,
+          Habitacion: i.Habitacion,
           // TODO cantidad
           cantidad: i.habitacion.CantidadHabitaciones,
-          HabitacionId: i.habitacion.HotetecInfoHabId
-          ,
         });
       });
 
@@ -661,13 +662,13 @@ export default {
         ProductoId: this.item.lodging.ProductoId,
         HabitacionId: listado[0].HabitacionId,
       };
-      this.roomsToReserve.IsSinContrato = listado[0].precioObjOne.IsSinContrato;
+      this.roomsToReserve.IsSinContrato = listado[0].precioObjOne.IsSinContrato; */
 
-      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      //let currentHotelec = localStorage.getItem("currentHotelecIds");
       //const hotelectData = await this.checkIsAvailable(this.roomsToReserve);
       //this.roomsToReserve.hotelectData = hotelectData;
 
-      let { Adl, Nin } = this.$helpers.generatePassageList(this.roomsToReserve.combinacion);
+      /*let { Adl, Nin } = this.$helpers.generatePassageList(this.roomsToReserve.combinacion);
       let allIds = [];
       Adl.forEach(adult => {
         allIds.push(adult.Id);
@@ -759,12 +760,13 @@ export default {
       this.roomSelectedToDis.push(item.rn);
     },
     async addToCart(item) {
-      console.log('item5', item);
       item.l.forEach((i) => {
+        i.Habitacion = item.rO;
         this.roomsToReserve.push(i);
         this.roomSelectedToDis.push(i.rn);
       });
-      console.info([this.roomsToReserve, this.roomSelectedToDis]);
+      console.log('item5', item);
+      //console.info([this.roomsToReserve, this.roomSelectedToDis]);
       // this.roomsSelecting = false
       // this.refreshLayout()
     },

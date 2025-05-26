@@ -145,20 +145,43 @@
                 </div>
                 <br />
                 <div
-                  class="flex-wrapper"
-                  v-for="(i, pos) in item.reservedRooms"
-                  :key="i.id"
+                  class="flex-wrapper lodging-reservation-view"
+                  v-for="(room, pos) in item.reservedRooms"
+                  :key="room.id"
                 >
                   <div class="to-left">
-                    Hab. {{ pos + 1 }}, {{ i.CantAdulto }} adulto(s)
-                    <template v-if="i.CantNino > 0">
-                      y {{ i.CantNino }} niño(s)
+                    Hab. {{ pos + 1 }}, {{ room.CantAdulto }} adulto(s)
+                    <template v-if="room.CantNino > 0">
+                      y {{ room.CantNino }} niño(s)
                     </template>
                     <template v-else> sin niños</template>
                   </div>
+                  <div class="payment-status">
+                    <span v-if="room.IsPagado" class="paid-status">
+                      <i class="mdi mdi-check-circle"></i> Pagado
+                    </span>
+                    <span v-if="room.IsPagado && room.FormaPago" class="payment-method">
+                      <i class="mdi mdi-credit-card"></i> {{ room.FormaPago }}
+                    </span>
+                    <span v-else class="unpaid-status">
+                      <i class="mdi mdi-alert-circle"></i> No pagado
+                    </span>
+                  </div>
                   <div class="to-right">
-                    {{ i.CantidadHabitaciones }} X
-                    {{ styledPrice(i.PrecioOrden).intPart }} USD
+                    <div class="details-btn" ><!-- v-if="state == 'Confirmed'" -->
+                      <button
+                        type="button"
+                        class="payment-btn antonio-regular"
+                         v-if="!room.IsPagado"
+                        @click="openModalToPay(item, room, itemIndex)"
+                      >
+                        <i class="mdi mdi-cash"></i> Pagar
+                      </button>
+                    </div>
+                    <div class="to-uppercase hn-roman gtt-text-color">
+                      {{ room.CantidadHabitaciones }} X
+                      {{ styledPrice(room.PrecioOrden).intPart }} USD
+                    </div>
                   </div>
                 </div>
                 <!-- <p class="gtt-text-color general-text-opt">
@@ -214,6 +237,10 @@ export default {
       type: Object,
       default: null,
     },
+    itemIndex: {
+      type: Number,
+      default: -1,
+    },
     can: {
       type: Boolean,
       default: false,
@@ -224,6 +251,10 @@ export default {
     hasVoucher: {
       default: false,
       type: Boolean,
+    },
+    state: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -285,6 +316,9 @@ export default {
       if (decimalPart == 0) decimalPart = "00";
 
       return { intPart: intPart, decimalPart: decimalPart };
+    },
+    openModalToPay(order, room, itemIndex) {
+      this.$emit('open-modal-to-pay', order, room, itemIndex);
     },
   },
 };
@@ -408,5 +442,102 @@ export default {
   .item-children-content-info {
     font-size: 12px;
   }
+}
+.flex-wrapper.lodging-reservation-view {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-left: 15px;
+  gap: 10px;
+  justify-content: space-between;
+  padding-bottom: 8px;
+}
+/* .to-right.details-btn {
+  width: 100px;
+  max-width: 100px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.details-btn button:hover {
+  cursor: pointer;
+}
+.details-btn button:focus {
+  border: none;
+  outline: none;
+} */
+.to-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+.payment-btn.antonio-regular {
+  background-color: #11491e !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  border: 1px solid transparent !important; /* <-- Cambiado aquí */
+  padding: 4px 10px !important;
+  margin-right: 15px;
+  font-size: 10px;
+  float: right;
+  transition: background 0.2s, color 0.2s, border-color 0.2s; /* <-- Añadido border-color */
+}
+.payment-btn.antonio-regular:hover,
+.payment-btn.antonio-regular:focus {
+  background-color: #fff !important;
+  color: #11491e !important;
+  border: 1px solid #11491e !important;
+  outline: none;
+  cursor: pointer;
+  padding: 4px 10px !important;
+  font-size: 10px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.payment-status {
+  color: #6d6d6d;
+}
+.payment-status i {
+  color: #6d6d6d;
+}
+.payment-status .paid-status {
+  color: green;
+}
+.payment-status .unpaid-status {
+  color: red;
+}
+.payment-status .payment-method {
+  color: #333;
+  margin-left: 16px;
+}
+.payment-status .payment-method i {
+  color: #333;
+}
+.payment-status .unpaid-status i {
+  color: red;
+}
+.payment-status .paid-status i {
+  color: green;
+}
+.payment-status .mdi-alert-circle {
+  color: red;
+}
+.payment-status .mdi-check-circle {
+  color: green;
+}
+.payment-status .mdi-credit-card {
+  color: #333;
+}
+.payment-status .mdi-calendar {
+  color: #333;
+}
+.payment-status .mdi-account {
+  color: #333;
+}
+.payment-status .mdi-calendar-week {
+  color: #333;
 }
 </style>

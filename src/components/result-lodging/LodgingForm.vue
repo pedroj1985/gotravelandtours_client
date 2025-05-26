@@ -199,8 +199,8 @@ export default {
     let t = await authGetRoomTypes();
     this.todosTipo = t.data;
     this.selectedRoomLayout = this.propRoomLayout;
-    this.getSearchResults().then(res => {
-      if (res.length > 0 && this.$route.name === 'lodging-detail') {
+    this.getSearchResults().then(res => {console.log('getSearchResults', res);
+      if (Array.isArray(res) && res.length > 0 && this.$route.name === 'lodging-detail') {
         this.hasSearchResults = true;
       }
     });

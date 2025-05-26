@@ -137,13 +137,16 @@
           </div>
           <div
             class="verify-step-content pt-30 pr-15 pl-15 pb-15"
-            v-for="orden in allTypesOrders"
+            v-for="(orden, index) in allTypesOrders"
             :key="orden.id"
           >
             <LodgingReservationView2
               class="lrv"
               v-if="orden.tipo == 'lodging'"
               :item="orden"
+              :state="state"
+              :item-index="index"
+              @open-modal-to-pay="openModalToPay"
             >
             </LodgingReservationView2>
             <RentReservationView
@@ -156,6 +159,27 @@
               @remove="showDeleteModal"
               @edit="showEditModal"
             ></RentReservationView>
+          </div>
+        </div>
+        <div v-if="isOpenModalToPay" class="modal-overlay">
+          <div class="modal-content">
+            <div class="modal-header centered-title">
+              <span class="to-uppercase">¿Cómo quieres pagar?</span>
+            </div>
+            <button class="modal-close" @click="closeModal">×</button>
+            <div class="modal-footer">
+              <button type="button" class="antonio-regular btn-blue" @click="confirmExternalPay(order.tipo, ordenAlojamiento)">Confirmar pago externo</button>
+              <button type="button" class="antonio-regular btn-green" @click="tropipayPayment(order.tipo, ordenAlojamiento, false)">Pagar con Tropipay</button>
+              <div class="email-input-container">
+                <input
+                  type="email"
+                  v-model="email"
+                  placeholder="Ingresar correo"
+                  class="email-input"
+                />
+              </div>
+              <button type="button" class="antonio-regular btn-orange" @click="sendPaymentLinkByEmail(order.tipo, ordenAlojamiento, email)">Enviar link de pago</button>
+            </div>
           </div>
         </div>
         <div class="create-order-step">
@@ -271,7 +295,10 @@ import {
   hotetecOpenSession,
   hotetecCancelReserve,
   authUpdateStatus,
-  hotetecUpdateDataOnGtt
+  hotetecUpdateDataOnGtt,
+  updateIsPagadoAlojamiento,
+  getTropiPayToken,
+  generatePaymentPage,
 } from "../../utils/auth";
 
 import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
@@ -284,7 +311,13 @@ import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { transmissionTypes } from "../../utils/utils";
 import GttEditRentModal from "../custom-elements/GttEditRentModal";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
+import { enumTypeService } from "../../utils/constant";
+
+import { PaymentLinkRequest } from "../../utils/paymentLinkRequest";
+import { ClientRequest } from "../../utils/clientRequest";
+
 import _ from "lodash";
+import moment from 'moment';
 
 export default {
   components: {
@@ -294,6 +327,18 @@ export default {
     GttVerificationModal,
     GttEditRentModal,
     LodgingReservationView2
+  },
+  watch: {
+    isOpenModalToPay(newVal) {
+      if (newVal === false) {
+        this.email = ''; // Limpiar el campo de correo electrónico después de enviar
+        this.emailError = null;
+        this.order = {}; // Limpiar la orden después de enviar el enlace
+        this.ordenAlojamiento = {}; // Limpiar la orden de alojamiento después de enviar el enlace
+        this.orderIndex = -1; // Reiniciar el índice de orden
+        this.local_data = {};
+      }
+    }
   },
   computed: {
     checkIfRentExist() {
@@ -316,11 +361,14 @@ export default {
     this.$emit("adminPanelInfo", "reservation-detail");
     let id = this.$route.params.id;
     let { data } = await authGetOrder(id);
-    console.log("orden: ", data);
+    console.log("thisAll: ", data);
     this.order = data;
     this.clientPasaporte = data.NumeroPasaporte;
     this.numeroOrden = this.order.NumeroOrden;
     this.state = this.order.Estado;
+    this.local_data.Cliente = data.Cliente;
+    this.local_data.NombreClienteFinal = data.NombreClienteFinal;
+
     await this.preproccesingLists(this.order.ListaVehiculosOrden);
     await this.preproccesingLists(this.order.ListaAlojamientoOrden, "lodging");
     this.calculatePrice(this.allTypesOrders);
@@ -357,6 +405,7 @@ export default {
       currentFilterData: null,
       tempItemToEdit: null,
       order: null,
+      orderIndex: null,
       allTypesOrders: [],
       idsToDelete: [],
       numeroOrden: "",
@@ -374,7 +423,16 @@ export default {
       state: "",
       isReserving: false,
       somethingChanged: false,
-      tempIdToDelete: -1
+      tempIdToDelete: -1,
+      isOpenModalToPay: false,
+      emailError: null,
+      email: null,
+      local_data: {
+        Cliente: {},
+        NombreClienteFinal: '',
+      },
+      ordenAlojamiento: {},
+      tropiPayToken: null,
     };
   },
   methods: {
@@ -528,6 +586,8 @@ export default {
       await this.$helpers.shoppingCartDeleteAll(true);
       this.$eventCartBus.$emit("updateCart");
       try {
+        console.info('this->', this);
+        console.info('this.order->', this.order);
         const response = await hotetecOpenSession();
         if (response && response.data && response.data.Ideses) {
           const currentHotelec = response.data.Ideses;
@@ -543,8 +603,7 @@ export default {
                 const orderData = {
                   OrdenId: this.order.OrdenId,
                   EstadoHotetec: "Cancel",
-                  NumeroConfirmacionHotetec: this.order
-                    .NumeroConfirmacionHotetec
+                  NumeroConfirmacionHotetec: this.order.NumeroOrden
                 };
                 const orderStatus = {
                   OrdenId: this.order.OrdenId,
@@ -850,6 +909,352 @@ export default {
       orden.ListaActividadOrden = lao;
       orden.ListaAlojamientoOrden = lalo;
       orden.ListaTrasladoOrden = lto;
+    },
+    openModalToPay(order, room, orderIndex) {
+      this.isOpenModalToPay = true;
+      this.ordenAlojamiento = room;
+      this.order = order;
+      this.orderIndex = orderIndex;
+      console.info('this', this);
+      if (!this.ordenAlojamiento.IsPagado) {
+        this.isOpenModalToPay = true;
+      } else {
+        this.$toasted.show('Este alojamiento ya ha sido pagado.', {
+          type: 'info'
+        });
+      }
+    },
+    closeModal() {
+      this.isOpenModalToPay = false;
+    },
+    confirmExternalPay(type, room) {
+      console.info('params', type, room);
+      let idx = this.allTypesOrders[this.orderIndex].reservedRooms.findIndex(r => {
+        return r.OrdenAlojamientoId == room.OrdenAlojamientoId;
+      });
+      let isPaid = false;
+      switch (type) {
+        /* case enumTypeService.vehicle:
+          let vehicleOrder = {
+            IsPagado: !order.IsPagado,
+            FormaPago: !order.IsPagado ? enumTypeService.EXT : null,
+            OrdenVehiculoId: order.OrdenVehiculoId
+          };
+          this.externalServices.confirmExernalPaymentVehicle(vehicleOrder)
+            .then((response) => {
+              this.allTypesOrders[i].orderVehiculo.IsPagado = response.IsPagado;
+              this.allTypesOrders[i].orderVehiculo.FormaPago = response.FormaPago;
+            })
+            .catch((error) => {
+              console.error('Error confirming external payment for vehicle:', error);
+            });
+          break; */
+        case enumTypeService.accomodation:
+          if (!room.IsPagado) {
+            isPaid = true;
+            let payData = {
+              CantidadHabitaciones: room.CantidadHabitaciones,
+              IsPagado: !room.IsPagado,
+              FormaPago: enumTypeService.EXT,
+              OrdenAlojamientoId: room.OrdenAlojamientoId
+            };
+            updateIsPagadoAlojamiento(payData)
+              .then((v) => {
+                this.allTypesOrders[this.orderIndex].reservedRooms[idx].IsPagado = true;
+                this.allTypesOrders[this.orderIndex].reservedRooms[idx].FormaPago = enumTypeService.EXT;
+              })
+              .catch((error) => {
+                console.error('Error confirming external payment for accommodation:', error);
+              });
+          }
+          if (isPaid) {
+            this.$toasted.show('Pago confirmado con éxito.', {
+              type: 'success'
+            });
+          } else {
+            this.$toasted.show('Este alojamiento ya ha sido pagado.', {
+            type: 'info'
+            });
+          }
+          this.closeModal();
+        break;
+        /* case enumTypeService.activity:
+          let activityOrder = {
+            IsPagado: !order.IsPagado,
+            FormaPago: !order.IsPagado ? enumTypeService.EXT : null,
+            OrdenActividadId: order.OrdenActividadId
+          };
+          this.externalServices.confirmExernalPaymentActivity(activityOrder)
+            .then((response) => {
+              this.allTypesOrders[i].IsPagado = response.IsPagado;
+              this.allTypesOrders[i].FormaPago = response.FormaPago;
+            })
+            .catch((error) => {
+              console.error('Error confirming external payment for activity:', error);
+            });
+          break;
+        case enumTypeService.service:
+          let serviceOrder = {
+            IsPagado: !order.IsPagado,
+            FormaPago: !order.IsPagado ? enumTypeService.EXT : null,
+            OrdenServicioAdicionalId: order.OrdenServicioAdicionalId
+          };
+          this.externalServices.confirmExernalPaymentService(serviceOrder)
+            .then((response) => {
+              this.allTypesOrders[i].IsPagado = response.IsPagado;
+              this.allTypesOrders[i].FormaPago = response.FormaPago;
+            })
+            .catch((error) => {
+              console.error('Error confirming external payment for service:', error);
+            });
+          break;
+        case enumTypeService.transportation:
+          let t = {
+            IsPagado: !order.IsPagado,
+            FormaPago: !order.IsPagado ? enumTypeService.EXT : null,
+            OrdenTrasladoId: order.OrdenTrasladoId
+          };
+          this.externalServices.confirmExernalPaymentTransfer(t)
+            .then((response) => {
+              this.allTypesOrders[i].IsPagado = response.IsPagado;
+              this.allTypesOrders[i].FormaPago = response.FormaPago;
+            })
+            .catch((error) => {
+              console.error('Error confirming external payment for transportation:', error);
+            });
+          break; */
+        default:
+        // El usuario canceló la acción
+      }
+    },
+    sendPaymentLinkByEmail(type, order, email) {
+      this.validateEmail();
+      if (!this.emailError) {
+        console.log(`Enviando correo a: ${this.email}`);
+        this.tropipayPayment(type, order, true);
+      } else {
+        this.$toasted.show(this.emailError, {
+          type: "error"
+        });
+      }
+    },
+    tropipayPayment(type, order, sendPaymentLInk) {
+      let id = 0
+      let description = ''
+      console.info('order ', order);
+      let fi = order.FechaInicio.split('T')[0];
+      let ff = order.FechaFin.split('T')[0];
+      /* getTropiPayToken().then((res) => {console.info('res', res.data);
+        this.tropiPayToken = res.data.access_token;
+      }).catch((error) => {
+        console.error('Error fetching TropiPay token:', error);
+      }); */
+
+      switch (type) {
+        /*case enumTypeService.vehicle:
+          id = order.OrdenVehiculoId
+          description = 'Rent the ' + order.Vehiculo.Nombre + ' from ' + fi + ' to ' + ff
+          break;*/
+        case enumTypeService.accomodation:
+          id = order.OrdenAlojamientoId
+          description = order.Alojamiento.Nombre + '-' + order.Habitacion.Nombre + '-'
+            + order.TipoHabitacion.Nombre + ' reservation ' + ' from ' + fi + ' to ' + ff
+          break;
+        /*case enumTypeService.activity:
+          id = order.OrdenActividadId
+          description = order.Actividad.Nombre + ' for the day ' + fi
+          break;
+        case enumTypeService.service:
+          id = order.OrdenServicioAdicionalId
+          description = order.ServicioAdicional.Nombre + ' from ' + fi + ' to ' + ff
+          break;
+        case enumTypeService.transportation:
+          id = order.OrdenTrasladoId
+          description = order.Traslado.Nombre + ' from ' + order.PuntoOrigen.Nombre + ' to ' + order.PuntoOrigen.PuntoDestino + ' for the day ' + fi
+          break;*/
+        default:
+        // El usuario canceló la acción
+      }
+      let typeCode = ''
+      let typeLabel = ''
+      enumTypeService.productTypeFilter.forEach((item) => {
+        if (item.value === type) {
+          typeCode = item.id
+          typeLabel = item.label
+        }
+      });
+
+      let request = new PaymentLinkRequest();
+      let price = order.CurrencyUsada === enumTypeService.currency[1].code
+        ? parseInt(order.PrecioOrdenTasa + '00')
+        : parseInt(order.PrecioOrden + '00');
+      request.amount = price;
+      request.concept = 'Rent a ' + typeLabel;
+      request.currency = order.CurrencyUsada;
+      request.TipoOrden = typeCode;
+      request.OrdenProductoId = id;
+      request.EnviarLinkDePago = sendPaymentLInk;
+      request.description = description;
+      request.directPayment = false;
+      request.expirationDays = 1;
+
+      let ttpClient = new ClientRequest();
+      ttpClient.address = this.local_data?.Cliente?.Direccion || '000000';
+      let textoSinEspaciosExtras = (this.local_data?.NombreClienteFinal || '').replace(/\s+/g, ' ').trim();
+      const tmpName = textoSinEspaciosExtras.split(" ");
+      ttpClient.name = tmpName[0] || '';
+      ttpClient.lastName = tmpName.length > 1 ? tmpName.slice(1).join(' ') : tmpName[0] || '';
+      ttpClient.email = sendPaymentLInk
+        ? this.email
+        : (this.local_data?.Cliente?.Correo || '');
+      ttpClient.phone = this.local_data?.Cliente?.Telefono || '000000';
+      ttpClient.termsAndConditions = 'true';
+      request.client = ttpClient;
+      request.favorite = true;
+      request.lang = 'es';
+      request.paymentMethods = [];
+
+      request.reasonId = 0;
+      request.reference = 'carvel_viajes_colibri';
+      request.serviceDate = moment().format();
+      request.singleUse = true;
+      request.urlNotification = 'https://admin.gotravelandtours.com/publicEliecer/api/ApiTropiPay/Callback/' + typeCode + '/' + id;
+      request.urlSuccess = 'https://admin.gotravelandtours.com/#/payment-success?amount=' + order.PrecioOrden + '&currency=' + order.CurrencyUsada + '&description=' + encodeURIComponent(description);
+      request.urlFailed = 'https://admin.gotravelandtours.com/#/payment-error?amount=' + order.PrecioOrden + '&currency=' + order.CurrencyUsada + '&description=' + encodeURIComponent(description);
+
+      /* request = {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJlbnQiOm51bGwsImNyZWRlbnRpYWxJZCI6NDcwNjA2LCJjcmVkZW50aWFsTmFtZSI6IjU1YzRhNzc3Yzc4NzYyZTNmYWE5OGJkYmU0ZjhhYjNkIiwiaWQiOiI4ZWYxZmQ4MC01MzQ0LTExZWYtOTk2OS1iZGQ2NDc0ZDk0ZWEiLCJpYXQiOjE3NDgyMTczMzUsImV4cCI6MTc0ODIyNDUzNX0.ViJYAapzF_EgzMLDBXfsI1bNv1ZHAyVStVKGcSRINvk",
+        "amount": 19200,
+        "concept": "Rent a Accommodation",
+        "currency": "USD",
+        "TipoOrden": "AL",
+        "OrdenProductoId": 2715,
+        "EnviarLinkDePago": false,
+        "description": "HOTEL COPACABANA-STANDARD - STANDARD-Sencilla reservation  from 09/04/25 to 12/04/25",
+        "directPayment": false,
+        "expirationDays": 1,
+        "client": {
+            "address": "Cuba",
+            "name": "Sistema",
+            "lastName": "Sistema",
+            "email": "eliecer@gotravelandtours.com",
+            "phone": "123",
+            "termsAndConditions": "true"
+        },
+        "favorite": true,
+        "lang": "es",
+        "paymentMethods": [],
+        "reasonId": 0,
+        "reference": "carvel_viajes_colibri",
+        "serviceDate": "2025-05-25T17:55:35-06:00",
+        "singleUse": true,
+        "urlNotification": "https://admin.gotravelandtours.com/publicEliecer/api/ApiTropiPay/Callback/AL/2715",
+        "urlSuccess": "https://admin.gotravelandtours.com/#/payment-success?amount=192&currency=USD&description=HOTEL%20COPACABANA-STANDARD%20-%20STANDARD-Sencilla%20reservation%20%20from%2009%2F04%2F25%20to%2012%2F04%2F25",
+        "urlFailed": "https://admin.gotravelandtours.com/#/payment-error?amount=192&currency=USD&description=HOTEL%20COPACABANA-STANDARD%20-%20STANDARD-Sencilla%20reservation%20%20from%2009%2F04%2F25%20to%2012%2F04%2F25"
+      }; */
+      getTropiPayToken()
+        .then((res) => {
+          request.access_token = res.data.access_token;
+          generatePaymentPage(request)
+            .then((v) => {
+              if (!sendPaymentLInk) {
+                if (v && v.shortUrl) {
+                  window.open(v.shortUrl, '_blank');
+                } else {
+                  this.$toasted.show('No se pudo obtener el enlace de pago de TropiPay.', {
+                    type: 'error'
+                  });
+                }
+              } else {
+                if (this.email === '') {
+                  this.$toasted.show('Correo electrónico no proporcionado. El enlace de pago se abrirá en una nueva pestaña.', {
+                    type: 'info',
+                    duration: 5000
+                  });
+                  window.open(v.shortUrl, '_blank');
+                } else if (this.email !== '') {
+                  this.$toasted.show(`Enlace de pago enviado a ${this.email}: ${v.shortUrl}`, {
+                    type: 'info',
+                    duration: 5000
+                  });
+                }
+              }
+              this.isOpenModalToPay = false;
+            })
+            .catch((error) => {
+              if (window) {
+                window.close();
+              }
+              console.log('Error al generar el link de pago:', error);
+              this.$toasted.show('Error al generar el link de pago.', {
+                type: 'error'
+              });
+            });
+        })
+        .catch((error) => {
+          console.error('Error fetching TropiPay token:', error);
+          this.$toasted.show('Error al obtener el token de TropiPay.', {
+            type: 'error'
+          });
+        });
+      /* generatePaymentPage(request)
+        .then((v) => {
+          if (!sendPaymentLInk) {
+            window.open(v.shortUrl, '_blank');
+          } else {
+            if (this.email === '') {
+              this.$toasted.show('Correo electrónico no proporcionado. El enlace de pago se abrirá en una nueva pestaña.', {
+                type: 'info',
+                duration: 5000
+              });
+              window.open(v.shortUrl, '_blank');
+            } else if (this.email !== '') {
+              this.$toasted.show(`Enlace de pago enviado a ${this.email}: ${v.shortUrl}`, {
+                type: 'info',
+                duration: 5000
+              });
+            }
+          }
+          this.isOpenModalToPay = false;
+        })
+        .catch((error) => {
+          if (window) {
+            window.close();
+          }
+          console.log('Error al generar el link de pago:', error);
+          this.$toasted.show('Error al generar el link de pago.', {
+            type: 'error'
+          });
+        }); */
+      /* this.externalServicesSubscription.add(this.externalServices.getTtpPaymentLink(request)
+      .subscribe(
+        (v: TtpPaymentLinkResponse) => {
+          this.localService.loading.next('end');
+          if (email === '') {
+            window.open(v.shortUrl, '_blank');
+          } else {
+            this._snackBar.open('Email Sent', 'X', {
+              duration: 5000,
+              panelClass: ['success-dialog']
+            });
+          }
+        },
+        (error: any) => {
+          this.localService.loading.next('end');
+          console.log('error');
+        }
+      ));
+      } */
+    },
+    validateEmail() {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.email) {
+        this.emailError = "El correo electrónico es obligatorio.";
+      } else if (!emailRegex.test(this.email)) {
+        this.emailError = "El correo electrónico no es válido.";
+      } else {
+        this.emailError = null;
+      }
     }
   }
 };
@@ -890,5 +1295,111 @@ export default {
 
 .state-closed {
   background: #212f3d;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative; /* Necesario para posicionar el botón de cerrar */
+  background-color: #ffffff;
+  border-radius: 8px;
+  width: 450px;
+  max-width: 90%;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  font-size: 14px;
+}
+
+.modal-header .to-uppercase {
+  font-size: 20px;
+  font-weight: bold;
+  color: #212f3d;
+}
+
+.modal-close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.modal-close:hover {
+  color: #000;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-blue {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-orange {
+  background-color: #fd7e14;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-green {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-gray:hover,
+.btn-blue:hover,
+.btn-orange:hover,
+.btn-green:hover {
+  opacity: 0.9;
 }
 </style>
