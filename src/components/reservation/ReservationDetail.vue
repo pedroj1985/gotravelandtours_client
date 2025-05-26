@@ -178,7 +178,7 @@
                   class="email-input"
                 />
               </div>
-              <button type="button" class="antonio-regular btn-orange" @click="sendPaymentLinkByEmail(order.tipo, ordenAlojamiento, email)">Enviar link de pago</button>
+              <button type="button" class="antonio-regular btn-orange" @click="sendPaymentLinkByEmail(order.tipo, ordenAlojamiento)">Enviar link de pago</button>
             </div>
           </div>
         </div>
@@ -1030,7 +1030,7 @@ export default {
         // El usuario canceló la acción
       }
     },
-    sendPaymentLinkByEmail(type, order, email) {
+    sendPaymentLinkByEmail(type, order) {
       this.validateEmail();
       if (!this.emailError) {
         console.log(`Enviando correo a: ${this.email}`);
