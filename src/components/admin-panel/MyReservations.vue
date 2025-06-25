@@ -338,10 +338,7 @@ export default {
       filtroNombreOrden: "",
       filtroNumeroOrden: "",
       filtroEstado: [
-        {
-          name: "Abierta",
-          value: "Open",
-        },
+        { value: "Open", name: "Abierta" },
         { value: "Confirmed", name: "Confirmada" },
         { value: "Pending", name: "Pendiente" },
         { value: "Rejected", name: "Rechazada" },

@@ -321,6 +321,7 @@ import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 import _ from "lodash";
 import moment from "moment";
+import { orderStatusList } from "../../utils/constant"
 
 export default {
   created() {
@@ -474,6 +475,7 @@ export default {
     async reserve() {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
+        let createInHotetec = {};
         let listaVehiculosOrden = this.getListaVehiculosOrden();
         let listaAlojamientosOrden = this.getListaAlojamientosOrden();
         listaAlojamientosOrden.forEach(ao => {
@@ -546,7 +548,7 @@ export default {
               Tipo: "Info",
               FuncionParam: JSON.stringify(onlyOrdenId)
             });
-            let createInHotetec = await this.createOrderInHotelect(onlyOrdenId);
+            createInHotetec = await this.createOrderInHotelect(onlyOrdenId);
             authLog({
               OrdenId: ordenSaveIt.data.OrdenId,
               FuncionCreador: "createInHotetec",
@@ -569,12 +571,22 @@ export default {
           }
           this.$helpers.shoppingCartDeleteAll();
           this.isReserving = false;
+
+          let msg = "Orden creada y confirmada con éxito. Puede proceder al pago.";
+          let msgType = "success"
+          if (createInHotetec.Estado !== orderStatusList.confirmed) {
+            msg = "Orden creada con éxito. Pendiente de aceptación por la administración.";
+            msgType = "info"
+          }
           this.$toasted.show(
-            "Orden creada con éxito. A espera de la administración para su aceptación.",
+            msg,
             {
-              type: "success"
+
+              type: msgType,
+              duration: 5000,
             }
-          );
+          )
+
           this.$eventCartBus.$emit("updateCart");
           this.$router.push({ name: "myreservations" });
         } catch (error) {
@@ -613,17 +625,28 @@ export default {
         const res = await hotetecCloseReserve(closeReserve);
         localStorage.removeItem("currentHotelecIds");
         const Cupest = res.data.Cupest;
-        const orderData = {
-          OrdenId: order.OrdenId,
-          EstadoHotetec: Cupest,
-          NumeroConfirmacionHotetec: res.data.Locata[0]
-        };
-        const orderStatus = {
-          OrdenId: order.OrdenId,
-          Estado: "Confirmed"
-        };
-        await hotetecUpdateDataOnGtt(orderData);
+        let orderStatus = {};
+
+        if (Cupest !== null && Cupest === orderStatusList.cm) {
+          const orderData = {
+            OrdenId: order.OrdenId,
+            EstadoHotetec: orderStatusList.close,
+            NumeroConfirmacionHotetec: res.data.Locata[0]
+          };
+          await hotetecUpdateDataOnGtt(orderData);
+
+          orderStatus = {
+            OrdenId: order.OrdenId,
+            Estado: orderStatusList.confirmed
+          };
+        } else {
+          orderStatus = {
+            OrdenId: order.OrdenId,
+            Estado: orderStatusList.pending
+          };
+        }
         await authUpdateStatus(orderStatus);
+        return orderStatus;
       } catch (error) {
         console.log(error);
         localStorage.removeItem("currentHotelecIds");
@@ -1153,7 +1176,6 @@ export default {
       editTime: true,
       clientPickUpPlace: [],
       clientDeliveryPlace: [],
-
       isReserving: false,
       menuLinks: []
     };

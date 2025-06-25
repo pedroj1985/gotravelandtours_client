@@ -311,7 +311,7 @@ import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { transmissionTypes } from "../../utils/utils";
 import GttEditRentModal from "../custom-elements/GttEditRentModal";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
-import { paymentData } from "../../utils/constant";
+import { paymentData, orderStatusList } from "../../utils/constant";
 
 import { PaymentLinkRequest } from "../../utils/paymentLinkRequest";
 import { ClientRequest } from "../../utils/clientRequest";
@@ -610,7 +610,7 @@ export default {
                 };
                 const orderStatus = {
                   OrdenId: this.order.OrdenId,
-                  Estado: "Cancel"
+                  Estado: orderStatusList.cancel
                 };
                 try {
                   await hotetecUpdateDataOnGtt(orderData);

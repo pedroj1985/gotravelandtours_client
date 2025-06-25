@@ -24,38 +24,15 @@ export const paymentData = {
   ]
 }
 
-/*export const paymentDataLabel = {
-  accomodation: 'Accommodation',
-  vehicle: 'Vehicle',
-  activity: 'Activity',
-  service: 'Service',
-  transportation: 'Transportation',
-  EXT: 'EXT',
+export const orderStatusList = {
+  open: 'Open',
+  confirmed: 'Confirmed',
+  accepted: 'Accepted',
+  rejected: 'Rejected',
+  autorized: 'Autorized',
+  close: 'Close',
+  closed: 'Closed',
+  pending: 'Pending',
+  cancel: 'Cancel',
+  cm: 'CM',
 }
-
-export const paymentDataIcon = {
-  accomodation: 'hotel',
-  vehicle: 'car',
-  activity: 'activity',
-  service: 'service',
-  transportation: 'transportation',
-  EXT: 'EXT',
-}
-
-export const paymentDataColor = {
-  accomodation: '#FFB800',
-  vehicle: '#FFB800',
-  activity: '#FFB800',
-  service: '#FFB800',
-  transportation: '#FFB800',
-  EXT: '#FFB800',
-}
-
-export const paymentDataColorHover = {
-  accomodation: '#FFB800',
-  vehicle: '#FFB800',
-  activity: '#FFB800',
-  service: '#FFB800',
-  transportation: '#FFB800',
-  EXT: '#FFB800',
-} */
