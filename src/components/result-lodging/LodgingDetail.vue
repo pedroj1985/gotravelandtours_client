@@ -348,7 +348,7 @@ import {
   authGetLodgingEatingPlanOne,
   hotetecOpenSession,
   hotetecStateSession,
-  //hotetecBlockProduct
+  hotetecBlockProduct
 } from "../../utils/auth";
 import Slick from "vue-slick-carousel";
 /* import GttSelectDate from "../custom-elements/GttSelectDate";
@@ -629,7 +629,10 @@ export default {
     },
     async addToGeneralCart() {
       let listado = [];
-      this.roomsToReserve.forEach((i) => {console.info('----- i ---------', i);
+      let so = {};
+      let hotelectData = {};
+      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      this.roomsToReserve.map( async (i) => {
         listado.push({
           precioObjOne: i.habitacion,
           tipoHabitacion: i.habitacion.TipoHabitacion.TipoHabitacionId,
@@ -644,8 +647,25 @@ export default {
           // TODO cantidad
           cantidad: i.habitacion.CantidadHabitaciones,
         });
+        so = {
+          Cliente: { ClienteId: localStorage.getItem("cliente") },
+          PlanAlimenticio: {
+            PlanesAlimenticiosId: i.PA.PlanesAlimenticiosId,
+          },
+          Alojamiento: { ProductoId: this.item.lodging.ProductoId },
+          TipoHabitacion: { TipoHabitacionId: i.CantAdultos },
+          CantidadAdultos: i.CantAdultos,
+          CantidadMenores: i.CantidadMenores,
+          CantidadInfantes: 0,
+          CantidadHabitaciones: 1,
+          HotetecIdeses: currentHotelec,
+          IsSinContrato: true,
+          Habitacion: { HabitacionId: i.Habitacion.HabitacionId },
+          Entrada: this.inDate,
+          Salida: this.outDate,
+        };
+        hotelectData = await authGetRoomPrice(so);
       });
-
       let total = _.sumBy(this.roomsToReserve, (j) => {
         return (
           j.habitacion.PrecioOrden *
@@ -653,7 +673,7 @@ export default {
         );
       });
 
-      /* this.roomsToReserve.combinacion = {
+      this.roomsToReserve.combinacion = {
         listado: listado,
         total: total,
       };
@@ -662,13 +682,10 @@ export default {
         ProductoId: this.item.lodging.ProductoId,
         HabitacionId: listado[0].HabitacionId,
       };
-      this.roomsToReserve.IsSinContrato = listado[0].precioObjOne.IsSinContrato; */
+      this.roomsToReserve.IsSinContrato = listado[0].precioObjOne.IsSinContrato;
+      this.roomsToReserve.hotelectData = hotelectData;
 
-      //let currentHotelec = localStorage.getItem("currentHotelecIds");
-      //const hotelectData = await this.checkIsAvailable(this.roomsToReserve);
-      //this.roomsToReserve.hotelectData = hotelectData;
-
-      /*let { Adl, Nin } = this.$helpers.generatePassageList(this.roomsToReserve.combinacion);
+      let { Adl, Nin } = this.$helpers.generatePassageList(this.roomsToReserve.combinacion);
       let allIds = [];
       Adl.forEach(adult => {
         allIds.push(adult.Id);
@@ -679,7 +696,7 @@ export default {
 
       let blockProduct = {
         Accion: "A",
-        Codtou: "HTT",
+        Codtou: "HTI",
         Ideses: currentHotelec,
         Pasage: { Adl, Nin },
         Bloser: {
@@ -687,7 +704,7 @@ export default {
           Dissmo: [
             {
               Pasid: allIds,
-              Id: 1,//this.roomsToReserve.hotelectData.HotetecInfoHabId,
+              Id: this.roomsToReserve.hotelectData.HotetecInfoHabId,
               Numuni: this.amoung.toString()
             }
           ]
@@ -696,7 +713,7 @@ export default {
 
       let unblockProduct = {
         Accion: "E",
-        Codtou: "HTT",
+        Codtou: "HTI",
         Ideses: currentHotelec,
         Pasage: { Adl, Nin },
         Bloser: {
@@ -704,7 +721,7 @@ export default {
           Dissmo: [
             {
               Pasid: allIds,
-              Id: 1,//this.roomsToReserve.hotelectData.HotetecInfoHabId,
+              Id: this.roomsToReserve.hotelectData.HotetecInfoHabId,
               Numuni: this.amoung.toString()
             }
           ]
@@ -721,8 +738,6 @@ export default {
         .finally(() => {
           this.$emit("loading", false);
         });
-
-      console.log('-- this.roomsToReserve --', this.roomsToReserve); */
 
       let l = {
         tipo: "lodging",

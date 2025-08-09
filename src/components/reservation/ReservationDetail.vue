@@ -252,7 +252,7 @@
               </button>
             </div>
             <div
-              v-if="state == 'Open' || state == 'Confirmed'"
+              v-if="isVisibleCancelButton"
               id="reservation-cancelation-info"
               class="hn-roman font14 gtt-first-color pl-30 pb-15"
             >
@@ -368,6 +368,12 @@ export default {
     this.local_data.Cliente = data.Cliente;
     this.local_data.NombreClienteFinal = data.NombreClienteFinal;
 
+    this.isVisibleCancelButton = [
+      orderStatusList.open,
+      orderStatusList.confirmed,
+      orderStatusList.pending
+    ].includes(this.state);
+
     await this.preproccesingLists(this.order.ListaVehiculosOrden);
     await this.preproccesingLists(this.order.ListaAlojamientoOrden, "lodging");
     this.calculatePrice(this.allTypesOrders);
@@ -436,6 +442,7 @@ export default {
       },
       ordenAlojamiento: {},
       tropiPayToken: null,
+      isVisibleCancelButton: false,
     };
   },
   methods: {
@@ -559,7 +566,7 @@ export default {
       return validator;
     },
     async cancelateOrder() {
-      if (this.state === "Confirmed") {
+      if (this.state === orderStatusList.confirmed) {
         return this.cancelOnHotetec();
       }
       let listaVehiculosOrden = this.getListaVehiculosOrden();
@@ -568,7 +575,7 @@ export default {
         this.cleanVO(vo);
       });
       try {
-        this.order.Estado = "Rejected";
+        this.order.Estado = orderStatusList.rejected;
         let ordenSaveIt = await authPutReserve(
           this.$route.params.id,
           this.order
@@ -606,11 +613,11 @@ export default {
                 const orderData = {
                   OrdenId: this.order.OrdenId,
                   EstadoHotetec: "Cancel",
-                  NumeroConfirmacionHotetec: this.order.NumeroOrden
+                  NumeroConfirmacionHotetec: this.order.NumeroConfirmacionHotetec
                 };
                 const orderStatus = {
                   OrdenId: this.order.OrdenId,
-                  Estado: orderStatusList.cancel
+                  Estado: orderStatusList.rejected
                 };
                 try {
                   await hotetecUpdateDataOnGtt(orderData);

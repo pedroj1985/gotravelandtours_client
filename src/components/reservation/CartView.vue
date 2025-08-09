@@ -611,7 +611,7 @@ export default {
       const userData = JSON.parse(localStorage.getItem("usuarioObjeto"));
       let closeReserve = {};
       closeReserve.Accion = "F";
-      closeReserve.Codtou = "HTT";
+      closeReserve.Codtou = "HTI";
       closeReserve.Refage = "17162";
       closeReserve.Ideses = localStorage.getItem("currentHotelecIds");
       let person = {};
@@ -624,14 +624,18 @@ export default {
       try {
         const res = await hotetecCloseReserve(closeReserve);
         localStorage.removeItem("currentHotelecIds");
+        const NumeroConfirmacionHotetec = res.data.Locata[0];
         const Cupest = res.data.Cupest;
         let orderStatus = {};
 
-        if (Cupest !== null && Cupest === orderStatusList.cm) {
+        if (NumeroConfirmacionHotetec !== null
+          && Cupest !== null
+          && Cupest === orderStatusList.cm
+        ) {
           const orderData = {
             OrdenId: order.OrdenId,
             EstadoHotetec: orderStatusList.close,
-            NumeroConfirmacionHotetec: res.data.Locata[0]
+            NumeroConfirmacionHotetec: NumeroConfirmacionHotetec
           };
           await hotetecUpdateDataOnGtt(orderData);
 
@@ -639,14 +643,14 @@ export default {
             OrdenId: order.OrdenId,
             Estado: orderStatusList.confirmed
           };
-        } else {
+          await authUpdateStatus(orderStatus);
+          return orderStatus;
+        } /* else {
           orderStatus = {
             OrdenId: order.OrdenId,
             Estado: orderStatusList.pending
           };
-        }
-        await authUpdateStatus(orderStatus);
-        return orderStatus;
+        } */
       } catch (error) {
         console.log(error);
         localStorage.removeItem("currentHotelecIds");
