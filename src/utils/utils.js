@@ -1,5 +1,6 @@
 import moment from "moment";
 import { eventDiffDays } from "../main";
+import { storageService } from "./storageService";
 
 export function constructDate(date) {
   return moment(date)
@@ -21,10 +22,9 @@ export function constructDisplay(d) {
 }
 
 export function verifyDifferentsDates(itemToCompare, tipo = "rent") {
-  let lcart = localStorage.getItem("gttCart");
-  console.log(JSON.parse(lcart));
-  if (lcart) {
-    let list = JSON.parse(lcart).filter((i) => {
+  const cart = storageService.getCart();
+  if (cart && cart.length > 0) {
+    let list = cart.filter((i) => {
       return i.tipo == tipo;
     });
     eventDiffDays.$emit("diffDays", checkDifferentDates(itemToCompare, list));

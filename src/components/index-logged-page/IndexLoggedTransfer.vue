@@ -179,6 +179,7 @@ export default {
     window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
+    constructDisplay,
     handleScroll() {
       let height = window.innerHeight;
       if (
@@ -219,12 +220,6 @@ export default {
     },
     desactivateModal() {
       this.isModalActive = false;
-    },
-    constructDate(date) {
-      return constructDate(date);
-    },
-    constructDisplay(d) {
-      return constructDisplay(d);
     },
   },
   data() {

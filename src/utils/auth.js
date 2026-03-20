@@ -4,7 +4,7 @@ let headers = {
   "Content-Type": "application/json"
 };
 export const HTTP = axios.create({
-  baseURL: "https://admin.gotravelandtours.com/publicEliecer/api",
+  baseURL: "http://gottours-001-site4.mtempurl.com/publicEliecer/api/",
   //baseURL: "http://192.168.1.7:5000/api",
   timeout: 120000
 });

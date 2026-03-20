@@ -19,6 +19,7 @@
 <script>
 import RentResultListItem from '../result-rent/RentResultListItem'
 import moment from 'moment'
+import { calculateNights } from "../../utils/utils";
 
 export default {
     components: {
@@ -43,9 +44,6 @@ export default {
 
             return sp.join('-')
 
-        },
-        calculateNights(min, max){
-            return moment(min).diff(moment(max), 'days');
         },
         search(filters){
             console.log(filters)

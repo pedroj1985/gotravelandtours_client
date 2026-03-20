@@ -321,7 +321,8 @@ import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 import _ from "lodash";
 import moment from "moment";
-import { orderStatusList } from "../../utils/constant"
+import { orderStatusList } from "../../utils/constant";
+import { hotelecSessionService } from "../../utils/hotelecSessionService";
 
 export default {
   created() {
@@ -613,7 +614,7 @@ export default {
       closeReserve.Accion = "F";
       closeReserve.Codtou = "HTI";
       closeReserve.Refage = "17162";
-      closeReserve.Ideses = localStorage.getItem("currentHotelecIds");
+      closeReserve.Ideses = hotelecSessionService.getSessionId();
       let person = {};
       person.Id = "1";
       person.Nombre = userData.name;
@@ -623,7 +624,7 @@ export default {
       closeReserve.Percon = person;
       try {
         const res = await hotetecCloseReserve(closeReserve);
-        localStorage.removeItem("currentHotelecIds");
+        hotelecSessionService.clearSessionId();
         const NumeroConfirmacionHotetec = res.data.Locata[0];
         const Cupest = res.data.Cupest;
         let orderStatus = {};
@@ -653,7 +654,7 @@ export default {
         } */
       } catch (error) {
         console.log(error);
-        localStorage.removeItem("currentHotelecIds");
+        hotelecSessionService.clearSessionId();
       }
     },
     fillReserveInfo(orden) {

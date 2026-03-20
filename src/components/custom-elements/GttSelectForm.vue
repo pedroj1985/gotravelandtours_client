@@ -62,6 +62,7 @@
 <script>
 import ClickOutside from "vue-click-outside";
 import GttSelect from "../custom-elements/GttSelect";
+import { constructDisplay } from "../../utils/utils";
 
 export default {
   components: {
@@ -128,6 +129,7 @@ export default {
     };
   },
   methods: {
+    constructDisplay,
     toggleClicked() {
       this.isVisible = !this.isVisible;
     },
@@ -145,14 +147,6 @@ export default {
         value: item.value
       });
       this.$emit("input", this.emitValue);
-    },
-    constructDisplay(d) {
-      let s = "";
-      Object.keys(d).forEach(element => {
-        s = s + " · " + d[element].value + " " + d[element].display;
-      });
-
-      return s.substring(2);
     },
     add(item, step = 1) {
       if (item.code == "kids") {

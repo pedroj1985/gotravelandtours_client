@@ -109,6 +109,7 @@
   import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
   import moment from "moment";
   import { authGetRoomTypes } from "../../utils/auth";
+  import { constructDisplay } from "../../utils/utils";
 
   export default {
     components: {
@@ -157,6 +158,7 @@
       }
     },
     methods: {
+      constructDisplay,
       toMoment(date) {
         return moment(date);
       },
@@ -190,14 +192,6 @@
           );
           return null;
         }
-      },
-      constructDisplay(d) {
-        let s = "";
-        Object.keys(d).forEach(element => {
-          s = s + " · " + d[element].value + " " + d[element].display;
-        });
-
-        return s.substring(2);
       },
       setResultTotal(value) {
         this.resultTotal = value;

@@ -146,9 +146,6 @@
       onlyToSelect: Boolean
     },
     methods: {
-      calculateNights(min, max) {
-        return calculateNights(min, max);
-      },
       toMoment(date) {
         return moment(date);
       },

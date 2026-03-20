@@ -346,10 +346,9 @@ import {
   authSearchRoomsByLodging,
   authGetRoomPrice,
   authGetLodgingEatingPlanOne,
-  hotetecOpenSession,
-  hotetecStateSession,
   hotetecBlockProduct
 } from "../../utils/auth";
+import { hotelecSessionService } from "../../utils/hotelecSessionService";
 import Slick from "vue-slick-carousel";
 /* import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttSelect from "../custom-elements/GttSelect";
@@ -631,7 +630,7 @@ export default {
       let listado = [];
       let so = {};
       let hotelectData = {};
-      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      let currentHotelec = await hotelecSessionService.getOrCreateSession();
       this.roomsToReserve.map( async (i) => {
         listado.push({
           precioObjOne: i.habitacion,
@@ -796,29 +795,7 @@ export default {
       }
     },
     async sR() {
-      let currentHotelec = localStorage.getItem("currentHotelecIds");
-      let HotelecSessionExpired = false;
-      //let PlanesAlimenticiosIds = [];
-
-      if (currentHotelec) {
-        const response = await hotetecStateSession(currentHotelec);
-        HotelecSessionExpired = !response.data.Infses;
-      }
-      if (!currentHotelec || HotelecSessionExpired) {
-        // await this.$helpers.shoppingCartDeleteAll(true);
-        try {
-          const response = await hotetecOpenSession();
-          if (response && response.data && response.data.Ideses) {
-            currentHotelec = response.data.Ideses;
-            localStorage.setItem("currentHotelecIds", currentHotelec);
-          }
-        } catch (error) {
-          console.error(
-            "Error occurred while fetching or processing data:",
-            error.message
-          );
-        }
-      }
+      let currentHotelec = await hotelecSessionService.getOrCreateSession();
 
       this.roomsResult = [];
       let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;

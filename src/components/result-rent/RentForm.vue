@@ -170,10 +170,12 @@ import GttModalSearch from "../custom-elements/GttModalSearch";
 import {
   constructDate,
   calculateNights,
+  overflowText,
   transmissionTypes,
 } from "../../utils/utils";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { useModal } from "../../composables/useModal";
 import moment from "moment";
 
 export default {
@@ -182,6 +184,9 @@ export default {
     GttSelect,
     GttSelectDate,
     GttModalSearch,
+  },
+  beforeCreate() {
+    this.modal = useModal(this);
   },
   props: {
     propPickUpDate: {
@@ -258,7 +263,7 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         try {
-          this.isModalActive = true;
+          this.modal.open();
           // let otherData = {
           //     pickUpPlace: this.selectedPickUpPlace,
           //     deliveryPlace: this.selectedDeliveryPlace,
@@ -363,19 +368,7 @@ export default {
       }
     },
     desactivateModal() {
-      this.isModalActive = false;
-    },
-    overflowText(text, l = 30) {
-      if (text.length > l) {
-        return `${text.substring(0, l)}...`;
-      }
-      return text;
-    },
-    constructDate(date) {
-      return constructDate(date);
-    },
-    calculateNights(min, max) {
-      return calculateNights(min, max);
+      this.modal.close();
     },
     async loadMarcas() {
       if (this.categoriesOpened == true) {

@@ -1128,7 +1128,7 @@ export default {
       request.reference = 'carvel_viajes_colibri';
       request.serviceDate = moment().format();
       request.singleUse = true;
-      request.urlNotification = 'https://admin.gotravelandtours.com/publicEliecer/api/ApiTropiPay/Callback/' + typeCode + '/' + id;
+      request.urlNotification = 'http://gottours-001-site4.mtempurl.com/publicEliecer/api//ApiTropiPay/Callback/' + typeCode + '/' + id;
       request.urlSuccess = 'https://admin.gotravelandtours.com/#/payment-success?amount=' + order.PrecioOrden + '&currency=' + order.CurrencyUsada + '&description=' + encodeURIComponent(description);
       request.urlFailed = 'https://admin.gotravelandtours.com/#/payment-error?amount=' + order.PrecioOrden + '&currency=' + order.CurrencyUsada + '&description=' + encodeURIComponent(description);
       request.access_token = this.tropiPayToken;

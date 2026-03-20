@@ -138,6 +138,7 @@
 import Slick from "vue-slick-carousel";
 import ResultListRow from "./ResultListRow";
 import _ from "lodash";
+import { constructDisplay } from "../../utils/utils";
 export default {
   created() {},
   components: {
@@ -162,6 +163,7 @@ export default {
     },
   },
   methods: {
+    constructDisplay,
     blockingOthers(status) {
       this.disabledItems = status;
     },
@@ -207,14 +209,6 @@ export default {
       return _.minBy(array, function(e) {
         return e.combinacion.listado[0].precioObjOne.PrecioOrden;
       });
-    },
-    constructDisplay(d) {
-      let s = "";
-      Object.keys(d).forEach((element) => {
-        s = s + " · " + d[element].value + " " + d[element].display;
-      });
-
-      return s.substring(2);
     },
     openList() {
       if (!this.isOpen) {

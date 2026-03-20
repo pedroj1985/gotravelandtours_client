@@ -89,9 +89,6 @@ export default {
         },
         constructDisplay(d){
             return constructDisplay(d);
-        },
-        calculateNights(min, max){
-            return calculateNights(min, max);
         }
     },
     data(){

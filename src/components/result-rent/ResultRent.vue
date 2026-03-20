@@ -58,6 +58,7 @@ import Breadcrumb from "../shared/Breadcrumb";
 import RentRightColumnList from "./RentRightColumnList";
 import { eventFiltersRent } from "../../main";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { constructDisplay } from "../../utils/utils";
 import {
   authSearchCars,
   authSearchMarca,
@@ -174,14 +175,6 @@ export default {
       this.resultList = temp;
 
       this.dataLoaded = true;
-    },
-    constructDisplay(d) {
-      let s = "";
-      Object.keys(d).forEach(element => {
-        s = s + " · " + d[element].value + " " + d[element].display;
-      });
-
-      return s.substring(2);
     },
     setResultTotal(value) {
       this.resultTotal = value;

@@ -204,7 +204,7 @@ export default {
 
         if (!versionActual) {
           const response = await axios.get(
-            "https://admin.gotravelandtours.com/publicEliecer/api/Versions/1"
+            "http://gottours-001-site4.mtempurl.com/publicEliecer/api//Versions/1"
           );
           localStorage.setItem("version", JSON.stringify(response.data));
           Vue.toasted.show(`Nueva version instalada`, {
@@ -213,7 +213,7 @@ export default {
           });
         } else {
           const response = await axios.get(
-            "https://admin.gotravelandtours.com/publicEliecer/api/Versions/1"
+            "http://gottours-001-site4.mtempurl.com/publicEliecer/api//Versions/1"
           );
           const data = response.data;
           if (versionActual.VersionName != data.VersionName) {

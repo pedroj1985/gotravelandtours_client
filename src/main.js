@@ -13,6 +13,7 @@ import { ValidationProvider } from "vee-validate";
 import { ValidationObserver } from "vee-validate";
 import { Validator } from "vee-validate";
 import Toasted from "vue-toasted";
+import { storageService } from "./utils/storageService";
 import es from "vee-validate/dist/locale/es";
 import VueTimepicker from "vue2-timepicker";
 import "vue2-timepicker/dist/VueTimepicker.css";
@@ -72,22 +73,23 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (localStorage.getItem("token") == null) {
+    if (storageService.getToken() == null) {
       next({
         name: "index",
         params: { nextUrl: to.fullPath },
       });
     } else {
-      if (localStorage.getItem("fecha_exp")) {
+      const expiryDate = storageService.getExpiryDate();
+      if (expiryDate) {
         if (
-          new Date(localStorage.getItem("fecha_exp")).getTime() >
+          new Date(expiryDate).getTime() >
           new Date().getTime()
         ) {
           next();
         } else {
-          const saveVersion = JSON.parse(localStorage.getItem("version"));
-          localStorage.clear();
-          localStorage.setItem("version", JSON.stringify(saveVersion));
+          const saveVersion = storageService.getVersion();
+          storageService.clear();
+          storageService.setVersion(saveVersion);
 
           eventCartBus.$emit("updateCart");
           eventBus.$emit("userLogin", null);
@@ -103,7 +105,7 @@ router.beforeEach((to, from, next) => {
         next();
       }
     }
-  } else if (localStorage.getItem("token") == null) {
+  } else if (storageService.getToken() == null) {
     next();
   } else
     next({

@@ -206,7 +206,9 @@ import {
   authGetLodgingsAll,
   authGetHotelList
 } from "../../utils/auth";
+import { constructDate, calculateNights, constructDisplay } from "../../utils/utils";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { useModal } from "../../composables/useModal";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
 export default {
@@ -218,6 +220,9 @@ export default {
     GttModalSearch
   },
   mixins: [lodgingUtilsMixin],
+  beforeCreate() {
+    this.modal = useModal(this);
+  },
   async created() {
     this.searchCountriesPlaceholder();
     window.addEventListener("scroll", this.handleScroll);
@@ -262,6 +267,9 @@ export default {
     }
   },
   methods: {
+    constructDate,
+    calculateNights,
+    constructDisplay,
     gttValidate() {
       let validator = [
         {
@@ -331,7 +339,7 @@ export default {
     async activateModal() {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
-        this.isModalActive = true;
+        this.modal.open();
         await this.clearSerchResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
           console.log('RGN', this);
@@ -476,23 +484,7 @@ export default {
       });
     },
     desactivateModal() {
-      this.isModalActive = false;
-    },
-    constructDate(date) {
-      return moment(date)
-        .locale("es")
-        .format("DD MMM YYYY");
-    },
-    calculateNights(min, max) {
-      return moment(min).diff(moment(max), "days") * -1;
-    },
-    constructDisplay(d) {
-      let s = "";
-      Object.keys(d).forEach(element => {
-        s = s + " · " + d[element].value + " " + d[element].display;
-      });
-
-      return s.substring(2);
+      this.modal.close();
     },
     constructDisplayNights(n) {
       if (n == 1) {

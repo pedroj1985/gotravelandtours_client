@@ -75,6 +75,7 @@ import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 
 import { authSearchPuntosInteres } from "../../utils/auth";
+import { overflowText } from "../../utils/utils";
 
 export default {
   created() {
@@ -108,12 +109,6 @@ export default {
   },
   mixins: [cleanVoMixin],
   methods: {
-    overflowText(text, l = 30) {
-      if (text.length > l) {
-        return `${text.substring(0, l)}...`;
-      }
-      return text;
-    },
     async loadPuntosInteres() {
       try {
         let { data } = await authSearchPuntosInteres();

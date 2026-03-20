@@ -3,6 +3,7 @@ import { en } from "../lang/en";
 import { uuid } from "vue-uuid";
 import lodash from "lodash";
 import { hotetecBlockProduct } from "@/utils/auth";
+import { storageService } from "./storageService";
 
 export const helpers = {
   traducir: (data, locale = "es") => {
@@ -19,36 +20,23 @@ export const helpers = {
     return str;
   },
   getCartItemsList() {
-    if (localStorage.getItem("gttCart")) {
-      let temp = JSON.parse(localStorage.getItem("gttCart"));
-      return temp;
-    }
-
-    return 0;
+    return storageService.getCart();
   },
   getCartItems() {
-    if (localStorage.getItem("gttCart")) {
-      let temp = JSON.parse(localStorage.getItem("gttCart"));
-      return temp.length;
-    }
-
-    return 0;
+    const cart = storageService.getCart();
+    return cart ? cart.length : 0;
   },
   shoppingCartUpdate(list) {
     this.shoppingCartDeleteAll();
     list = this.orderList(list);
-    localStorage.setItem("gttCart", JSON.stringify(list));
+    storageService.setCart(list);
   },
   shoppingCartAdd(value) {
     value["uID"] = uuid.v4();
-    if (localStorage.getItem("gttCart")) {
-      let temp = JSON.parse(localStorage.getItem("gttCart"));
-      temp.push(value);
-      temp = this.orderList(temp);
-      localStorage.setItem("gttCart", JSON.stringify(temp));
-    } else {
-      localStorage.setItem("gttCart", JSON.stringify([value]));
-    }
+    const cart = storageService.getCart();
+    cart.push(value);
+    const orderedCart = this.orderList(cart);
+    storageService.setCart(orderedCart);
   },
   generatePassageList(combination) {
     let totalA = 0;
@@ -88,13 +76,9 @@ export const helpers = {
     return `${day}/${month}/${year - years}`;
   },
   shoppingCartRemoveOne(uID) {
-    if (localStorage.getItem("gttCart")) {
-      let temp = JSON.parse(localStorage.getItem("gttCart"));
-      let tempWithoutElement = temp.filter(item => {
-        return item.uID != uID;
-      });
-      localStorage.setItem("gttCart", JSON.stringify(tempWithoutElement));
-    }
+    const cart = storageService.getCart();
+    const filteredCart = cart.filter(item => item.uID != uID);
+    storageService.setCart(filteredCart);
   },
   // shoppingCartEditOne(id, itemEdited){
   //   if (localStorage.getItem("gttCart")) {
