@@ -351,8 +351,3 @@ export default {
   outline: none;
 }
 </style>
-<style>
-#index-logged-transfer .hour .gtt__list_area {
-  width: 150px;
-}
-</style>

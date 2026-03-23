@@ -28,6 +28,7 @@
                       @click.native="loadDestinies"
                       v-model="selectedDestiny"
                       :options="destinies"
+                      :alignLeft="true"
                     >
                       <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                       <span slot="placeholder" class="required-field">Destino o Alojamiento</span>

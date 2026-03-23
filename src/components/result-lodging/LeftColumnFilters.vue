@@ -25,9 +25,3 @@ export default {
   }
 };
 </script>
-
-<style>
-#left-column-filters {
-  height: 100%;
-}
-</style>

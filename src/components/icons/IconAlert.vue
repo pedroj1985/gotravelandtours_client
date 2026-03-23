@@ -14,13 +14,3 @@
     />
   </svg>
 </template>
-
-<style>
-.cls-1 {
-  fill: red;
-}
-.icon {
-  width: 20px;
-  height: 20px;
-}
-</style>

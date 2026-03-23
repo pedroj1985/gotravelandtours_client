@@ -8,7 +8,7 @@
       :disabled="isDisabled"
     >
       <div class="gtt__toggle_content">
-        <div class="gtt__toggle_text">
+        <div class="gtt__toggle_text" :class="{ 'align-left': alignLeft }">
           <div class="gtt__toggle_text_first_column">
             <slot name="iconSelectedValue"></slot>
           </div>
@@ -184,6 +184,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    alignLeft: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -275,6 +279,10 @@ export default {
 .gtt__toggle_text {
   @include flex-center;
   flex: 1;
+
+  &.align-left {
+    justify-content: flex-start;
+  }
 }
 
 .gtt__toggle_text_first_column,

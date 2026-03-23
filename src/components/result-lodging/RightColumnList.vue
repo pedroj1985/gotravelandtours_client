@@ -93,8 +93,3 @@
   };
 </script>
 
-<style>
-  #right-column-list {
-    /* height: 100%; */
-  }
-</style>

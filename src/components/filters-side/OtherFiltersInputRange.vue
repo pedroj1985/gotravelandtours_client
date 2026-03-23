@@ -62,39 +62,3 @@ export default {
     }
 }
 </script>
-
-<style>
-    .input-wrapper{
-        line-height: 1;
-        padding-bottom: 30px;
-        margin-bottom: 15px;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    .input-wrapper .input-header{
-        display: flex;
-    }
-    .input-wrapper .input-content{
-        margin-top: 15px;
-    }
-    .input-open-close-button:hover{
-        cursor: pointer;
-    }
-    .input-wrapper .input-label{
-        font-size: 18px;
-        color: #212f3d;
-        font-family: 'Helvetica Neue LT Std-Roman';
-    }
-    .input-wrapper .currentPrices{
-        text-align: center;
-        color: #6d6d6d;
-        font-size: 16px;
-        padding-bottom: 15px;
-    }
-    .input-wrapper .vue-slider-process{
-        background-color: #6d6d6d;
-    }
-    .input-wrapper .vue-slider-dot-handle{
-        border-color: #6d6d6d;
-    }
-
-</style>

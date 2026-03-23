@@ -56,20 +56,3 @@ export default {
     
 }
 </script>
-
-<style>
-    .rent-edit-list-item{
-        width: 70vw;
-    }
-</style>
-<style>
-    .btn-close{
-        background: transparent;
-        color: #212f3d;
-        border: none;
-    }
-    .list-wrapper{
-        max-height: 50vh;
-        overflow: scroll;
-    }
-</style>

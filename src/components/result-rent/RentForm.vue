@@ -466,8 +466,3 @@ export default {
   text-align: right;
 }
 </style>
-<style>
-#lodging-form .gtt__toggle {
-  margin-bottom: 15px;
-}
-</style>

@@ -42,12 +42,13 @@
         <span class="bannerText">para usted y su familia</span>
       </div>
       <div class="lodging-form">
-        <div ref="gttDestinyLodging" class="cleft" style="width: 100%;">
+        <div ref="gttDestinyLodging" style="width: 100%;">
           <gtt-select
             :openedLodging.sync="lodgingOpened"
             @click.native="loadDestinies"
             v-model="selectedLodgingDestinyValue"
             :options="destinies"
+            :alignLeft="true"
           >
             <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
             <span slot="placeholder" class="required-field"
@@ -122,6 +123,7 @@
                 30
               ]"
               :search="false"
+              :alignLeft="true"
             >
               <span slot="placeholder">Noches</span>
               <span slot="selectedPlaceholder">¿Cuántas noches?</span>
@@ -629,6 +631,10 @@ export default {
 
 .selects-inline {
   display: flex;
+}
+
+.selects-inline .gtt__list_area {
+  text-align: left;
 }
 
 #home-logged-banner .select-flag {

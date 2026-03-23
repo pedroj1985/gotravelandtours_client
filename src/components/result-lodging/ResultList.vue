@@ -18,10 +18,3 @@
         },
     }
 </script>
-
-<style>
-    .list-item{
-        margin-bottom: 20px;
-        position: relative;
-    }
-</style>

@@ -323,9 +323,6 @@ export default {
   },
 };
 </script>
-
-<style>
-.info-item {
   margin-bottom: 10px;
 }
 .btn-cart {

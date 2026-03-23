@@ -1,0 +1,52 @@
+.terms-of-use {
+  font-weight: bold;
+  line-height: 1.2;
+  font-size: 12px;
+  text-align: center;
+}
+#register.modal-backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 1 !important;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+#register .c-modal {
+  position: absolute;
+  border-radius: 10px;
+  left: 50%;
+  -webkit-transform: translate(-100%, 0);
+  top: 20%;
+  background-color: white;
+  width: 25%;
+  height: auto;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+#register input {
+  margin-top: 15px;
+  height: 50px;
+}
+#register .home-actions {
+  float: none;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  text-align: right;
+}
+@media(max-width: 1440px) {
+  .c-modal {
+    top: 29%;
+    width: 49.06vw;
+    height: 300px;
+  }
+  .searching-text {
+    font-size: 36px;
+  }
+  .c-modal-bottom .second-column {
+    font-size: 10px;
+  }
+}
