@@ -78,66 +78,56 @@ export default {
 }
 </script>
 
-<style scoped>
-    .gtt__button_modal{
-        position: relative;
-    }
-    .gtt__list_area_wrapper{
-        position: absolute;
-        border-radius: 10px;
-        z-index: 12;
-        top: 45px;
-        margin-top: 30px;
-        box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);
-        display: none;
-        left: -20px;
-    }
-    .isVisible{
-        display: block;
-    }
-    .arrow{
-        position: absolute;
-        z-index: 1000;
-        top: -15px;
-        left: 10%;
-        width: 0;
-        height: 0;
-        border-left: 15px solid transparent;
-        border-right: 15px solid transparent;
-        border-bottom: 15px solid #ffffff;
-    }
+<style lang="scss" scoped>
+.gtt__button_modal {
+  position: relative;
+}
 
-    div.gtt__list_area{
-        min-height: 100px;
-        max-height: 300px;
-        min-width: 300px;
-        list-style: none;
-        text-align: left;
-        border-radius: 10px;
-        overflow: auto;
-        padding-top: 15px;
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-bottom: 15px;
-        background-color: #ffffff;
-        margin-bottom: 0;
-        color: #212f3d;
-        font-family: 'Helvetica Neue LT Std-Roman';
-        font-size: 14px;
-    }
-    @media(max-width: 1440px){
-        .arrow{
-            top: -12px;
-        }
-        .gtt__list_area_wrapper{
-            top: 30px;
-            margin-top: 20px;
-        }
-        div.gtt__list_area{
-            font-size: 10px;
-            padding-top: 7px;
-            padding-bottom: 7px;
-        }
-    }
+.gtt__list_area_wrapper {
+  position: absolute;
+  left: -20px;
+  right: auto;
+  min-width: 100%;
+  border-radius: var(--border-radius-lg);
+  z-index: var(--z-dropdown);
+  top: calc(100% + var(--spacing-xs));
+  margin-top: 0;
+  box-shadow: var(--shadow-lg);
+  display: none;
 
+  &.isVisible {
+    display: block;
+  }
+}
+
+.arrow {
+  @include dropdown-arrow;
+}
+
+.gtt__list_area {
+  min-height: 100px;
+  max-height: 300px;
+  min-width: 300px;
+  list-style: none;
+  text-align: left;
+  border-radius: var(--border-radius-lg);
+  overflow: auto;
+  padding: var(--spacing-lg);
+  background-color: var(--color-background-white);
+  margin-bottom: 0;
+  color: var(--color-text-primary);
+  font-family: 'Helvetica Neue LT Std-Roman';
+  font-size: var(--font-size-sm);
+}
+
+@media(max-width: 1440px) {
+  .arrow {
+    top: -12px;
+  }
+
+  .gtt__list_area {
+    font-size: 10px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}
 </style>

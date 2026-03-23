@@ -38,38 +38,43 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .gtt_input_wrapper {
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-lg);
 }
+
 .gtt_input_label {
-  margin-bottom: 6px;
-  font-size: 14px;
-  color: #212f3d;
-  font-family: 'Helvetica Neue LT Std-Roman', Arial, sans-serif;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
 }
+
 .gtt_input {
-  padding: 10px;
-  border: 1px solid #c4c4c4;
-  border-radius: 5px;
-  font-size: 16px;
-  color: #212f3d;
-  font-family: 'Helvetica Neue LT Std-Roman', Arial, sans-serif;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
   outline: none;
-  transition: border-color .2s;
+  transition: border-color var(--transition-normal);
+
+  &:focus {
+    border-color: var(--color-primary);
+  }
+
+  &:disabled {
+    background: var(--color-bg-disabled);
+    color: var(--color-text-disabled);
+  }
 }
-.gtt_input:focus {
-  border-color: #212f3d;
-}
-.gtt_input:disabled {
-  background: #f5f5f5;
-  color: #bcbcbc;
-}
+
 .gtt_input_error {
-  color: #ff0000;
-  font-size: 12px;
-  margin-top: 4px;
+  color: var(--color-error);
+  font-size: var(--font-size-xs);
+  margin-top: var(--spacing-xs);
 }
 </style>

@@ -497,7 +497,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .c-modal {
   height: auto;
   width: auto;

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="list-item-general">
-      <div class="list-item-carousel">
+    <div class="result-item">
+      <div class="result-item-carousel">
         <Slick
           ref="slick"
           :slidesToShow="1"
@@ -24,7 +24,7 @@
           </div>
         </Slick>
       </div>
-      <div class="list-item-info">
+      <div class="result-item-info">
         <div class="item-name hn-bdcn">{{ item.name }}</div>
         <slot name="item-other-info" v-bind:item="item">
           <div class="item-other-info hn-roman">
@@ -86,7 +86,7 @@
           </div>
         </slot>
       </div>
-      <div class="list-item-price">
+      <div class="result-item-price">
         <div class="price-wrapper">
           <!-- <div class="hn-mdcn better-price">Mejor precio para:</div> -->
           <div class="hn-mdcn">{{ constructDisplay(filters.Visitantes) }}</div>

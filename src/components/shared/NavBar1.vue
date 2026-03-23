@@ -83,7 +83,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .shopping-cart-wrapper {
   position: relative;
 }
@@ -100,41 +100,41 @@ export default {
 
 .vl {
   height: 100%;
-  border-left: 1px solid #c4c4c4;
+  border-left: 1px solid var(--color-border);
 }
 
 .user-name-hello {
-  margin-top: 10px;
+  margin-top: var(--spacing-sm);
 }
 
 .hello,
 .user-name {
   padding: 0;
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
   text-align: right;
-  color: #bcd01d;
-  font-size: 18px;
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
 }
 
 #language_selector {
   margin-top: 18px;
-  color: #c4c4c4;
-  line-height: 1.2;
+  color: var(--color-border);
+  line-height: var(--line-height-tight);
   float: right;
   font-size: 24px;
-  padding-right: 30px;
+  padding-right: var(--spacing-xl);
 }
 
 .reservations {
-  padding-left: 15px;
+  padding-left: var(--spacing-md);
 }
 
 .reservations,
 .bills,
 .shopping-cart,
 .search {
-  padding-right: 30px;
-  line-height: 1.2;
+  padding-right: var(--spacing-xl);
+  line-height: var(--line-height-tight);
   margin-top: 18px;
 }
 
@@ -146,38 +146,38 @@ export default {
 }
 
 .search {
-  color: #c4c4c4;
+  color: var(--color-border);
 }
 
 .reservations a,
 .bills a,
 .shopping-cart a {
   text-transform: uppercase;
-  color: #c4c4c4;
-  font-size: 16px;
+  color: var(--color-border);
+  font-size: var(--font-size-md);
 }
 
 @media (max-width: 1440px) {
   .hello,
   .user-name {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
   }
 
   .reservations i,
   .bills i,
   .shopping-cart i,
   .search i {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
   }
 
   .reservations a,
   .bills a,
   .shopping-cart a {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
   }
 
   #language_selector {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
   }
 }
 </style>

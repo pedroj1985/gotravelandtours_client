@@ -208,7 +208,6 @@ import {
 } from "../../utils/auth";
 import { constructDate, calculateNights, constructDisplay } from "../../utils/utils";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
-import { useModal } from "../../composables/useModal";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
 export default {
@@ -220,9 +219,6 @@ export default {
     GttModalSearch
   },
   mixins: [lodgingUtilsMixin],
-  beforeCreate() {
-    this.modal = useModal(this);
-  },
   async created() {
     this.searchCountriesPlaceholder();
     window.addEventListener("scroll", this.handleScroll);
@@ -339,7 +335,7 @@ export default {
     async activateModal() {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
-        this.modal.open();
+        this.isModalActive = true;
         await this.clearSerchResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
           console.log('RGN', this);
@@ -484,7 +480,7 @@ export default {
       });
     },
     desactivateModal() {
-      this.modal.close();
+      this.isModalActive = false;
     },
     constructDisplayNights(n) {
       if (n == 1) {

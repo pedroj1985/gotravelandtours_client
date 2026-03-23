@@ -25,24 +25,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .gtt_btn {
-  display: inline-block;
-  padding: 10px 24px;
-  font-size: 16px;
-  font-family: 'Helvetica Neue LT Std-Roman', Arial, sans-serif;
-  color: #fff;
-  background-color: #212f3d;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color .2s;
+  @include gtt-button;
 }
+
 .gtt_btn:disabled {
-  background-color: #bcbcbc;
+  background-color: var(--color-text-disabled);
   cursor: not-allowed;
 }
+
 .gtt_btn:hover:not(:disabled) {
-  background-color: #1a2533;
+  background-color: var(--color-primary-dark);
 }
 </style>

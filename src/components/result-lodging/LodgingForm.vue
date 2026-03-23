@@ -132,7 +132,6 @@ import {
 } from "../../utils/auth";
 import { constructDate, calculateNights, constructDisplay } from "../../utils/utils";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
-import { useModal } from "../../composables/useModal";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import moment from "moment";
 
@@ -143,9 +142,6 @@ export default {
     GttSelectDate,
     GttSelectForm,
     GttModalSearch
-  },
-  beforeCreate() {
-    this.modal = useModal(this);
   },
   computed: {
     minArriveDate() {
@@ -293,7 +289,7 @@ export default {
     async activateModal() {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
-        this.modal.open();
+        this.isModalActive = true;
         await this.clearSerchResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
           console.info('RGN', this);
@@ -423,7 +419,7 @@ export default {
       }
     },
     desactivateModal() {
-      this.modal.close();
+      this.isModalActive = false;
     },
     async loadDestinies() {
       if (this.lodgingOpened == true) {

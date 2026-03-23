@@ -163,3 +163,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.details-btn {
+  margin-top: 15px;
+}
+</style>

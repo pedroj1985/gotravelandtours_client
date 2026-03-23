@@ -5,7 +5,11 @@ module.exports = {
   },
   extends: ["plugin:vue/essential", "eslint:recommended", "@vue/prettier"],
   parserOptions: {
-    parser: "babel-eslint"
+    parser: "@babel/eslint-parser",
+    requireConfigFile: false,  // Necesario para que funcione sin babel.config.js adicional
+    babelOptions: {
+      presets: ["@vue/cli-plugin-babel/preset"]
+    }
   },
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",

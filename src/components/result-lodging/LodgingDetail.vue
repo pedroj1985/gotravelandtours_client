@@ -138,16 +138,10 @@
                 v-for="destinyImage in item.images"
                 :key="destinyImage"
               >
-                <img v-bind:src="destinyImage" alt="" />
+                <img v-bind:src="destinyImage" alt="" @click="isModalGalleryActive = true" />
                 <div class="w-100 h-100 position-absolute bgHolder"></div>
               </div>
             </Slick>
-            <div class="footer-buttons-carousel">
-              <i
-                class="mdi mdi-image-multiple font18 float-right"
-                @click="isModalGalleryActive = true"
-              ></i>
-            </div>
           </div>
           <div class="lodging-info-info">
             <div class="lodging-info-name hn-ltcn font24 gtt-text-color">
@@ -308,8 +302,13 @@
                   </div>
                 </div>
               </div>
-              <div v-else class="text-center">
-                Buscando...
+              <div
+                v-else
+                class="text-center d-flex align-items-center justify-content-center mb-2 alert-state info"
+                role="status"
+              >
+                <i class="mdi mdi-cloud-search-outline"></i>
+                <span>Buscando disponibilidad...</span>
               </div>
               <div class="list-item-children">
                 <ResultListRow2
@@ -326,9 +325,11 @@
             <div v-else>
               <div
                 v-if="roomsResult.length == 0"
-                class="text-center gtt-errors mb-2"
+                class="text-center d-flex align-items-center justify-content-center mb-2 alert-state warning"
+                role="alert"
               >
-                No existe disponibilidad
+                <i class="mdi mdi-alert-circle-outline"></i>
+                <span>No existe disponibilidad</span>
               </div>
             </div>
           </div>
@@ -961,6 +962,7 @@ export default {
 <style>
 .lodging-detail-wrapper {
   margin-left: 9.375% !important;
+  margin-bottom: 25px !important;
 }
 .lodging-detail-wrapper .left-side-wrapper {
   position: relative;
@@ -972,17 +974,42 @@ export default {
   margin-right: 10px;
 }
 .lic-carousel {
-  width: 45.8vw;
-  height: 616px;
+  width: 700px;
+  max-width: 700px;
+  min-width: 700px;
+  height: 520px;
+  overflow: hidden;
+  border-radius: 12px;
+  position: relative;
+  margin: 0 auto;
+  min-height: 520px;
+  display: block;
 }
-.lic-carousel .result-images-carousel img {
-  height: 616px;
+.lic-carousel .slick-list,
+.lic-carousel .slick-track,
+.lic-carousel .slick-slide {
+  min-height: 520px !important;
+  height: 520px !important;
 }
 .lic-carousel .result-images-carousel {
+  width: 100%;
   height: 100%;
   padding: 0;
   position: relative;
+  overflow: hidden;
 }
+.lic-carousel .result-images-carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  cursor: zoom-in;
+  transition: transform 0.35s ease;
+}
+.lic-carousel .result-images-carousel img:hover {
+  transform: scale(1.02);
+}
+
 .bgHolder {
   top: 0;
   background: linear-gradient(
@@ -996,9 +1023,6 @@ export default {
   padding-left: 30px;
   padding-right: 15px;
   padding-top: 15px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  background: #f5f5f5;
   padding-bottom: 5px;
   width: 14.2vw;
 }
@@ -1010,12 +1034,46 @@ export default {
 }
 #pai .info-box {
   border: 1px solid #6d6d6d;
-  width: 60vw;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
+  width: 60vw;  
+  border-radius: 10px !important;
 }
+.alert-state {
+  max-width: 460px;
+  width: 100%;
+  margin: 12px auto;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.16);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: #27323a;
+}
+.alert-state i {
+  margin-right: 10px;
+  font-size: 20px;
+}
+.alert-state span {
+  font-weight: 600;
+}
+.alert-state.info {
+  background: rgba(9, 132, 177, 0.12);
+  border: 1px solid rgba(9, 132, 177, 0.35);
+  color: #0d3a59;
+}
+.alert-state.warning {
+  background: rgba(250, 130, 49, 0.12);
+  border: 1px solid rgba(250, 130, 49, 0.35);
+  color: #7a3a07;
+}
+.alert-state strong {
+  margin-left: 6px;
+}
+
 .rooms-disponibility-form {
   padding-top: 5px;
   padding-bottom: 5px;
@@ -1037,7 +1095,7 @@ export default {
   border: 1px solid #6d6d6d;
   margin-top: 30px;
   min-height: 100px;
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 15px;
 }
 .selected-rooms .selected-rooms-title {
@@ -1062,8 +1120,10 @@ export default {
 }
 .lodging-detail-header {
   background: #f5f5f5;
-  margin-bottom: 45px;
-  padding: 10px;
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 .star-wrapper {
   position: relative;
@@ -1102,6 +1162,20 @@ export default {
 }
 .lodging-info-carousel {
   position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.lodging-detail-info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.lodging-info-info {
+  background: #f5f5f5;
+  border-radius: 14px;
+  padding: 16px;
+  flex: 1;
 }
 .footer-buttons-carousel {
   position: absolute;

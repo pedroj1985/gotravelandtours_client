@@ -177,32 +177,29 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .gtt__select_form {
   width: 100%;
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-md);
 }
 
 .gtt__toggle {
+  @include gtt-button;
   width: 100%;
-  padding-left: 15px;
-  padding-right: 15px;
-  height: 50px;
-  background-color: #ffffff;
-  border: 1px solid #c4c4c4;
-  border-radius: 5px;
-  font-family: "Helvetica Neue LT Std-Roman";
-  font-size: 16px;
-  margin-bottom: 30px;
-  cursor: pointer;
+  margin-bottom: var(--spacing-xl);
+  border-radius: var(--border-radius-sm);
+  justify-content: flex-start;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 47, 61, 0.2);
+  }
 }
-.gtt__toggle:focus {
-  outline: none;
-  box-shadow: 0px 0px 2px #212f3d;
-}
+
 .gtt__toggle_content {
-  display: flex;
+  @include flex-between;
+  width: 100%;
 }
 .gtt__toggle_text {
   float: left;
@@ -225,78 +222,51 @@ export default {
   font-size: 30px;
 }
 .gtt__list_area_wrapper {
-  position: absolute;
-  border-radius: 10px;
-  z-index: 3;
-  top: 45px;
-  margin-top: 30px;
-  box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);
   display: none;
-}
-.gtt__itemKids {
-  margin-top: 30px;
-}
-.gtt__kidsSelect {
-  padding-right: 5px;
-  padding-left: 0;
-  height: 50px;
-  margin-bottom: 5px;
-}
-.isVisible {
-  display: block;
-}
-.arrow {
+  @include dropdown-wrapper;
   position: absolute;
-  z-index: 1000;
-  top: -15px;
-  left: 10%;
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 15px solid #ffffff;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--spacing-xs));
+  margin-top: 0;
+  z-index: var(--z-dropdown);
+
+  &.isVisible {
+    display: block;
+  }
+}
+
+.arrow {
+  @include dropdown-arrow;
 }
 
 .gtt__form {
-  padding: 30px;
+  padding: var(--spacing-xl);
   position: relative;
-  background: #ffffff;
+  background: var(--color-background-white);
   min-width: 450px;
   min-height: 150px;
-  border-radius: 10px;
-  font-family: "Helvetica Neue LT Std-Roman";
-  color: #212f3d;
-  font-size: 14px;
-  line-height: 1.2;
+  border-radius: var(--border-radius-lg);
+  font-family: 'Helvetica Neue LT Std-Roman';
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
 }
-.gtt__item {
-  display: flex;
-  margin-bottom: 5px;
-}
-.gtt__item_v_picker {
-  display: flex;
-}
+
 .gtt__picker_button {
   width: 48px;
   height: 48px;
   border-radius: 100%;
-  border: 1px solid #212f3d;
-  background: #ffffff;
-  font-size: 14px;
-  font-family: "Helvetica Neue LT Std-Roman";
-  color: #212f3d;
-}
-.gtt__item_label,
-.gtt__picker_value {
-  padding-top: 15px;
-}
-.gtt__picker_value {
-  text-align: center;
-}
+  border: 1px solid var(--color-text-primary);
+  background: var(--color-background-white);
+  font-size: var(--font-size-sm);
+  font-family: 'Helvetica Neue LT Std-Roman';
+  color: var(--color-text-primary);
 
-.gtt__picker_button.disabled {
-  color: #c4c4c4;
-  border: 1px solid #c4c4c4;
+  &.disabled {
+    color: var(--color-border);
+    border: 1px solid var(--color-border);
+  }
 }
 
 .gtt__picker_button:focus {
@@ -330,10 +300,6 @@ export default {
   }
   .gtt__toggle_arrow {
     font-size: 20px;
-  }
-  .gtt__list_area_wrapper {
-    top: 30px;
-    margin-top: 20px;
   }
   .gtt__form {
     padding: 15px;

@@ -29,34 +29,38 @@ export default {
     }
 }
 </script>
-<style scoped>
-    .twoRowsDiv{
-        width: 100%;
-        display: flex;
-        padding: 15px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        border: 2px solid #f5f5f5;
-        border-radius: 10px;
-    }
-    .tr-icon-wrapper{
-        align-self: center;
-    }
-    .tr-info-wrapper{
-        margin-left: 5px;
-    }
-    .tr-info-value{
-        font-size: 14px !important;
-    }
-    @media(max-width: 1440px){
-        .twoRowsDiv{
-            padding: 5px;
-        }
-        .tr-info-name{
-            font-size: 10px !important;
-        }
-        .tr-info-value{
-            font-size: 12px !important;
-        }
-    }
+<style lang="scss" scoped>
+.twoRowsDiv {
+  width: 100%;
+  display: flex;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-background);
+  border-radius: var(--border-radius-lg);
+}
+
+.tr-icon-wrapper {
+  align-self: center;
+}
+
+.tr-info-wrapper {
+  margin-left: var(--spacing-xs);
+}
+
+.tr-info-value {
+  font-size: var(--font-size-sm) !important;
+}
+
+@media (max-width: 1440px) {
+  .twoRowsDiv {
+    padding: var(--spacing-xs);
+  }
+
+  .tr-info-name {
+    font-size: 10px !important;
+  }
+
+  .tr-info-value {
+    font-size: var(--font-size-xs) !important;
+  }
+}
 </style>

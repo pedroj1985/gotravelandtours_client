@@ -277,29 +277,24 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .gtt__select_form {
   width: 100%;
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-md);
 }
 
 .gtt__toggle {
+  @include gtt-button;
   width: 100%;
-  padding-left: 15px;
-  padding-right: 15px;
-  height: 50px;
-  background-color: #ffffff;
-  border: 1px solid #c4c4c4;
-  border-radius: 5px;
-  font-family: "Helvetica Neue LT Std-Roman";
-  font-size: 16px;
-  margin-bottom: 30px;
-  cursor: pointer;
-}
-.gtt__toggle:focus {
-  outline: none;
-  box-shadow: 0px 0px 2px #212f3d;
+  margin-bottom: var(--spacing-xl);
+  border-radius: var(--border-radius-sm);
+  justify-content: flex-start;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 47, 61, 0.2);
+  }
 }
 .gtt__toggle_content {
   display: flex;
@@ -326,12 +321,18 @@ export default {
 }
 .gtt__list_area_wrapper {
   position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--spacing-xs));
+  margin-top: 0;
   border-radius: 10px;
-  z-index: 3;
-  top: 45px;
-  margin-top: 30px;
+  z-index: var(--z-dropdown);
   box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);
   display: none;
+
+  &.isVisible {
+    display: block;
+  }
 }
 .gtt__itemKids {
   margin-top: 30px;
@@ -341,9 +342,6 @@ export default {
   padding-left: 0;
   height: 50px;
   margin-bottom: 5px;
-}
-.isVisible {
-  display: block;
 }
 .arrow {
   position: absolute;
@@ -448,10 +446,6 @@ export default {
   }
   .gtt__toggle_arrow {
     font-size: 20px;
-  }
-  .gtt__list_area_wrapper {
-    top: 30px;
-    margin-top: 20px;
   }
   .gtt__form {
     padding: 15px;

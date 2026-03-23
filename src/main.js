@@ -8,6 +8,7 @@ import VCalendar from "v-calendar";
 import BootstrapVue from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+import "@/assets/styles/main.scss";
 import VeeValidate from "vee-validate";
 import { ValidationProvider } from "vee-validate";
 import { ValidationObserver } from "vee-validate";
