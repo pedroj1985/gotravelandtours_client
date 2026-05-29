@@ -1,6 +1,5 @@
 import Vue from "vue";
 import App from "./App.vue";
-import VueResource from "vue-resource";
 import VueScrollTo from "vue-scrollto";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
@@ -28,7 +27,6 @@ import "vue-image-lightbox/dist/vue-image-lightbox.min.css";
 
 Vue.config.productionTip = false;
 Vue.use(VueLazyLoad);
-Vue.use(VueResource);
 Vue.use(BootstrapVue);
 Vue.use(VueLodash, { lodash: lodash });
 Vue.use(Toasted, {
