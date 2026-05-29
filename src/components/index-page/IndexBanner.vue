@@ -109,6 +109,7 @@ import {
 import { authConfig } from "../../../public/js/auth_config";
 import { codes } from "../../utils/codes";
 import moment from "moment";
+import { storageService } from "../../utils/storageService";
 
 export default {
   name: "IndexBanner",
@@ -149,7 +150,7 @@ export default {
           const { rol } = data;
 
           if (rol == "Cliente") {
-            localStorage.setItem("token", data.token);
+            storageService.setToken(data.token);
             localStorage.setItem("nombre", data.nombre);
             localStorage.setItem("userid", data.Id);
             localStorage.setItem("cliente", data.clienteId);
@@ -198,14 +199,14 @@ export default {
           } else {
             window.location.replace(
               authConfig.externalURL +
-              "?" +
-              authConfig.userParam +
-              "=" +
-              user.usuario +
-              "&" +
-              authConfig.passParam +
-              "=" +
-              user.password
+                "?" +
+                authConfig.userParam +
+                "=" +
+                user.usuario +
+                "&" +
+                authConfig.passParam +
+                "=" +
+                user.password
             );
           }
         })
