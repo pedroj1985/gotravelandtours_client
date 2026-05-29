@@ -25,7 +25,6 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 import VueLazyLoad from "vue-lazyload";
 import "vue-image-lightbox/dist/vue-image-lightbox.min.css";
-import axios from "axios";
 
 Vue.config.productionTip = false;
 Vue.use(VueLazyLoad);
@@ -34,10 +33,10 @@ Vue.use(BootstrapVue);
 Vue.use(VueLodash, { lodash: lodash });
 Vue.use(Toasted, {
   duration: 5000,
-  className: "gtt-notification",
+  className: "gtt-notification"
 });
 Vue.use(VueScrollTo, {
-  offset: -30,
+  offset: -30
 });
 
 // const originalPush = VueRouter.prototype.push
@@ -51,14 +50,14 @@ Vue.use(VCalendar, {
     es: {
       masks: {
         title: "MMMM",
-        weekdays: "WWW",
-      },
-    },
-  },
+        weekdays: "WWW"
+      }
+    }
+  }
 });
 Vue.prototype.$helpers = helpers;
 Vue.use(VeeValidate, {
-  fieldsBagName: "inputs ",
+  fieldsBagName: "inputs "
 });
 Vue.component("multiselect", Multiselect);
 Vue.component("ValidationProvider", ValidationProvider);
@@ -69,23 +68,20 @@ const router = new VueRouter({
   routes,
   scrollBehavior() {
     return { x: 0, y: 0 };
-  },
+  }
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
     if (storageService.getToken() == null) {
       next({
         name: "index",
-        params: { nextUrl: to.fullPath },
+        params: { nextUrl: to.fullPath }
       });
     } else {
       const expiryDate = storageService.getExpiryDate();
       if (expiryDate) {
-        if (
-          new Date(expiryDate).getTime() >
-          new Date().getTime()
-        ) {
+        if (new Date(expiryDate).getTime() > new Date().getTime()) {
           next();
         } else {
           const saveVersion = storageService.getVersion();
@@ -95,11 +91,11 @@ router.beforeEach((to, from, next) => {
           eventCartBus.$emit("updateCart");
           eventBus.$emit("userLogin", null);
           Vue.toasted.show(`Sesión expirada`, {
-            type: "error",
+            type: "error"
           });
           router.push({
             name: "index",
-            params: { nextUrl: to.fullPath },
+            params: { nextUrl: to.fullPath }
           });
         }
       } else {
@@ -110,7 +106,7 @@ router.beforeEach((to, from, next) => {
     next();
   } else
     next({
-      name: "indexLogged",
+      name: "indexLogged"
     });
 });
 
@@ -128,5 +124,5 @@ new Vue({
   mounted() {
     this.$validator.localize(es);
   },
-  render: (h) => h(App),
+  render: h => h(App)
 }).$mount("#app");

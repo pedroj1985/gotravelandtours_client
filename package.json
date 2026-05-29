@@ -5,8 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "lint:fix": "eslint --fix src/**/*.{vue,js}",
+    "lint": "eslint --ext .vue,.js src/",
+    "lint:fix": "eslint --ext .vue,.js src/ --fix",
     "prepare": "husky"
   },
   "dependencies": {
