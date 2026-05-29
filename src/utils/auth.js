@@ -407,9 +407,9 @@ export function updateHeader(token) {
 }
 
 export function closeSession(vueInstance) {
-  const saveVersion = JSON.parse(localStorage.getItem("version"));
-  localStorage.clear();
-  localStorage.setItem("version", JSON.stringify(saveVersion));
+  const saveVersion = storageService.getVersion();
+  storageService.clear();
+  storageService.setVersion(saveVersion);
   vueInstance.$eventCartBus.$emit("updateCart");
   vueInstance.$router.push({ name: "index" });
 }
