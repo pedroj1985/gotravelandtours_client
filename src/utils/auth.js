@@ -4,8 +4,7 @@ let headers = {
   "Content-Type": "application/json"
 };
 export const HTTP = axios.create({
-  baseURL: "http://gottours-001-site4.mtempurl.com/publicEliecer/api/",
-  //baseURL: "http://192.168.1.7:5000/api",
+  baseURL: process.env.VUE_APP_API_URL || "http://localhost:5000/api/",
   timeout: 120000
 });
 

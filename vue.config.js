@@ -1,9 +1,3 @@
-if (process.env.NODE_ENV === "production") {
-  process.env.VUE_APP_API_URL = "https://myprodlink.com";
-} else {
-  process.env.VUE_APP_API_URL = "http://localhost:5000/api/";
-}
-
 process.env.VUE_APP_VERSION = "0.5.0";
 
 function skipGlobalScssPrepend(resourcePath) {
@@ -15,6 +9,13 @@ function skipGlobalScssPrepend(resourcePath) {
 }
 
 module.exports = {
+  devServer: {
+    headers: {
+      "X-Frame-Options": "DENY",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+    },
+  },
   configureWebpack: {
     devtool: "source-map",
     output: {
