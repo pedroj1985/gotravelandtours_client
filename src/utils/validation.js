@@ -147,13 +147,14 @@ export function renderValid(Validator, vueInstance) {
     }
 
 
-    ref.querySelector(".gtt-errors").innerHTML = "";
+    const errorsContainer = ref.querySelector(".gtt-errors");
+    errorsContainer.textContent = "";
     if (!element.isValid) {
-
       element.messages.forEach(item => {
-
-        let div = ref.querySelector(".gtt-errors");
-        div.innerHTML += item + "<br>";
+        const span = document.createElement("span");
+        span.textContent = item;
+        errorsContainer.appendChild(span);
+        errorsContainer.appendChild(document.createElement("br"));
       });
     }
   });
