@@ -17,17 +17,17 @@ export default {
 }
 </script>
 
-<style scoped>
-.c-modal{
-    height: auto;
-    font-size: 24px;
-    border-radius: 10px;
+<style lang="scss" scoped>
+.c-modal {
+  height: auto;
+  font-size: var(--font-size-xxl);
+  border-radius: var(--border-radius-lg);
 }
 
-.c-modal button{
-    font-size: 16px;
-    width: 50px;
-    height: 30px;
-    margin-left: 15px;
+.c-modal button {
+  font-size: var(--font-size-md);
+  width: 50px;
+  height: 30px;
+  margin-left: var(--spacing-md);
 }
 </style>

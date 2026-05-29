@@ -1497,6 +1497,7 @@ button.slick-next {
     color: #6d6d6d;
     font-size: 16px;
     position: relative;
+    min-height: 100px;
 }
 
 .better-price {
@@ -1513,7 +1514,9 @@ button.slick-next {
     position: absolute;
     bottom: 0;
     left: 50%;
-    -webkit-transform: translate(-50%, 0);
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    margin-bottom: 0;
 }
 
 .open-close-button {

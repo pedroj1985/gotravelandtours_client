@@ -1,0 +1,15 @@
+@forward "variables";
+@forward "mixins";
+@forward "results";
+
+// Module-specific styles
+@use "pages/admin-panel" as *;
+@use "pages/shared" as *;
+@use "pages/icons" as *;
+@use "pages/custom-elements" as *;
+@use "pages/filters-side" as *;
+@use "pages/index-page" as *;
+@use "pages/index-logged-page" as *;
+@use "pages/result-lodging" as *;
+@use "pages/result-rent" as *;
+@use "pages/reservation" as *;

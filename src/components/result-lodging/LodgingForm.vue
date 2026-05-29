@@ -34,6 +34,7 @@
         @click.native="loadDestinies"
         v-model="selectedLodgingDestinyValue"
         :options="destinies"
+        :alignLeft="true"
       >
         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
         <span slot="placeholder" class="required-field">Destino</span>
@@ -130,6 +131,7 @@ import {
   authGetLodgingsAll,
   authGetHotelList
 } from "../../utils/auth";
+import { constructDate, calculateNights, constructDisplay } from "../../utils/utils";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import moment from "moment";
@@ -206,22 +208,9 @@ export default {
     });
   },
   methods: {
-    constructDate(date) {
-      return moment(date)
-        .locale("es")
-        .format("DD MMM YYYY");
-    },
-    calculateNights(min, max) {
-      return moment(min).diff(moment(max), "days") * -1;
-    },
-    constructDisplay(d) {
-      let s = "";
-      Object.keys(d).forEach(element => {
-        s = s + " · " + d[element].value + " " + d[element].display;
-      });
-
-      return s.substring(2);
-    },
+    constructDate,
+    calculateNights,
+    constructDisplay,
     goToDetail(f, a, id) {
       const currentRoute = this.$route;
 

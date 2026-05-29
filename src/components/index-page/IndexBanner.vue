@@ -254,13 +254,3 @@ export default {
   }
 };
 </script>
-<style>
-.test-error {
-    color: red;
-    border: 1px solid red;
-    border-radius: 5px;
-    background-color: rgba(255, 0, 0, 0.5);
-    margin-bottom: 5px;
-    padding: 5px;
-}
-</style>

@@ -86,6 +86,7 @@
 
 <script>
 import RentResultListRow from "./RentResultListRow";
+import { constructDisplay } from "../../utils/utils";
 export default {
   components: {
     RentResultListRow,
@@ -117,6 +118,7 @@ export default {
     },
   },
   methods: {
+    constructDisplay,
     emitElement(value) {
       this.$emit("selectedElementEditItem", value);
     },
@@ -142,14 +144,6 @@ export default {
 
       return sp.join("-");
     },
-    constructDisplay(d) {
-      let s = "";
-      Object.keys(d).forEach((element) => {
-        s = s + " · " + d[element].value + " " + d[element].display;
-      });
-
-      return s.substring(2);
-    },
     openList() {
       if (!this.isOpen) {
         this.limit = this.item.items.lenght;
@@ -169,3 +163,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.details-btn {
+  margin-top: 15px;
+}
+</style>

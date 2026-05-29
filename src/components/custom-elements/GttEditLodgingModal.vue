@@ -28,6 +28,7 @@
                       @click.native="loadDestinies"
                       v-model="selectedDestiny"
                       :options="destinies"
+                      :alignLeft="true"
                     >
                       <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                       <span slot="placeholder" class="required-field">Destino o Alojamiento</span>
@@ -538,19 +539,19 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .c-modal {
   height: auto;
   width: auto;
-  font-size: 18px;
-  border-radius: 10px;
+  font-size: var(--font-size-lg);
+  border-radius: var(--border-radius-lg);
   -webkit-transform: translate(-50%, 0);
 }
 
 .c-modal button {
-  font-size: 16px;
+  font-size: var(--font-size-md);
   height: 40px;
-  margin-left: 15px;
+  margin-left: var(--spacing-md);
 }
 
 .c-modal .c-form {
