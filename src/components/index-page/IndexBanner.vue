@@ -140,9 +140,15 @@ export default {
   },
   methods: {
     login() {
+      if (!this.username.trim() || !this.password.trim()) {
+        this.$toasted.show("Usuario y contraseña son requeridos", {
+          type: "error"
+        });
+        return;
+      }
       let user = {
-        usuario: this.username,
-        password: this.password
+        usuario: this.username.trim(),
+        password: this.password.trim()
       };
       this.loading = true;
       authLogin(user)

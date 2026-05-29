@@ -21,7 +21,7 @@
                 >
                   <ValidationProvider
                     name="usuario"
-                    rules="required"
+                    rules="required|alpha_num"
                     v-slot="{ errors }"
                   >
                     <input
@@ -36,7 +36,7 @@
                   </ValidationProvider>
                   <ValidationProvider
                     name="teléfono"
-                    rules="required"
+                    rules="required|numeric"
                     v-slot="{ errors }"
                   >
                     <input
@@ -51,7 +51,7 @@
                   </ValidationProvider>
                   <ValidationProvider
                     name="email"
-                    rules="required"
+                    rules="required|email"
                     v-slot="{ errors }"
                   >
                     <input
@@ -66,7 +66,7 @@
                   </ValidationProvider>
                   <ValidationProvider
                     name="contraseña"
-                    rules="required|confirmed:confirm"
+                    rules="required|confirmed:confirm|min:8"
                     v-slot="{ errors }"
                   >
                     <input
@@ -133,6 +133,7 @@
 <script>
 import { authRegister } from "../../utils/auth";
 import { storageService } from "../../utils/storageService";
+import logger from "../../utils/logger";
 
 export default {
   data() {
@@ -155,10 +156,10 @@ export default {
       const valid = await this.$refs.observer.validate();
       if (valid) {
         let user = {
-          username: this.username,
-          password: this.password,
-          telefono: this.phone,
-          correo: this.email,
+          username: this.username.trim(),
+          password: this.password.trim(),
+          telefono: this.phone.trim(),
+          correo: this.email.trim().toLowerCase(),
           clienteId: localStorage.getItem("cliente"),
           rolId: 3
         };
@@ -167,7 +168,7 @@ export default {
           Authorization: `Bearer ${storageService.getToken()}`
         })
           .then(({ data }) => {
-            console.log(data);
+            logger.log(data);
             this.$toasted.show(
               `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
               {
