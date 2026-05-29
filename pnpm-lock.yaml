@@ -32,6 +32,9 @@ importers:
       core-js:
         specifier: ^3.6.5
         version: 3.49.0
+      dayjs:
+        specifier: ^1.11.21
+        version: 1.11.21
       fslightbox-vue:
         specifier: ^1.2.0
         version: 1.2.0(vue-template-compiler@2.7.16)(vue@2.7.16)
@@ -41,9 +44,6 @@ importers:
       lodash:
         specifier: ^4.17.20
         version: 4.17.23
-      moment:
-        specifier: ^2.27.0
-        version: 2.30.1
       uuid:
         specifier: ^8.3.1
         version: 8.3.2
@@ -2218,6 +2218,9 @@ packages:
     resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
     engines: {node: '>=0.11'}
 
+  dayjs@1.11.21:
+    resolution: {integrity: sha512-98IT+HOahAisibz/yjKbzuOBwYcjJ7BCLPzARyHiyEBmRz4fatF+KPJszEHXsGYjUG234aH/cOjW1wwTbKUZlA==}
+
   de-indent@1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
 
@@ -3828,9 +3831,6 @@ packages:
   mkdirp@0.5.6:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
-
-  moment@2.30.1:
-    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
 
   move-concurrently@1.0.1:
     resolution: {integrity: sha512-hdrFxZOycD/g6A6SoI2bB5NA/5NEqD0569+S47WZhPvm46sD50ZHdYaFmnua5lndde9rCHGjmfK7Z8BuCt/PcQ==}
@@ -8402,6 +8402,8 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.2
 
+  dayjs@1.11.21: {}
+
   de-indent@1.0.2: {}
 
   debug@2.6.9(supports-color@6.1.0):
@@ -9456,7 +9458,7 @@ snapshots:
     dependencies:
       http-proxy: 1.18.1(debug@4.4.3)
       is-glob: 4.0.3
-      lodash: 4.17.23
+      lodash: 4.18.1
       micromatch: 3.1.10(supports-color@6.1.0)
     transitivePeerDependencies:
       - debug
@@ -10155,8 +10157,6 @@ snapshots:
     dependencies:
       minimist: 1.2.8
 
-  moment@2.30.1: {}
-
   move-concurrently@1.0.1:
     dependencies:
       aproba: 1.2.0
@@ -10823,7 +10823,7 @@ snapshots:
 
   pretty-error@2.1.2:
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       renderkid: 2.0.7
 
   process-nextick-args@2.0.1: {}
@@ -11015,7 +11015,7 @@ snapshots:
       css-select: 4.3.0
       dom-converter: 0.2.0
       htmlparser2: 6.1.0
-      lodash: 4.17.23
+      lodash: 4.18.1
       strip-ansi: 3.0.1
 
   repeat-element@1.1.4: {}
