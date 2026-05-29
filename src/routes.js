@@ -1,21 +1,30 @@
 import Index from "./components/index-page/Index.vue";
 import IndexLogged from "./components/index-logged-page/IndexLogged.vue";
-import ResultLodging from "./components/result-lodging/ResultLodging.vue";
-import ResultRent from "./components/result-rent/ResultRent";
-import CartView from "./components/reservation/CartView";
-import MyAdminPanel from "./components/shared/MyAdminPanel";
-import MyReservations from "./components/admin-panel/MyReservations";
-import MyDashboard from "./components/admin-panel/MyReservations";
-import RentRouteHolder from "./components/result-rent/RentRouteHolder";
-import LodgingRouteHolder from "./components/result-lodging/LodgingRouteHolder";
-import RentDetail from "./components/result-rent/RentDetail";
-import ReservationDetail from "./components/reservation/ReservationDetail";
-import RentEditList from "./components/reservation/RentEditList";
-import LodgingDetail from "./components/result-lodging/LodgingDetail";
-import CookiesPolicy from "@/components/cookies-policy/CookiesPolicy.vue";
-import LegalInformation from "@/components/legal-information/LegalInformation.vue";
-import BookingConditions from "@/components/booking-conditions/BookingConditions.vue";
-import PrivacyPolicy from "@/components/privacy-policy/PrivacyPolicy.vue";
+
+const ResultLodging = () =>
+  import("./components/result-lodging/ResultLodging.vue");
+const ResultRent = () => import("./components/result-rent/ResultRent");
+const CartView = () => import("./components/reservation/CartView");
+const MyAdminPanel = () => import("./components/shared/MyAdminPanel");
+const MyReservations = () => import("./components/admin-panel/MyReservations");
+const MyDashboard = () => import("./components/admin-panel/MyDashboard.vue");
+const RentRouteHolder = () =>
+  import("./components/result-rent/RentRouteHolder");
+const LodgingRouteHolder = () =>
+  import("./components/result-lodging/LodgingRouteHolder");
+const RentDetail = () => import("./components/result-rent/RentDetail");
+const ReservationDetail = () =>
+  import("./components/reservation/ReservationDetail");
+const RentEditList = () => import("./components/reservation/RentEditList");
+const LodgingDetail = () => import("./components/result-lodging/LodgingDetail");
+const CookiesPolicy = () =>
+  import("@/components/cookies-policy/CookiesPolicy.vue");
+const LegalInformation = () =>
+  import("@/components/legal-information/LegalInformation.vue");
+const BookingConditions = () =>
+  import("@/components/booking-conditions/BookingConditions.vue");
+const PrivacyPolicy = () =>
+  import("@/components/privacy-policy/PrivacyPolicy.vue");
 
 export const routes = [
   { path: "", component: Index, name: "index", meta: { guest: true } },
