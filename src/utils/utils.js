@@ -4,9 +4,7 @@ import { storageService } from "./storageService";
 import logger from "./logger";
 
 export function constructDate(date) {
-  return moment(date)
-    .locale("es")
-    .format("DD MMM YYYY");
+  return moment(date).format("DD MMM YYYY");
 }
 
 export function calculateNights(min, max) {

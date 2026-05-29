@@ -2,27 +2,21 @@
   <div>
     <div class="result-item">
       <div class="result-item-carousel">
-        <Slick
-          ref="slick"
-          :slidesToShow="1"
-          :slidesToScroll="1"
-          :draggable="true"
-          :arrows="false"
+        <GttCarousel
+          :slides="item.images"
           :dots="true"
           :autoplay="true"
+          :draggable="true"
         >
-          <div
-            class="result-images-carousel"
-            v-for="destinyImage in item.images"
-            :key="destinyImage"
-          >
-            <img v-if="destinyImage" v-bind:src="destinyImage" alt />
-            <img v-else
-                src="../../../public/img/icopaq_alojamiento_black.svg"
-                alt="alojamiento"
+          <template v-slot:slide="{ slide }">
+            <img v-if="slide" v-bind:src="slide" alt />
+            <img
+              v-else
+              src="../../../public/img/icopaq_alojamiento_black.svg"
+              alt="alojamiento"
             />
-          </div>
-        </Slick>
+          </template>
+        </GttCarousel>
       </div>
       <div class="result-item-info">
         <div class="item-name hn-bdcn">{{ item.name }}</div>
@@ -127,7 +121,7 @@
         class="mdi"
         :class="{
           'mdi-chevron-double-down': !isOpen,
-          'mdi-chevron-double-up': isOpen,
+          'mdi-chevron-double-up': isOpen
         }"
       ></i>
     </div>
@@ -135,20 +129,20 @@
 </template>
 
 <script>
-import Slick from "vue-slick-carousel";
+import GttCarousel from "../custom-elements/GttCarousel";
 import ResultListRow from "./ResultListRow";
 import _ from "lodash";
 import { constructDisplay } from "../../utils/utils";
 export default {
   created() {},
   components: {
-    Slick,
-    ResultListRow,
+    GttCarousel,
+    ResultListRow
   },
   props: {
     item: Object,
     filters: Object,
-    todosTipo: Array,
+    todosTipo: Array
   },
   data() {
     return {
@@ -160,7 +154,7 @@ export default {
   computed: {
     filteredItems: function() {
       return this.item.habitaciones.slice(0, this.limit);
-    },
+    }
   },
   methods: {
     constructDisplay,
@@ -179,8 +173,8 @@ export default {
       this.$router.push({
         name: "lodging-detail",
         params: {
-          id: id,
-        },
+          id: id
+        }
       });
     },
     onLoading(value) {
@@ -202,7 +196,7 @@ export default {
     reserve(i, cant) {
       this.addToCart(i, cant);
       this.$router.push({
-        name: "reservation",
+        name: "reservation"
       });
     },
     getMinPrice(array) {
@@ -225,7 +219,7 @@ export default {
       if (decimalPart == 0) decimalPart = "00";
 
       return { intPart: intPart, decimalPart: decimalPart };
-    },
-  },
+    }
+  }
 };
 </script>

@@ -163,7 +163,10 @@
                     <span v-else class="unpaid-status">
                       <i class="mdi mdi-alert-circle"></i> No pagado
                     </span>
-                    <span v-if="room.IsPagado && room.FormaPago" class="payment-method">
+                    <span
+                      v-if="room.IsPagado && room.FormaPago"
+                      class="payment-method"
+                    >
                       <i class="mdi mdi-cash-multiple"></i> {{ room.FormaPago }}
                     </span>
                   </div>
@@ -172,7 +175,7 @@
                       <button
                         type="button"
                         class="payment-btn antonio-regular"
-                         v-if="!room.IsPagado"
+                        v-if="!room.IsPagado"
                         @click="openModalToPay(item, room, itemIndex)"
                       >
                         <i class="mdi mdi-cash"></i> Pagar
@@ -230,54 +233,54 @@ export default {
   created() {},
   components: {
     Slick,
-    GttTwoRowsInfo,
+    GttTwoRowsInfo
   },
   props: {
     item: {
       type: Object,
-      default: null,
+      default: null
     },
     itemIndex: {
       type: Number,
-      default: -1,
+      default: -1
     },
     can: {
       type: Boolean,
-      default: false,
+      default: false
     },
     ordenId: {
-      default: -1,
+      default: -1
     },
     hasVoucher: {
       default: false,
-      type: Boolean,
+      type: Boolean
     },
     state: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   data() {
     return {
       selectedInfo: "info",
-      pos: 1,
+      pos: 1
     };
   },
   computed: {
     // a computed getter
     getTotal: function() {
       let total = 0;
-      this.item.reservedRooms.map((x) => {
+      this.item.reservedRooms.map(x => {
         total += x.CantidadHabitaciones * x.PrecioOrden;
       });
       return total;
-    },
+    }
   },
   methods: {
     getVisitantes(item) {
       let totalA = 0;
       let totalN = 0;
-      item.reservedRooms.forEach((i) => {
+      item.reservedRooms.forEach(i => {
         totalA = totalA + i.CantAdulto;
         totalN = totalN + i.CantNino;
       });
@@ -318,11 +321,12 @@ export default {
       return { intPart: intPart, decimalPart: decimalPart };
     },
     openModalToPay(order, room, itemIndex) {
-      this.$emit('open-modal-to-pay', order, room, itemIndex);
-    },
-  },
+      this.$emit("open-modal-to-pay", order, room, itemIndex);
+    }
+  }
 };
 </script>
+<style scoped>
   margin-bottom: 10px;
 }
 .btn-cart {
@@ -476,12 +480,12 @@ export default {
   background-color: #11491e !important;
   color: #fff !important;
   border-radius: 4px !important;
-  border: 1px solid transparent !important; /* <-- Cambiado aquí */
+  border: 1px solid transparent !important;
   padding: 4px 10px !important;
   margin-right: 15px;
   font-size: 10px;
   float: right;
-  transition: background 0.2s, color 0.2s, border-color 0.2s; /* <-- Añadido border-color */
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 .payment-btn.antonio-regular:hover,
 .payment-btn.antonio-regular:focus {

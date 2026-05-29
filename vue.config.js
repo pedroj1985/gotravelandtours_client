@@ -1,3 +1,5 @@
+const path = require("path");
+
 process.env.VUE_APP_VERSION = "0.5.0";
 
 function skipGlobalScssPrepend(resourcePath) {
@@ -13,14 +15,19 @@ module.exports = {
     headers: {
       "X-Frame-Options": "DENY",
       "X-Content-Type-Options": "nosniff",
-      "Referrer-Policy": "strict-origin-when-cross-origin",
-    },
+      "Referrer-Policy": "strict-origin-when-cross-origin"
+    }
   },
   configureWebpack: {
+    resolve: {
+      alias: {
+        moment: path.resolve(__dirname, "src/utils/momentShim.js")
+      }
+    },
     devtool: "source-map",
     output: {
-      filename: "[name].[hash].bundle.js",
-    },
+      filename: "[name].[hash].bundle.js"
+    }
   },
   css: {
     loaderOptions: {
@@ -36,10 +43,10 @@ module.exports = {
         sassOptions: {
           quietDeps: true,
           // sass-loader + webpack 4 siguen usando la API JS antigua de Dart Sass
-          silenceDeprecations: ["legacy-js-api"],
-        },
-      },
-    },
+          silenceDeprecations: ["legacy-js-api"]
+        }
+      }
+    }
   },
-  publicPath: process.env.NODE_ENV === "production" ? "./" : "/",
+  publicPath: process.env.NODE_ENV === "production" ? "./" : "/"
 };
