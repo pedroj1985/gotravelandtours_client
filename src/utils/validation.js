@@ -1,23 +1,15 @@
 import { helpers } from "./helpers";
 import moment from "moment";
-import { ValidationObserver } from "vee-validate";
 
 export function gttIsValid(Validator, vueInstance = null) {
-
-  console.log(Validator);
-  console.log(vueInstance);
   if (Validator.length == 8 && vueInstance.$children.length == 4) {
     Validator.pop();
     Validator.pop();
     Validator.pop();
   }
 
-
   return Validator.map(element => {
-
     let passesArray = element.rules.map(item => {
-
-
       return passes(item, element.value, element);
     });
 
@@ -70,8 +62,7 @@ function passes(ruleName, value, vueInstance = null) {
 
         if (value.length === undefined) {
           result = { ruleName: ruleName, passes: true };
-        }
-        else {
+        } else {
           if (value.length === 0) {
             result = { ruleName: ruleName, passes: false };
           } else {
@@ -79,28 +70,29 @@ function passes(ruleName, value, vueInstance = null) {
           }
         }
       } else {
-
-        if (vueInstance.name == "gttLlegada" || vueInstance.name == "gttSalida") {
-          let param = value.split("-")
-          if (param[0].length > 1 && param[1].length > 1 && param[2].length > 1) {
-            let a = parseInt(param[2], 10)
+        if (
+          vueInstance.name == "gttLlegada" ||
+          vueInstance.name == "gttSalida"
+        ) {
+          let param = value.split("-");
+          if (
+            param[0].length > 1 &&
+            param[1].length > 1 &&
+            param[2].length > 1
+          ) {
+            let a = parseInt(param[2], 10);
 
             if (isNaN(a)) {
               result = { ruleName: ruleName, passes: false };
-            }
-            else {
+            } else {
               result = { ruleName: ruleName, passes: true };
             }
-
-          }
-          else {
+          } else {
             result = { ruleName: ruleName, passes: false };
           }
-        }
-        else {
+        } else {
           result = { ruleName: ruleName, passes: value ? true : false };
         }
-
       }
 
       break;
@@ -132,20 +124,14 @@ function translateMessage(ruleName, lang) {
 }
 
 export function renderValid(Validator, vueInstance) {
-
   Validator.forEach(element => {
     let ref = vueInstance.$refs[element.name];
 
     if (ref == null) {
-
-      vueInstance.$children.forEach(
-        child => {
-          if (child.$refs[element.name]) ref = child.$refs[element.name]
-        }
-      )
-
+      vueInstance.$children.forEach(child => {
+        if (child.$refs[element.name]) ref = child.$refs[element.name];
+      });
     }
-
 
     const errorsContainer = ref.querySelector(".gtt-errors");
     errorsContainer.textContent = "";

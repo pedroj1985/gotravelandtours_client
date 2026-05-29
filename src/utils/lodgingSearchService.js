@@ -10,26 +10,33 @@ import {
 import { hotelecSessionService } from "./hotelecSessionService";
 import { storageService } from "./storageService";
 import { openDB } from "idb";
-import _ from "lodash";
-import {
-  buildRoomCombo,
-  buildRoomComboV2
-} from "./roomBuilder";
+import logger from "./logger";
+import { buildRoomCombo } from "./roomBuilder";
 
 const dbPromise = openDB("searchResultDB", 1, {
   upgrade(db) {
     if (!db.objectStoreNames.contains("searchResults")) {
-      db.createObjectStore("searchResults", { keyPath: "id", autoIncrement: true });
+      db.createObjectStore("searchResults", {
+        keyPath: "id",
+        autoIncrement: true
+      });
     }
   }
 });
 
-export async function searchResult(searchItem, combination, combinationV2, todosTipo, helpers) {
+export async function searchResult(
+  searchItem,
+  combination,
+  combinationV2,
+  todosTipo,
+  helpers
+) {
   let currentHotelec = await hotelecSessionService.getOrCreateSession();
   let resultList = [];
 
-  let resultadoAcomodacion = buildRoomCombo(combination, i => helpers.habitacionPorCantidadPersonas(i, todosTipo));
-  let rAV2 = buildRoomComboV2(combinationV2, i => helpers.habitacionPorCantidadPersonas(i, todosTipo));
+  let resultadoAcomodacion = buildRoomCombo(combination, i =>
+    helpers.habitacionPorCantidadPersonas(i, todosTipo)
+  );
 
   const { data } = await authSearchLodging(searchItem);
 
@@ -44,7 +51,6 @@ export async function searchResult(searchItem, combination, combinationV2, todos
 
         await Promise.all(
           rooms.data.map(async j => {
-            let todasCombinaciones = j.ListaCombinacionesDisponibles;
             let puedeAcomodarse = true;
             if (resultadoAcomodacion && resultadoAcomodacion.length > 0) {
               // cuando se usa la validación externa, no forzamos aquí
@@ -90,14 +96,22 @@ export async function searchResult(searchItem, combination, combinationV2, todos
                         };
 
                         try {
-                          let precioA = await authGetRoomPrice(roomPriceSearchObj);
+                          let precioA = await authGetRoomPrice(
+                            roomPriceSearchObj
+                          );
 
-                          if (precioA.data.length != 0 && precioA.data[0].PrecioOrden != 0) {
+                          if (
+                            precioA.data.length != 0 &&
+                            precioA.data[0].PrecioOrden != 0
+                          ) {
                             hotelecData = {
-                              HotetecInfoHabId: precioA.data[0].HotetecInfoHabId,
-                              HotetecInfoHotelId: precioA.data[0].HotetecInfoHotelId,
+                              HotetecInfoHabId:
+                                precioA.data[0].HotetecInfoHabId,
+                              HotetecInfoHotelId:
+                                precioA.data[0].HotetecInfoHotelId,
                               HotetecIdeses: precioA.data[0].HotetecIdeses,
-                              HotetecIsAvailable: precioA.data[0].HotetecIsAvailable
+                              HotetecIsAvailable:
+                                precioA.data[0].HotetecIsAvailable
                             };
                             if (hotelecData.HotetecIsAvailable) {
                               temp.push({
@@ -135,7 +149,9 @@ export async function searchResult(searchItem, combination, combinationV2, todos
                       display += `${element.cantidad}x${element.tipoHabitacionNombre} | `;
                     });
 
-                    let planA = await authGetLodgingEatingPlanOne(lpa.PlanesAlimenticiosId);
+                    let planA = await authGetLodgingEatingPlanOne(
+                      lpa.PlanesAlimenticiosId
+                    );
                     listadoPrecios.push({
                       name: j.Nombre,
                       habitacion: j,
@@ -188,11 +204,14 @@ export async function searchResult(searchItem, combination, combinationV2, todos
         localStorage.setItem("currentHotelecIds", currentHotelec);
       }
     } catch (error) {
-      console.error("Error occurred while fetching or processing data:", error.message);
+      console.error(
+        "Error occurred while fetching or processing data:",
+        error.message
+      );
     }
   }
 
-  console.log("resultList", resultList);
+  logger.log("resultList", resultList);
   return resultList;
 }
 
@@ -237,4 +256,3 @@ export async function performSearch(query) {
   await saveSearchResult(searchResult);
   return searchResult;
 }
-

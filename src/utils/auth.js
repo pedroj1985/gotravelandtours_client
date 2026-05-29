@@ -1,4 +1,5 @@
 import axios from "axios";
+import logger from "./logger";
 
 let headers = {
   "Content-Type": "application/json"
@@ -250,7 +251,7 @@ export function authSearchProvider(id) {
 
 export function authSearchCars(searchItem) {
   let token = localStorage.getItem("token");
-  console.log(searchItem);
+  logger.log(searchItem);
   return HTTP.post("/Vehiculoes/BuscarOrden", searchItem, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -269,7 +270,7 @@ export function authGetCar(id) {
   const resp = HTTP.get("/Vehiculoes/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  console.log(resp);
+  logger.log(resp);
   return resp;
 }
 
@@ -365,10 +366,10 @@ export function authGetOrdersCount(searchItem) {
     const data = HTTP.post("/Ordens/Count", searchItem, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    console.log("response-DATA", data);
+    logger.log("response-DATA", data);
     return data;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
 }
 
