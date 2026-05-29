@@ -73,6 +73,9 @@ export function updateHeader(token) {
     Authorization: `Bearer ${token}`
   };
 }
+
+```
+
 Recomendaciones:
 
 Migrar autenticación a cookies HttpOnly + Secure + SameSite en lugar de localStorage
