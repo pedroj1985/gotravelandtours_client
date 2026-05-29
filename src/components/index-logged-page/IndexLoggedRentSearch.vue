@@ -259,6 +259,7 @@ import {
   authSearchMarca,
 } from "../../utils/auth";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import { overflowText } from "../../utils/utils";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 
 export default {
@@ -453,17 +454,8 @@ export default {
     constructDate(date) {
       return constructDate(date);
     },
-    calculateNights(min, max) {
-      return calculateNights(min, max);
-    },
     hasInsurance(text) {
       return hasInsurance(text);
-    },
-    overflowText(text, l = 30) {
-      if (text.length > l) {
-        return `${text.substring(0, l)}...`;
-      }
-      return text;
     },
     searchCountriesPlaceholder() {
       let usa = this.countries.find((el) => {

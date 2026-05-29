@@ -19,6 +19,7 @@
 <script>
 import RentResultListItem from '../result-rent/RentResultListItem'
 import moment from 'moment'
+import { calculateNights } from "../../utils/utils";
 
 export default {
     components: {
@@ -44,9 +45,6 @@ export default {
             return sp.join('-')
 
         },
-        calculateNights(min, max){
-            return moment(min).diff(moment(max), 'days');
-        },
         search(filters){
             console.log(filters)
             return []
@@ -58,20 +56,3 @@ export default {
     
 }
 </script>
-
-<style>
-    .rent-edit-list-item{
-        width: 70vw;
-    }
-</style>
-<style>
-    .btn-close{
-        background: transparent;
-        color: #212f3d;
-        border: none;
-    }
-    .list-wrapper{
-        max-height: 50vh;
-        overflow: scroll;
-    }
-</style>

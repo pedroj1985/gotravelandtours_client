@@ -54,7 +54,7 @@ export function getValid(val) {
     return i.isValid == false;
   });
 
-  return !r > 0;
+  return !r;
 }
 
 function passes(ruleName, value, vueInstance = null) {
@@ -72,10 +72,11 @@ function passes(ruleName, value, vueInstance = null) {
           result = { ruleName: ruleName, passes: true };
         }
         else {
-          if (true) {
-
+          if (value.length === 0) {
+            result = { ruleName: ruleName, passes: false };
+          } else {
+            result = { ruleName: ruleName, passes: true };
           }
-          result = { ruleName: ruleName, passes: false };
         }
       } else {
 

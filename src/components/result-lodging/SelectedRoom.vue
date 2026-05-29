@@ -65,24 +65,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.remove-icon {
-  /* border: none; */
-  background: transparent;
-  border-radius: 5px;
-  margin-left: 15px;
-}
-.remove-icon:hover {
-  /* border: none; */
-  color: #ffffff;
-  background: #212f3d;
-}
-.selected-room {
-  margin-bottom: 15px;
-}
-.room-name,
-.room-price {
-  font-size: 14px;
-}
-</style>

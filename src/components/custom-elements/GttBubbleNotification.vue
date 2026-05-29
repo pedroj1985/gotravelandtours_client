@@ -17,30 +17,25 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .bubble-wrapper {
   position: absolute;
   top: -5px;
   right: -5px;
 }
+
 .bubble {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   border-radius: 100%;
-  background: rgb(188, 208, 29);
-  color: #212f3d;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  padding-left: 4px;
-  padding-right: 4px;
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  padding: 1px 4px;
 }
 
-@media(max-width: 1440px){
-    .bubble{
-        font-size: 8px;
-        padding-left: 2px;
-        padding-right: 2px;
-        padding-top: .5px;
-        padding-bottom: .5px;
-    }
+@media (max-width: 1440px) {
+  .bubble {
+    font-size: 8px;
+    padding: 0.5px 2px;
+  }
 }
 </style>

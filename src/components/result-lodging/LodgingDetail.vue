@@ -138,16 +138,10 @@
                 v-for="destinyImage in item.images"
                 :key="destinyImage"
               >
-                <img v-bind:src="destinyImage" alt="" />
+                <img v-bind:src="destinyImage" alt="" @click="isModalGalleryActive = true" />
                 <div class="w-100 h-100 position-absolute bgHolder"></div>
               </div>
             </Slick>
-            <div class="footer-buttons-carousel">
-              <i
-                class="mdi mdi-image-multiple font18 float-right"
-                @click="isModalGalleryActive = true"
-              ></i>
-            </div>
           </div>
           <div class="lodging-info-info">
             <div class="lodging-info-name hn-ltcn font24 gtt-text-color">
@@ -308,8 +302,13 @@
                   </div>
                 </div>
               </div>
-              <div v-else class="text-center">
-                Buscando...
+              <div
+                v-else
+                class="text-center d-flex align-items-center justify-content-center mb-2 alert-state info"
+                role="status"
+              >
+                <i class="mdi mdi-cloud-search-outline"></i>
+                <span>Buscando disponibilidad...</span>
               </div>
               <div class="list-item-children">
                 <ResultListRow2
@@ -326,9 +325,11 @@
             <div v-else>
               <div
                 v-if="roomsResult.length == 0"
-                class="text-center gtt-errors mb-2"
+                class="text-center d-flex align-items-center justify-content-center mb-2 alert-state warning"
+                role="alert"
               >
-                No existe disponibilidad
+                <i class="mdi mdi-alert-circle-outline"></i>
+                <span>No existe disponibilidad</span>
               </div>
             </div>
           </div>
@@ -346,10 +347,9 @@ import {
   authSearchRoomsByLodging,
   authGetRoomPrice,
   authGetLodgingEatingPlanOne,
-  hotetecOpenSession,
-  hotetecStateSession,
   hotetecBlockProduct
 } from "../../utils/auth";
+import { hotelecSessionService } from "../../utils/hotelecSessionService";
 import Slick from "vue-slick-carousel";
 /* import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttSelect from "../custom-elements/GttSelect";
@@ -631,7 +631,7 @@ export default {
       let listado = [];
       let so = {};
       let hotelectData = {};
-      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      let currentHotelec = await hotelecSessionService.getOrCreateSession();
       this.roomsToReserve.map( async (i) => {
         listado.push({
           precioObjOne: i.habitacion,
@@ -796,29 +796,7 @@ export default {
       }
     },
     async sR() {
-      let currentHotelec = localStorage.getItem("currentHotelecIds");
-      let HotelecSessionExpired = false;
-      //let PlanesAlimenticiosIds = [];
-
-      if (currentHotelec) {
-        const response = await hotetecStateSession(currentHotelec);
-        HotelecSessionExpired = !response.data.Infses;
-      }
-      if (!currentHotelec || HotelecSessionExpired) {
-        // await this.$helpers.shoppingCartDeleteAll(true);
-        try {
-          const response = await hotetecOpenSession();
-          if (response && response.data && response.data.Ideses) {
-            currentHotelec = response.data.Ideses;
-            localStorage.setItem("currentHotelecIds", currentHotelec);
-          }
-        } catch (error) {
-          console.error(
-            "Error occurred while fetching or processing data:",
-            error.message
-          );
-        }
-      }
+      let currentHotelec = await hotelecSessionService.getOrCreateSession();
 
       this.roomsResult = [];
       let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;
@@ -980,166 +958,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.lodging-detail-wrapper {
-  margin-left: 9.375% !important;
-}
-.lodging-detail-wrapper .left-side-wrapper {
-  position: relative;
-}
-.lodging-detail-wrapper .left-side {
-  top: 135px;
-}
-.check-sp {
-  margin-right: 10px;
-}
-.lic-carousel {
-  width: 45.8vw;
-  height: 616px;
-}
-.lic-carousel .result-images-carousel img {
-  height: 616px;
-}
-.lic-carousel .result-images-carousel {
-  height: 100%;
-  padding: 0;
-  position: relative;
-}
-.bgHolder {
-  top: 0;
-  background: linear-gradient(
-    0deg,
-    rgba(68, 68, 71, 0.6334908963585435) 0%,
-    rgba(0, 0, 0, 0) 15%,
-    rgba(0, 121, 255, 0) 100%
-  );
-}
-.lodging-info-info {
-  padding-left: 30px;
-  padding-right: 15px;
-  padding-top: 15px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  background: #f5f5f5;
-  padding-bottom: 5px;
-  width: 14.2vw;
-}
-.lodging-info-stars .stars {
-  color: #6d6d6d;
-}
-#pai .verify-step-title {
-  background: #fff;
-}
-#pai .info-box {
-  border: 1px solid #6d6d6d;
-  width: 60vw;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
-}
-.rooms-disponibility-form {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  background: #f5f5f5;
-  height: 60px;
-  margin-bottom: 15px;
-}
-.room-form-item {
-  margin-right: 5px;
-}
-.room-form-item.last {
-  margin-right: 60px;
-}
-.list-item-select {
-  text-align: center;
-  padding-bottom: 10px;
-}
-.selected-rooms {
-  border: 1px solid #6d6d6d;
-  margin-top: 30px;
-  min-height: 100px;
-  border-radius: 10px;
-  padding: 15px;
-}
-.selected-rooms .selected-rooms-title {
-  text-align: center;
-  /* padding-top: 15px; */
-  padding-bottom: 15px;
-  text-transform: uppercase;
-}
-.selected-rooms .selected-rooms-empty {
-  text-align: center;
-}
-.selected-rooms .selected-rooms-btn {
-  font-size: 14px;
-  height: 30px;
-  margin-right: 5px;
-}
-.selected-rooms .btn-cart {
-  width: 50px;
-}
-.selected-rooms .selected-rooms-footer {
-  margin-top: 30px;
-}
-.lodging-detail-header {
-  background: #f5f5f5;
-  margin-bottom: 45px;
-  padding: 10px;
-}
-.star-wrapper {
-  position: relative;
-}
-.header-star .icon {
-  color: #bcd01b;
-  font-size: 60px;
-  line-height: 1;
-  /* position: absolute; */
-}
-.header-star .total-stars {
-  color: #212f3d;
-  line-height: 1;
-  font-size: 30px;
-  position: absolute;
-  -webkit-transform: translate(0, 50%);
-  left: 20px;
-}
-.headers-buttons {
-  margin-top: 30px;
-}
-.headers-buttons button {
-  width: auto;
-  background: transparent !important;
-}
-.headers-buttons button:hover {
-  background: #212f3d !important;
-  color: #fff !important;
-}
-.result-text {
-  font-size: 18px;
-}
-.buscando {
-  justify-content: center;
-  align-items: center;
-}
-.lodging-info-carousel {
-  position: relative;
-}
-.footer-buttons-carousel {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding-bottom: 5px;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-.footer-buttons-carousel i {
-  color: white;
-  font-size: 28px;
-  margin-left: auto;
-}
-.footer-buttons-carousel i:hover {
-  cursor: pointer;
-}
-</style>

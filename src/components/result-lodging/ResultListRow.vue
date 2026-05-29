@@ -167,6 +167,7 @@ import {
   hotetecBlockProduct
 } from "../../utils/auth";
 import { helpers } from "@/utils/helpers";
+import { hotelecSessionService } from "../../utils/hotelecSessionService";
 
 export default {
   mixins: [lodgingUtilsMixin],
@@ -188,7 +189,7 @@ export default {
   methods: {
     async addToCart() {
       this.$emit("loading", true);
-      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      let currentHotelec = await hotelecSessionService.getOrCreateSession();
       const hotelectData = await this.checkIsAvailable(this.child);
       this.child.hotelectData = hotelectData;
       let { Adl, Nin } = helpers.generatePassageList(this.child.combinacion);
@@ -249,7 +250,7 @@ export default {
     },
     async reserve() {
       this.$emit("loading", true);
-      let currentHotelec = localStorage.getItem("currentHotelecIds");
+      let currentHotelec = await hotelecSessionService.getOrCreateSession();
       const hotelectData = await this.checkIsAvailable(this.child);
       this.child.hotelectData = hotelectData;
       let { Adl, Nin } = helpers.generatePassageList(this.child.combinacion);

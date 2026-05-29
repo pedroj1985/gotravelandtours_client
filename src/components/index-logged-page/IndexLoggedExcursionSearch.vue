@@ -18,7 +18,11 @@
         <div class="custom-text-form custom-margin">
             <div class="custom-form">
                 <div class="selects-inline">
-                    <gtt-select :options="pickUpDeliveryOptions" class="cleft custom-width-big" v-model="selectedDestiny">
+                    <gtt-select 
+                        :options="pickUpDeliveryOptions" 
+                        class="custom-width-big" 
+                        v-model="selectedDestiny"
+                        :alignLeft="true">
                         <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
                         <span slot="placeholder"> Destino</span>
                         <span slot="selectedPlaceholder"> ¿A dónde deseas ir?</span>
@@ -89,9 +93,6 @@ export default {
         },
         constructDisplay(d){
             return constructDisplay(d);
-        },
-        calculateNights(min, max){
-            return calculateNights(min, max);
         }
     },
     data(){

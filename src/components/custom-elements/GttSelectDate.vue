@@ -181,176 +181,101 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .gtt__select_date {
   width: 100%;
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-md);
 }
 
 .gtt__toggle {
+  @include gtt-button;
   width: 100%;
-  padding-left: 15px;
   padding-right: 7px;
-  height: 50px;
-  background-color: #ffffff;
-  border: 1px solid #c4c4c4;
-  border-radius: 5px;
-  font-family: "Helvetica Neue LT Std-Roman";
-  font-size: 16px;
-  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  justify-content: flex-start;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 47, 61, 0.2);
+  }
 }
-.gtt__toggle:focus {
-  outline: none;
-  box-shadow: 0px 0px 2px #212f3d;
-}
+
 .gtt__toggle_content {
-  display: flex;
+  @include flex-between;
+  width: 100%;
 }
+
 .gtt__toggle_text {
-  float: left;
   display: flex;
 }
+
 .gtt__toggle_text_first_column,
 .gtt__toggle_text_second_column {
   padding-top: 11px;
 }
+
 .gtt__toggle_text_second_column {
   text-align: left;
-  padding-left: 5px;
+  padding-left: var(--spacing-xs);
+
+  &.twoRows {
+    padding-top: var(--spacing-xs);
+  }
 }
 
-.twoRows {
-  padding-top: 2px;
-}
 .gtt__toggle_arrow {
   margin-left: auto;
   font-size: 30px;
 }
+
 .gtt__list_area_wrapper {
-  padding: 30px;
-  background: #ffffff;
-  /* min-height: 500px;*/
+  @include dropdown-wrapper;
   position: absolute;
-  border-radius: 10px;
-  z-index: 3;
-  top: 45px;
-  margin-top: 30px;
-  box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);
-  display: block;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--spacing-xs));
+  margin-top: 0;
+  z-index: var(--z-dropdown);
 }
+
 .arrow {
-  position: absolute;
-  z-index: 1000;
-  top: -15px;
-  left: 10%;
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 15px solid #ffffff;
+  @include dropdown-arrow;
 }
 
 .displayDate {
   text-align: center;
-  font-family: "Helvetica Neue LT Std-Roman";
-  font-size: 14px;
-  color: #6d6d6d;
+  font-family: 'Helvetica Neue LT Std-Roman';
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
+
 @media (max-width: 1440px) {
   .gtt__toggle {
     height: 35px;
-    /* margin-bottom: 20px; */
-    font-size: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
   }
+
   .arrow {
     top: -12px;
   }
+
   .gtt__toggle_text {
-    padding-top: 0px;
+    padding-top: 0;
   }
+
   .gtt__toggle_text_first_column,
   .gtt__toggle_text_second_column {
-    padding-top: 5px;
+    padding-top: var(--spacing-xs);
   }
-  .twoRows {
-    padding-top: 0px;
-  }
+
   .gtt__toggle_arrow {
     font-size: 20px;
   }
-  .gtt__list_area_wrapper {
-    top: 30px;
-    margin-top: 20px;
-  }
+
   .displayDate {
     font-size: 10px;
-  }
-}
-</style>
-<style>
-.gtt__date_picker .vc-grid-cell-col-1 .vc-pane {
-  margin-right: 15px;
-}
-.gtt__date_picker .vc-grid-cell-col-2 .vc-pane {
-  margin-left: 15px;
-}
-.gtt__date_picker .vc-container {
-  font-family: "Helvetica Neue LT Std-Roman";
-  line-height: 1.2;
-  border: none;
-}
-
-.gtt__date_picker .vc-container .vc-title {
-  font-size: 16px;
-  text-transform: uppercase;
-}
-
-.gtt__date_picker .vc-container .vc-weekday {
-  font-size: 14px;
-  /* color: #6d6d6d !important; */
-}
-
-.gtt__date_picker .vc-highlights .vc-highlight {
-  background: transparent;
-}
-.gtt__date_picker .vc-highlights + span {
-  background: #bcd01d;
-}
-.gtt__date_picker .vc-container span {
-  color: #212f3d;
-  padding: 16px;
-  font-size: 14px;
-}
-
-.gtt__date_picker .vc-highlights + span:focus {
-  background: #bcd01d;
-}
-
-.gtt__date_picker hr {
-  height: 1px;
-  border: none;
-  background-color: #c4c4c4;
-}
-
-/* .gtt__date_picker .vc-grid-cell + .vc-grid-cell > .vc-pane{
-        margin-left: 60px;
-    } */
-@media (max-width: 1368px) {
-  .gtt__date_picker .vc-container .vc-title {
-    font-size: 12px;
-  }
-
-  .gtt__date_picker .vc-container .vc-weekday {
-    font-size: 10px;
-    /* color: #6d6d6d !important; */
-  }
-
-  .gtt__date_picker .vc-container span {
-    padding: 12px;
-    font-size: 12px;
   }
 }
 </style>

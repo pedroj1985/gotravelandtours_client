@@ -179,6 +179,7 @@ export default {
     window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
+    constructDisplay,
     handleScroll() {
       let height = window.innerHeight;
       if (
@@ -219,12 +220,6 @@ export default {
     },
     desactivateModal() {
       this.isModalActive = false;
-    },
-    constructDate(date) {
-      return constructDate(date);
-    },
-    constructDisplay(d) {
-      return constructDisplay(d);
     },
   },
   data() {
@@ -354,10 +349,5 @@ export default {
 
 .display-time:focus-visible {
   outline: none;
-}
-</style>
-<style>
-#index-logged-transfer .hour .gtt__list_area {
-  width: 150px;
 }
 </style>

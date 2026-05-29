@@ -27,10 +27,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.list-item {
-  margin-bottom: 15px;
-  position: relative;
-}
-</style>

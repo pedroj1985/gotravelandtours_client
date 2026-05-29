@@ -164,7 +164,7 @@ import GttSelectDate from "../custom-elements/GttSelectDate";
 import moment from "moment";
 import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
-import { transmissionTypes } from "../../utils/utils";
+import { transmissionTypes, overflowText } from "../../utils/utils";
 import {
   authSearchPuntosInteres,
   authSearchMarcas,
@@ -497,7 +497,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .c-modal {
   height: auto;
   width: auto;

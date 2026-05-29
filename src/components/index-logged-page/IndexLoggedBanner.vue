@@ -42,12 +42,13 @@
         <span class="bannerText">para usted y su familia</span>
       </div>
       <div class="lodging-form">
-        <div ref="gttDestinyLodging" class="cleft" style="width: 100%;">
+        <div ref="gttDestinyLodging" style="width: 100%;">
           <gtt-select
             :openedLodging.sync="lodgingOpened"
             @click.native="loadDestinies"
             v-model="selectedLodgingDestinyValue"
             :options="destinies"
+            :alignLeft="true"
           >
             <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
             <span slot="placeholder" class="required-field"
@@ -122,6 +123,7 @@
                 30
               ]"
               :search="false"
+              :alignLeft="true"
             >
               <span slot="placeholder">Noches</span>
               <span slot="selectedPlaceholder">¿Cuántas noches?</span>
@@ -206,6 +208,7 @@ import {
   authGetLodgingsAll,
   authGetHotelList
 } from "../../utils/auth";
+import { constructDate, calculateNights, constructDisplay } from "../../utils/utils";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
@@ -262,6 +265,9 @@ export default {
     }
   },
   methods: {
+    constructDate,
+    calculateNights,
+    constructDisplay,
     gttValidate() {
       let validator = [
         {
@@ -478,22 +484,6 @@ export default {
     desactivateModal() {
       this.isModalActive = false;
     },
-    constructDate(date) {
-      return moment(date)
-        .locale("es")
-        .format("DD MMM YYYY");
-    },
-    calculateNights(min, max) {
-      return moment(min).diff(moment(max), "days") * -1;
-    },
-    constructDisplay(d) {
-      let s = "";
-      Object.keys(d).forEach(element => {
-        s = s + " · " + d[element].value + " " + d[element].display;
-      });
-
-      return s.substring(2);
-    },
     constructDisplayNights(n) {
       if (n == 1) {
         return `1 noche`;
@@ -641,6 +631,10 @@ export default {
 
 .selects-inline {
   display: flex;
+}
+
+.selects-inline .gtt__list_area {
+  text-align: left;
 }
 
 #home-logged-banner .select-flag {
