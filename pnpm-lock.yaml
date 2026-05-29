@@ -89,9 +89,6 @@ importers:
       vue-select:
         specifier: ^3.10.7
         version: 3.20.4(vue@2.7.16)
-      vue-slick:
-        specifier: ^1.1.15
-        version: 1.2.0(jquery@3.7.1)
       vue-slick-carousel:
         specifier: ^1.0.6
         version: 1.0.6
@@ -4837,11 +4834,6 @@ packages:
     resolution: {integrity: sha512-stxByr12oeeOyY2BlviTNQlYV5xOj47GirPr4yA1hE9JCtxfQN0+tVbkxwCtYDQWhEKWFHsEK48ORg5jrouCAg==}
     engines: {node: '>=20'}
 
-  slick-carousel@1.8.1:
-    resolution: {integrity: sha512-XB9Ftrf2EEKfzoQXt3Nitrt/IPbT+f1fgqBdoxO3W/+JYvtEOW6EgxnWfr9GH6nmULv7Y2tPmEX3koxThVmebA==}
-    peerDependencies:
-      jquery: '>=1.8.0'
-
   snapdragon-node@2.1.1:
     resolution: {integrity: sha512-O27l4xaMYt/RSQ5TR3vpWCAB5Kb/czIcqUFOM/C4fYcLnbZUc1PkjTAMjof2pBWaSTwOUd6qUHcFGVGj7aIwnw==}
     engines: {node: '>=0.10.0'}
@@ -5495,11 +5487,6 @@ packages:
 
   vue-slick-carousel@1.0.6:
     resolution: {integrity: sha512-1CN/hpWC8m1U/eO7Kuc71jntJqdg6Z/ieLji21OPfQUhs8ZYnnGhQSu1covpa3IyuovM9T5puPCVgexs3DDF5A==}
-
-  vue-slick@1.2.0:
-    resolution: {integrity: sha512-1hjZsKyBbnOQPwyoJqAmnEs7d24CHACC+R0fKOaOsycB2g7K1JIYqsLpK0N2SRLcJBhfno9YrOYfEPiPZVCjCA==}
-    peerDependencies:
-      jquery: '*'
 
   vue-slider-component@3.2.24:
     resolution: {integrity: sha512-28hfotAL/CPXPwqHgVFyUwUEV0zweoc2wW0bgraGkoIcRZGlFjk8caYJLE8+Luug5t3b9tJm/NyDXpyIdmcYZg==}
@@ -11230,10 +11217,6 @@ snapshots:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 5.1.0
 
-  slick-carousel@1.8.1(jquery@3.7.1):
-    dependencies:
-      jquery: 3.7.1
-
   snapdragon-node@2.1.1:
     dependencies:
       define-property: 1.0.0
@@ -12009,11 +11992,6 @@ snapshots:
       lodash.pick: 4.4.0
       resize-observer-polyfill: 1.5.1
       vue: 2.7.16
-
-  vue-slick@1.2.0(jquery@3.7.1):
-    dependencies:
-      jquery: 3.7.1
-      slick-carousel: 1.8.1(jquery@3.7.1)
 
   vue-slider-component@3.2.24(vue@2.7.16):
     dependencies:
