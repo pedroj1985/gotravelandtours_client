@@ -9,6 +9,13 @@ function skipGlobalScssPrepend(resourcePath) {
 }
 
 module.exports = {
+  devServer: {
+    headers: {
+      "X-Frame-Options": "DENY",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+    },
+  },
   configureWebpack: {
     devtool: "source-map",
     output: {
