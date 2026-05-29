@@ -1,4 +1,6 @@
 import axios from "axios";
+import logger from "./logger";
+import { storageService } from "./storageService";
 
 let headers = {
   "Content-Type": "application/json"
@@ -9,7 +11,7 @@ export const HTTP = axios.create({
 });
 
 export function authCheck() {
-  if (localStorage.getItem("token") == null) {
+  if (storageService.getToken() == null) {
     return false;
   }
   return true;
@@ -32,7 +34,7 @@ export function getUser() {
 }
 
 export function authGetUser(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Clientes/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -47,48 +49,48 @@ export function authRegister(user, head) {
 }
 
 export function authSearchLodging(searchItem) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/Alojamientoes/BuscarOrden", searchItem, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodging(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Alojamientoes/" + id, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodgings() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Alojamientoes", {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodgingsAll() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Alojamientoes/Todos", {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetRoomPrice(searchRoomPrice) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/Alojamientoes/BuscarOrdenPrecio", searchRoomPrice, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function getPackages(searchRoomPrice) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/Paquetes/BuscarOrden", searchRoomPrice, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 export function hotetecOpenSession() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post(
     "/ApiDisponibilidadHotetec/SesionAbrirPeticion",
     {},
@@ -98,7 +100,7 @@ export function hotetecOpenSession() {
   );
 }
 export function hotetecStateSession(idSession) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post(
     "/ApiDisponibilidadHotetec/SesionEstado",
     { ideses: idSession },
@@ -109,155 +111,155 @@ export function hotetecStateSession(idSession) {
 }
 
 export function hotetecBlockProduct(blockProduct) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/ApiDisponibilidadHotetec/Bloqueo", blockProduct, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function hotetecCloseReserve(reserveData) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/ApiDisponibilidadHotetec/ReservaCerrar", reserveData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function hotetecCancelReserve(reserveData) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/ApiDisponibilidadHotetec/CancelarReserva", reserveData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function hotetecUpdateDataOnGtt(reserveData) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/OrdenAlojamientoes/UpdateDatosHotetec", reserveData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function updateIsPagadoAlojamiento(payData) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/OrdenAlojamientoes/UpdateIsPagado", payData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 /* export function updateIsPagadoActividad(payData) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/OrdenActividad/UpdateIsPagado", payData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
  */
 export function updateIsPagadoVehiculo(payData) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/OrdenVehiculoes/UpdateIsPagado", payData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 /* export function updateIsPagadoTraslado(payData) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/OrdenTraslado/UpdateIsPagado", payData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 } */
 
 export function getTropiPayToken() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/ApiTropiPay/GetToken", {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function generatePaymentPage(paymentData) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/ApiTropiPay/GenerarPaginaPago", paymentData, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchRoomsByLodging(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Habitacions/Producto/" + id, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetRoomTypes() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/TipoHabitacions?col=-1", {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodgingEatingPlan() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/PlanesAlimenticios?col=-1", {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetLodgingEatingPlanOne(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/PlanesAlimenticios/" + id, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetHotelList() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Alojamientoes/GetHotelList", {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchRegions() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Regions?col=-1", null, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchPuntosInteres() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/PuntoInteres?col=-1", null, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchMarcas() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Marcas?col=-1", null, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchMarca(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Marcas/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchProvider(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Proveedors/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authSearchCars(searchItem) {
-  let token = localStorage.getItem("token");
-  console.log(searchItem);
+  let token = storageService.getToken();
+  logger.log(searchItem);
   return HTTP.post("/Vehiculoes/BuscarOrden", searchItem, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authUpdateCar(searchItem) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
 
   return HTTP.post("/Vehiculoes/CambiarPrecio", searchItem, {
     headers: { Authorization: `Bearer ${token}` }
@@ -265,64 +267,64 @@ export function authUpdateCar(searchItem) {
 }
 
 export function authGetCar(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   const resp = HTTP.get("/Vehiculoes/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  console.log(resp);
+  logger.log(resp);
   return resp;
 }
 
 export function authDeleteCarOrder(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.delete("/OrdenVehiculoes/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authReserve(orden) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/Ordens", orden, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 export function authUpdateStatus(orderStatus) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/Ordens/CambiarEstado", orderStatus, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authCreateQbEstimated(orden) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/QBIntegracion/createEstimated", orden, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authUpdateQbEstimated(orden) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/QBIntegracion/updateEstimated", orden, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authUpdOnlyInDbQbEstimated(orden) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/Ordens/UpdEstimated", orden, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authPutReserve(id, orden) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.put("/Ordens/" + id, orden, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetImage(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/AlmacenImagenes/getmain", null, {
     params: { idProducto: id },
     headers: { Authorization: `Bearer ${token}` }
@@ -330,14 +332,14 @@ export function authGetImage(id) {
 }
 
 export function authGetImages(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/AlmacenImagenes/Productos/" + id, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
 
 export function authGetOrders(searchItem) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   try {
     return HTTP.post("/Ordens/Buscar", searchItem, {
       headers: { Authorization: `Bearer ${token}` }
@@ -348,7 +350,7 @@ export function authGetOrders(searchItem) {
 }
 
 export function authGetAirlines() {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   try {
     return HTTP.get("/TipoAerolineas?col=-1", {
       headers: { Authorization: `Bearer ${token}` }
@@ -359,21 +361,21 @@ export function authGetAirlines() {
 }
 
 export function authGetOrdersCount(searchItem) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
 
   try {
     const data = HTTP.post("/Ordens/Count", searchItem, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    console.log("response-DATA", data);
+    logger.log("response-DATA", data);
     return data;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
 }
 
 export function authGetOrder(id) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.get("/Ordens/" + id, null, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -405,15 +407,15 @@ export function updateHeader(token) {
 }
 
 export function closeSession(vueInstance) {
-  const saveVersion = JSON.parse(localStorage.getItem("version"));
-  localStorage.clear();
-  localStorage.setItem("version", JSON.stringify(saveVersion));
+  const saveVersion = storageService.getVersion();
+  storageService.clear();
+  storageService.setVersion(saveVersion);
   vueInstance.$eventCartBus.$emit("updateCart");
   vueInstance.$router.push({ name: "index" });
 }
 
 export function authLog(log) {
-  let token = localStorage.getItem("token");
+  let token = storageService.getToken();
   return HTTP.post("/logs", log, {
     headers: { Authorization: `Bearer ${token}` }
   });

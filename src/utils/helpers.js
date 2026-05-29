@@ -3,6 +3,7 @@ import { en } from "../lang/en";
 import { uuid } from "vue-uuid";
 import lodash from "lodash";
 import { hotetecBlockProduct } from "@/utils/auth";
+import logger from "./logger";
 import { storageService } from "./storageService";
 
 export const helpers = {
@@ -47,7 +48,6 @@ export const helpers = {
       totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion;
     });
 
-    let list = [];
     let adl = [];
     let nin = [];
 
@@ -101,7 +101,7 @@ export const helpers = {
           try {
             await hotetecBlockProduct(unblockRequest);
           } catch (error) {
-            console.log(error);
+            logger.error(error);
           }
         }
       }

@@ -4,10 +4,10 @@
  */
 
 const STORAGE_KEYS = {
-  CART: 'gttCart',
-  TOKEN: 'token',
-  EXPIRY_DATE: 'fecha_exp',
-  VERSION: 'version'
+  CART: "gttCart",
+  TOKEN: "token",
+  EXPIRY_DATE: "fecha_exp",
+  VERSION: "version"
 };
 
 class StorageService {
@@ -65,7 +65,7 @@ class StorageService {
       localStorage.clear();
       return true;
     } catch (error) {
-      console.error('Error clearing localStorage', error);
+      console.error("Error clearing localStorage", error);
       return false;
     }
   }
@@ -105,20 +105,60 @@ class StorageService {
   // Specific methods for common operations
 
   /**
-   * Get authentication token
-   * @returns {string|null} The token or null
+   * Encode token with simple obfuscation (Base64 reverse)
+   * Not cryptographic security, but prevents casual exposure
    */
-  getToken() {
-    return this.getItem(STORAGE_KEYS.TOKEN);
+  _encodeToken(token) {
+    try {
+      return btoa(token)
+        .split("")
+        .reverse()
+        .join("");
+    } catch {
+      return token;
+    }
   }
 
   /**
-   * Set authentication token
+   * Decode obfuscated token
+   */
+  _decodeToken(encoded) {
+    try {
+      return atob(
+        encoded
+          .split("")
+          .reverse()
+          .join("")
+      );
+    } catch {
+      return encoded;
+    }
+  }
+
+  /**
+   * Get authentication token (decoded)
+   * @returns {string|null} The token or null
+   */
+  getToken() {
+    const encoded = this.getItem(STORAGE_KEYS.TOKEN);
+    return encoded ? this._decodeToken(encoded) : null;
+  }
+
+  /**
+   * Set authentication token (encoded)
    * @param {string} token - The token to store
    * @returns {boolean} True if successful
    */
   setToken(token) {
-    return this.setItem(STORAGE_KEYS.TOKEN, token);
+    return this.setItem(STORAGE_KEYS.TOKEN, this._encodeToken(token));
+  }
+
+  /**
+   * Remove authentication token
+   * @returns {boolean} True if successful
+   */
+  clearToken() {
+    return this.removeItem(STORAGE_KEYS.TOKEN);
   }
 
   /**
