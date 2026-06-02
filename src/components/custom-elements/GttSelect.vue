@@ -4,6 +4,7 @@
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
+      @keydown="onToggleKeydown"
       :value="updateValue"
       :disabled="isDisabled"
       role="combobox"
@@ -189,6 +190,16 @@ export default {
           this.searchQuery = "";
           this.emitClose();
         }
+      }
+    },
+    onToggleKeydown(e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        this.toggleClicked();
+      }
+      if (e.key === "Escape") {
+        this.isVisible = false;
+        this.emitClose();
       }
     },
     setSelectedValue(item) {

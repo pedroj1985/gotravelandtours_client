@@ -31,6 +31,19 @@ export default {
       type: String,
       default: ""
     }
+  },
+  methods: {
+    onKeydown(e) {
+      if (e.key === "Escape" && this.show) {
+        this.$emit("close");
+      }
+    }
+  },
+  mounted() {
+    document.addEventListener("keydown", this.onKeydown);
+  },
+  beforeDestroy() {
+    document.removeEventListener("keydown", this.onKeydown);
   }
 };
 </script>
