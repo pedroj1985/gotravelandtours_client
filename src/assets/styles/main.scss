@@ -2,11 +2,6 @@
 @forward "mixins";
 @forward "results";
 
-*:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
 // Module-specific styles
 @use "pages/admin-panel" as *;
 @use "pages/shared" as *;
@@ -18,6 +13,11 @@
 @use "pages/result-lodging" as *;
 @use "pages/result-rent" as *;
 @use "pages/reservation" as *;
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 // ==========================================
 // Responsive utilities

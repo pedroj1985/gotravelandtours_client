@@ -15,13 +15,14 @@ import {
 } from "../utils/accommodationValidator";
 import {
   searchResult,
-  searchPreviousResult,
+  searchPreviousResult
+} from "../utils/lodgingSearchService";
+import {
   saveSearchResult,
-  performSearch,
   getSearchResults,
   clearSearchResults,
   deleteDatabase
-} from "../utils/lodgingSearchService";
+} from "../utils/searchPersistenceService";
 import { visitantesToAcomodation } from "../utils/visitorTransformer";
 
 export function useLodging() {
@@ -96,7 +97,7 @@ export function useLodging() {
   }
 
   async function executeQuery(query) {
-    return await performSearch(query);
+    return await searchResult(query, null, null, null, null);
   }
 
   async function getResults() {

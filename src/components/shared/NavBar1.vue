@@ -4,7 +4,7 @@
       <router-link to="/" id="logo_link" aria-label="Ir a la página principal">
         <img
           class="logo"
-          src="img/logo_colibri_white.png"
+          src="/img/logo_colibri_white.png"
           alt="Colibri Viajes"
         />
       </router-link>
@@ -55,8 +55,8 @@
 </template>
 
 <script>
-import GttButtonModal from "../custom-elements/GttButtonModal";
-import GttBubbleNotification from "../custom-elements/GttBubbleNotification";
+import GttButtonModal from "../custom-elements/GttButtonModal.vue";
+import GttBubbleNotification from "../custom-elements/GttBubbleNotification.vue";
 
 export default {
   components: {

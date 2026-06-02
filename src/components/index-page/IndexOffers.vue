@@ -1,6 +1,6 @@
 <template>
   <div id="offers">
-    <img src="img/arriba_piedepagina.jpg" alt="Ofertas" />
+    <img src="/img/arriba_piedepagina.jpg" alt="Ofertas" />
     <div class="offers-info">
       <div class="big-text hn-ltcn">
         <span class="hn-bdcn">Impresiones de primera clase</span> esperan por

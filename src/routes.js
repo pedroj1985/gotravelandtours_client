@@ -3,20 +3,20 @@ import IndexLogged from "./components/index-logged-page/IndexLogged.vue";
 
 const ResultLodging = () =>
   import("./components/result-lodging/ResultLodging.vue");
-const ResultRent = () => import("./components/result-rent/ResultRent");
-const CartView = () => import("./components/reservation/CartView");
-const MyAdminPanel = () => import("./components/shared/MyAdminPanel");
-const MyReservations = () => import("./components/admin-panel/MyReservations");
+const ResultRent = () => import("./components/result-rent/ResultRent.vue");
+const CartView = () => import("./components/reservation/CartView.vue");
+const MyAdminPanel = () => import("./components/shared/MyAdminPanel.vue");
+const MyReservations = () => import("./components/admin-panel/MyReservations.vue");
 const MyDashboard = () => import("./components/admin-panel/MyDashboard.vue");
 const RentRouteHolder = () =>
-  import("./components/result-rent/RentRouteHolder");
+  import("./components/result-rent/RentRouteHolder.vue");
 const LodgingRouteHolder = () =>
-  import("./components/result-lodging/LodgingRouteHolder");
-const RentDetail = () => import("./components/result-rent/RentDetail");
+  import("./components/result-lodging/LodgingRouteHolder.vue");
+const RentDetail = () => import("./components/result-rent/RentDetail.vue");
 const ReservationDetail = () =>
-  import("./components/reservation/ReservationDetail");
-const RentEditList = () => import("./components/reservation/RentEditList");
-const LodgingDetail = () => import("./components/result-lodging/LodgingDetail");
+  import("./components/reservation/ReservationDetail.vue");
+const RentEditList = () => import("./components/reservation/RentEditList.vue");
+const LodgingDetail = () => import("./components/result-lodging/LodgingDetail.vue");
 const CookiesPolicy = () =>
   import("@/components/cookies-policy/CookiesPolicy.vue");
 const LegalInformation = () =>

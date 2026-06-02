@@ -19,7 +19,7 @@
 import Footer2 from "./components/shared/Footer2.vue";
 import Footer1 from "./components/shared/Footer1.vue";
 import NavBar1 from "./components/shared/NavBar1.vue";
-import IndexOffers from "./components/index-page/IndexOffers";
+import IndexOffers from "./components/index-page/IndexOffers.vue";
 import { authStore } from "./stores/authStore";
 import { cartStore } from "./stores/cartStore";
 

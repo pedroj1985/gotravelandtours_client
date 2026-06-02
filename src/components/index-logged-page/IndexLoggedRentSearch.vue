@@ -1,11 +1,11 @@
 <template>
   <div id="index-logged-rent-search">
     <div class="home-logged-rent-img">
-      <img src="img/homelogin_img_form_renta.jpg" alt="Renta de autos" />
+      <img src="/img/homelogin_img_form_renta.jpg" alt="Renta de autos" />
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
       <div slot="image">
-        <img src="img/icopaq_renta_color.svg" alt="" />
+        <img src="/img/icopaq_renta_color.svg" alt="" />
       </div>
       <div slot="searching-text" class="searching-text">
         <span class="antonio-light">Buscando disponibilidad de</span>

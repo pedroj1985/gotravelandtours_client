@@ -9,7 +9,7 @@
       :swipe="true"
     >
       <div class="image-review">
-        <img src="img/home_carrusel_01.jpg" alt="playa" />
+        <img src="/img/home_carrusel_01.jpg" alt="playa" />
         <!-- <div class="review custom-margin">
           <div class="home-banner-title antonio-bold">
             península de Hicacos "Varadero"
@@ -29,16 +29,16 @@
         </div> -->
       </div>
       <div>
-        <img src="img/home_carrusel_02.jpg" alt="hotel" />
+        <img src="/img/home_carrusel_02.jpg" alt="hotel" />
       </div>
       <div>
-        <img src="img/home_carrusel_03.jpg" alt="habana" />
+        <img src="/img/home_carrusel_03.jpg" alt="habana" />
       </div>
       <div>
-        <img src="img/home_carrusel_04.jpg" alt="habana" />
+        <img src="/img/home_carrusel_04.jpg" alt="habana" />
       </div>
       <div>
-        <img src="img/home_carrusel_05.jpg" alt="habana" />
+        <img src="/img/home_carrusel_05.jpg" alt="habana" />
       </div>
     </Slick>
     <div class="navs-wrapper">
@@ -47,7 +47,7 @@
     <div class="home-banner-login">
       <div class="form-login-container">
         <div class="form-logo">
-          <img src="img/logo_colibri_colored.png" alt="Colibri Viajes" />
+          <img src="/img/logo_colibri_colored.png" alt="Colibri Viajes" />
           <hr />
           <div class="form-inicio-sesion-text antonio-bold">
             inicio de sesión para agencias

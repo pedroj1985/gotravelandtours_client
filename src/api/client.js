@@ -3,7 +3,7 @@ import { logger } from "../utils/logger";
 import { notifyError, getErrorMessage, isNetworkError, isTimeoutError } from "../utils/errorHandler";
 
 const HTTP = axios.create({
-  baseURL: process.env.VUE_APP_API_URL || "http://localhost:5000/api/",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api/",
   timeout: 120000,
   headers: { "Content-Type": "application/json" }
 });
