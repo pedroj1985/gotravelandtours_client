@@ -10,8 +10,11 @@
     <ul class="gtt__list_area" v-if="searchQuery">
       <li
         class="gtt__item"
-        v-for="option in searchResult"
+        role="option"
+        v-for="(option, index) in searchResult"
         :key="option.id"
+        :aria-selected="isSelected(option)"
+        :id="'gtt-option-' + index"
         @click="$emit('select', option)"
       >
         <slot name="option" v-bind:option="option">{{ option }}</slot>
@@ -37,6 +40,9 @@ export default {
     searchQuery: {
       type: String,
       default: ""
+    },
+    selectedValue: {
+      default: null
     }
   },
   data() {
@@ -53,6 +59,12 @@ export default {
     }
   },
   methods: {
+    isSelected(option) {
+      if (typeof option === 'object' && typeof this.selectedValue === 'object') {
+        return option.id === this.selectedValue.id;
+      }
+      return option === this.selectedValue;
+    },
     onInput(e) {
       this.$emit("update:searchQuery", e.target.value);
       this.$emit("search", e.target.value);

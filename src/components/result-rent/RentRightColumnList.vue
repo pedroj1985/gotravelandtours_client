@@ -5,7 +5,7 @@
         <div class="custom-line-1">
           <img
             src="../../../public/img/icopaq_renta_gris.svg"
-            alt="alojamiento"
+            alt="alquiler"
           />
           <div class="result-search">
             <div class="result-search-text-title antonio-regular">

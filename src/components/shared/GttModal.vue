@@ -1,11 +1,11 @@
 <template>
-  <div v-if="show" class="gtt_modal_overlay" v-on:click.self="$emit('close')">
+  <div v-if="show" class="gtt_modal_overlay" role="dialog" aria-modal="true" :aria-hidden="!show" aria-labelledby="modal-title" v-on:click.self="$emit('close')">
     <div class="gtt_modal">
       <div class="gtt_modal_header">
         <slot name="header">
-          <span>{{ title }}</span>
+          <span id="modal-title">{{ title }}</span>
         </slot>
-        <button class="gtt_modal_close" v-on:click="$emit('close')">
+        <button class="gtt_modal_close" aria-label="Cerrar modal" v-on:click="$emit('close')">
           &times;
         </button>
       </div>

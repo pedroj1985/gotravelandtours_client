@@ -17,7 +17,7 @@
               v-for="destinyImage in item.images"
               :key="destinyImage"
             >
-              <img v-bind:src="destinyImage" alt="" />
+              <img v-bind:src="destinyImage" :alt="item.name" />
             </div>
           </Slick>
         </div>

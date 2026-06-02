@@ -1,7 +1,7 @@
 <template>
   <div id="index-logged-excursion-search">
     <div class="home-logged-excursion-img">
-      <img src="img/homelogin_img_form_actividades.jpg" alt="" />
+      <img src="img/homelogin_img_form_actividades.jpg" alt="Excursiones y actividades" />
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
       <div slot="image">

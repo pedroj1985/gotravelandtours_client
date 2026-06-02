@@ -2,7 +2,7 @@
   <div id="footer2">
     <div class="footer2-container hn-roman custom-margin">
       <div class="left-part">
-        <img src="img/logo_colibri_white.png" alt="" />
+        <img src="img/logo_colibri_white.png" alt="Colibri Viajes" />
         <div class="all-rights">
           © 2020 Colibri Viajes. Todos los derechos reservados.
           <router-link to="booking-conditions">Términos de uso </router-link>|

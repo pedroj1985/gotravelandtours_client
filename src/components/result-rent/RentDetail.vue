@@ -75,7 +75,7 @@
           <div id="car-info-block" class="row">
             <div class="col-lg-9">
               <div class="img-wrapper">
-                <img :src="image" alt="" v-if="!isLoadingImage" />
+                <img :src="image" alt="Imagen del vehículo" v-if="!isLoadingImage" />
                 <b-spinner
                   class="loading-spinner img-loading"
                   label="Text Centered"
@@ -89,7 +89,7 @@
                   {{ displayName(car.Nombre) }}
                 </div>
                 <div class="car-dist">
-                  <img :src="imageProvider" alt="" />
+                  <img :src="imageProvider" alt="Proveedor" />
                   <!-- <b-spinner class="loading-spinner img-loading" label="Text Centered" v-else></b-spinner> -->
                 </div>
                 <div class="row icons-row">

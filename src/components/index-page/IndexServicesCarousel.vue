@@ -17,7 +17,7 @@
       </div>
       <div class="service-c" v-for="service in services" :key="service.id">
         <div class="service">
-          <img :src="'img/' + service.image" alt="" />
+          <img :src="'img/' + service.image" :alt="service.name" />
           <div class="service-content-container">
             <div class="tag hn-roman">{{ service.tag }}</div>
             <div class="service-desc">

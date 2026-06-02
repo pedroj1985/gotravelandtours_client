@@ -18,7 +18,7 @@
         class="other-services-container"
         v-for="oService in oServices"
       >
-        <img :src="'img/' + oService.image" alt="" />
+        <img :src="'img/' + oService.image" :alt="oService.name" />
         <div class="other-service-content">
           <hr />
           <div class="other-service-text hn-roman">{{ oService.name }}</div>

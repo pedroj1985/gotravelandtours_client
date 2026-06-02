@@ -8,7 +8,7 @@
         v-show="index === currentSlide"
       >
         <slot name="slide" v-bind:slide="slide" v-bind:index="index">
-          <img v-if="slide" v-bind:src="slide" alt />
+          <img v-if="slide" v-bind:src="slide" alt="" />
           <img
             v-else
             src="../../../public/img/icopaq_alojamiento_black.svg"

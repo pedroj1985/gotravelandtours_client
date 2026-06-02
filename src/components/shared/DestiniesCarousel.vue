@@ -20,7 +20,7 @@
       :key="destiny.id"
     >
       <div class="dest">
-        <img v-bind:src="'img/' + destiny.image" alt="" />
+        <img v-bind:src="'img/' + destiny.image" :alt="'Imagen de ' + destiny.name" />
         <div class="name-weather">
           <div class="name antonio-regular">{{ destiny.name }}</div>
           <div class="weather hn-ltcn">

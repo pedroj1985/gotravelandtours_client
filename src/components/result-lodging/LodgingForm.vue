@@ -2,7 +2,7 @@
   <div id="lodging-form">
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
       <div slot="image">
-        <img src="img/icopaq_alojamiento_color.svg" alt />
+        <img src="img/icopaq_alojamiento_color.svg" alt="" />
       </div>
       <div slot="searching-text" class="searching-text">
         <span class="antonio-light">Buscando disponibilidad de</span>

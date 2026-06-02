@@ -141,7 +141,7 @@
               >
                 <img
                   v-bind:src="destinyImage"
-                  alt=""
+                  :alt="'Imagen de ' + item.lodging.Nombre"
                   @click="isModalGalleryActive = true"
                 />
                 <div class="w-100 h-100 position-absolute bgHolder"></div>

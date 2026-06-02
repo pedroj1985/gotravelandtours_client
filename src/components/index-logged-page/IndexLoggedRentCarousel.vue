@@ -15,7 +15,7 @@
       </div>
       <div class="index-logged-car-wrapper" v-for="car in cars" :key="car.id">
         <div class="index-logged-car">
-          <img :src="'img/' + car.img" alt="" />
+          <img :src="'img/' + car.img" :alt="car.model_name" />
           <div class="index-logged-car-name">
             <div class="car-name antonio-bold">
               {{ car.model_name }}

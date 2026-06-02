@@ -1,7 +1,7 @@
 <template>
   <div id="index-logged-transfer">
     <div class="home-logged-transfer-img">
-      <img src="img/homelogin_img_form_traslados.jpg" alt="" />
+      <img src="img/homelogin_img_form_traslados.jpg" alt="Traslados" />
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
       <div slot="image">
