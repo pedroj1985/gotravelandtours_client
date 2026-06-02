@@ -249,3 +249,43 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+@media (max-width: 1024px) {
+  .result-item {
+    flex-direction: column;
+  }
+  .result-item-carousel {
+    width: 100%;
+  }
+  .result-images-carousel {
+    width: 100%;
+    height: 200px;
+  }
+  .result-item-info {
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+  .result-item-price {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .result-images-carousel {
+    height: 160px;
+  }
+  .item-name {
+    font-size: var(--font-size-lg);
+  }
+  .item-other-info {
+    font-size: var(--font-size-xs);
+  }
+  .details-btn button {
+    width: 100%;
+  }
+}
+</style>

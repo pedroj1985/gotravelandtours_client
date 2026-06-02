@@ -68,3 +68,26 @@
     line-height: var(--line-height-tight);
   }
 }
+
+@media (max-width: 1024px) {
+  .result-row {
+    flex-direction: column;
+  }
+  .result-row .result-left-column {
+    width: 100%;
+    padding-right: 0;
+  }
+  .result-row .result-right-column {
+    width: 100%;
+    margin-top: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .result-container {
+    padding: var(--spacing-sm);
+  }
+  .result-header {
+    font-size: var(--font-size-lg);
+  }
+}

@@ -244,4 +244,20 @@ ul#ap-elements a:hover {
     padding-left: 5px;
   }
 }
+
+@media (max-width: 768px) {
+  #ap-side-menu {
+    width: 100%;
+    margin-bottom: var(--spacing-lg);
+  }
+  #r-right-side {
+    width: 100%;
+  }
+  #ap-nav-text {
+    font-size: var(--font-size-sm);
+  }
+  #ap-elements li {
+    font-size: var(--font-size-sm);
+  }
+}
 </style>

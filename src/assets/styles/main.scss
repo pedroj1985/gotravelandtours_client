@@ -18,3 +18,43 @@
 @use "pages/result-lodging" as *;
 @use "pages/result-rent" as *;
 @use "pages/reservation" as *;
+
+// ==========================================
+// Responsive utilities
+// ==========================================
+
+// Hide on mobile
+@media (max-width: 480px) {
+  .hide-mobile { display: none !important; }
+}
+
+// Hide on tablet
+@media (max-width: 768px) {
+  .hide-tablet { display: none !important; }
+}
+
+// Show only on mobile
+@media (min-width: 481px) {
+  .show-mobile-only { display: none !important; }
+}
+
+// Prevent horizontal overflow
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+// Responsive container
+.container-responsive {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box;
+}

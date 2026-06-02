@@ -34,3 +34,53 @@ export default {
   name: "Footer2"
 };
 </script>
+
+<style lang="scss" scoped>
+#footer2 {
+  background: var(--color-text-primary);
+  color: var(--color-text-light);
+  padding: var(--spacing-xl) 0;
+}
+
+.footer2-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.left-part {
+  flex: 1;
+}
+
+.left-part img {
+  max-width: 150px;
+  height: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.right-part {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: 24px;
+}
+
+.right-part a {
+  color: var(--color-text-light);
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .footer2-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  .right-part {
+    margin-top: var(--spacing-lg);
+    justify-content: center;
+  }
+  .all-rights {
+    font-size: var(--font-size-xs);
+    line-height: 1.6;
+  }
+}
+</style>

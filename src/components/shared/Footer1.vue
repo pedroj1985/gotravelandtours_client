@@ -79,3 +79,23 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+@media (max-width: 768px) {
+  .footer1-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer1-content .form-inline {
+    flex-direction: column;
+    width: 100%;
+  }
+  .footer1-content .form-group {
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+  }
+  .footer1-content input {
+    width: 100%;
+  }
+}
+</style>

@@ -8,7 +8,8 @@
           alt="Colibri Viajes"
         />
       </router-link>
-      <div class="right-side-navbar">
+      <button class="hamburger-toggle hide-desktop" @click="menuOpen = !menuOpen" aria-label="Menú de navegación"><i :class="menuOpen ? 'mdi mdi-close' : 'mdi mdi-menu'"></i></button>
+      <div class="right-side-navbar" :class="{ 'mobile-open': menuOpen }">
         <div class="auth-user-menu" v-if="isUserLogged">
           <div class="user-name-hello">
             <div class="hello antonio-light">Buenas tardes</div>
@@ -75,6 +76,11 @@ export default {
     }
   },
 
+  data() {
+    return {
+      menuOpen: false
+    };
+  },
   methods: {
     emitUserLogin(value) {
       this.$emit("userLogin", value);
@@ -84,6 +90,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#first-nav {
+  position: relative;
+}
+
 .shopping-cart-wrapper {
   position: relative;
 }
@@ -178,6 +188,73 @@ export default {
 
   #language_selector {
     font-size: var(--font-size-sm);
+  }
+}
+
+// Hamburger toggle
+.hamburger-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text-light);
+  font-size: 28px;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .hamburger-toggle {
+    display: block;
+  }
+
+  .right-side-navbar {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-text-primary);
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+
+    &.mobile-open {
+      display: flex;
+    }
+  }
+
+  .auth-user-menu {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .user-name-hello {
+    text-align: left;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .reservations, .shopping-cart, .vl {
+    padding: var(--spacing-sm) 0;
+    margin: 0;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  #language_selector {
+    margin-top: var(--spacing-md);
+    float: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .right-side-navbar {
+    display: flex !important;
   }
 }
 </style>
