@@ -39,12 +39,9 @@
         <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
         <template v-slot:option="option">{{ option.option.nombre }}</template>
         <template v-slot:selectedValue="selectedValue">
-          <span id="selectedPickUp">
+          <span class="gtt-tooltip" :data-tooltip="selectedValue.selectedValue.nombre">
             {{ overflowText(selectedValue.selectedValue.nombre, 21) }}
           </span>
-          <b-tooltip target="selectedPickUp" triggers="hover">{{
-            selectedValue.selectedValue.nombre
-          }}</b-tooltip>
         </template>
         <span slot="error" class="gtt-errors"></span>
       </gtt-select>
@@ -62,12 +59,9 @@
         <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
         <template v-slot:option="option">{{ option.option.nombre }}</template>
         <template v-slot:selectedValue="selectedValue">
-          <span id="selectedDelivery">
+          <span class="gtt-tooltip" :data-tooltip="selectedValue.selectedValue.nombre">
             {{ overflowText(selectedValue.selectedValue.nombre, 21) }}
           </span>
-          <b-tooltip target="selectedDelivery" triggers="hover">{{
-            selectedValue.selectedValue.nombre
-          }}</b-tooltip>
         </template>
         <span slot="error" class="gtt-errors"></span>
       </gtt-select>

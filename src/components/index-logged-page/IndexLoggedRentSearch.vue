@@ -46,12 +46,9 @@
               option.option.nombre
             }}</template>
             <template v-slot:selectedValue="selectedValue">
-              <span id="selectedPickUp">
+              <span class="gtt-tooltip" :data-tooltip="selectedValue.selectedValue.nombre">
                 {{ overflowText(selectedValue.selectedValue.nombre) }}
               </span>
-              <b-tooltip target="selectedPickUp" triggers="hover">{{
-                selectedValue.selectedValue.nombre
-              }}</b-tooltip>
             </template>
           </gtt-select>
           <gtt-select

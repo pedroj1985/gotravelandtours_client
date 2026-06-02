@@ -4,10 +4,11 @@
       <div class="c-modal">
         <div class="c-modal-body">
           <div class="d-flex mb-3">
-            <b-button-close
+            <button
               @click="$emit('modalCancel', true)"
               class="bclose"
-            ></b-button-close>
+              type="button"
+            >&times;</button>
           </div>
           <div class="d-flex">
             <GttSelectDate
@@ -64,12 +65,10 @@
             <div class="form-actions prices-info-search-btn">
               <button type="submit" class="antonio-regular" @click="btnSearch">
                 <template v-if="!loading">Buscar</template>
-                <b-spinner
-                  small
-                  class="loading-spinner"
-                  label="Text Centered"
+                <span
+                  class="gtt-spinner gtt-spinner-sm loading-spinner"
                   v-else
-                ></b-spinner>
+                ></span>
               </button>
             </div>
           </div>

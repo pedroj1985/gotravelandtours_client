@@ -102,36 +102,42 @@
         Se encontraron {{ totalItems }} reservaciones en estas fechas
       </div>
       <div id="r-table">
-        <b-table
-          :items="items"
-          :fields="fields"
-          small
-          hover
-          :busy="searching"
-          :tbody-tr-class="rowClass"
-          :thead-class="'gttTableHeader'"
-          @row-clicked="goDetails"
-        >
-          <template #table-busy>
-            <div class="text-center text-danger my-2">
-              <b-spinner class="align-middle"></b-spinner>
-              <strong>Buscando...</strong>
-            </div>
-          </template>
-          <template #cell(estado)="data">
-            <span class="estado">{{ traducir(data.item.estado) }}</span>
-          </template>
-        </b-table>
+        <div v-if="searching" class="text-center text-danger my-2">
+          <span class="gtt-spinner"></span>
+          <strong>Buscando...</strong>
+        </div>
+        <table class="gtt-table gtt-table-hover gtt-table-sm" v-else>
+          <thead class="gttTableHeader">
+            <tr>
+              <th v-for="field in fields" :key="field">{{ field }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in items" :key="index" :class="rowClass(item, 'row')" @click="goDetails(item)">
+              <td v-for="field in fields" :key="field">
+                <template v-if="field === 'estado'">
+                  <span class="estado">{{ traducir(item[field]) }}</span>
+                </template>
+                <template v-else>{{ item[field] }}</template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <div class="pagination-section">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="totalItems"
-          :per-page="10"
-          @page-click="getOthers"
-          align="center"
-          class="custom-page-container"
-        ></b-pagination>
+        <nav aria-label="Paginación">
+          <ul class="gtt-pagination">
+            <li class="gtt-page-item" :class="{ disabled: currentPage <= 1 }">
+              <a class="gtt-page-link" href="#" @click.prevent="currentPage > 1 && getOthers($event, currentPage - 1)">&laquo;</a>
+            </li>
+            <li class="gtt-page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
+              <a class="gtt-page-link" href="#" @click.prevent="getOthers($event, page)">{{ page }}</a>
+            </li>
+            <li class="gtt-page-item" :class="{ disabled: currentPage >= totalPages }">
+              <a class="gtt-page-link" href="#" @click.prevent="currentPage < totalPages && getOthers($event, currentPage + 1)">&raquo;</a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>
@@ -154,6 +160,11 @@ export default {
   props: {
     user: {
       type: Object
+    }
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.totalItems / 10);
     }
   },
   methods: {

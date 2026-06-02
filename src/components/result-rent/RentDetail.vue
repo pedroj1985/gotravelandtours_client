@@ -76,11 +76,10 @@
             <div class="col-lg-9">
               <div class="img-wrapper">
                 <img :src="image" alt="Imagen del vehículo" v-if="!isLoadingImage" />
-                <b-spinner
-                  class="loading-spinner img-loading"
-                  label="Text Centered"
+                <span
+                  class="gtt-spinner loading-spinner img-loading"
                   v-else
-                ></b-spinner>
+                ></span>
               </div>
             </div>
             <div class="col-lg-3 text-center">
@@ -90,7 +89,7 @@
                 </div>
                 <div class="car-dist">
                   <img :src="imageProvider" alt="Proveedor" />
-                  <!-- <b-spinner class="loading-spinner img-loading" label="Text Centered" v-else></b-spinner> -->
+                  <!-- <span class="gtt-spinner loading-spinner img-loading" v-else></span> -->
                 </div>
                 <div class="row icons-row">
                   <div class="col-lg-6">

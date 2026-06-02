@@ -6,9 +6,8 @@
           <div class="item-children-info-btn">
             <button
               type="button"
-              v-b-tooltip.hover
-              title="Descripción"
-              class="btn-children-info"
+              class="btn-children-info gtt-tooltip"
+              :data-tooltip="'Descripción'"
               :class="{ selected: selectedInfo == 'info' }"
               @click="selectInfo('info')"
             >
@@ -26,16 +25,14 @@
           <slot name="itemChildren" v-bind:child="child">
             <div class="item-children-section hn-roman">
               <div
-                class="item-children-section-item"
-                v-b-tooltip.hover
-                :title="child.planAlimenticioNombre"
+                class="item-children-section-item gtt-tooltip"
+                :data-tooltip="child.planAlimenticioNombre"
               >
                 {{ child.planAlimenticioCodigo }}
               </div>
               <div
-                class="item-children-section-item item-children-section-icon"
-                v-b-tooltip.hover
-                title="Confirmación Inmediata o a Solicitud"
+                class="item-children-section-item item-children-section-icon gtt-tooltip"
+                data-tooltip="Confirmación Inmediata o a Solicitud"
               >
                 <i class="mdi mdi-phone-check"></i>
               </div>
@@ -48,9 +45,8 @@
               >
                 <button
                   type="button"
-                  v-b-tooltip.hover
-                  title="Precios"
-                  class="btn-children-info"
+                  class="btn-children-info gtt-tooltip"
+                  data-tooltip="Precios"
                   :class="{ selected: selectedInfo == 'roomLayout' }"
                   @click="selectInfo('roomLayout')"
                 >

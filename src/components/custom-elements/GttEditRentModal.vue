@@ -36,12 +36,9 @@
                   {{ option.option.nombre }}
                 </template>
                 <template v-slot:selectedValue="selectedValue">
-                  <span id="selectedPickUp">{{
+                  <span class="gtt-tooltip" :data-tooltip="selectedValue.selectedValue.nombre">{{
                     overflowText(selectedValue.selectedValue.nombre, 50)
                   }}</span>
-                  <b-tooltip target="selectedPickUp" triggers="hover">
-                    {{ selectedValue.selectedValue.nombre }}
-                  </b-tooltip>
                 </template>
               </gtt-select>
               <gtt-select
@@ -124,9 +121,10 @@
               </gtt-select>
             </div>
             <div class="selects-inline">
-              <b-form-checkbox id="checkbox-same-car" v-model="useSameCar">{{
-                $helpers.traducir("sameCar")
-              }}</b-form-checkbox>
+              <label class="gtt-checkbox">
+                <input type="checkbox" v-model="useSameCar" />
+                {{ $helpers.traducir("sameCar") }}
+              </label>
               <div class="form-actions text-right ml-auto">
                 <button
                   type="submit"
@@ -134,12 +132,10 @@
                   class="lodging-searchButton antonio-regular"
                 >
                   <template v-if="!isReserving">Buscar</template>
-                  <b-spinner
-                    small
-                    class="loading-spinner"
-                    label="Text Centered"
+                  <span
+                    class="gtt-spinner gtt-spinner-sm loading-spinner"
                     v-else
-                  ></b-spinner>
+                  ></span>
                 </button>
                 <button
                   type="button"

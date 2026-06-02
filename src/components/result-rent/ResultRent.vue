@@ -26,11 +26,10 @@
           class="right-column-content"
         ></RentRightColumnList>
         <div v-else class="text-center">
-          <!-- <b-spinner
+          <!-- <span
+            class="gtt-spinner"
             style="width: 5rem; height: 5rem;"
-            class="loading-spinner"
-            label="Text Centered"
-          ></b-spinner>-->
+          ></span>-->
           <div class="loader">
             <div class="balls-loader">
               <img
