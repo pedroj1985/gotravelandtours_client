@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: http:; font-src 'self' data:; connect-src 'self' http://localhost:5000 https://admin.gotravelandtours.com; frame-ancestors 'none'; base-uri 'self'" />
 
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
-    <!-- <title><%= htmlWebpackPlugin.options.title %></title> -->
+    <link rel="icon" href="favicon.ico" />
     <title>colibri Viajes</title>
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/base.css" />
@@ -22,13 +21,13 @@
   <body>
     <noscript>
       <strong
-        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
+        >We're sorry but colibri Viajes doesn't work
         properly without JavaScript enabled. Please enable it to
         continue.</strong
       >
     </noscript>
     <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <script type="module" src="/src/main.js"></script>
   </body>
   <script src="js/jquery-3.4.1.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>

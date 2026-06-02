@@ -327,6 +327,7 @@ export default {
 };
 </script>
 <style scoped>
+.lodging-reservation-view {
   margin-bottom: 10px;
 }
 .btn-cart {

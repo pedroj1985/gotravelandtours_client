@@ -1,14 +1,14 @@
 <template>
   <div id="home-logged-banner">
     <div class="home-logged-img">
-      <img src="img/homelogin_img_form_alojamiento.jpg" alt="Alojamientos" />
+      <img src="/img/homelogin_img_form_alojamiento.jpg" alt="Alojamientos" />
     </div>
     <div class="navs-wrapper">
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
       <div slot="image">
-        <img src="img/icopaq_alojamiento_color.svg" alt="" />
+        <img src="/img/icopaq_alojamiento_color.svg" alt="" />
       </div>
       <div slot="searching-text" class="searching-text">
         <span class="antonio-light">Buscando disponibilidad de</span>

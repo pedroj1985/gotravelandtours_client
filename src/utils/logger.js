@@ -7,7 +7,7 @@ const LOG_LEVELS = {
   error: 3
 };
 
-const currentLevel = LOG_LEVELS[process.env.VUE_APP_LOG_LEVEL] || 0;
+const currentLevel = LOG_LEVELS[import.meta.env.VITE_LOG_LEVEL] || 0;
 
 export const logger = {
   debug(...args) {
