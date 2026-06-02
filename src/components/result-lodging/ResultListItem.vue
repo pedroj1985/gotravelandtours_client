@@ -140,7 +140,7 @@ import Slick from "vue-slick-carousel";
 import ResultListRow from "./ResultListRow";
 import _ from "lodash";
 import { constructDisplay } from "../../utils/utils";
-import { cartStore } from "../../stores/cartStore";
+import { addToCartItem, reserveItem } from "../../composables/useCartItem";
 export default {
   created() {},
   components: {
@@ -189,23 +189,10 @@ export default {
       this.disabledItems = value;
     },
     addToCart(i, cant) {
-      i.combinacion.listado[0].precioObjOne.OrdenAlojamientoId = 0;
-      if (cant > 1) {
-        i.combinacion.listado[0].precioObjOne.CantidadHabitaciones = cant;
-        i.combinacion.total = i.combinacion.total * cant;
-        i.combinacion.listado[0].precioObjOne["sameRoom"] = true;
-      } else {
-        i.combinacion.listado[0].precioObjOne["sameRoom"] = false;
-      }
-      this.item["reservedRooms"] = i;
-      this.$helpers.shoppingCartAdd(this.item);
-      cartStore.refresh();
+      addToCartItem(this.item, i, cant, this.$helpers);
     },
     reserve(i, cant) {
-      this.addToCart(i, cant);
-      this.$router.push({
-        name: "reservation"
-      });
+      reserveItem(this.$router, this.item, i, cant, this.$helpers);
     },
     getMinPrice(array) {
       return _.minBy(array, function(e) {
