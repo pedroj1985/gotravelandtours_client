@@ -1,5 +1,29 @@
 <template>
   <div>
+    <template v-if="loading">
+      <div class="result-item">
+        <div class="result-item-carousel">
+          <GttSkeleton type="rect" :width="100" height="200px"></GttSkeleton>
+        </div>
+        <div class="result-item-info">
+          <GttSkeleton type="text" :width="70" height="1.4em"></GttSkeleton>
+          <div class="item-other-info">
+            <GttSkeleton type="text" :width="50" height="1em"></GttSkeleton>
+            <GttSkeleton type="text" :width="40" height="1em"></GttSkeleton>
+            <GttSkeleton type="text" :width="60" height="1em"></GttSkeleton>
+          </div>
+        </div>
+        <div class="result-item-price">
+          <div class="price-wrapper">
+            <GttSkeleton type="text" :width="40" height="1em"></GttSkeleton>
+            <div class="details-btn">
+              <GttSkeleton type="rect" :width="40" height="40px"></GttSkeleton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template v-else>
     <div class="result-item">
       <div class="result-item-carousel">
         <Slick
@@ -108,6 +132,7 @@
         </div>
       </div>
     </div>
+    </template>
     <!-- <div class="list-item-children">
       <ResultListRow
         v-for="child in filteredItems"
@@ -138,6 +163,7 @@
 <script>
 import Slick from "vue-slick-carousel";
 import ResultListRow from "./ResultListRow";
+import GttSkeleton from "../shared/GttSkeleton";
 import _ from "lodash";
 import { constructDisplay } from "../../utils/utils";
 import { addToCartItem, reserveItem } from "../../composables/useCartItem";
@@ -145,12 +171,17 @@ export default {
   created() {},
   components: {
     Slick,
-    ResultListRow
+    ResultListRow,
+    GttSkeleton
   },
   props: {
     item: Object,
     filters: Object,
-    todosTipo: Array
+    todosTipo: Array,
+    loading: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {

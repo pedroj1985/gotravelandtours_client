@@ -10,7 +10,34 @@
         class="right-column-list-wrapper position-relative"
         id="right-column-list-wrapper"
       >
-        <div v-if="dataLoaded">
+        <div v-if="isLoading" class="text-center w-100">
+          <div class="skeleton-list">
+            <div
+              class="skeleton-item d-flex"
+              v-for="n in 3"
+              :key="n"
+            >
+              <GttSkeleton type="rect" :width="30" height="180px" class="skeleton-image"></GttSkeleton>
+              <div class="skeleton-info flex-grow-1">
+                <GttSkeleton type="text" :width="60" height="1.2em"></GttSkeleton>
+                <GttSkeleton type="text" :width="40" height="1em"></GttSkeleton>
+                <GttSkeleton type="text" :width="80" height="1em"></GttSkeleton>
+                <GttSkeleton type="text" :width="50" height="1em"></GttSkeleton>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="hasError" class="text-center w-100">
+          <GttErrorState :retryable="true" @retry="retrySearch"></GttErrorState>
+        </div>
+        <div v-else-if="dataLoaded && resultList.length === 0" class="text-center w-100">
+          <GttEmptyState>
+            <template #icon><i class="mdi mdi-bed-outline"></i></template>
+            <template #title>Sin alojamientos disponibles</template>
+            No se encontraron alojamientos para los filtros seleccionados.
+          </GttEmptyState>
+        </div>
+        <div v-else-if="dataLoaded">
           <div class="map-wrapper">
             <div class="left-side-map">
               <div class="custom-line-1">
@@ -78,22 +105,7 @@
             :order="selectedOrganizeType"
           ></RightColumnList>
         </div>
-        <div v-else class="text-center w-100">
-          <div class="loader">
-            <div class="balls-loader lodging-loader">
-              <img
-                src="../../../public/img/preloadSERVICIOrenta_bolas_verde.svg"
-                alt="bolas cargando"
-              />
-            </div>
-            <div class="icon-loader lodging-loader-icon">
-              <img
-                src="../../../public/img/preloadSERVICIOalojamiento_icono_verde.svg"
-                alt="alojamiento cargando"
-              />
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   </div>
@@ -105,6 +117,9 @@ import LeftColumnFilters from "./LeftColumnFilters";
 import RightColumnList from "./RightColumnList";
 import Breadcrumb from "../shared/Breadcrumb";
 import GttSelect from "../custom-elements/GttSelect";
+import GttSkeleton from "../shared/GttSkeleton";
+import GttEmptyState from "../shared/GttEmptyState";
+import GttErrorState from "../shared/GttErrorState";
 // import { authSearchLodging } from '../../utils/auth';
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import moment from "moment";
@@ -117,44 +132,41 @@ export default {
     LeftColumnFilters,
     RightColumnList,
     Breadcrumb,
-    GttSelect
+    GttSelect,
+    GttSkeleton,
+    GttEmptyState,
+    GttErrorState
   },
   mixins: [lodgingUtilsMixin],
   async created() {
-    let t = await authGetRoomTypes();
-    this.todosTipo = t.data;
-    let f = localStorage.getItem("searchLodgingFilters");
-    if (f) {
-      this.filters = JSON.parse(f);
-    }
-    console.info("second", this);
-    /* if (
-        this.filters.Visitantes.adults.value >=
-        this.filters.Visitantes.kids.value
-      )
-        this.roomComb = this.$helpers.roomCombination(
-          this.filters.Visitantes.adults.value,
-          this.filters.Visitantes.kids.value || 0
-        );
-      else {
-        this.roomComb = this.$helpers.roomCombination2kids(
-          this.filters.Visitantes.adults.value,
-          this.filters.Visitantes.kids.value || 0
-        );
-      } */
-    /* this.roomComb2 = this.$helpers.roomCombinationV2(
-        this.filters.Visitantes.adults.value,
-        this.filters.Visitantes.kids.value || 0
-      ); */
-    let r = this.$route.params["searchResult"];
-    if (r) {
-      let temp = r;
-      this.createList(temp);
-      this.resultTotal = this.resultList.length;
-    } else {
-      let temp = await this.searchCResult();
-      this.createList(temp);
-      this.resultTotal = this.resultList.length;
+    this.isLoading = true;
+    this.hasError = false;
+    try {
+      let t = await authGetRoomTypes();
+      this.todosTipo = t.data;
+      let f = localStorage.getItem("searchLodgingFilters");
+      if (f) {
+        this.filters = JSON.parse(f);
+      }
+      let r = this.$route.params["searchResult"];
+      if (r) {
+        let temp = r;
+        this.createList(temp);
+        this.resultTotal = this.resultList.length;
+      } else {
+        let temp = await this.searchCResult();
+        if (temp) {
+          this.createList(temp);
+          this.resultTotal = this.resultList.length;
+        } else {
+          this.dataLoaded = true;
+        }
+      }
+    } catch (error) {
+      this.hasError = true;
+      this.dataLoaded = true;
+    } finally {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -194,13 +206,34 @@ export default {
       this.resultTotal = value;
     },
     createList(list) {
-      this.resultList = list;
+      this.resultList = list || [];
       this.dataLoaded = true;
+    },
+    async retrySearch() {
+      this.isLoading = true;
+      this.hasError = false;
+      this.dataLoaded = false;
+      try {
+        let temp = await this.searchCResult();
+        if (temp) {
+          this.createList(temp);
+          this.resultTotal = this.resultList.length;
+        } else {
+          this.dataLoaded = true;
+        }
+      } catch (error) {
+        this.hasError = true;
+        this.dataLoaded = true;
+      } finally {
+        this.isLoading = false;
+      }
     }
   },
   data() {
     return {
       dataLoaded: false,
+      isLoading: false,
+      hasError: false,
       roomComb: Object,
       roomComb2: Object,
       todosTipo: [],

@@ -278,18 +278,12 @@
         </div>
       </div>
     </div>
-    <div
-      class="
-        no-content
-        font24
-        hn-roman
-        general-text-opt
-        gtt-text-color
-        text-center
-      "
-      v-else
-    >
-      No existen elementos en el carrito
+    <div v-else class="text-center">
+      <GttEmptyState>
+        <template #icon><i class="mdi mdi-cart-outline"></i></template>
+        <template #title>Tu carrito está vacío</template>
+        Agrega alojamientos o renta de autos para comenzar tu reservación.
+      </GttEmptyState>
     </div>
   </div>
 </template>
@@ -312,6 +306,7 @@ import {
 } from "../../utils/auth";
 import GttEditLodgingModal from "../custom-elements/GttEditLodgingModal";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
+import GttEmptyState from "../shared/GttEmptyState";
 import NavBar2 from "../shared/NavBar2";
 import { menuLinks } from "../../menu";
 import GttEditRentModal from "../custom-elements/GttEditRentModal";
@@ -338,6 +333,7 @@ export default {
     RentInfoRow,
     FlightInfoRow,
     GttVerificationModal,
+    GttEmptyState,
     NavBar2,
     GttEditLodgingModal,
     GttEditRentModal
