@@ -28,7 +28,7 @@ import { uuid } from "vue-uuid";
 
 export default {
   components: {
-    AdultsKidsIcons,
+    AdultsKidsIcons
   },
   // mounted(){
   //     console.log(this.item)
@@ -39,7 +39,7 @@ export default {
   },
   data() {
     return {
-      id: null,
+      id: null
     };
   },
   props: {
@@ -47,8 +47,8 @@ export default {
       type: Object,
       default: function() {
         return {};
-      },
-    },
+      }
+    }
   },
   methods: {
     remove() {
@@ -61,7 +61,7 @@ export default {
       if (decimalPart == 0) decimalPart = "00";
 
       return { intPart: intPart, decimalPart: decimalPart };
-    },
-  },
+    }
+  }
 };
 </script>

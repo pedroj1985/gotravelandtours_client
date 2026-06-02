@@ -1,4 +1,6 @@
 // DEPRECATED: Use composables/useScroll.js instead
+import { scrollStore } from "../stores/scrollStore";
+
 export const handleScrollMixin = {
   methods: {
     handleScroll() {
@@ -9,7 +11,7 @@ export const handleScrollMixin = {
         height * 0.25 > el.getBoundingClientRect().top &&
         height * 0 < el.getBoundingClientRect().top
       ) {
-        this.$eventBus.$emit("componentScrolled", el.id);
+        scrollStore.scrollTo(el.id);
       }
     }
   },

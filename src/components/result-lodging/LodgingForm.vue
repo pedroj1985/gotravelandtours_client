@@ -10,9 +10,7 @@
         <span class="antonio-light">
           en
           <span v-if="selectedLodgingDestinyValue">
-            {{
-            selectedLodgingDestinyValue.nombre
-            }}
+            {{ selectedLodgingDestinyValue.nombre }}
           </span>
           <span v-else>cualquier lugar</span>
         </span>
@@ -21,11 +19,13 @@
         <div>
           entre el {{ constructDate(selectedArriveDate) }} y el
           {{ constructDate(selectedDepartureDate) }} ({{
-          calculateNights(selectedArriveDate, selectedDepartureDate)
+            calculateNights(selectedArriveDate, selectedDepartureDate)
           }}
           noches)
         </div>
-        <div v-if="selectedRoomLayout">para {{ constructDisplay(selectedRoomLayout) }}</div>
+        <div v-if="selectedRoomLayout">
+          para {{ constructDisplay(selectedRoomLayout) }}
+        </div>
       </div>
     </GttModalSearch>
     <div ref="gttDestinyLodging">
@@ -40,7 +40,9 @@
         <span slot="placeholder" class="required-field">Destino</span>
         <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
         <template v-slot:option="option">{{ option.option.nombre }}</template>
-        <template v-slot:selectedValue="selectedValue">{{ selectedValue.selectedValue.nombre }}</template>
+        <template v-slot:selectedValue="selectedValue">{{
+          selectedValue.selectedValue.nombre
+        }}</template>
         <span slot="error" class="gtt-errors"></span>
       </gtt-select>
     </div>
@@ -48,7 +50,8 @@
       <gtt-select-date
         v-model="selectedArriveDate"
         :min-date="minArriveDate"
-        :mode="'single'">
+        :mode="'single'"
+      >
         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
         <span slot="placeholder" class="required-field">Fecha de entrada</span>
         <span slot="error" class="gtt-errors"></span>
@@ -58,7 +61,8 @@
       <gtt-select-date
         v-model="selectedDepartureDate"
         :min-date="minDepartureDate"
-        :mode="'single'">
+        :mode="'single'"
+      >
         <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
         <span slot="placeholder" class="required-field">Fecha de salida</span>
         <span slot="error" class="gtt-errors"></span>
@@ -107,13 +111,11 @@
         v-if="hasSearchResults"
         type="submit"
         class="antonio-regular regresar"
-        @click="returnToPreviousSearch">
+        @click="returnToPreviousSearch"
+      >
         Regresar
       </button>
-      <button
-        type="submit"
-        class="antonio-regular"
-        @click="activateModal">
+      <button type="submit" class="antonio-regular" @click="activateModal">
         Buscar
       </button>
     </div>
@@ -131,7 +133,11 @@ import {
   authGetLodgingsAll,
   authGetHotelList
 } from "../../utils/auth";
-import { constructDate, calculateNights, constructDisplay } from "../../utils/utils";
+import {
+  constructDate,
+  calculateNights,
+  constructDisplay
+} from "../../utils/utils";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import moment from "moment";
@@ -146,15 +152,21 @@ export default {
   },
   computed: {
     minArriveDate() {
-      return moment().add(4, "days").format("YYYY-MM-DD");
+      return moment()
+        .add(4, "days")
+        .format("YYYY-MM-DD");
     },
     minDepartureDate() {
-      let minDepartureDate = moment().add(7, "days").format("YYYY-MM-DD");
+      let minDepartureDate = moment()
+        .add(7, "days")
+        .format("YYYY-MM-DD");
       if (this.selectedArriveDate) {
-        minDepartureDate = moment(this.selectedArriveDate).add(this.selectedNights, "days").format("YYYY-MM-DD");
+        minDepartureDate = moment(this.selectedArriveDate)
+          .add(this.selectedNights, "days")
+          .format("YYYY-MM-DD");
       }
       return minDepartureDate;
-    },
+    }
   },
   watch: {
     propNationality: function(sn) {
@@ -172,18 +184,23 @@ export default {
     selectedArriveDate(i) {
       if (moment(i).isAfter(this.selectedDepartureDate)) {
         this.selectedNights = 3;
-        this.selectedDepartureDate = moment(i).add(this.selectedNights, "days").toDate();
-        let n = moment(this.selectedDepartureDate).diff(this.selectedArriveDate, "days");
+        this.selectedDepartureDate = moment(i)
+          .add(this.selectedNights, "days")
+          .toDate();
+        let n = moment(this.selectedDepartureDate).diff(
+          this.selectedArriveDate,
+          "days"
+        );
         this.selectedNights = n;
       }
     },
     selectedDepartureDate(i) {
       let n = moment(this.selectedDepartureDate).diff(
-          this.selectedArriveDate,
-          "days"
-        );
+        this.selectedArriveDate,
+        "days"
+      );
 
-        this.selectedNights = n;
+      this.selectedNights = n;
 
       //return new Date(i);
     },
@@ -193,7 +210,7 @@ export default {
       );
     },
     selectedLodgingDestinyValue(i) {
-      console.info('watch', i);
+      console.info("watch", i);
       return i;
     }
   },
@@ -201,8 +218,13 @@ export default {
     let t = await authGetRoomTypes();
     this.todosTipo = t.data;
     this.selectedRoomLayout = this.propRoomLayout;
-    this.getSearchResults().then(res => {console.log('getSearchResults', res);
-      if (Array.isArray(res) && res.length > 0 && this.$route.name === 'lodging-detail') {
+    this.getSearchResults().then(res => {
+      console.log("getSearchResults", res);
+      if (
+        Array.isArray(res) &&
+        res.length > 0 &&
+        this.$route.name === "lodging-detail"
+      ) {
         this.hasSearchResults = true;
       }
     });
@@ -278,7 +300,7 @@ export default {
         "searchLodgingFilters",
         JSON.stringify(searchFilters)
       );
-      console.log('desactivateModal');
+      console.log("desactivateModal");
       this.desactivateModal();
       this.$router.push({
         name: "lodgingResultHolder",
@@ -293,7 +315,7 @@ export default {
         this.isModalActive = true;
         await this.clearSerchResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
-          console.info('RGN', this);
+          console.info("RGN", this);
           let region = { RegionId: this.selectedLodgingDestinyValue.id };
           let cliente = { ClienteId: localStorage.getItem("cliente") };
           let searchItem = {
@@ -344,7 +366,7 @@ export default {
                 "searchLodgingFilters",
                 JSON.stringify(searchFilters)
               );
-              console.log('desactivateModal');
+              console.log("desactivateModal");
               this.desactivateModal();
               this.$router.push({
                 name: "lodgingResultHolder",
@@ -492,7 +514,7 @@ export default {
   },
   data() {
     return {
-      selectedLodgingDestinyValue:  this.propLodgingDestinyValue,
+      selectedLodgingDestinyValue: this.propLodgingDestinyValue,
       selectedArriveDate: new Date(moment(this.propArriveDate)),
       selectedDepartureDate: new Date(moment(this.propDepartureDate)),
       selectedRoomLayout: null,

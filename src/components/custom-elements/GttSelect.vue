@@ -128,7 +128,7 @@ import ClickOutside from "vue-click-outside";
 
 export default {
   directives: {
-    ClickOutside,
+    ClickOutside
   },
   created() {
     this.isVisible = this.opened;
@@ -145,49 +145,49 @@ export default {
     },
     value: function(val) {
       this.selectedValue = val;
-    },
+    }
   },
   props: {
     openedLodging: {
-      default: false,
+      default: false
     },
     twoRows: {
-      default: true,
+      default: true
     },
     options: {
-      type: Array,
+      type: Array
     },
     search: {
       type: Boolean,
-      default: false,
+      default: false
     },
     clickable: {
       type: Boolean,
-      default: true,
+      default: true
     },
     opened: {
       type: Boolean,
-      default: false,
+      default: false
     },
     searchFinished: {
       type: Boolean,
-      default: false,
+      default: false
     },
     value: {
-      default: null,
+      default: null
     },
     isDisabled: {
       type: Boolean,
-      default: false,
+      default: false
     },
     nullable: {
       type: Boolean,
-      default: false,
+      default: false
     },
     alignLeft: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
@@ -195,12 +195,12 @@ export default {
       searchResult: [],
       searchQuery: "",
       arrow: true,
-      selectedValue: "",
+      selectedValue: ""
     };
   },
   methods: {
     submitSearch() {
-      let result = this.options.filter((e) => {
+      let result = this.options.filter(e => {
         return e.nombre.toLowerCase().includes(this.searchQuery.toLowerCase());
       });
 
@@ -245,8 +245,8 @@ export default {
     },
     emitValue(value) {
       this.$emit("input", value);
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -334,7 +334,7 @@ export default {
   color: var(--color-text-primary);
   border-radius: var(--border-radius-lg);
   background-color: var(--color-background-white);
-  font-family: 'Helvetica Neue LT Std-Roman';
+  font-family: "Helvetica Neue LT Std-Roman";
   font-size: var(--font-size-sm);
 
   input {
@@ -378,7 +378,7 @@ ul.gtt__list_area {
   margin-bottom: 0;
   color: var(--color-text-primary);
   padding-left: 0;
-  font-family: 'Helvetica Neue LT Std-Roman';
+  font-family: "Helvetica Neue LT Std-Roman";
   font-size: var(--font-size-sm);
 }
 

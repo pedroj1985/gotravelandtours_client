@@ -6,7 +6,7 @@
       :itemsInCart="itemsInCart"
     ></NavBar1>
     <router-view></router-view>
-<!--    <IndexOffers></IndexOffers>-->
+    <!--    <IndexOffers></IndexOffers>-->
     <Footer1></Footer1>
     <Footer2></Footer2>
   </div>
@@ -17,46 +17,35 @@ import Footer2 from "./components/shared/Footer2.vue";
 import Footer1 from "./components/shared/Footer1.vue";
 import NavBar1 from "./components/shared/NavBar1.vue";
 import IndexOffers from "./components/index-page/IndexOffers";
-import { getUser } from "./utils/auth";
-import { eventBus } from "./main";
+import { authStore } from "./stores/authStore";
+import { cartStore } from "./stores/cartStore";
 
 export default {
   name: "App",
   computed: {
+    user() {
+      return authStore.user;
+    },
+    itemsInCart() {
+      return cartStore.count;
+    },
     isLogged() {
       return this.user ? true : false;
-    },
+    }
   },
   data() {
-    return {
-      user: null,
-      itemsInCart: 0,
-    };
+    return {};
   },
-  methods: {
-    updateUser(value) {
-      this.user = value;
-    },
-  },
+  methods: {},
   mounted() {
-    this.user = getUser();
     this.itemsInCart = this.$helpers.getCartItems();
-  },
-  created() {
-    this.$eventCartBus.$on("updateCart", () => {
-      console.log(this.$helpers.getCartItemsList());
-      this.itemsInCart = this.$helpers.getCartItems();
-    });
-    eventBus.$on("userLogin", (val) => {
-      this.user = val;
-    });
   },
   components: {
     Footer2,
     Footer1,
     NavBar1,
-    IndexOffers,
-  },
+    IndexOffers
+  }
 };
 </script>
 

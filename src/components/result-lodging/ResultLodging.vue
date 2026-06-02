@@ -100,35 +100,35 @@
 </template>
 
 <script>
-  import NavBar2 from "../shared/NavBar2";
-  import LeftColumnFilters from "./LeftColumnFilters";
-  import RightColumnList from "./RightColumnList";
-  import Breadcrumb from "../shared/Breadcrumb";
-  import GttSelect from "../custom-elements/GttSelect";
-  // import { authSearchLodging } from '../../utils/auth';
-  import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
-  import moment from "moment";
-  import { authGetRoomTypes } from "../../utils/auth";
-  import { constructDisplay } from "../../utils/utils";
+import NavBar2 from "../shared/NavBar2";
+import LeftColumnFilters from "./LeftColumnFilters";
+import RightColumnList from "./RightColumnList";
+import Breadcrumb from "../shared/Breadcrumb";
+import GttSelect from "../custom-elements/GttSelect";
+// import { authSearchLodging } from '../../utils/auth';
+import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import moment from "moment";
+import { authGetRoomTypes } from "../../utils/auth";
+import { constructDisplay } from "../../utils/utils";
 
-  export default {
-    components: {
-      NavBar2,
-      LeftColumnFilters,
-      RightColumnList,
-      Breadcrumb,
-      GttSelect
-    },
-    mixins: [lodgingUtilsMixin],
-    async created() {
-      let t = await authGetRoomTypes();
-      this.todosTipo = t.data;
-      let f = localStorage.getItem("searchLodgingFilters");
-      if (f) {
-        this.filters = JSON.parse(f);
-      }
-      console.info('second', this);
-      /* if (
+export default {
+  components: {
+    NavBar2,
+    LeftColumnFilters,
+    RightColumnList,
+    Breadcrumb,
+    GttSelect
+  },
+  mixins: [lodgingUtilsMixin],
+  async created() {
+    let t = await authGetRoomTypes();
+    this.todosTipo = t.data;
+    let f = localStorage.getItem("searchLodgingFilters");
+    if (f) {
+      this.filters = JSON.parse(f);
+    }
+    console.info("second", this);
+    /* if (
         this.filters.Visitantes.adults.value >=
         this.filters.Visitantes.kids.value
       )
@@ -142,106 +142,103 @@
           this.filters.Visitantes.kids.value || 0
         );
       } */
-      /* this.roomComb2 = this.$helpers.roomCombinationV2(
+    /* this.roomComb2 = this.$helpers.roomCombinationV2(
         this.filters.Visitantes.adults.value,
         this.filters.Visitantes.kids.value || 0
       ); */
-      let r = this.$route.params["searchResult"];
-      if (r) {
-        let temp = r;
-        this.createList(temp);
-        this.resultTotal = this.resultList.length;
-      } else {
-        let temp = await this.searchCResult();
-        this.createList(temp);
-        this.resultTotal = this.resultList.length;
-      }
+    let r = this.$route.params["searchResult"];
+    if (r) {
+      let temp = r;
+      this.createList(temp);
+      this.resultTotal = this.resultList.length;
+    } else {
+      let temp = await this.searchCResult();
+      this.createList(temp);
+      this.resultTotal = this.resultList.length;
+    }
+  },
+  methods: {
+    constructDisplay,
+    toMoment(date) {
+      return moment(date);
     },
-    methods: {
-      constructDisplay,
-      toMoment(date) {
-        return moment(date);
-      },
-      async searchCResult() {
-        try {
-          if (this.roomComb != "ERROR") {
-            let ff = {
-              Region: this.filters.Region,
-              Cliente: this.filters.Cliente,
-              Entrada: this.filters.Entrada,
-              Salida: this.filters.Salida
-            };
-            let result = await this.searchResult(
-              ff,
-              this.roomComb,
-              this.roomComb2
-            );
-            return result;
-          } else {
-            this.$toasted.show("Demasiados niños", {
-              type: "error"
-            });
-            return null;
-          }
-        } catch (error) {
-          this.$toasted.show(
-            "El servicio no está disponible en estos momentos",
-            {
-              type: "error"
-            }
+    async searchCResult() {
+      try {
+        if (this.roomComb != "ERROR") {
+          let ff = {
+            Region: this.filters.Region,
+            Cliente: this.filters.Cliente,
+            Entrada: this.filters.Entrada,
+            Salida: this.filters.Salida
+          };
+          let result = await this.searchResult(
+            ff,
+            this.roomComb,
+            this.roomComb2
           );
+          return result;
+        } else {
+          this.$toasted.show("Demasiados niños", {
+            type: "error"
+          });
           return null;
         }
-      },
-      setResultTotal(value) {
-        this.resultTotal = value;
-      },
-      createList(list) {
-        this.resultList = list;
-        this.dataLoaded = true;
+      } catch (error) {
+        this.$toasted.show("El servicio no está disponible en estos momentos", {
+          type: "error"
+        });
+        return null;
       }
     },
-    data() {
-      return {
-        dataLoaded: false,
-        roomComb: Object,
-        roomComb2: Object,
-        todosTipo: [],
-        resultList: [],
-        organizedBy: [
-          {
-            displayName: "Precio (asc)",
-            code: "price_asc"
-          },
-          {
-            displayName: "Precio (desc)",
-            code: "price_desc"
-          }
-        ],
-        selectedOrganizeType: {
+    setResultTotal(value) {
+      this.resultTotal = value;
+    },
+    createList(list) {
+      this.resultList = list;
+      this.dataLoaded = true;
+    }
+  },
+  data() {
+    return {
+      dataLoaded: false,
+      roomComb: Object,
+      roomComb2: Object,
+      todosTipo: [],
+      resultList: [],
+      organizedBy: [
+        {
           displayName: "Precio (asc)",
           code: "price_asc"
         },
-        resultTotal: 0,
-        filters: {},
-        breadcrumbList: ["Inicio", "Alojamientos", "Resultados de la búsqueda"],
-        menuLinks: [
-          {
-            name: "index",
-            displayName: "Inicio",
-            id: "home-logged-banner"
-          },
-          {
-            name: "lodging",
-            displayName: "alojamientos",
-            id: "home-logged-banner"
-          },
-/*           {
+        {
+          displayName: "Precio (desc)",
+          code: "price_desc"
+        }
+      ],
+      selectedOrganizeType: {
+        displayName: "Precio (asc)",
+        code: "price_asc"
+      },
+      resultTotal: 0,
+      filters: {},
+      breadcrumbList: ["Inicio", "Alojamientos", "Resultados de la búsqueda"],
+      menuLinks: [
+        {
+          name: "index",
+          displayName: "Inicio",
+          id: "home-logged-banner"
+        },
+        {
+          name: "lodging",
+          displayName: "alojamientos",
+          id: "home-logged-banner"
+        }
+        /*           {
             name: "car-rent",
             displayName: "renta de autos",
             id: "index-logged-rent-wrapper"
           }, */
-/*          {
+        /*          {
             name: "transfer",
             displayName: "traslados",
             id: "index-logged-transfer"
@@ -251,9 +248,8 @@
             displayName: "Excursiones y actividades",
             id: "index-logged-excursion"
           }*/
-        ]
-      };
-    }
-  };
+      ]
+    };
+  }
+};
 </script>
-

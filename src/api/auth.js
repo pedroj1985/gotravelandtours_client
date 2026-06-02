@@ -1,4 +1,5 @@
 import HTTP from "./client";
+import { cartStore } from "../stores/cartStore";
 
 export function authCheck() {
   return localStorage.getItem("token") != null;
@@ -32,7 +33,7 @@ export function closeSession(vueInstance) {
   const saveVersion = JSON.parse(localStorage.getItem("version"));
   localStorage.clear();
   localStorage.setItem("version", JSON.stringify(saveVersion));
-  vueInstance.$eventCartBus.$emit("updateCart");
+  cartStore.refresh();
   vueInstance.$router.push({ name: "index" });
 }
 

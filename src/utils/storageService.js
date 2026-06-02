@@ -4,10 +4,10 @@
  */
 
 const STORAGE_KEYS = {
-  CART: 'gttCart',
-  TOKEN: 'token',
-  EXPIRY_DATE: 'fecha_exp',
-  VERSION: 'version'
+  CART: "gttCart",
+  TOKEN: "token",
+  EXPIRY_DATE: "fecha_exp",
+  VERSION: "version"
 };
 
 class StorageService {
@@ -65,7 +65,7 @@ class StorageService {
       localStorage.clear();
       return true;
     } catch (error) {
-      console.error('Error clearing localStorage', error);
+      console.error("Error clearing localStorage", error);
       return false;
     }
   }

@@ -74,110 +74,110 @@
 </template>
 
 <script>
-  import Slick from "vue-slick-carousel";
+import Slick from "vue-slick-carousel";
 
-  export default {
-    components: {
-      Slick
+export default {
+  components: {
+    Slick
+  },
+  methods: {
+    isSelected(word, list) {
+      return list.includes(word);
     },
-    methods: {
-      isSelected(word, list) {
-        return list.includes(word);
-      },
-      styledPrice(number) {
-        let intPart = Math.ceil(number);
-        let decimalPart = (number - intPart).toFixed(2) * 100;
+    styledPrice(number) {
+      let intPart = Math.ceil(number);
+      let decimalPart = (number - intPart).toFixed(2) * 100;
 
-        if (decimalPart == 0) decimalPart = "00";
+      if (decimalPart == 0) decimalPart = "00";
 
-        return { intPart: intPart, decimalPart: decimalPart };
-      }
-    },
-    data() {
-      return {
-        cars: [
-          {
-            model_name: "Mercedes Benz Clase C200",
-            img: "homelogin_renta_mercedesbenzcc.jpg",
-            category: "premium plus",
-            capacity: "4",
-            luggage: {
-              quantity: "2",
-              type: "grandes"
-            },
-            type: "automático",
-            min_price: {
-              currency: "USD",
-              value: "145"
-            },
-            agencies: ["R"]
-          },
-          {
-            model_name: "Hyundai Santa Fe",
-            img: "homelogin_renta_hyundaisantafe.jpg",
-            category: "jeep",
-            capacity: "5",
-            luggage: {
-              quantity: "2",
-              type: "pequeños"
-            },
-            type: "automático",
-            min_price: {
-              currency: "USD",
-              value: "270"
-            },
-            agencies: ["R"]
-          },
-          {
-            model_name: "Peugeot 301",
-            img: "homelogin_renta_peugeot.jpg",
-            category: "medium",
-            capacity: "5",
-            luggage: {
-              quantity: "2",
-              type: "grandes"
-            },
-            type: "automático",
-            min_price: {
-              currency: "USD",
-              value: "66"
-            },
-            agencies: ["V"]
-          },
-          {
-            model_name: "Morris Garage MG3",
-            img: "homelogin_renta_mg.jpg",
-            category: "económico",
-            capacity: "4",
-            luggage: {
-              quantity: "2",
-              type: "pequeñas"
-            },
-            type: "manual",
-            min_price: {
-              currency: "USD",
-              value: "46"
-            },
-            agencies: ["C", "V"]
-          },
-          {
-            model_name: "Morris Garage MG3",
-            img: "homelogin_renta_mg.jpg",
-            category: "económico",
-            capacity: "4",
-            luggage: {
-              quantity: "2",
-              type: "pequeñas"
-            },
-            type: "manual",
-            min_price: {
-              currency: "USD",
-              value: "46"
-            },
-            agencies: ["C", "V"]
-          }
-        ]
-      };
+      return { intPart: intPart, decimalPart: decimalPart };
     }
-  };
+  },
+  data() {
+    return {
+      cars: [
+        {
+          model_name: "Mercedes Benz Clase C200",
+          img: "homelogin_renta_mercedesbenzcc.jpg",
+          category: "premium plus",
+          capacity: "4",
+          luggage: {
+            quantity: "2",
+            type: "grandes"
+          },
+          type: "automático",
+          min_price: {
+            currency: "USD",
+            value: "145"
+          },
+          agencies: ["R"]
+        },
+        {
+          model_name: "Hyundai Santa Fe",
+          img: "homelogin_renta_hyundaisantafe.jpg",
+          category: "jeep",
+          capacity: "5",
+          luggage: {
+            quantity: "2",
+            type: "pequeños"
+          },
+          type: "automático",
+          min_price: {
+            currency: "USD",
+            value: "270"
+          },
+          agencies: ["R"]
+        },
+        {
+          model_name: "Peugeot 301",
+          img: "homelogin_renta_peugeot.jpg",
+          category: "medium",
+          capacity: "5",
+          luggage: {
+            quantity: "2",
+            type: "grandes"
+          },
+          type: "automático",
+          min_price: {
+            currency: "USD",
+            value: "66"
+          },
+          agencies: ["V"]
+        },
+        {
+          model_name: "Morris Garage MG3",
+          img: "homelogin_renta_mg.jpg",
+          category: "económico",
+          capacity: "4",
+          luggage: {
+            quantity: "2",
+            type: "pequeñas"
+          },
+          type: "manual",
+          min_price: {
+            currency: "USD",
+            value: "46"
+          },
+          agencies: ["C", "V"]
+        },
+        {
+          model_name: "Morris Garage MG3",
+          img: "homelogin_renta_mg.jpg",
+          category: "económico",
+          capacity: "4",
+          luggage: {
+            quantity: "2",
+            type: "pequeñas"
+          },
+          type: "manual",
+          min_price: {
+            currency: "USD",
+            value: "46"
+          },
+          agencies: ["C", "V"]
+        }
+      ]
+    };
+  }
+};
 </script>

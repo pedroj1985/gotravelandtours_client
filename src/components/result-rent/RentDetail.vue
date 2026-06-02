@@ -150,7 +150,7 @@ import { authGetCar, authGetImage, authSearchProvider } from "../../utils/auth";
 export default {
   components: {
     NavBar2,
-    RentForm,
+    RentForm
   },
   async created() {
     let carId = this.$route.params.id;
@@ -164,7 +164,7 @@ export default {
     } catch (error) {
       if (error) {
         this.$toasted.show("Su petición no se ha podido procesar", {
-          type: "error",
+          type: "error"
         });
       }
     }
@@ -188,7 +188,7 @@ export default {
     async getProviderImage(id) {
       let { data } = await authSearchProvider(id);
       return data.ImageContent;
-    },
+    }
   },
   data() {
     return {
@@ -202,19 +202,19 @@ export default {
         {
           name: "index",
           displayName: "Inicio",
-          id: "home-logged-banner",
+          id: "home-logged-banner"
         },
         {
           name: "lodging",
           displayName: "alojamientos",
-          id: "home-logged-banner",
-        },
-/*         {
+          id: "home-logged-banner"
+        }
+        /*         {
           name: "car-rent",
           displayName: "renta de autos",
           id: "index-logged-rent-wrapper",
         }, */
-/*        {
+        /*        {
           name: "transfer",
           displayName: "traslados",
           id: "index-logged-transfer",
@@ -224,8 +224,8 @@ export default {
           displayName: "Excursiones y actividades",
           id: "index-logged-excursion",
         },*/
-      ],
+      ]
     };
-  },
+  }
 };
 </script>

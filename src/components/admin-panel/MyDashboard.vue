@@ -1,9 +1,7 @@
 <template>
-    <div id="my-dashboard"></div>
+  <div id="my-dashboard"></div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>

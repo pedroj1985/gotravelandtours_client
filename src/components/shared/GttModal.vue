@@ -5,7 +5,9 @@
         <slot name="header">
           <span>{{ title }}</span>
         </slot>
-        <button class="gtt_modal_close" v-on:click="$emit('close')">&times;</button>
+        <button class="gtt_modal_close" v-on:click="$emit('close')">
+          &times;
+        </button>
       </div>
       <div class="gtt_modal_body">
         <slot />
@@ -19,17 +21,17 @@
 
 <script>
 export default {
-  name: 'GttModal',
+  name: "GttModal",
   props: {
     show: {
       type: Boolean,
-      required: true,
+      required: true
     },
     title: {
       type: String,
-      default: '',
-    },
-  },
+      default: ""
+    }
+  }
 };
 </script>
 

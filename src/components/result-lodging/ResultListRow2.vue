@@ -154,7 +154,7 @@ import AdultsKidsIcons from "./AdultsKidsIcons";
 import _ from "lodash";
 export default {
   components: {
-    AdultsKidsIcons,
+    AdultsKidsIcons
   },
   mixins: [lodgingUtilsMixin],
   data() {
@@ -162,25 +162,25 @@ export default {
       amoung: 1,
       selectedInfo: "",
       todosTiposHabitaciones: [],
-      totalPrecio: 0,
+      totalPrecio: 0
     };
   },
   async created() {
     let tth = await authGetRoomTypes();
     this.todosTiposHabitaciones = tth.data;
-    this.totalPrecio = _.sumBy(this.child.l, (i) => i.habitacion.PrecioOrden);
+    this.totalPrecio = _.sumBy(this.child.l, i => i.habitacion.PrecioOrden);
   },
   props: {
     child: Object,
-    roomSelectedToDis: Array,
+    roomSelectedToDis: Array
   },
   watch: {
     child(item) {
       this.totalPrecio = _.sumBy(
         item.l,
-        (i) => i.habitacion.PrecioOrden * this.amoung
+        i => i.habitacion.PrecioOrden * this.amoung
       );
-    },
+    }
   },
   methods: {
     addToCart() {
@@ -223,12 +223,12 @@ export default {
         item.CantAdult,
         this.todosTiposHabitaciones
       );
-      let r = listadoPrecios.find((i) => {
+      let r = listadoPrecios.find(i => {
         return i.tipoHabitacion == tipoHabitacion.TipoHabitacionId;
       });
       return r.price;
-    },
-  },
+    }
+  }
 };
 </script>
 

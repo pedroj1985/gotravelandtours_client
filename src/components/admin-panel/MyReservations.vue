@@ -66,7 +66,7 @@
                 locale="es"
                 :input-props="{
                   placeholder: 'Fecha de Inicio',
-                  readonly: true,
+                  readonly: true
                 }"
               />
             </div>
@@ -84,7 +84,7 @@
                 locale="es"
                 :input-props="{
                   placeholder: 'Fecha de cierre',
-                  readonly: true,
+                  readonly: true
                 }"
               />
             </div>
@@ -153,16 +153,16 @@ export default {
   },
   props: {
     user: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   methods: {
     goDetails(item) {
       this.$router.push({
         name: "reservation-detail",
         params: {
-          id: item.ordenId,
-        },
+          id: item.ordenId
+        }
       });
     },
     getOthers(event, page) {
@@ -175,7 +175,7 @@ export default {
     constructFilterObj() {
       this.filters.Nombre = this.filtroNombreOrden;
       this.filters.NumeroOrden = this.filtroNumeroOrden;
-      this.filters.Estados = this.filtroEstado.map((item) => {
+      this.filters.Estados = this.filtroEstado.map(item => {
         return item.value;
       });
       /*  this.filters.FechaI = new Date("2022-01-01").toISOString().split("T")[0]; */
@@ -209,7 +209,7 @@ export default {
           localStorage.setItem("version", JSON.stringify(response.data));
           Vue.toasted.show(`Nueva version instalada`, {
             fullWidth: true,
-            duration: 86400000,
+            duration: 86400000
           });
         } else {
           const response = await axios.get(
@@ -227,15 +227,15 @@ export default {
                     localStorage.setItem("version", JSON.stringify(data));
                     window.location.reload();
                     toastObject.goAway(0);
-                  },
+                  }
                 },
                 {
                   text: "No",
                   onClick: (e, toastObject) => {
                     toastObject.goAway(0);
-                  },
-                },
-              ],
+                  }
+                }
+              ]
             });
           }
         }
@@ -258,7 +258,7 @@ export default {
         console.log("filtros", filters);
         let { data } = await authGetOrders(filters);
         console.log(data);
-        return data.map((item) => {
+        return data.map(item => {
           return {
             númeroOrden: item.NumeroOrden,
             nombreOrden: item.OrdenNombre,
@@ -268,7 +268,7 @@ export default {
               "DD/MM/YYYY"
             ),
             ordenId: item.OrdenId,
-            estado: item.Estado,
+            estado: item.Estado
           };
         });
       } catch (error) {
@@ -282,7 +282,7 @@ export default {
       if (item.estado === "Open") return "r-table-open";
       if (item.estado === "Closed") return "r-table-close";
       if (item.estado === "Pending") return "r-table-pending";
-    },
+    }
   },
   data() {
     return {
@@ -294,37 +294,37 @@ export default {
         TipoServicio: 0,
         col: 0,
         pageIndex: 1,
-        pageSize: 20,
+        pageSize: 20
       },
       estados: [
         {
           value: "Open",
-          name: this.traducir("Open"),
+          name: this.traducir("Open")
         },
         {
           value: "Confirmed",
-          name: this.traducir("Confirmed"),
+          name: this.traducir("Confirmed")
         },
         {
           value: "Accepted",
-          name: this.traducir("Accepted"),
+          name: this.traducir("Accepted")
         },
         {
           value: "Rejected",
-          name: this.traducir("Rejected"),
+          name: this.traducir("Rejected")
         },
         {
           value: "Autorized",
-          name: this.traducir("Autorized"),
+          name: this.traducir("Autorized")
         },
         {
           value: "Closed",
-          name: this.traducir("Closed"),
+          name: this.traducir("Closed")
         },
         {
           value: "Pending",
-          name: this.traducir("Pending"),
-        },
+          name: this.traducir("Pending")
+        }
       ],
       fields: [
         "númeroOrden",
@@ -332,7 +332,7 @@ export default {
         "fechaCreación",
         "fechaInicio",
         "fechaFin",
-        "estado",
+        "estado"
       ],
       items: [],
       filtroNombreOrden: "",
@@ -341,7 +341,7 @@ export default {
         { value: "Open", name: "Abierta" },
         { value: "Confirmed", name: "Confirmada" },
         { value: "Pending", name: "Pendiente" },
-        { value: "Rejected", name: "Rechazada" },
+        { value: "Rejected", name: "Rechazada" }
       ],
       /* filtroFechaInicio: new Date(Date.now() - 1440 * 60 * 60000), */
       filtroFechaInicio: new Date(
@@ -349,8 +349,8 @@ export default {
         new Date().getMonth() - 2,
         1
       ),
-      filtroFechaFin: "",
+      filtroFechaFin: ""
     };
-  },
+  }
 };
 </script>

@@ -1,3 +1,3 @@
 export const codes = {
-    invalidCredentials: 401,
-}
+  invalidCredentials: 401
+};

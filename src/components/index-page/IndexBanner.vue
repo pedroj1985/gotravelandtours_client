@@ -98,7 +98,9 @@
 
 <script>
 import NavBar2 from "../shared/NavBar2";
-import { eventBus } from "../../main";
+import { authStore } from "../../stores/authStore";
+import { cartStore } from "../../stores/cartStore";
+import { scrollStore } from "../../stores/scrollStore";
 import Slick from "vue-slick-carousel";
 import {
   authLogin,
@@ -175,9 +177,9 @@ export default {
                 localStorage.setItem("usuarioObjeto", uEncode);
                 this.loading = false;
                 let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
-                eventBus.$emit("userLogin", uS);
+                authStore.login(uS);
                 updateHeader(localStorage.getItem("token"));
-                this.$eventCartBus.$emit("updateCart");
+                cartStore.refresh();
                 this.$router.push({ name: "indexLogged" });
               })
               .catch(() => {
@@ -190,22 +192,22 @@ export default {
                 );
                 let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
                 let u = uS;
-                eventBus.$emit("userLogin", u);
+                authStore.login(u);
                 updateHeader(localStorage.getItem("token"));
-                this.$eventCartBus.$emit("updateCart");
+                cartStore.refresh();
                 this.$router.push({ name: "indexLogged" });
               });
           } else {
             window.location.replace(
               authConfig.externalURL +
-              "?" +
-              authConfig.userParam +
-              "=" +
-              user.usuario +
-              "&" +
-              authConfig.passParam +
-              "=" +
-              user.password
+                "?" +
+                authConfig.userParam +
+                "=" +
+                user.usuario +
+                "&" +
+                authConfig.passParam +
+                "=" +
+                user.password
             );
           }
         })
@@ -238,7 +240,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        eventBus.$emit("componentScrolled", "index");
+        scrollStore.scrollTo("index");
       }
     },
     cleanInputs() {

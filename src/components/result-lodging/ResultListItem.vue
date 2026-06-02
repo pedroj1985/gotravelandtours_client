@@ -17,9 +17,10 @@
             :key="destinyImage"
           >
             <img v-if="destinyImage" v-bind:src="destinyImage" alt />
-            <img v-else
-                src="../../../public/img/icopaq_alojamiento_black.svg"
-                alt="alojamiento"
+            <img
+              v-else
+              src="../../../public/img/icopaq_alojamiento_black.svg"
+              alt="alojamiento"
             />
           </div>
         </Slick>
@@ -127,7 +128,7 @@
         class="mdi"
         :class="{
           'mdi-chevron-double-down': !isOpen,
-          'mdi-chevron-double-up': isOpen,
+          'mdi-chevron-double-up': isOpen
         }"
       ></i>
     </div>
@@ -139,16 +140,17 @@ import Slick from "vue-slick-carousel";
 import ResultListRow from "./ResultListRow";
 import _ from "lodash";
 import { constructDisplay } from "../../utils/utils";
+import { cartStore } from "../../stores/cartStore";
 export default {
   created() {},
   components: {
     Slick,
-    ResultListRow,
+    ResultListRow
   },
   props: {
     item: Object,
     filters: Object,
-    todosTipo: Array,
+    todosTipo: Array
   },
   data() {
     return {
@@ -160,7 +162,7 @@ export default {
   computed: {
     filteredItems: function() {
       return this.item.habitaciones.slice(0, this.limit);
-    },
+    }
   },
   methods: {
     constructDisplay,
@@ -179,8 +181,8 @@ export default {
       this.$router.push({
         name: "lodging-detail",
         params: {
-          id: id,
-        },
+          id: id
+        }
       });
     },
     onLoading(value) {
@@ -197,12 +199,12 @@ export default {
       }
       this.item["reservedRooms"] = i;
       this.$helpers.shoppingCartAdd(this.item);
-      this.$eventCartBus.$emit("updateCart");
+      cartStore.refresh();
     },
     reserve(i, cant) {
       this.addToCart(i, cant);
       this.$router.push({
-        name: "reservation",
+        name: "reservation"
       });
     },
     getMinPrice(array) {
@@ -225,7 +227,7 @@ export default {
       if (decimalPart == 0) decimalPart = "00";
 
       return { intPart: intPart, decimalPart: decimalPart };
-    },
-  },
+    }
+  }
 };
 </script>

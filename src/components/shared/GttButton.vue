@@ -11,17 +11,17 @@
 
 <script>
 export default {
-  name: 'GttButton',
+  name: "GttButton",
   props: {
     type: {
       type: String,
-      default: 'button',
+      default: "button"
     },
     disabled: {
       type: Boolean,
-      default: false,
-    },
-  },
+      default: false
+    }
+  }
 };
 </script>
 

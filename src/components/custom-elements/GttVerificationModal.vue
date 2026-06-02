@@ -1,20 +1,24 @@
 <template>
- <div class="c-modal-backdrop">
+  <div class="c-modal-backdrop">
     <div class="c-modal custom-margin">
       <div class="c-modal-body">
-          <div><i class="mdi mdi-alert" style="color: #ff0000;"></i> <slot name="question">{{$helpers.traducir('deleteQuestion')}}</slot> </div>
-          <div class="form-actions text-right">
-              <button type="button" @click="$emit('next')">{{$helpers.traducir('yes')}}</button>
-              <button type="button" @click="$emit('closeModal')">No</button>
-          </div>
+        <div>
+          <i class="mdi mdi-alert" style="color: #ff0000;"></i>
+          <slot name="question">{{ $helpers.traducir("deleteQuestion") }}</slot>
+        </div>
+        <div class="form-actions text-right">
+          <button type="button" @click="$emit('next')">
+            {{ $helpers.traducir("yes") }}
+          </button>
+          <button type="button" @click="$emit('closeModal')">No</button>
+        </div>
       </div>
     </div>
-  </div> 
+  </div>
 </template>
 
 <script>
-export default {
-}
+export default {};
 </script>
 
 <style lang="scss" scoped>

@@ -73,10 +73,10 @@ export default {
     ClickOutside
   },
   mounted() {
-    console.log(this.value)
+    console.log(this.value);
     this.popupItem = this.$el;
-    console.log(this.opened)
-    this.isVisible = this.opened
+    console.log(this.opened);
+    this.isVisible = this.opened;
   },
   props: {
     value: {
@@ -96,7 +96,7 @@ export default {
     },
     day: {
       type: Boolean,
-      default: false,
+      default: false
     },
     mode: {
       type: String,
@@ -112,31 +112,29 @@ export default {
     return {
       isVisible: false,
       arrow: true,
-      dates: this.value,
+      dates: this.value
     };
   },
   watch: {
     dates: function(val, oldVal) {
       if (val && val !== oldVal) {
-        this.isVisible = false
+        this.isVisible = false;
       }
       if (!val) {
         this.$emit("input", this.minDate);
       }
       this.$emit("input", val);
     },
-    value: function(){
-      this.updateValue()
+    value: function() {
+      this.updateValue();
     }
   },
   methods: {
     toggleClicked() {
-      if(this.clickable)
-          this.isVisible = !this.isVisible;
+      if (this.clickable) this.isVisible = !this.isVisible;
     },
     handleFocusOut() {
-      if(!this.opened)
-        this.isVisible = false;
+      if (!this.opened) this.isVisible = false;
     },
     toMoment(date) {
       return moment(date);
@@ -149,22 +147,13 @@ export default {
     constructDates(startDate, endDate) {
       let start = this.formatDate(startDate);
       let end = this.formatDate(endDate);
-      let diff = this.toMoment(startDate).diff(this.toMoment(endDate), "days") * -1
-      let dayNightString = ''
-      if(diff>1)
-        dayNightString = this.day ? " días)" : " noches)" 
-      else
-        dayNightString = this.day ? " día)" : " noche)" 
-      
-      return (
-        start +
-        " - " +
-        end +
-        " (" +
-        diff
-          +
-        dayNightString
-      );
+      let diff =
+        this.toMoment(startDate).diff(this.toMoment(endDate), "days") * -1;
+      let dayNightString = "";
+      if (diff > 1) dayNightString = this.day ? " días)" : " noches)";
+      else dayNightString = this.day ? " día)" : " noche)";
+
+      return start + " - " + end + " (" + diff + dayNightString;
     },
     constructSingleDate(date) {
       return this.toMoment(date)
@@ -245,7 +234,7 @@ export default {
 
 .displayDate {
   text-align: center;
-  font-family: 'Helvetica Neue LT Std-Roman';
+  font-family: "Helvetica Neue LT Std-Roman";
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
 }

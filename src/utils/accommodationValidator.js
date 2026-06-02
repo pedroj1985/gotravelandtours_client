@@ -61,8 +61,8 @@ export function existeAcomodacion(item, list) {
  * @returns {boolean} True if combination is available
  */
 export function isRoomCombinationAvailable(adults, kids, availableCombos) {
-  return availableCombos.some(combo => 
-    combo.CantAdult === adults && combo.CantNino === kids
+  return availableCombos.some(
+    combo => combo.CantAdult === adults && combo.CantNino === kids
   );
 }
 
@@ -73,9 +73,9 @@ export function isRoomCombinationAvailable(adults, kids, availableCombos) {
  */
 export function validateRoomLayout(roomLayout) {
   if (!roomLayout) return false;
-  
+
   const { adults = 0, kids = 0 } = roomLayout;
-  
+
   // Must have at least one adult
   return adults > 0;
 }
@@ -86,13 +86,15 @@ export function validateRoomLayout(roomLayout) {
  * @param {Array} availableRooms - Available room types
  * @returns {boolean} True if all requested accommodations can be fulfilled
  */
-export function canFulfillAccommodations(requestedAccommodations, availableRooms) {
+export function canFulfillAccommodations(
+  requestedAccommodations,
+  availableRooms
+) {
   let availableRoomsCopy = [...availableRooms];
 
   for (const accommodation of requestedAccommodations) {
     let roomIndex = availableRoomsCopy.findIndex(room => {
-      return room.hab === accommodation.hab && 
-             room.kids >= accommodation.kids;
+      return room.hab === accommodation.hab && room.kids >= accommodation.kids;
     });
 
     if (roomIndex === -1) {

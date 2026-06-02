@@ -89,33 +89,33 @@ import RentResultListRow from "./RentResultListRow";
 import { constructDisplay } from "../../utils/utils";
 export default {
   components: {
-    RentResultListRow,
+    RentResultListRow
   },
   props: {
     item: Object,
     totalDays: {
       type: Number,
-      default: 0,
+      default: 0
     },
     onlyToSelect: {
       type: Boolean,
-      default: false,
+      default: false
     },
     noDetail: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
       // isOpen: false,
-      limit: 2,
+      limit: 2
     };
   },
   computed: {
     filteredItems: function() {
       return this.item.items.slice(0, this.limit);
-    },
+    }
   },
   methods: {
     constructDisplay,
@@ -126,8 +126,8 @@ export default {
       this.$router.push({
         name: "rent-detail",
         params: {
-          id: id,
-        },
+          id: id
+        }
       });
     },
     hasInsurance(tString) {
@@ -159,8 +159,8 @@ export default {
       if (decimalPart == 0) decimalPart = "00";
 
       return { intPart: intPart, decimalPart: decimalPart };
-    },
-  },
+    }
+  }
 };
 </script>
 

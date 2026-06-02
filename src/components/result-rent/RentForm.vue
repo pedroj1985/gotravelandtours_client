@@ -164,14 +164,14 @@ import {
   authSearchCars,
   authSearchMarca,
   authGetImage,
-  authSearchProvider,
+  authSearchProvider
 } from "../../utils/auth";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import {
   constructDate,
   calculateNights,
   overflowText,
-  transmissionTypes,
+  transmissionTypes
 } from "../../utils/utils";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
@@ -183,7 +183,7 @@ export default {
   components: {
     GttSelect,
     GttSelectDate,
-    GttModalSearch,
+    GttModalSearch
   },
   beforeCreate() {
     this.modal = useModal(this);
@@ -192,33 +192,33 @@ export default {
     propPickUpDate: {
       default: function() {
         return moment();
-      },
+      }
     },
     propDeliveryDate: {
       default: function() {
         return moment().add(1, "days");
-      },
+      }
     },
     propPickUpPlace: {
-      default: null,
+      default: null
     },
     propDeliveryPlace: {
-      default: null,
+      default: null
     },
     propCarCategory: {
-      default: null,
+      default: null
     },
     propTransmission: {
-      default: null,
+      default: null
     },
     propNationality: {
       default: function() {
         return {
           nombre: "Estados Unidos",
-          flag: "flag_estadosunidos.jpg",
+          flag: "flag_estadosunidos.jpg"
         };
-      },
-    },
+      }
+    }
   },
   watch: {
     propNationality: function(sn) {
@@ -226,7 +226,7 @@ export default {
     },
     selectedPickUpPlace: function(val) {
       this.selectedDeliveryPlace = val;
-    },
+    }
   },
   // mounted(){
   //     this.gttValidate()
@@ -241,20 +241,20 @@ export default {
           rules: ["required", "dateAfter:selectedPickUpDate"],
           name: "gttDeliveryDate",
           value: this.selectedDeliveryDate,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttPickUpDate",
           value: this.selectedPickUpDate,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttTransmision",
           value: this.selectedTransmissionType,
-          lang: "es",
-        },
+          lang: "es"
+        }
       ];
 
       return validator;
@@ -275,7 +275,7 @@ export default {
           ) {
             marca = {
               MarcaId: this.selectedCarCategory.marcaid,
-              Nombre: this.selectedCarCategory.nombre,
+              Nombre: this.selectedCarCategory.nombre
             };
           } else {
             marca = { MarcaId: undefined, Nombre: undefined };
@@ -287,16 +287,16 @@ export default {
             FechaEntrega: this.selectedDeliveryDate,
             Marca: marca,
             TipoTransmision: transmissionType,
-            Cliente: cliente,
+            Cliente: cliente
           };
           let resultList = [];
           let { data } = await authSearchCars(searchItem);
           await Promise.all(
             data
-              .filter((j) => {
+              .filter(j => {
                 return j.ValorSobreprecioAplicado > 0;
               })
-              .map(async (item) => {
+              .map(async item => {
                 let image = await authGetImage(item.Vehiculo.ProductoId);
                 let marca = await authSearchMarca(item.Vehiculo.MarcaId);
                 let provider = await authSearchProvider(
@@ -319,7 +319,7 @@ export default {
                   imagen: image.data.ImageContent,
                   provider: provider.data.Nombre,
                   providerImage: provider.data.ImageContent,
-                  orderVehiculo: item,
+                  orderVehiculo: item
                 });
                 this.cleanVO(item);
               })
@@ -332,7 +332,7 @@ export default {
             deliveryPlace: this.selectedDeliveryPlace,
             pickUpDate: this.selectedPickUpDate,
             deliveryDate: this.selectedDeliveryDate,
-            nationality: this.selectedNationality,
+            nationality: this.selectedNationality
           };
           localStorage.setItem(
             "searchRentFilters",
@@ -349,9 +349,9 @@ export default {
                 deliveryPlace: this.selectedDeliveryPlace,
                 pickUpDate: this.selectedPickUpDate,
                 deliveryDate: this.selectedDeliveryDate,
-                nationality: this.selectedNationality,
-              },
-            },
+                nationality: this.selectedNationality
+              }
+            }
           });
         } catch (error) {
           console.log(error);
@@ -359,7 +359,7 @@ export default {
           this.$toasted.show(
             "El servicio no está disponible en estos momentos",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -374,11 +374,11 @@ export default {
       if (this.categoriesOpened == true) {
         let { data } = await authSearchMarcas();
         let totalResult = [];
-        data.forEach((item) => {
+        data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             marcaid: item.MarcaId,
-            type: "marca",
+            type: "marca"
           });
         });
         this.carsCategories = totalResult;
@@ -388,12 +388,12 @@ export default {
       if (this.pickUpOpened == true) {
         let { data } = await authSearchPuntosInteres();
         let totalResult = [];
-        data.forEach((item) => {
+        data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             regionid: item.RegionId,
             puntointeresid: item.PuntoInteresId,
-            type: "punto-interes",
+            type: "punto-interes"
           });
         });
         this.pickUpDeliveryOptions = totalResult;
@@ -403,17 +403,17 @@ export default {
       if (this.deliveryOpened == true) {
         let { data } = await authSearchPuntosInteres();
         let totalResult = [];
-        data.forEach((item) => {
+        data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             regionid: item.RegionId,
             puntointeresid: item.PuntoInteresId,
-            type: "punto-interes",
+            type: "punto-interes"
           });
         });
         this.pickUpDeliveryOptions = totalResult;
       }
-    },
+    }
   },
   data() {
     return {
@@ -434,23 +434,23 @@ export default {
       countries: [
         {
           nombre: "Afganistán",
-          flag: "flag_afganistan.jpg",
+          flag: "flag_afganistan.jpg"
         },
         {
           nombre: "Albania",
-          flag: "flag_albania.jpg",
+          flag: "flag_albania.jpg"
         },
         {
           nombre: "Alemania",
-          flag: "flag_alemania.jpg",
+          flag: "flag_alemania.jpg"
         },
         {
           nombre: "Estados Unidos",
-          flag: "flag_estadosunidos.jpg",
-        },
-      ],
+          flag: "flag_estadosunidos.jpg"
+        }
+      ]
     };
-  },
+  }
 };
 </script>
 

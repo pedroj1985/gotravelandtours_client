@@ -60,26 +60,26 @@ import GttBubbleNotification from "../custom-elements/GttBubbleNotification";
 export default {
   components: {
     GttButtonModal,
-    GttBubbleNotification,
+    GttBubbleNotification
   },
   name: "NavBar1",
   props: {
     itemsInCart: {
       type: Number,
-      default: 0,
+      default: 0
     },
     user: Object,
     isUserLogged: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
 
   methods: {
     emitUserLogin(value) {
       this.$emit("userLogin", value);
-    },
-  },
+    }
+  }
 };
 </script>
 

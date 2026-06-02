@@ -1,6 +1,11 @@
 <template>
   <div class="gtt__select_form">
-    <button class="gtt__toggle" ref="buttonToggle" @click="toggleClicked" :value="uValue">
+    <button
+      class="gtt__toggle"
+      ref="buttonToggle"
+      @click="toggleClicked"
+      :value="uValue"
+    >
       <div class="gtt__toggle_content">
         <div class="gtt__toggle_text">
           <div class="gtt__toggle_text_first_column">
@@ -14,13 +19,16 @@
           </div>
         </div>
         <div class="gtt__toggle_arrow">
-          <i class="mdi" :class="{'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible}"></i>
+          <i
+            class="mdi"
+            :class="{ 'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible }"
+          ></i>
         </div>
       </div>
     </button>
     <div
       class="gtt__list_area_wrapper"
-      :class="{isVisible: isVisible}"
+      :class="{ isVisible: isVisible }"
       v-click-outside="handleFocusOut"
     >
       <span class="arrow" v-if="arrow"></span>
@@ -30,8 +38,8 @@
           <div class="col-md-2">
             <button
               class="gtt__picker_button"
-              :class="{disabled: item.value<=0}"
-              :disabled="item.value<=0"
+              :class="{ disabled: item.value <= 0 }"
+              :disabled="item.value <= 0"
               @click="remove(item, item.step)"
             >
               <i class="mdi mdi-minus"></i>
@@ -47,10 +55,16 @@
           </div>
         </div>
         <div class="gtt__item gtt__itemKids row" v-if="kids.length > 0">
-          <div class="col-md-6 gtt__kidsSelect" v-for="(kid, i) in kids" :key="kid.id">
+          <div
+            class="col-md-6 gtt__kidsSelect"
+            v-for="(kid, i) in kids"
+            :key="kid.id"
+          >
             <gtt-select :options="kidsAgeList" v-model="kid.age">
-              <span slot="placeholder">Edad del menor {{i+1}}</span>
-              <template v-slot:selectedValue="selectedValue">{{selectedValue.selectedValue}} años</template>
+              <span slot="placeholder">Edad del menor {{ i + 1 }}</span>
+              <template v-slot:selectedValue="selectedValue"
+                >{{ selectedValue.selectedValue }} años</template
+              >
             </gtt-select>
           </div>
         </div>
@@ -247,7 +261,7 @@ export default {
   min-width: 450px;
   min-height: 150px;
   border-radius: var(--border-radius-lg);
-  font-family: 'Helvetica Neue LT Std-Roman';
+  font-family: "Helvetica Neue LT Std-Roman";
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-tight);
@@ -260,7 +274,7 @@ export default {
   border: 1px solid var(--color-text-primary);
   background: var(--color-background-white);
   font-size: var(--font-size-sm);
-  font-family: 'Helvetica Neue LT Std-Roman';
+  font-family: "Helvetica Neue LT Std-Roman";
   color: var(--color-text-primary);
 
   &.disabled {

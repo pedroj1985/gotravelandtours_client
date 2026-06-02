@@ -214,33 +214,33 @@ export default {
     // this.Voucher = await this.getVoucher();
   },
   components: {
-    GttTwoRowsInfo,
+    GttTwoRowsInfo
   },
   props: {
     overDay: {
       type: Number,
-      default: 0,
+      default: 0
     },
     item: {
       type: Object,
-      default: null,
+      default: null
     },
     can: {
       type: Boolean,
-      default: true,
+      default: true
     },
     ordenId: {
-      default: -1,
+      default: -1
     },
     hasVoucher: {
       default: false,
-      type: Boolean,
-    },
+      type: Boolean
+    }
   },
   data() {
     return {
       selectedInfo: "info",
-      UrlVoucher: "",
+      UrlVoucher: ""
     };
   },
   methods: {
@@ -335,8 +335,8 @@ export default {
         console.log(e);
         return null;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>

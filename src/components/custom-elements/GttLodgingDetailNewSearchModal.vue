@@ -86,7 +86,7 @@ import GttSelect from "../custom-elements/GttSelect";
 import {
   authSearchRoomsByLodging,
   authGetRoomPrice,
-  authGetLodgingEatingPlanOne,
+  authGetLodgingEatingPlanOne
 } from "../../utils/auth";
 import { uuid } from "vue-uuid";
 
@@ -94,7 +94,7 @@ export default {
   components: {
     GttSelectDate,
     GttSelectForm2,
-    GttSelect,
+    GttSelect
   },
   created() {
     this.roomsOpt = this.generateRooms();
@@ -119,15 +119,15 @@ export default {
           code: "adults",
           label: "Adultos",
           display: "Adulto(s)",
-          default: 1,
+          default: 1
         },
         {
           code: "kids",
           label: "Niños",
           display: "Niño(s)",
-          default: 0,
-        },
-      ],
+          default: 0
+        }
+      ]
     };
   },
   props: {
@@ -138,8 +138,8 @@ export default {
     tR: Object,
     clickedItem: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   methods: {
     refreshRoomLayout(roomLayout) {
@@ -149,7 +149,7 @@ export default {
     },
     addRoom() {
       let currrentValue = this.totalRooms.value;
-      let v = this.roomsOpt.find((i) => {
+      let v = this.roomsOpt.find(i => {
         return i.value == currrentValue + 1;
       });
       this.totalRooms = v;
@@ -158,7 +158,7 @@ export default {
       this.selectedRoomLayout.splice(indexRoomLayout, 1);
       this.refreshRoomLayout(this.selectedRoomLayout);
       let currrentValue = this.totalRooms.value;
-      let v = this.roomsOpt.find((i) => {
+      let v = this.roomsOpt.find(i => {
         return i.value == currrentValue - 1;
       });
       this.totalRooms = v;
@@ -175,8 +175,8 @@ export default {
               inDate: this.dateIn,
               outDate: this.dateOut,
               selectedRoomLayout: this.selectedRoomLayout,
-              totalRooms: this.totalRooms,
-            },
+              totalRooms: this.totalRooms
+            }
           });
         } else {
           this.$emit("errorC");
@@ -193,7 +193,7 @@ export default {
         else d = `${key} habitaciones`;
         i.push({
           value: key,
-          display: d,
+          display: d
         });
       }
 
@@ -203,14 +203,14 @@ export default {
       let roomsResult = [];
       let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;
       let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId);
-      let active_rooms = rooms.data.filter((i) => {
+      let active_rooms = rooms.data.filter(i => {
         return i.IsActiva == true;
       });
       try {
         await Promise.all(
-          active_rooms.map(async (j) => {
+          active_rooms.map(async j => {
             await Promise.all(
-              listaPlanesAlimenticios.map(async (i) => {
+              listaPlanesAlimenticios.map(async i => {
                 let pa = await authGetLodgingEatingPlanOne(
                   i.PlanesAlimenticiosId
                 );
@@ -219,12 +219,12 @@ export default {
                 let temp = [];
                 while (!noDisp && c < this.selectedRoomLayout.length) {
                   let el = this.selectedRoomLayout[c];
-                  let ca = el.layout.find((p) => p.code == "adults").value;
-                  let cm = el.layout.find((p) => p.code == "kids").value;
+                  let ca = el.layout.find(p => p.code == "adults").value;
+                  let cm = el.layout.find(p => p.code == "kids").value;
                   let so = {
                     Cliente: { ClienteId: localStorage.getItem("cliente") },
                     PlanAlimenticio: {
-                      PlanesAlimenticiosId: i.PlanesAlimenticiosId,
+                      PlanesAlimenticiosId: i.PlanesAlimenticiosId
                     },
                     Alojamiento: { ProductoId: this.item.lodging.ProductoId },
                     TipoHabitacion: { TipoHabitacionId: ca },
@@ -234,7 +234,7 @@ export default {
                     CantidadHabitaciones: 1,
                     Habitacion: { HabitacionId: j.HabitacionId },
                     Entrada: this.dateIn,
-                    Salida: this.dateOut,
+                    Salida: this.dateOut
                   };
                   try {
                     let result = await authGetRoomPrice(so);
@@ -250,7 +250,7 @@ export default {
                         CantidadMenores: cm,
                         PA: pa.data,
                         rn: el.room,
-                        id: uuid.v4(),
+                        id: uuid.v4()
                       });
                     } else {
                       noDisp = true;
@@ -267,7 +267,7 @@ export default {
                   roomsResult.push({
                     rO: j,
                     pA: pa.data,
-                    l: temp,
+                    l: temp
                   });
                 }
               })
@@ -280,8 +280,8 @@ export default {
 
       this.loading = false;
       return roomsResult;
-    },
-  },
+    }
+  }
 };
 </script>
 

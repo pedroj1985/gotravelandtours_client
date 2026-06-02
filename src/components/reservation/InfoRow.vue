@@ -67,7 +67,11 @@
           <span slot="error" class="gtt-errors"></span>
         </div>
       </div>
-      <div v-if="!hasCar" ref="gttPhone" class="flex-wrapper input-right ir-text-input">
+      <div
+        v-if="!hasCar"
+        ref="gttPhone"
+        class="flex-wrapper input-right ir-text-input"
+      >
         <div class="input-icon font18">
           <i class="mdi mdi-card-account-details-outline"></i>
         </div>
@@ -111,7 +115,7 @@
     <p
       v-if="(age >= 21 && age <= 24) || (age >= 76 && age <= 80)"
       v-bind:class="[
-        (age >= 21 && age <= 24) || (age >= 76 && age <= 80) ? 'show' : 'hide',
+        (age >= 21 && age <= 24) || (age >= 76 && age <= 80) ? 'show' : 'hide'
       ]"
       class="ir-info-name"
     >
@@ -137,32 +141,32 @@ import IconAlert from "../icons/IconAlert.vue";
 export default {
   props: {
     name: {
-      type: String,
+      type: String
     },
     lastname: {
       type: String,
-      default: "",
+      default: ""
     },
     pasaporte: {
-      type: String,
+      type: String
     },
     phone: {
-      type: String,
+      type: String
     },
     hasCar: {
-      type: Boolean,
+      type: Boolean
     },
     nacimiento: {
-      type: String,
+      type: String
     },
     onlyOne: {
       type: Boolean,
-      default: false,
+      default: false
     },
     editable: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   computed: {
     age: function() {
@@ -172,9 +176,9 @@ export default {
       var diff = cur - date;
       var currentAge = Math.floor(diff / 31557600000);
       return currentAge;
-    },
+    }
   },
-  components: { IconAlert },
+  components: { IconAlert }
 };
 </script>
 

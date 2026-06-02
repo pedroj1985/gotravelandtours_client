@@ -172,7 +172,7 @@ import {
   authSearchMarca,
   authGetImage,
   authSearchProvider,
-  authUpdateCar,
+  authUpdateCar
 } from "../../utils/auth";
 
 import RentEditList from "../reservation/RentEditList";
@@ -183,7 +183,7 @@ export default {
   components: {
     GttSelect,
     GttSelectDate,
-    RentEditList,
+    RentEditList
   },
   mixins: [reusableMethodsMixin, cleanVoMixin],
   data() {
@@ -202,7 +202,7 @@ export default {
       selectedTransmissionType: this.filterData.propTransmission,
       selectedCarCategory: this.filterData.propCarCategory,
       pickUpDeliveryOptions: [],
-      carsCategories: [],
+      carsCategories: []
     };
   },
   props: {
@@ -217,16 +217,16 @@ export default {
           propCarCategory: null,
           propTransmission: null,
           id: undefined,
-          name: "",
+          name: ""
         };
-      },
+      }
     },
-    age: Number,
+    age: Number
   },
   watch: {
     selectedPickUpPlace: function(val) {
       this.selectedDeliveryPlace = val;
-    },
+    }
   },
   methods: {
     transmissionTypes() {
@@ -238,14 +238,14 @@ export default {
           rules: ["required", "dateAfter:selectedPickUpDate"],
           name: "gttDeliveryDate",
           value: this.selectedDeliveryDate,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttPickUpDate",
           value: this.selectedPickUpDate,
-          lang: "es",
-        },
+          lang: "es"
+        }
       ];
 
       return validator;
@@ -263,11 +263,11 @@ export default {
       if (this.categoriesOpened == true) {
         let { data } = await authSearchMarcas();
         let totalResult = [];
-        data.forEach((item) => {
+        data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             marcaid: item.MarcaId,
-            type: "marca",
+            type: "marca"
           });
         });
         this.carsCategories = totalResult;
@@ -277,12 +277,12 @@ export default {
       if (this.pickUpOpened == true) {
         let { data } = await authSearchPuntosInteres();
         let totalResult = [];
-        data.forEach((item) => {
+        data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             regionid: item.RegionId,
             puntointeresid: item.PuntoInteresId,
-            type: "punto-interes",
+            type: "punto-interes"
           });
         });
         this.pickUpDeliveryOptions = totalResult;
@@ -292,12 +292,12 @@ export default {
       if (this.deliveryOpened == true) {
         let { data } = await authSearchPuntosInteres();
         let totalResult = [];
-        data.forEach((item) => {
+        data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             regionid: item.RegionId,
             puntointeresid: item.PuntoInteresId,
-            type: "punto-interes",
+            type: "punto-interes"
           });
         });
         this.pickUpDeliveryOptions = totalResult;
@@ -307,7 +307,7 @@ export default {
       try {
         let marca = {
           MarcaId: this.filterData.propCarCategory.marcaid,
-          Nombre: this.filterData.propCarCategory.nombre,
+          Nombre: this.filterData.propCarCategory.nombre
         };
         let cliente = { ClienteId: localStorage.getItem("cliente") };
         let transmissionType = this.filterData.propTransmission.nombre;
@@ -329,7 +329,7 @@ export default {
           HoraRecogida:
             this.filterData.HoraRecogida == ""
               ? "00:00"
-              : this.filterData.HoraRecogida,
+              : this.filterData.HoraRecogida
         };
         this.isReserving = true;
 
@@ -343,7 +343,7 @@ export default {
           this.$toasted.show(
             "No hay disponibilidad para esta fecha con este auto",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -352,12 +352,12 @@ export default {
         console.log("error en la busqueda: ", error);
         this.isReserving = false;
         this.$toasted.show("El servicio no está disponible en estos momentos", {
-          type: "error",
+          type: "error"
         });
       }
     },
     findCarById(list, id) {
-      return list.find((item) => {
+      return list.find(item => {
         return item.Vehiculo.ProductoId == id;
       });
     },
@@ -366,7 +366,7 @@ export default {
       this.$emit("editedItem", {
         tipo: "rent",
         pItemId: this.filterData.id,
-        nI: value,
+        nI: value
       });
     },
     async editVehiculoOrder(item) {
@@ -392,13 +392,13 @@ export default {
         imagen: image.data.ImageContent,
         provider: provider.data.Nombre,
         providerImage: provider.data.ImageContent,
-        orderVehiculo: item,
+        orderVehiculo: item
       };
       this.cleanVO(item);
       this.$emit("editedItem", {
         tipo: "rent",
         pItemId: this.filterData.id,
-        nI: editedItem,
+        nI: editedItem
       });
     },
     async searchResult() {
@@ -415,7 +415,7 @@ export default {
             ) {
               marca = {
                 MarcaId: this.selectedCarCategory.marcaid,
-                Nombre: this.selectedCarCategory.nombre,
+                Nombre: this.selectedCarCategory.nombre
               };
             } else {
               marca = { MarcaId: undefined, Nombre: undefined };
@@ -427,17 +427,17 @@ export default {
               FechaEntrega: this.selectedDeliveryDate,
               Marca: marca,
               TipoTransmision: transmissionType,
-              Cliente: cliente,
+              Cliente: cliente
             };
             let resultList = [];
             this.isReserving = true;
             let { data } = await authSearchCars(searchItem);
             await Promise.all(
               data
-                .filter((i) => {
+                .filter(i => {
                   return i.Sobreprecio;
                 })
-                .map(async (item) => {
+                .map(async item => {
                   let image = await authGetImage(item.Vehiculo.ProductoId);
                   let marca = await authSearchMarca(item.Vehiculo.MarcaId);
                   let provider = await authSearchProvider(
@@ -462,7 +462,7 @@ export default {
                     imagen: image.data.ImageContent,
                     provider: provider.data.Nombre,
                     providerImage: provider.data.ImageContent,
-                    orderVehiculo: item,
+                    orderVehiculo: item
                   });
                   this.cleanVO(item);
                 })
@@ -484,7 +484,7 @@ export default {
             this.$toasted.show(
               "El servicio no está disponible en estos momentos",
               {
-                type: "error",
+                type: "error"
               }
             );
           }
@@ -492,8 +492,8 @@ export default {
       } else {
         renderValid(iv, this);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -105,7 +105,7 @@
                   to-uppercase
                   general-text-opt
                 "
-              >Total a pagar</span
+                >Total a pagar</span
               >
               <span class="antonio-light gtt-first-color font48">
                 {{ styledPrice(priceTotal).intPart }} USD
@@ -132,7 +132,7 @@
             <span
               class="to-uppercase ml-auto font18 state-label"
               :class="'state-' + state.toLowerCase()"
-            >{{ $helpers.traducir(state) }}</span
+              >{{ $helpers.traducir(state) }}</span
             >
           </div>
           <div
@@ -168,8 +168,20 @@
             </div>
             <button class="modal-close" @click="closeModal">×</button>
             <div class="modal-footer">
-              <button type="button" class="antonio-regular btn-blue" @click="confirmExternalPay(order.tipo, ordenAlojamiento)">Confirmar pago externo</button>
-              <button type="button" class="antonio-regular btn-green" @click="tropipayPayment(order.tipo, ordenAlojamiento, false)">Pagar con Tropipay</button>
+              <button
+                type="button"
+                class="antonio-regular btn-blue"
+                @click="confirmExternalPay(order.tipo, ordenAlojamiento)"
+              >
+                Confirmar pago externo
+              </button>
+              <button
+                type="button"
+                class="antonio-regular btn-green"
+                @click="tropipayPayment(order.tipo, ordenAlojamiento, false)"
+              >
+                Pagar con Tropipay
+              </button>
               <div class="email-input-container">
                 <input
                   type="email"
@@ -178,7 +190,13 @@
                   class="email-input"
                 />
               </div>
-              <button type="button" class="antonio-regular btn-orange" @click="sendPaymentLinkByEmail(order.tipo, ordenAlojamiento)">Enviar link de pago</button>
+              <button
+                type="button"
+                class="antonio-regular btn-orange"
+                @click="sendPaymentLinkByEmail(order.tipo, ordenAlojamiento)"
+              >
+                Enviar link de pago
+              </button>
             </div>
           </div>
         </div>
@@ -257,9 +275,9 @@
               class="hn-roman font14 gtt-first-color pl-30 pb-15"
             >
               <span
-              >Si cambias de planes, puedes
+                >Si cambias de planes, puedes
                 <span class="cancelate-button" @click="showCancelationModal"
-                >CANCELAR</span
+                  >CANCELAR</span
                 >
                 esta reservación.</span
               >
@@ -270,7 +288,7 @@
               style="color: #ff0000"
             >
               <span
-              >Si los datos introducidos no son correctos, nuestra agencia no
+                >Si los datos introducidos no son correctos, nuestra agencia no
                 se hace responsable de las consecuencias que esto traiga para la
                 correcta realización del servicio o los servicios</span
               >
@@ -298,7 +316,7 @@ import {
   hotetecUpdateDataOnGtt,
   updateIsPagadoAlojamiento,
   getTropiPayToken,
-  generatePaymentPage,
+  generatePaymentPage
 } from "../../utils/auth";
 
 import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
@@ -309,15 +327,15 @@ import FlightInfoRow from "./FlightInfoRow";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { transmissionTypes } from "../../utils/utils";
-import GttEditRentModal from "../custom-elements/GttEditRentModal";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 import { paymentData, orderStatusList } from "../../utils/constant";
+import { cartStore } from "../../stores/cartStore";
 
 import { PaymentLinkRequest } from "../../utils/paymentLinkRequest";
 import { ClientRequest } from "../../utils/clientRequest";
 
 import _ from "lodash";
-import moment from 'moment';
+import moment from "moment";
 
 export default {
   components: {
@@ -331,7 +349,7 @@ export default {
   watch: {
     isOpenModalToPay(newVal) {
       if (newVal === false) {
-        this.email = ''; // Limpiar el campo de correo electrónico después de enviar
+        this.email = ""; // Limpiar el campo de correo electrónico después de enviar
         this.emailError = null;
         this.order = {}; // Limpiar la orden después de enviar el enlace
         this.ordenAlojamiento = {}; // Limpiar la orden de alojamiento después de enviar el enlace
@@ -438,11 +456,11 @@ export default {
       email: null,
       local_data: {
         Cliente: {},
-        NombreClienteFinal: '',
+        NombreClienteFinal: ""
       },
       ordenAlojamiento: {},
       tropiPayToken: null,
-      isVisibleCancelButton: false,
+      isVisibleCancelButton: false
     };
   },
   methods: {
@@ -594,10 +612,10 @@ export default {
     },
     cancelOnHotetec: async function() {
       await this.$helpers.shoppingCartDeleteAll(true);
-      this.$eventCartBus.$emit("updateCart");
+      cartStore.refresh();
       try {
-        console.info('this->', this);
-        console.info('this.order->', this.order);
+        console.info("this->", this);
+        console.info("this.order->", this.order);
         const response = await hotetecOpenSession();
         if (response && response.data && response.data.Ideses) {
           const currentHotelec = response.data.Ideses;
@@ -613,7 +631,8 @@ export default {
                 const orderData = {
                   OrdenId: this.order.OrdenId,
                   EstadoHotetec: "Cancel",
-                  NumeroConfirmacionHotetec: this.order.NumeroConfirmacionHotetec
+                  NumeroConfirmacionHotetec: this.order
+                    .NumeroConfirmacionHotetec
                 };
                 const orderStatus = {
                   OrdenId: this.order.OrdenId,
@@ -925,12 +944,12 @@ export default {
       this.ordenAlojamiento = room;
       this.order = order;
       this.orderIndex = orderIndex;
-      console.info('this', this);
+      console.info("this", this);
       if (!this.ordenAlojamiento.IsPagado) {
         this.isOpenModalToPay = true;
       } else {
-        this.$toasted.show('Este alojamiento ya ha sido pagado.', {
-          type: 'info'
+        this.$toasted.show("Este alojamiento ya ha sido pagado.", {
+          type: "info"
         });
       }
     },
@@ -938,10 +957,12 @@ export default {
       this.isOpenModalToPay = false;
     },
     confirmExternalPay(type, room) {
-      console.info('params', type, room);
-      let idx = this.allTypesOrders[this.orderIndex].reservedRooms.findIndex(r => {
-        return r.OrdenAlojamientoId == room.OrdenAlojamientoId;
-      });
+      console.info("params", type, room);
+      let idx = this.allTypesOrders[this.orderIndex].reservedRooms.findIndex(
+        r => {
+          return r.OrdenAlojamientoId == room.OrdenAlojamientoId;
+        }
+      );
       let isPaid = false;
       switch (type) {
         /* case paymentData.vehicle:
@@ -969,25 +990,32 @@ export default {
               OrdenAlojamientoId: room.OrdenAlojamientoId
             };
             updateIsPagadoAlojamiento(payData)
-              .then((v) => {
-                this.allTypesOrders[this.orderIndex].reservedRooms[idx].IsPagado = true;
-                this.allTypesOrders[this.orderIndex].reservedRooms[idx].FormaPago = paymentData.paymentMethod.EXT;
+              .then(v => {
+                this.allTypesOrders[this.orderIndex].reservedRooms[
+                  idx
+                ].IsPagado = true;
+                this.allTypesOrders[this.orderIndex].reservedRooms[
+                  idx
+                ].FormaPago = paymentData.paymentMethod.EXT;
               })
-              .catch((error) => {
-                console.error('Error confirming external payment for accommodation:', error);
+              .catch(error => {
+                console.error(
+                  "Error confirming external payment for accommodation:",
+                  error
+                );
               });
           }
           if (isPaid) {
-            this.$toasted.show('Pago confirmado con éxito.', {
-              type: 'success'
+            this.$toasted.show("Pago confirmado con éxito.", {
+              type: "success"
             });
           } else {
-            this.$toasted.show('Este alojamiento ya ha sido pagado.', {
-            type: 'info'
+            this.$toasted.show("Este alojamiento ya ha sido pagado.", {
+              type: "info"
             });
           }
           this.closeModal();
-        break;
+          break;
         /* case paymentData.activity:
           let activityOrder = {
             IsPagado: !order.IsPagado,
@@ -1049,11 +1077,11 @@ export default {
       }
     },
     tropipayPayment(type, order, sendPaymentLInk) {
-      let id = 0
-      let description = ''
-      console.info('order ', order);
-      let fi = order.FechaInicio.split('T')[0];
-      let ff = order.FechaFin.split('T')[0];
+      let id = 0;
+      let description = "";
+      console.info("order ", order);
+      let fi = order.FechaInicio.split("T")[0];
+      let ff = order.FechaFin.split("T")[0];
       /* getTropiPayToken().then((res) => {console.info('res', res.data);
         this.tropiPayToken = res.data.access_token;
       }).catch((error) => {
@@ -1066,9 +1094,18 @@ export default {
           description = 'Rent the ' + order.Vehiculo.Nombre + ' from ' + fi + ' to ' + ff
           break;*/
         case paymentData.accomodation:
-          id = order.OrdenAlojamientoId
-          description = order.Alojamiento.Nombre + '-' + order.Habitacion.Nombre + '-'
-            + order.TipoHabitacion.Nombre + ' reservation ' + ' from ' + fi + ' to ' + ff
+          id = order.OrdenAlojamientoId;
+          description =
+            order.Alojamiento.Nombre +
+            "-" +
+            order.Habitacion.Nombre +
+            "-" +
+            order.TipoHabitacion.Nombre +
+            " reservation " +
+            " from " +
+            fi +
+            " to " +
+            ff;
           break;
         /*case paymentData.activity:
           id = order.OrdenActividadId
@@ -1085,21 +1122,22 @@ export default {
         default:
         // El usuario canceló la acción
       }
-      let typeCode = ''
-      let typeLabel = ''
-      paymentData.productTypeFilter.forEach((item) => {
+      let typeCode = "";
+      let typeLabel = "";
+      paymentData.productTypeFilter.forEach(item => {
         if (item.value === type) {
-          typeCode = item.id
-          typeLabel = item.label
+          typeCode = item.id;
+          typeLabel = item.label;
         }
       });
 
       let request = new PaymentLinkRequest();
-      let price = order.CurrencyUsada === paymentData.currency[1].code
-        ? parseInt(order.PrecioOrdenTasa + '00')
-        : parseInt(order.PrecioOrden + '00');
+      let price =
+        order.CurrencyUsada === paymentData.currency[1].code
+          ? parseInt(order.PrecioOrdenTasa + "00")
+          : parseInt(order.PrecioOrden + "00");
       request.amount = price;
-      request.concept = 'Rent a ' + typeLabel;
+      request.concept = "Rent a " + typeLabel;
       request.currency = order.CurrencyUsada;
       request.TipoOrden = typeCode;
       request.OrdenProductoId = id;
@@ -1109,79 +1147,107 @@ export default {
       request.expirationDays = 1;
 
       let ttpClient = new ClientRequest();
-      ttpClient.address = this.local_data?.Cliente?.Direccion || '000000';
-      let textoSinEspaciosExtras = (this.local_data?.NombreClienteFinal || '').replace(/\s+/g, ' ').trim();
+      ttpClient.address = this.local_data?.Cliente?.Direccion || "000000";
+      let textoSinEspaciosExtras = (this.local_data?.NombreClienteFinal || "")
+        .replace(/\s+/g, " ")
+        .trim();
       const tmpName = textoSinEspaciosExtras.split(" ");
-      ttpClient.name = tmpName[0] || '';
-      ttpClient.lastName = tmpName.length > 1 ? tmpName.slice(1).join(' ') : tmpName[0] || '';
+      ttpClient.name = tmpName[0] || "";
+      ttpClient.lastName =
+        tmpName.length > 1 ? tmpName.slice(1).join(" ") : tmpName[0] || "";
       ttpClient.email = sendPaymentLInk
         ? this.email
-        : (this.local_data?.Cliente?.Correo || '');
-      ttpClient.phone = this.local_data?.Cliente?.Telefono || '000000';
-      ttpClient.termsAndConditions = 'true';
+        : this.local_data?.Cliente?.Correo || "";
+      ttpClient.phone = this.local_data?.Cliente?.Telefono || "000000";
+      ttpClient.termsAndConditions = "true";
       request.client = ttpClient;
       request.favorite = true;
-      request.lang = 'es';
+      request.lang = "es";
       request.paymentMethods = [];
 
       request.reasonId = 0;
-      request.reference = 'carvel_viajes_colibri';
+      request.reference = "carvel_viajes_colibri";
       request.serviceDate = moment().format();
       request.singleUse = true;
-      request.urlNotification = 'http://gottours-001-site4.mtempurl.com/publicEliecer/api//ApiTropiPay/Callback/' + typeCode + '/' + id;
-      request.urlSuccess = 'https://admin.gotravelandtours.com/#/payment-success?amount=' + order.PrecioOrden + '&currency=' + order.CurrencyUsada + '&description=' + encodeURIComponent(description);
-      request.urlFailed = 'https://admin.gotravelandtours.com/#/payment-error?amount=' + order.PrecioOrden + '&currency=' + order.CurrencyUsada + '&description=' + encodeURIComponent(description);
+      request.urlNotification =
+        "http://gottours-001-site4.mtempurl.com/publicEliecer/api//ApiTropiPay/Callback/" +
+        typeCode +
+        "/" +
+        id;
+      request.urlSuccess =
+        "https://admin.gotravelandtours.com/#/payment-success?amount=" +
+        order.PrecioOrden +
+        "&currency=" +
+        order.CurrencyUsada +
+        "&description=" +
+        encodeURIComponent(description);
+      request.urlFailed =
+        "https://admin.gotravelandtours.com/#/payment-error?amount=" +
+        order.PrecioOrden +
+        "&currency=" +
+        order.CurrencyUsada +
+        "&description=" +
+        encodeURIComponent(description);
       request.access_token = this.tropiPayToken;
 
       generatePaymentPage(request)
-        .then((v) => {
+        .then(v => {
           let shortUrl = v.data.shortUrl || v.shortUrl;
           if (!sendPaymentLInk) {
             if (shortUrl) {
-              window.open(shortUrl, '_blank');
+              window.open(shortUrl, "_blank");
             } else {
-              this.$toasted.show('No se pudo obtener el enlace de pago de TropiPay.', {
-                type: 'error'
-              });
+              this.$toasted.show(
+                "No se pudo obtener el enlace de pago de TropiPay.",
+                {
+                  type: "error"
+                }
+              );
             }
           } else {
-            if (this.email === '') {
-              this.$toasted.show('Correo electrónico no proporcionado. El enlace de pago se abrirá en una nueva pestaña.', {
-                type: 'info',
-                duration: 5000
-              });
-              window.open(shortUrl, '_blank');
-            } else if (this.email !== '') {
-              this.$toasted.show(`Enlace de pago enviado a ${this.email}: ${shortUrl}`, {
-                type: 'info',
-                duration: 5000
-              });
+            if (this.email === "") {
+              this.$toasted.show(
+                "Correo electrónico no proporcionado. El enlace de pago se abrirá en una nueva pestaña.",
+                {
+                  type: "info",
+                  duration: 5000
+                }
+              );
+              window.open(shortUrl, "_blank");
+            } else if (this.email !== "") {
+              this.$toasted.show(
+                `Enlace de pago enviado a ${this.email}: ${shortUrl}`,
+                {
+                  type: "info",
+                  duration: 5000
+                }
+              );
             }
           }
           this.isOpenModalToPay = false;
-          this.$eventCartBus.$emit('updateCart');
+          cartStore.refresh();
         })
-        .catch((error) => {
+        .catch(error => {
           if (window) {
             window.close();
           }
-          console.log('Error al generar el link de pago:', error);
-          this.$toasted.show('Error al generar el link de pago.', {
-            type: 'error'
+          console.log("Error al generar el link de pago:", error);
+          this.$toasted.show("Error al generar el link de pago.", {
+            type: "error"
           });
         });
     },
-    getTropiPayToken(){
+    getTropiPayToken() {
       getTropiPayToken()
-        .then((res) => {
+        .then(res => {
           this.tropiPayToken = res.data.access_token;
-      })
-      .catch((error) => {
-        console.error('Error fetching TropiPay token:', error);
-        this.$toasted.show('Error al obtener el token de TropiPay.', {
-          type: 'error'
+        })
+        .catch(error => {
+          console.error("Error fetching TropiPay token:", error);
+          this.$toasted.show("Error al obtener el token de TropiPay.", {
+            type: "error"
+          });
         });
-      });
     },
     validateEmail() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
