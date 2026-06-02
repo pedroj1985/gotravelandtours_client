@@ -1266,7 +1266,7 @@ export default {
 <style scoped>
 .cancelate-button {
   text-decoration-line: underline;
-  color: #bcd01d;
+    color: var(--color-primary);
 }
 
 .cancelate-button:hover {

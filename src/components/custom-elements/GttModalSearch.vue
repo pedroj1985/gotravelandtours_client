@@ -10,7 +10,7 @@
             <slot name="searching-text"></slot>
             <div class="progression-bar">
               <BarLoader
-                :color="'#bcd01d'"
+                :color="'#7fa300'"
                 :loading="loading"
                 :width="100"
                 :widthUnit="'%'"

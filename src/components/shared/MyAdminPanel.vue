@@ -16,7 +16,7 @@
             >, te encuentras en:
             <span
               class="admin-display-section antonio-bold"
-              style="color: #bcd01d"
+              style="color: var(--color-primary)"
               >{{ constructDisplaySection(currentChild) }}</span
             >
           </div>
