@@ -10,19 +10,19 @@
       </div>
     </div>
     <div class="input-content" v-show="isOpen">
-      <b-input-group>
-        <b-input-group-prepend>
-          <b-input-group-text>
+      <div class="gtt-input-group">
+        <span class="gtt-input-group-prepend">
+          <span class="gtt-input-group-text">
             <slot name="prepend">
               <i class="mdi mdi-magnify"></i>
             </slot>
-          </b-input-group-text>
-        </b-input-group-prepend>
-        <b-form-input
-          class="otherFiltersInput"
+          </span>
+        </span>
+        <input
+          class="otherFiltersInput form-control"
           :placeholder="placeholder"
-        ></b-form-input>
-      </b-input-group>
+        />
+      </div>
     </div>
   </div>
 </template>

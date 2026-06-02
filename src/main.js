@@ -4,9 +4,7 @@ import VueScrollTo from "vue-scrollto";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
 import VCalendar from "v-calendar";
-import BootstrapVue from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/styles/main.scss";
 import VeeValidate from "vee-validate";
 import { ValidationProvider } from "vee-validate";
@@ -33,7 +31,6 @@ Vue.config.productionTip = false;
 setupGlobalErrorHandler(Vue);
 Vue.use(VueLazyLoad);
 Vue.use(VueCompositionApi);
-Vue.use(BootstrapVue);
 Vue.use(VueLodash, { lodash: lodash });
 Vue.use(Toasted, {
   duration: 5000,

@@ -82,12 +82,10 @@
             <!-- <button class="btn home-sign-up" type="button">registrarse</button> -->
             <button class="btn home-login-btn" @click="login" type="button">
               <template v-if="!loading">entrar</template>
-              <b-spinner
-                small
-                class="loading-spinner"
-                label="Text Centered"
+              <span
+                class="gtt-spinner gtt-spinner-sm loading-spinner"
                 v-else
-              ></b-spinner>
+              ></span>
             </button>
           </div>
         </form>

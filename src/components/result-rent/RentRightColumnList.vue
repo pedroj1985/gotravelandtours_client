@@ -62,14 +62,19 @@
     >
     </RentResultList>
     <div class="pagination-section">
-      <b-pagination
-        v-model="currentPage"
-        :total-rows="total"
-        :per-page="perPage"
-        @page-click="getOthers"
-        align="center"
-        class="custom-page-container"
-      ></b-pagination>
+      <nav aria-label="Paginación">
+        <ul class="gtt-pagination">
+          <li class="gtt-page-item" :class="{ disabled: currentPage <= 1 }">
+            <a class="gtt-page-link" href="#" @click.prevent="currentPage > 1 && getOthers($event, currentPage - 1)">&laquo;</a>
+          </li>
+          <li class="gtt-page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
+            <a class="gtt-page-link" href="#" @click.prevent="getOthers($event, page)">{{ page }}</a>
+          </li>
+          <li class="gtt-page-item" :class="{ disabled: currentPage >= totalPages }">
+            <a class="gtt-page-link" href="#" @click.prevent="currentPage < totalPages && getOthers($event, currentPage + 1)">&raquo;</a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </template>
@@ -84,6 +89,11 @@ export default {
   components: {
     RentResultList,
     GttSelect
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.total / this.perPage);
+    }
   },
   watch: {
     selectedOrganizeType: function(val) {

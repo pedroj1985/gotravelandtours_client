@@ -23,12 +23,9 @@
           <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
           <template v-slot:option="option">{{ option.option.nombre }}</template>
           <template v-slot:selectedValue="selectedValue">
-            <span class="wrap" id="selectedPickUp">
+            <span class="wrap gtt-tooltip" :data-tooltip="selectedValue.selectedValue.nombre">
               {{ overflowText(selectedValue.selectedValue.nombre) }}
             </span>
-            <b-tooltip target="selectedPickUp" triggers="hover">{{
-              selectedValue.selectedValue.nombre
-            }}</b-tooltip>
           </template>
           <span slot="error" class="gtt-errors"></span>
         </gtt-select>

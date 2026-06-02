@@ -254,12 +254,10 @@
                   class="reserveButton antonio-regular"
                 >
                   <template v-if="!isReserving">Crear Orden</template>
-                  <b-spinner
-                    small
-                    class="loading-spinner"
-                    label="Text Centered"
+                  <span
+                    class="gtt-spinner gtt-spinner-sm loading-spinner"
                     v-else
-                  ></b-spinner>
+                  ></span>
                 </button>
               </div>
               <div

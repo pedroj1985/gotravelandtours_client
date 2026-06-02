@@ -20,8 +20,8 @@
               <span>{{ filterData.name }}</span>
             </div>
             <div class="d-flex">
-              <b-row>
-                <b-col cols="12">
+              <div class="row">
+                <div class="col-12">
                   <div ref="gttLodging">
                     <gtt-select
                       :openedLodging.sync="lodgingOpened"
@@ -49,8 +49,8 @@
                       <span slot="error" class="gtt-errors"></span>
                     </gtt-select>
                   </div>
-                </b-col>
-                <b-col cols="6">
+                </div>
+                <div class="col-6">
                   <div ref="gttStartDate">
                     <GttSelectDate
                       :mode="'single'"
@@ -66,8 +66,8 @@
                       >
                     </GttSelectDate>
                   </div>
-                </b-col>
-                <b-col cols="6">
+                </div>
+                <div class="col-6">
                   <div ref="gttEndDate">
                     <GttSelectDate
                       :mode="'single'"
@@ -83,8 +83,8 @@
                       >
                     </GttSelectDate>
                   </div>
-                </b-col>
-                <b-col cols="6">
+                </div>
+                <div class="col-6">
                   <GttSelectForm2
                     :options="roomLayout"
                     class="room-form-item"
@@ -100,8 +100,8 @@
                       >Visitantes</span
                     >
                   </GttSelectForm2>
-                </b-col>
-                <b-col cols="6">
+                </div>
+                <div class="col-6">
                   <GttSelect
                     :options="roomsOpt"
                     v-model="totalRooms"
@@ -117,15 +117,15 @@
                       {{ selectedValue.selectedValue.display }}
                     </template>
                   </GttSelect>
-                </b-col>
-              </b-row>
+                </div>
+              </div>
             </div>
 
             <div class="selects-inline">
-              <!-- <b-form-checkbox
-                id="checkbox-same-car"
-                v-model="useSameItem"
-              >{{ $helpers.traducir("sameLodging") }}</b-form-checkbox>-->
+              <!-- <label class="gtt-checkbox">
+                <input type="checkbox" v-model="useSameItem" />
+                {{ $helpers.traducir("sameLodging") }}
+              </label>-->
               <div class="form-actions text-right ml-auto">
                 <button
                   type="submit"
@@ -133,12 +133,10 @@
                   class="lodging-searchButton antonio-regular"
                 >
                   <template v-if="!isReserving">Buscar</template>
-                  <b-spinner
-                    small
-                    class="loading-spinner"
-                    label="Text Centered"
+                  <span
+                    class="gtt-spinner gtt-spinner-sm loading-spinner"
                     v-else
-                  ></b-spinner>
+                  ></span>
                 </button>
                 <button
                   type="button"

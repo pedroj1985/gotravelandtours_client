@@ -112,12 +112,10 @@
                   @click="submit()"
                 >
                   <template v-if="!loading">registrarse</template>
-                  <b-spinner
-                    small
-                    class="loading-spinner"
-                    label="Text Centered"
+                  <span
+                    class="gtt-spinner gtt-spinner-sm loading-spinner"
                     v-else
-                  ></b-spinner>
+                  ></span>
                 </button>
                 <button class="btn home-sign-up" type="button" @click="close">
                   cerrar
