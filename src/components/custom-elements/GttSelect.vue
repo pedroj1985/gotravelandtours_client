@@ -4,8 +4,15 @@
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
+      @keydown="onToggleKeydown"
       :value="updateValue"
       :disabled="isDisabled"
+      role="combobox"
+      :aria-expanded="isVisible"
+      aria-haspopup="listbox"
+      aria-controls="gtt-select-listbox"
+      :aria-activedescendant="activeDescendant"
+      :aria-label="toggleAriaLabel"
     >
       <div class="gtt__toggle_content">
         <div class="gtt__toggle_text" :class="{ 'align-left': alignLeft }">
@@ -49,6 +56,8 @@
     <div
       class="gtt__list_area_wrapper"
       :class="{ isVisible: isVisible }"
+      role="listbox"
+      id="gtt-select-listbox"
       v-click-outside="handleFocusOut"
     >
       <span class="arrow" v-if="arrow"></span>
@@ -58,6 +67,7 @@
         :nullable="nullable"
         :searchQuery.sync="searchQuery"
         :opened="opened"
+        :selectedValue="selectedValue"
         @select="setSelectedValue"
         @search="searchQuery = $event"
       />
@@ -65,6 +75,7 @@
         v-else
         :options="options"
         :searchQuery.sync="searchQuery"
+        :selectedValue="selectedValue"
         @select="setSelectedValue"
         @search="searchQuery = $event"
       />
@@ -139,6 +150,28 @@ export default {
       default: false
     }
   },
+  computed: {
+    toggleAriaLabel() {
+      if (this.selectedValue && this.selectedValue !== 'ALL_ITEMS') {
+        return typeof this.selectedValue === 'object'
+          ? this.selectedValue.nombre || 'Seleccionar'
+          : String(this.selectedValue);
+      }
+      return 'Seleccionar';
+    },
+    activeDescendant() {
+      if (!this.isVisible || !this.selectedValue || this.selectedValue === 'ALL_ITEMS') {
+        return undefined;
+      }
+      const idx = this.options.findIndex(opt => {
+        if (typeof opt === 'object' && typeof this.selectedValue === 'object') {
+          return opt.id === this.selectedValue.id;
+        }
+        return opt === this.selectedValue;
+      });
+      return idx >= 0 ? `gtt-option-${idx}` : undefined;
+    }
+  },
   data() {
     return {
       isVisible: false,
@@ -157,6 +190,16 @@ export default {
           this.searchQuery = "";
           this.emitClose();
         }
+      }
+    },
+    onToggleKeydown(e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        this.toggleClicked();
+      }
+      if (e.key === "Escape") {
+        this.isVisible = false;
+        this.emitClose();
       }
     },
     setSelectedValue(item) {

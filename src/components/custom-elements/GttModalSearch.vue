@@ -10,7 +10,7 @@
             <slot name="searching-text"></slot>
             <div class="progression-bar">
               <BarLoader
-                :color="'#bcd01d'"
+                :color="'#7fa300'"
                 :loading="loading"
                 :width="100"
                 :widthUnit="'%'"
@@ -20,7 +20,7 @@
         </div>
         <div class="modal-row c-modal-bottom">
           <div class="first-column">
-            <img class="modal-logo" src="img/logo_colibri_colored.png" alt="" />
+            <img class="modal-logo" src="img/logo_colibri_colored.png" alt="Colibri Viajes" />
           </div>
           <div class="second-column">
             <slot name="searching-fields"></slot>

@@ -14,14 +14,20 @@
       <li
         v-if="nullable"
         class="gtt__item"
+        role="option"
+        :aria-selected="isSelected('ALL_ITEMS')"
+        id="gtt-option-all"
         @click="$emit('select', 'ALL_ITEMS')"
       >
         {{ $helpers.traducir("Todos") }}
       </li>
       <li
         class="gtt__item"
-        v-for="option in searchResult"
+        role="option"
+        v-for="(option, index) in searchResult"
         :key="option.id"
+        :aria-selected="isSelected(option)"
+        :id="'gtt-option-' + index"
         @click="$emit('select', option)"
       >
         <slot name="option" v-bind:option="option">{{ option }}</slot>
@@ -47,6 +53,9 @@ export default {
     opened: {
       type: Boolean,
       default: false
+    },
+    selectedValue: {
+      default: null
     }
   },
   data() {
@@ -66,6 +75,15 @@ export default {
     }
   },
   methods: {
+    isSelected(option) {
+      if (option === 'ALL_ITEMS') {
+        return this.selectedValue === 'ALL_ITEMS';
+      }
+      if (typeof option === 'object' && typeof this.selectedValue === 'object') {
+        return option.id === this.selectedValue.id;
+      }
+      return option === this.selectedValue;
+    },
     onInput(e) {
       this.$emit("update:searchQuery", e.target.value);
       this.$emit("search", e.target.value);

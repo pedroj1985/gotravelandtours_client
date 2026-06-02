@@ -1,7 +1,7 @@
 <template>
-  <div id="first-nav">
+  <div id="first-nav" aria-label="Navegación principal">
     <div id="first-nav-content" class="custom-margin">
-      <router-link to="/" id="logo_link">
+      <router-link to="/" id="logo_link" aria-label="Ir a la página principal">
         <img
           class="logo"
           src="img/logo_colibri_white.png"
@@ -32,7 +32,7 @@
             ></a>
           </div> -->
           <div class="shopping-cart">
-            <router-link :to="{ name: 'reservation' }">
+            <router-link :to="{ name: 'reservation' }" :aria-label="`Carrito de compras (${itemsInCart} artículos)`">
               <div class="shopping-cart-wrapper">
                 <i class="mdi mdi-cart"></i>
                 <GttBubbleNotification

@@ -19,7 +19,7 @@
         :key="hotel.id"
       >
         <div class="index-logged-hotel">
-          <img :src="'img/' + hotel.img" alt="" />
+          <img :src="'img/' + hotel.img" :alt="'Imagen de ' + hotel.weather.location" />
           <div class="name-weather">
             <div class="name antonio-regular">{{ hotel.weather.location }}</div>
             <div class="weather hn-ltcn">

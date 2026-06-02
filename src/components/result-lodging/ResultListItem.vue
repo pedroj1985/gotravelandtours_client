@@ -40,7 +40,7 @@
             v-for="destinyImage in item.images"
             :key="destinyImage"
           >
-            <img v-if="destinyImage" v-bind:src="destinyImage" alt />
+             <img v-if="destinyImage" v-bind:src="destinyImage" :alt="'Imagen de ' + item.name" />
             <img
               v-else
               src="../../../public/img/icopaq_alojamiento_black.svg"

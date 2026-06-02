@@ -16,7 +16,7 @@
             >, te encuentras en:
             <span
               class="admin-display-section antonio-bold"
-              style="color: #bcd01d"
+              style="color: var(--color-primary)"
               >{{ constructDisplaySection(currentChild) }}</span
             >
           </div>
@@ -38,7 +38,7 @@
           v-if="currentChild != 'reservation-detail'"
         >
           <div class="no-nav-user-photo text-center">
-            <img :src="user.photo" v-if="user.photo" alt="" />
+            <img :src="user.photo" v-if="user.photo" :alt="'Foto de ' + user.name" />
             <i v-else class="mdi mdi-account font48"></i>
           </div>
           <div
