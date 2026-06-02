@@ -1,6 +1,5 @@
 import Vue from "vue";
 import App from "./App.vue";
-import VueResource from "vue-resource";
 import VueScrollTo from "vue-scrollto";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
@@ -25,10 +24,11 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 import VueLazyLoad from "vue-lazyload";
 import "vue-image-lightbox/dist/vue-image-lightbox.min.css";
+import VueCompositionApi from "@vue/composition-api";
 
 Vue.config.productionTip = false;
 Vue.use(VueLazyLoad);
-Vue.use(VueResource);
+Vue.use(VueCompositionApi);
 Vue.use(BootstrapVue);
 Vue.use(VueLodash, { lodash: lodash });
 Vue.use(Toasted, {

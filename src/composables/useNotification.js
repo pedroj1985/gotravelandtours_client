@@ -1,9 +1,9 @@
 // Composable para lógica de notificaciones (Vue 3 Composition API)
-import { ref } from 'vue';
+import { ref } from "vue";
 
 export function useNotification() {
   const notification = ref(null);
-  const showNotification = (message, type = 'info', duration = 3000) => {
+  const showNotification = (message, type = "info", duration = 3000) => {
     notification.value = { message, type };
     setTimeout(() => {
       notification.value = null;
@@ -11,6 +11,6 @@ export function useNotification() {
   };
   return {
     notification,
-    showNotification,
+    showNotification
   };
 }
