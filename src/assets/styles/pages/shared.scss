@@ -50,3 +50,25 @@
     font-size: 10px;
   }
 }
+
+@media (max-width: 768px) {
+  #register .c-modal {
+    width: 90%;
+    left: 5%;
+    transform: none;
+    top: 10%;
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  #register .c-modal {
+    width: 95%;
+    left: 2.5%;
+    padding: var(--spacing-md);
+  }
+  #register input {
+    height: 40px;
+    font-size: var(--font-size-sm);
+  }
+}
