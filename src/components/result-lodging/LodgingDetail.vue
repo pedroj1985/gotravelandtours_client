@@ -26,7 +26,8 @@
       <div class="col-md-3 col-sm-5 left-side-wrapper">
         <div class="left-side">
           <div class="lodging-form">
-            <LodgingForm ref="lodgingForm"
+            <LodgingForm
+              ref="lodgingForm"
               :propLodgingDestinyValue="filters.Destiny"
               :propArriveDate="filters.Entrada"
               :propDepartureDate="filters.Salida"
@@ -138,7 +139,11 @@
                 v-for="destinyImage in item.images"
                 :key="destinyImage"
               >
-                <img v-bind:src="destinyImage" alt="" @click="isModalGalleryActive = true" />
+                <img
+                  v-bind:src="destinyImage"
+                  alt=""
+                  @click="isModalGalleryActive = true"
+                />
                 <div class="w-100 h-100 position-absolute bgHolder"></div>
               </div>
             </Slick>
@@ -365,6 +370,7 @@ import LodgingForm from "./LodgingForm";
 import NavBar2 from "../shared/NavBar2";
 import LightBox from "vue-image-lightbox";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { cartStore } from "../../stores/cartStore";
 
 export default {
   mixins: [lodgingUtilsMixin],
@@ -379,12 +385,12 @@ export default {
     LodgingForm,
     NavBar2,
     GttLodgingDetailNewSearchModal,
-    LightBox,
+    LightBox
   },
   watch: {
-    '$route.params.id': {
+    "$route.params.id": {
       async handler(newId, oldId) {
-        console.log('id changed');
+        console.log("id changed");
         await this.initializeData();
       },
       immediate: true
@@ -433,32 +439,32 @@ export default {
           code: "adults",
           label: "Adultos",
           display: "Adulto(s)",
-          default: 1,
+          default: 1
         },
         {
           code: "kids",
           label: "Niños",
           display: "Niño(s)",
-          default: 0,
-        },
+          default: 0
+        }
       ],
       menuLinks: [
         {
           name: "index",
           displayName: "Inicio",
-          id: "home-logged-banner",
+          id: "home-logged-banner"
         },
         {
           name: "lodging",
           displayName: "alojamientos",
-          id: "home-logged-banner",
-        },
-/*         {
+          id: "home-logged-banner"
+        }
+        /*         {
           name: "car-rent",
           displayName: "renta de autos",
           id: "index-logged-rent-wrapper",
         }, */
-/*        {
+        /*        {
           name: "transfer",
           displayName: "traslados",
           id: "index-logged-transfer",
@@ -468,29 +474,29 @@ export default {
           displayName: "Excursiones y actividades",
           id: "index-logged-excursion",
         },*/
-      ],
+      ]
     };
   },
   computed: {
     totalPay: function() {
-      return _.sumBy(this.roomsToReserve, (i) => {
+      return _.sumBy(this.roomsToReserve, i => {
         return i.habitacion.PrecioOrden * i.habitacion.CantidadHabitaciones;
       });
     },
     imagesTreated() {
       if (this.item)
-        return this.item.images.map((i) => {
+        return this.item.images.map(i => {
           return { src: i, thumb: i };
         });
       return [];
-    },
+    }
   },
   methods: {
     async initializeData() {
       // this.roomsOpt = this.generateRooms()
       this.totalRooms = {
         value: 1,
-        display: "1 habitación",
+        display: "1 habitación"
       };
       let f = JSON.parse(localStorage.getItem("searchLodgingFilters"));
       this.filters = f;
@@ -502,24 +508,24 @@ export default {
       this.outDate = new Date(this.filters.Salida);
       let id = this.$route.params.id;
       let { data } = await authGetLodging(id);
-      console.info('dataDetail', data);
+      console.info("dataDetail", data);
       // let img = await authGetImage(id)
       let imgs = await authGetImages(id);
-      let imgs_array = imgs.data.map((i) => i.ImageContent);
+      let imgs_array = imgs.data.map(i => i.ImageContent);
       this.item = {
         images: imgs_array,
-        lodging: data,
+        lodging: data
       };
       try {
         this.roomsSelecting = true;
-        console.log('sR init');
+        console.log("sR init");
         await this.sR();
-        console.log('sR init done');
+        console.log("sR init done");
         if (this.roomsResult.length == 0) {
           this.roomsSelecting = false;
         }
         this.$refs.lodgingForm.desactivateModal();
-        this.$emit('searchingFinished',false)
+        this.$emit("searchingFinished", false);
       } catch (e) {
         console.log(e);
       }
@@ -531,14 +537,14 @@ export default {
       if (this.roomsToReserve.length == 0) this.isModalLodgingActive = true;
     },
     fillRoomLayout(acomodation) {
-      let total = _.sumBy(acomodation, (i) => i.cantidad);
+      let total = _.sumBy(acomodation, i => i.cantidad);
       this.totalRooms = {
         value: total,
-        display: total > 1 ? `${total} habitaciones` : `${total} habitación`,
+        display: total > 1 ? `${total} habitaciones` : `${total} habitación`
       };
       let count = 1;
       let a = [];
-      acomodation.forEach((i) => {
+      acomodation.forEach(i => {
         for (let t = 0; t < i.cantidad; t++) {
           a.push({
             room: count,
@@ -547,15 +553,15 @@ export default {
                 code: "adults",
                 display: "Adulto(s)",
                 label: "Adultos",
-                value: i.adults,
+                value: i.adults
               },
               {
                 code: "kids",
                 display: "Niño(s)",
                 label: "Niños",
-                value: i.kids,
-              },
-            ],
+                value: i.kids
+              }
+            ]
           });
           count++;
         }
@@ -569,12 +575,12 @@ export default {
       return moment(date);
     },
     getAdults(item) {
-      return item.layout.find((i) => {
+      return item.layout.find(i => {
         return i.code == "adults";
       }).value;
     },
     getKids(item) {
-      return item.layout.find((i) => {
+      return item.layout.find(i => {
         return i.code == "kids";
       }).value;
     },
@@ -587,28 +593,28 @@ export default {
             code: "adults",
             display: "Adulto(s)",
             label: "Adultos",
-            value: 1,
+            value: 1
           },
           {
             code: "kids",
             display: "Niño(s)",
             label: "Niños",
-            value: 0,
-          },
-        ],
+            value: 0
+          }
+        ]
       });
       this.totalRooms = {
         value: 1,
-        display: "1 habitación",
+        display: "1 habitación"
       };
     },
     removeFromToReserve(item) {
-      let indexR = this.roomsToReserve.findIndex((i) => {
+      let indexR = this.roomsToReserve.findIndex(i => {
         return i.id == item.id;
       });
       this.roomsToReserve.splice(indexR, 1);
 
-      let index = this.roomSelectedToDis.findIndex((o) => {
+      let index = this.roomSelectedToDis.findIndex(o => {
         return o == item.rn;
       });
       this.roomSelectedToDis.splice(index, 1);
@@ -632,7 +638,7 @@ export default {
       let so = {};
       let hotelectData = {};
       let currentHotelec = await hotelecSessionService.getOrCreateSession();
-      this.roomsToReserve.map( async (i) => {
+      this.roomsToReserve.map(async i => {
         listado.push({
           precioObjOne: i.habitacion,
           tipoHabitacion: i.habitacion.TipoHabitacion.TipoHabitacionId,
@@ -640,17 +646,17 @@ export default {
           planAlimenticioId: i.PA.PlanesAlimenticiosId,
           planAlimenticio: i.PA,
           price: {
-            value: i.habitacion.PrecioOrden,
+            value: i.habitacion.PrecioOrden
           },
           HabitacionId: i.Habitacion.HabitacionId,
           Habitacion: i.Habitacion,
           // TODO cantidad
-          cantidad: i.habitacion.CantidadHabitaciones,
+          cantidad: i.habitacion.CantidadHabitaciones
         });
         so = {
           Cliente: { ClienteId: localStorage.getItem("cliente") },
           PlanAlimenticio: {
-            PlanesAlimenticiosId: i.PA.PlanesAlimenticiosId,
+            PlanesAlimenticiosId: i.PA.PlanesAlimenticiosId
           },
           Alojamiento: { ProductoId: this.item.lodging.ProductoId },
           TipoHabitacion: { TipoHabitacionId: i.CantAdultos },
@@ -662,11 +668,11 @@ export default {
           IsSinContrato: true,
           Habitacion: { HabitacionId: i.Habitacion.HabitacionId },
           Entrada: this.inDate,
-          Salida: this.outDate,
+          Salida: this.outDate
         };
         hotelectData = await authGetRoomPrice(so);
       });
-      let total = _.sumBy(this.roomsToReserve, (j) => {
+      let total = _.sumBy(this.roomsToReserve, j => {
         return (
           j.habitacion.PrecioOrden *
           this.roomsToReserve[0].habitacion.CantidadHabitaciones
@@ -675,17 +681,19 @@ export default {
 
       this.roomsToReserve.combinacion = {
         listado: listado,
-        total: total,
+        total: total
       };
       this.roomsToReserve.planAlimenticio = listado[0].planAlimenticio;
       this.roomsToReserve.habitacion = {
         ProductoId: this.item.lodging.ProductoId,
-        HabitacionId: listado[0].HabitacionId,
+        HabitacionId: listado[0].HabitacionId
       };
       this.roomsToReserve.IsSinContrato = listado[0].precioObjOne.IsSinContrato;
       this.roomsToReserve.hotelectData = hotelectData;
 
-      let { Adl, Nin } = this.$helpers.generatePassageList(this.roomsToReserve.combinacion);
+      let { Adl, Nin } = this.$helpers.generatePassageList(
+        this.roomsToReserve.combinacion
+      );
       let allIds = [];
       Adl.forEach(adult => {
         allIds.push(adult.Id);
@@ -752,14 +760,14 @@ export default {
         reservedRooms: {
           combinacion: {
             listado: listado,
-            total: total,
-          },
-        },
+            total: total
+          }
+        }
       };
 
       this.refreshLayout();
       this.$helpers.shoppingCartAdd(l);
-      this.$eventCartBus.$emit("updateCart");
+      cartStore.refresh();
       this.roomSelectedToDis = [];
       this.roomsToReserve = [];
       this.roomsResult = [];
@@ -767,20 +775,21 @@ export default {
     async reserve() {
       await this.addToGeneralCart();
       this.$router.push({
-        name: "reservation",
+        name: "reservation"
       });
     },
-    addOneToCart(item) {console.info('item4', item);
+    addOneToCart(item) {
+      console.info("item4", item);
       this.roomsToReserve.push(item);
       this.roomSelectedToDis.push(item.rn);
     },
     async addToCart(item) {
-      item.l.forEach((i) => {
+      item.l.forEach(i => {
         i.Habitacion = item.rO;
         this.roomsToReserve.push(i);
         this.roomSelectedToDis.push(i.rn);
       });
-      console.log('item5', item);
+      console.log("item5", item);
       //console.info([this.roomsToReserve, this.roomSelectedToDis]);
       // this.roomsSelecting = false
       // this.refreshLayout()
@@ -801,83 +810,82 @@ export default {
       this.roomsResult = [];
       let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;
       let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId);
-      let active_rooms = rooms.data.filter((i) => {
+      let active_rooms = rooms.data.filter(i => {
         return i.IsActiva == true;
       });
       // console.info('allData', [listaPlanesAlimenticios, rooms, active_rooms])
       try {
-
         await Promise.all(
-          active_rooms.map(async (j) => {
-            console.log('--- j ---', j);
+          active_rooms.map(async j => {
+            console.log("--- j ---", j);
             await Promise.all(
-              listaPlanesAlimenticios.map(async (i) => {
-                console.log('--- i ---', i);
+              listaPlanesAlimenticios.map(async i => {
+                console.log("--- i ---", i);
                 //if (!PlanesAlimenticiosIds.includes(i.PlanesAlimenticiosId)) {
-                  let pa = await authGetLodgingEatingPlanOne(
-                    i.PlanesAlimenticiosId
-                  );
-                  let noDisp = false;
-                  let c = 0;
-                  let temp = [];
-                  while (!noDisp && c < this.selectedRoomLayout.length) {
-                    let el = this.selectedRoomLayout[c];
-                    let ca = el.layout.find((p) => p.code == "adults").value;
-                    let cm = el.layout.find((p) => p.code == "kids").value;
-                    let so = {
-                      Cliente: { ClienteId: localStorage.getItem("cliente") },
-                      PlanAlimenticio: {
-                        PlanesAlimenticiosId: i.PlanesAlimenticiosId,
-                      },
-                      Alojamiento: { ProductoId: this.item.lodging.ProductoId },
-                      TipoHabitacion: { TipoHabitacionId: ca },
-                      CantidadAdultos: ca,
-                      CantidadMenores: cm,
-                      CantidadInfantes: 0,
-                      CantidadHabitaciones: 1,
-                      HotetecIdeses: currentHotelec,
-                      IsSinContrato: true,
-                      Habitacion: { HabitacionId: j.HabitacionId },
-                      Entrada: this.inDate,
-                      Salida: this.outDate,
-                    };
-                    try {
-                      let precioA = await authGetRoomPrice(so);
-                      let data = precioA.data[0];
-                      data.TipoHabitacion = so.TipoHabitacion;
-                      console.info('precioData', data);
-                      if (
-                        precioA.data.length != 0 &&
-                        // && r.data[0].OrdenAlojamientoId != -1
-                        data.PrecioOrden != 0 &&
-                        data.HotetecIsAvailable === true
-                      ) {
-                        temp.push({
-                          name: j.Nombre,
-                          habitacion: data || -1,
-                          CantAdultos: ca,
-                          CantidadMenores: cm,
-                          PA: pa.data,
-                          rn: el.room,
-                          id: uuid.v4(),
-                        });
-                      } else {
-                        noDisp = true;
-                      }
-                    } catch (e) {
+                let pa = await authGetLodgingEatingPlanOne(
+                  i.PlanesAlimenticiosId
+                );
+                let noDisp = false;
+                let c = 0;
+                let temp = [];
+                while (!noDisp && c < this.selectedRoomLayout.length) {
+                  let el = this.selectedRoomLayout[c];
+                  let ca = el.layout.find(p => p.code == "adults").value;
+                  let cm = el.layout.find(p => p.code == "kids").value;
+                  let so = {
+                    Cliente: { ClienteId: localStorage.getItem("cliente") },
+                    PlanAlimenticio: {
+                      PlanesAlimenticiosId: i.PlanesAlimenticiosId
+                    },
+                    Alojamiento: { ProductoId: this.item.lodging.ProductoId },
+                    TipoHabitacion: { TipoHabitacionId: ca },
+                    CantidadAdultos: ca,
+                    CantidadMenores: cm,
+                    CantidadInfantes: 0,
+                    CantidadHabitaciones: 1,
+                    HotetecIdeses: currentHotelec,
+                    IsSinContrato: true,
+                    Habitacion: { HabitacionId: j.HabitacionId },
+                    Entrada: this.inDate,
+                    Salida: this.outDate
+                  };
+                  try {
+                    let precioA = await authGetRoomPrice(so);
+                    let data = precioA.data[0];
+                    data.TipoHabitacion = so.TipoHabitacion;
+                    console.info("precioData", data);
+                    if (
+                      precioA.data.length != 0 &&
+                      // && r.data[0].OrdenAlojamientoId != -1
+                      data.PrecioOrden != 0 &&
+                      data.HotetecIsAvailable === true
+                    ) {
+                      temp.push({
+                        name: j.Nombre,
+                        habitacion: data || -1,
+                        CantAdultos: ca,
+                        CantidadMenores: cm,
+                        PA: pa.data,
+                        rn: el.room,
+                        id: uuid.v4()
+                      });
+                    } else {
                       noDisp = true;
                     }
-
-                    c++;
+                  } catch (e) {
+                    noDisp = true;
                   }
+
+                  c++;
+                }
                 //}
 
                 if (!noDisp) {
-                  console.info('roomsResult', [j, pa.data, temp]);
+                  console.info("roomsResult", [j, pa.data, temp]);
                   this.roomsResult.push({
                     rO: j,
                     pA: pa.data,
-                    l: temp,
+                    l: temp
                   });
                 }
               })
@@ -893,16 +901,16 @@ export default {
       this.roomsResult = [];
       let atLeastOne = false;
       let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;
-      let ca = room.layout.find((p) => p.code == "adults").value;
-      let cm = room.layout.find((p) => p.code == "kids").value;
+      let ca = room.layout.find(p => p.code == "adults").value;
+      let cm = room.layout.find(p => p.code == "kids").value;
       let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId);
-      let active_rooms = rooms.data.filter((i) => {
+      let active_rooms = rooms.data.filter(i => {
         return i.IsActiva == true;
       });
       await Promise.all(
-        active_rooms.map(async (j) => {
+        active_rooms.map(async j => {
           await Promise.all(
-            listaPlanesAlimenticios.map(async (i) => {
+            listaPlanesAlimenticios.map(async i => {
               let pa = await authGetLodgingEatingPlanOne(
                 i.PlanesAlimenticiosId
               );
@@ -917,7 +925,7 @@ export default {
                 CantidadHabitaciones: 1,
                 Habitacion: { HabitacionId: j.HabitacionId },
                 Entrada: this.inDate,
-                Salida: this.outDate,
+                Salida: this.outDate
               };
               try {
                 let r = await authGetRoomPrice(sf);
@@ -932,7 +940,7 @@ export default {
                     CantAdultos: ca,
                     CantidadMenores: cm,
                     PA: pa.data,
-                    id: uuid.v4(),
+                    id: uuid.v4()
                   });
                 }
               } catch (e) {
@@ -954,7 +962,7 @@ export default {
       if (decimalPart == 0) decimalPart = "00";
 
       return { intPart: intPart, decimalPart: decimalPart };
-    },
-  },
+    }
+  }
 };
 </script>

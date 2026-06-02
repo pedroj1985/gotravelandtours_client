@@ -2,27 +2,13 @@ import {
   authSearchLodging,
   authSearchRoomsByLodging,
   authGetLodging,
-  authGetRoomPrice,
   authGetImage,
-  authGetLodgingEatingPlanOne,
   hotetecOpenSession
 } from "./auth";
 import { hotelecSessionService } from "./hotelecSessionService";
-import { storageService } from "./storageService";
-import { openDB } from "idb";
-import logger from "./logger";
 import { buildRoomCombo } from "./roomBuilder";
-
-const dbPromise = openDB("searchResultDB", 1, {
-  upgrade(db) {
-    if (!db.objectStoreNames.contains("searchResults")) {
-      db.createObjectStore("searchResults", {
-        keyPath: "id",
-        autoIncrement: true
-      });
-    }
-  }
-});
+import { calculateRoomPrices } from "./roomPriceCalculator";
+import { saveSearchResult, getSearchResults } from "./searchPersistenceService";
 
 export async function searchResult(
   searchItem,
@@ -47,130 +33,13 @@ export async function searchResult(
         const img = await authGetImage(i.Alojamiento.ProductoId);
         const fullLodging = await authGetLodging(i.Alojamiento.ProductoId);
 
-        let listadoPrecios = [];
-
-        await Promise.all(
-          rooms.data.map(async j => {
-            let puedeAcomodarse = true;
-            if (resultadoAcomodacion && resultadoAcomodacion.length > 0) {
-              // cuando se usa la validación externa, no forzamos aquí
-              puedeAcomodarse = true;
-            }
-
-            if (puedeAcomodarse) {
-              await Promise.all(
-                fullLodging.data.ListaPlanesAlimenticios.map(async lpa => {
-                  let r = resultadoAcomodacion;
-                  let listadoPorTipo = [];
-                  let temp = [];
-                  let hotelecData = null;
-                  let noPrice = false;
-
-                  await Promise.all(
-                    r.map(async k => {
-                      for (let index = 0; index < k.cantidad; index++) {
-                        let ca = 1;
-                        if (k.hab == "Doble") ca = 2;
-                        else if (k.hab == "Triple") ca = 3;
-
-                        let roomPriceSearchObj = {
-                          Cliente: {
-                            ClienteId: storageService.getItem("cliente") || null
-                          },
-                          PlanAlimenticio: {
-                            PlanesAlimenticiosId: lpa.PlanesAlimenticiosId
-                          },
-                          Alojamiento: {
-                            ProductoId: i.Alojamiento.ProductoId
-                          },
-                          TipoHabitacion: { TipoHabitacionId: k.habId },
-                          CantidadAdultos: ca,
-                          CantidadMenores: k.kids,
-                          CantidadInfantes: 0,
-                          CantidadHabitaciones: 1,
-                          HotetecIdeses: currentHotelec,
-                          Habitacion: { HabitacionId: j.HabitacionId },
-                          Entrada: searchItem.Entrada,
-                          IsSinContrato: i.IsSinContrato,
-                          Salida: searchItem.Salida
-                        };
-
-                        try {
-                          let precioA = await authGetRoomPrice(
-                            roomPriceSearchObj
-                          );
-
-                          if (
-                            precioA.data.length != 0 &&
-                            precioA.data[0].PrecioOrden != 0
-                          ) {
-                            hotelecData = {
-                              HotetecInfoHabId:
-                                precioA.data[0].HotetecInfoHabId,
-                              HotetecInfoHotelId:
-                                precioA.data[0].HotetecInfoHotelId,
-                              HotetecIdeses: precioA.data[0].HotetecIdeses,
-                              HotetecIsAvailable:
-                                precioA.data[0].HotetecIsAvailable
-                            };
-                            if (hotelecData.HotetecIsAvailable) {
-                              temp.push({
-                                cantidad: 1,
-                                precioObjOne: precioA.data[0] || -1,
-                                price: {
-                                  value: precioA.data[0].PrecioOrden,
-                                  currency: "USD"
-                                },
-                                tipoHabitacion: k.habId,
-                                tipoHabitacionNombre: k.hab,
-                                cantidadMenoresPorHabitacion: k.kids,
-                                planAlimenticio: lpa.PlanesAlimenticiosId
-                              });
-                            }
-                          } else {
-                            noPrice = true;
-                          }
-                        } catch (e) {
-                          noPrice = true;
-                        }
-                      }
-                    })
-                  );
-
-                  if (!noPrice) {
-                    listadoPorTipo = temp;
-                  }
-
-                  if (listadoPorTipo.length != 0) {
-                    let totalPrice = 0;
-                    let display = "";
-                    listadoPorTipo.forEach(element => {
-                      totalPrice += element.price.value;
-                      display += `${element.cantidad}x${element.tipoHabitacionNombre} | `;
-                    });
-
-                    let planA = await authGetLodgingEatingPlanOne(
-                      lpa.PlanesAlimenticiosId
-                    );
-                    listadoPrecios.push({
-                      name: j.Nombre,
-                      habitacion: j,
-                      planAlimenticioCodigo: planA.data.Codigo,
-                      planAlimenticioNombre: planA.data.Nombre,
-                      planAlimenticio: lpa.PlanesAlimenticiosId,
-                      hotelecData: hotelecData,
-                      IsSinContrato: i.IsSinContrato,
-                      combinacion: {
-                        total: totalPrice,
-                        display: display,
-                        listado: listadoPorTipo
-                      }
-                    });
-                  }
-                })
-              );
-            }
-          })
+        let listadoPrecios = await calculateRoomPrices(
+          rooms,
+          fullLodging,
+          searchItem,
+          currentHotelec,
+          resultadoAcomodacion,
+          i
         );
 
         let ro = {
@@ -211,48 +80,11 @@ export async function searchResult(
     }
   }
 
-  logger.log("resultList", resultList);
+  console.log("resultList", resultList);
   return resultList;
 }
 
 export async function searchPreviousResult() {
   await hotelecSessionService.getOrCreateSession();
   return await getSearchResults();
-}
-
-export async function saveSearchResult(result) {
-  const db = await dbPromise;
-  const tx = db.transaction("searchResults", "readwrite");
-  const store = tx.objectStore("searchResults");
-  await store.add(result);
-  await tx.done;
-}
-
-export async function getSearchResults() {
-  const db = await dbPromise;
-  const tx = db.transaction("searchResults", "readonly");
-  const store = tx.objectStore("searchResults");
-  const results = await store.getAll();
-  await tx.done;
-  return results[0];
-}
-
-export async function clearSearchResults() {
-  const db = await dbPromise;
-  const tx = db.transaction("searchResults", "readwrite");
-  const store = tx.objectStore("searchResults");
-  await store.clear();
-  await tx.done;
-}
-
-export async function deleteDatabase() {
-  const db = await dbPromise;
-  await db.delete();
-}
-
-export async function performSearch(query) {
-  // Placeholder helper matching mixin contract.
-  const searchResult = { query, results: ["Result 1", "Result 2", "Result 3"] };
-  await saveSearchResult(searchResult);
-  return searchResult;
 }

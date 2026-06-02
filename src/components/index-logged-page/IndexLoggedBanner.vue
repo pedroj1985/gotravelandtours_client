@@ -16,8 +16,8 @@
         <span class="antonio-light">
           en
           <span v-if="selectedLodgingDestinyValue">{{
-              selectedLodgingDestinyValue.nombre
-            }}</span>
+            selectedLodgingDestinyValue.nombre
+          }}</span>
           <span v-else>cualquier lugar</span>
         </span>
       </div>
@@ -52,7 +52,7 @@
           >
             <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
             <span slot="placeholder" class="required-field"
-            >Destino o Alojamiento</span
+              >Destino o Alojamiento</span
             >
             <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
             <template v-slot:option="option">
@@ -69,7 +69,8 @@
             <gtt-select-date
               v-model="selectedStartDate"
               :mode="'single'"
-              :min-date="minStartDate">
+              :min-date="minStartDate"
+            >
               <span slot="placeholder" class="required-field">
                 Fecha de entrada
               </span>
@@ -81,9 +82,10 @@
             <gtt-select-date
               v-model="selectedEndDate"
               :min-date="minEndDate"
-              :mode="'single'">
+              :mode="'single'"
+            >
               <span slot="placeholder" class="required-field"
-              >Fecha de salida</span
+                >Fecha de salida</span
               >
               <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
               <span slot="error" class="gtt-errors"></span>
@@ -201,14 +203,18 @@ import GttSelectForm from "../custom-elements/GttSelectForm";
 import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import moment from "moment";
-import { eventBus } from "../../main";
+import { scrollStore } from "../../stores/scrollStore";
 import {
   authSearchRegions,
   authGetRoomTypes,
   authGetLodgingsAll,
   authGetHotelList
 } from "../../utils/auth";
-import { constructDate, calculateNights, constructDisplay } from "../../utils/utils";
+import {
+  constructDate,
+  calculateNights,
+  constructDisplay
+} from "../../utils/utils";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
@@ -233,28 +239,33 @@ export default {
   },
   computed: {
     minStartDate() {
-      return moment().add(4, "days").format("YYYY-MM-DD");
+      return moment()
+        .add(4, "days")
+        .format("YYYY-MM-DD");
     },
     minEndDate() {
-      let minEndDate = moment().add(7, "days").format("YYYY-MM-DD");
+      let minEndDate = moment()
+        .add(7, "days")
+        .format("YYYY-MM-DD");
       if (this.selectedStartDate) {
-        minEndDate = moment(this.selectedStartDate).add(this.selectedNights, "days").format("YYYY-MM-DD");
+        minEndDate = moment(this.selectedStartDate)
+          .add(this.selectedNights, "days")
+          .format("YYYY-MM-DD");
       }
       return minEndDate;
     }
   },
   watch: {
     selectedEndDate(item) {
-      let n = moment(this.selectedEndDate).diff(
-        this.selectedStartDate,
-        "days"
-      );
+      let n = moment(this.selectedEndDate).diff(this.selectedStartDate, "days");
 
       this.selectedNights = n;
     },
     selectedStartDate(item) {
       this.selectedNights = 3;
-      this.selectedEndDate = moment(item).add(this.selectedNights, "days").toDate();
+      this.selectedEndDate = moment(item)
+        .add(this.selectedNights, "days")
+        .toDate();
       let n = moment(this.selectedEndDate).diff(this.selectedStartDate, "days");
       this.selectedNights = n;
     },
@@ -331,7 +342,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        eventBus.$emit("componentScrolled", "lodging");
+        scrollStore.scrollTo("lodging");
       }
     },
     async activateModal() {
@@ -340,7 +351,7 @@ export default {
         this.isModalActive = true;
         await this.clearSerchResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
-          console.log('RGN', this);
+          console.log("RGN", this);
           let region = {
             RegionId: this.selectedLodgingDestinyValue.id
           };
@@ -417,7 +428,7 @@ export default {
             );
           }
         } else if (this.selectedLodgingDestinyValue.type == "HTL") {
-          console.log('HTL', this);
+          console.log("HTL", this);
           let searchFilters = {
             Destiny: this.selectedLodgingDestinyValue,
             NombreHotel: this.selectedLodgingDestinyValue.nombre,

@@ -14,16 +14,9 @@ module.exports = {
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "vue/multi-word-component-names": "off",
-    "vue/no-unused-components": "warn",
-    "no-unused-vars": [
-      "warn",
-      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }
-    ],
-    "vue/no-mutating-props": "warn",
-    "vue/require-v-for-key": "warn",
-    "no-constant-condition": "warn",
-    "no-empty": "warn",
-    "no-undef": "warn"
+    "vue/multi-word-component-names": [
+      "error",
+      { ignores: ["multiselect", "Index", "IndexLogged"] }
+    ]
   }
 };

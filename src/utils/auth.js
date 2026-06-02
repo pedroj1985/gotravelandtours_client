@@ -1,422 +1,69 @@
-import axios from "axios";
-import logger from "./logger";
-import { storageService } from "./storageService";
+import HTTP from "../api/client";
 
-let headers = {
-  "Content-Type": "application/json"
-};
-export const HTTP = axios.create({
-  baseURL: process.env.VUE_APP_API_URL || "http://localhost:5000/api/",
-  timeout: 120000
-});
-
-export function authCheck() {
-  if (storageService.getToken() == null) {
-    return false;
-  }
-  return true;
-}
-
-export function getVoucher() {
-  // URL = "https://admin.gotravelandtours.com/#/dasboard/admin"
-  // return HTTP.get("/Clientes/" + id, null, {
-  //   headers: { Authorization: `Bearer ${token}` }
-  // });
-  // /voucher?id=3836&type=Vehicle&position=0
-}
-
-export function getUser() {
-  let storageUser = JSON.parse(localStorage.getItem("usuarioObjeto"));
-  // if (s && u && id) {
-  //   return { name: u, clienteId: id };
-  // }
-  return storageUser;
-}
-
-export function authGetUser(id) {
-  let token = storageService.getToken();
-  return HTTP.get("/Clientes/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authLogin(user) {
-  return HTTP.post("/Login", user, headers);
-}
-
-export function authRegister(user, head) {
-  return HTTP.post("/Usuarios", user, { headers: head });
-}
-
-export function authSearchLodging(searchItem) {
-  let token = storageService.getToken();
-  return HTTP.post("/Alojamientoes/BuscarOrden", searchItem, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetLodging(id) {
-  let token = storageService.getToken();
-  return HTTP.get("/Alojamientoes/" + id, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetLodgings() {
-  let token = storageService.getToken();
-  return HTTP.get("/Alojamientoes", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetLodgingsAll() {
-  let token = storageService.getToken();
-  return HTTP.get("/Alojamientoes/Todos", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetRoomPrice(searchRoomPrice) {
-  let token = storageService.getToken();
-  return HTTP.post("/Alojamientoes/BuscarOrdenPrecio", searchRoomPrice, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function getPackages(searchRoomPrice) {
-  let token = storageService.getToken();
-  return HTTP.post("/Paquetes/BuscarOrden", searchRoomPrice, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-export function hotetecOpenSession() {
-  let token = storageService.getToken();
-  return HTTP.post(
-    "/ApiDisponibilidadHotetec/SesionAbrirPeticion",
-    {},
-    {
-      headers: { Authorization: `Bearer ${token}` }
-    }
-  );
-}
-export function hotetecStateSession(idSession) {
-  let token = storageService.getToken();
-  return HTTP.post(
-    "/ApiDisponibilidadHotetec/SesionEstado",
-    { ideses: idSession },
-    {
-      headers: { Authorization: `Bearer ${token}` }
-    }
-  );
-}
-
-export function hotetecBlockProduct(blockProduct) {
-  let token = storageService.getToken();
-  return HTTP.post("/ApiDisponibilidadHotetec/Bloqueo", blockProduct, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function hotetecCloseReserve(reserveData) {
-  let token = storageService.getToken();
-  return HTTP.post("/ApiDisponibilidadHotetec/ReservaCerrar", reserveData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function hotetecCancelReserve(reserveData) {
-  let token = storageService.getToken();
-  return HTTP.post("/ApiDisponibilidadHotetec/CancelarReserva", reserveData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function hotetecUpdateDataOnGtt(reserveData) {
-  let token = storageService.getToken();
-  return HTTP.post("/OrdenAlojamientoes/UpdateDatosHotetec", reserveData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function updateIsPagadoAlojamiento(payData) {
-  let token = storageService.getToken();
-  return HTTP.post("/OrdenAlojamientoes/UpdateIsPagado", payData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-/* export function updateIsPagadoActividad(payData) {
-  let token = storageService.getToken();
-  return HTTP.post("/OrdenActividad/UpdateIsPagado", payData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
- */
-export function updateIsPagadoVehiculo(payData) {
-  let token = storageService.getToken();
-  return HTTP.post("/OrdenVehiculoes/UpdateIsPagado", payData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-/* export function updateIsPagadoTraslado(payData) {
-  let token = storageService.getToken();
-  return HTTP.post("/OrdenTraslado/UpdateIsPagado", payData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-} */
-
-export function getTropiPayToken() {
-  let token = storageService.getToken();
-  return HTTP.get("/ApiTropiPay/GetToken", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function generatePaymentPage(paymentData) {
-  let token = storageService.getToken();
-  return HTTP.post("/ApiTropiPay/GenerarPaginaPago", paymentData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authSearchRoomsByLodging(id) {
-  let token = storageService.getToken();
-  return HTTP.get("/Habitacions/Producto/" + id, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetRoomTypes() {
-  let token = storageService.getToken();
-  return HTTP.get("/TipoHabitacions?col=-1", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetLodgingEatingPlan() {
-  let token = storageService.getToken();
-  return HTTP.get("/PlanesAlimenticios?col=-1", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetLodgingEatingPlanOne(id) {
-  let token = storageService.getToken();
-  return HTTP.get("/PlanesAlimenticios/" + id, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetHotelList() {
-  let token = storageService.getToken();
-  return HTTP.get("/Alojamientoes/GetHotelList", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authSearchRegions() {
-  let token = storageService.getToken();
-  return HTTP.get("/Regions?col=-1", null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authSearchPuntosInteres() {
-  let token = storageService.getToken();
-  return HTTP.get("/PuntoInteres?col=-1", null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authSearchMarcas() {
-  let token = storageService.getToken();
-  return HTTP.get("/Marcas?col=-1", null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authSearchMarca(id) {
-  let token = storageService.getToken();
-  return HTTP.get("/Marcas/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authSearchProvider(id) {
-  let token = storageService.getToken();
-  return HTTP.get("/Proveedors/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authSearchCars(searchItem) {
-  let token = storageService.getToken();
-  logger.log(searchItem);
-  return HTTP.post("/Vehiculoes/BuscarOrden", searchItem, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authUpdateCar(searchItem) {
-  let token = storageService.getToken();
-
-  return HTTP.post("/Vehiculoes/CambiarPrecio", searchItem, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetCar(id) {
-  let token = storageService.getToken();
-  const resp = HTTP.get("/Vehiculoes/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  logger.log(resp);
-  return resp;
-}
-
-export function authDeleteCarOrder(id) {
-  let token = storageService.getToken();
-  return HTTP.delete("/OrdenVehiculoes/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authReserve(orden) {
-  let token = storageService.getToken();
-  return HTTP.post("/Ordens", orden, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-export function authUpdateStatus(orderStatus) {
-  let token = storageService.getToken();
-  return HTTP.post("/Ordens/CambiarEstado", orderStatus, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authCreateQbEstimated(orden) {
-  let token = storageService.getToken();
-  return HTTP.post("/QBIntegracion/createEstimated", orden, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authUpdateQbEstimated(orden) {
-  let token = storageService.getToken();
-  return HTTP.post("/QBIntegracion/updateEstimated", orden, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authUpdOnlyInDbQbEstimated(orden) {
-  let token = storageService.getToken();
-  return HTTP.post("/Ordens/UpdEstimated", orden, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authPutReserve(id, orden) {
-  let token = storageService.getToken();
-  return HTTP.put("/Ordens/" + id, orden, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetImage(id) {
-  let token = storageService.getToken();
-  return HTTP.post("/AlmacenImagenes/getmain", null, {
-    params: { idProducto: id },
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetImages(id) {
-  let token = storageService.getToken();
-  return HTTP.get("/AlmacenImagenes/Productos/" + id, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function authGetOrders(searchItem) {
-  let token = storageService.getToken();
-  try {
-    return HTTP.post("/Ordens/Buscar", searchItem, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export function authGetAirlines() {
-  let token = storageService.getToken();
-  try {
-    return HTTP.get("/TipoAerolineas?col=-1", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export function authGetOrdersCount(searchItem) {
-  let token = storageService.getToken();
-
-  try {
-    const data = HTTP.post("/Ordens/Count", searchItem, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    logger.log("response-DATA", data);
-    return data;
-  } catch (error) {
-    logger.error(error);
-  }
-}
-
-export function authGetOrder(id) {
-  let token = storageService.getToken();
-  return HTTP.get("/Ordens/" + id, null, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-export function subscribe(email) {
-  return HTTP.get("/Usuarios/Mail", null, {
-    params: {
-      email: email
-    }
-  });
-}
-
-export function voucher(id) {
-  return HTTP.get("/VoucherOrdens/Orden/" + id);
-}
-
-export function authSearchCountries() {
-  return axios.get("https://restcountries.eu/rest/v2/all?fields=name");
-}
-
-export function updateHeader(token) {
-  headers = {
-    ...headers,
-    ...{
-      Authorization: `Bearer ${token}`
-    }
-  };
-}
-
-export function closeSession(vueInstance) {
-  const saveVersion = storageService.getVersion();
-  storageService.clear();
-  storageService.setVersion(saveVersion);
-  vueInstance.$eventCartBus.$emit("updateCart");
-  vueInstance.$router.push({ name: "index" });
-}
-
-export function authLog(log) {
-  let token = storageService.getToken();
-  return HTTP.post("/logs", log, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
+export { HTTP };
+export {
+  authCheck,
+  getUser,
+  authGetUser,
+  authLogin,
+  authRegister,
+  authLog,
+  closeSession,
+  updateHeader,
+  getVoucher,
+  authSearchCountries
+} from "../api/auth";
+export {
+  authSearchLodging,
+  authGetLodging,
+  authGetLodgings,
+  authGetLodgingsAll,
+  authGetRoomPrice,
+  authSearchRoomsByLodging,
+  authGetRoomTypes,
+  authGetLodgingEatingPlan,
+  authGetLodgingEatingPlanOne,
+  authGetHotelList,
+  authSearchRegions,
+  authSearchPuntosInteres,
+  getPackages
+} from "../api/lodging";
+export {
+  authSearchCars,
+  authUpdateCar,
+  authGetCar,
+  authDeleteCarOrder,
+  authSearchMarcas,
+  authSearchMarca,
+  authSearchProvider
+} from "../api/rent";
+export {
+  authReserve,
+  authUpdateStatus,
+  authPutReserve,
+  authGetOrders,
+  authGetOrdersCount,
+  authGetOrder,
+  voucher
+} from "../api/orders";
+export {
+  getTropiPayToken,
+  generatePaymentPage,
+  updateIsPagadoAlojamiento,
+  updateIsPagadoVehiculo
+} from "../api/payment";
+export {
+  hotetecOpenSession,
+  hotetecStateSession,
+  hotetecBlockProduct,
+  hotetecCloseReserve,
+  hotetecCancelReserve,
+  hotetecUpdateDataOnGtt
+} from "../api/hotetec";
+export { authGetImage, authGetImages } from "../api/images";
+export {
+  authCreateQbEstimated,
+  authUpdateQbEstimated,
+  authUpdOnlyInDbQbEstimated
+} from "../api/qb";
+export { subscribe, authGetAirlines } from "../api/general";

@@ -1,81 +1,96 @@
 <template>
-    <div class="gtt__button_modal">
-        <div class="gtt__button" 
-                :class="classToButton"
-                ref="buttonModal"
-                @click="toggleClicked"
-                >
-                <i class="mdi mdi-account"></i>
-        </div>
-
-        <div class="gtt__list_area_wrapper" :class="{isVisible: isVisible}" v-click-outside="handleFocusOut">
-            <span class="arrow" v-if="arrow"></span>
-            <div class="gtt__list_area">
-                <div class="client-actions-wrapper">
-                    <div class="client-actions-item" @click="activeRegisterModal">Registrar cliente</div>
-                    <div class="button-close-session-wrapper">
-                        <button class="btn btn-danger button-close-session" type="button" @click="closeSession">Cerrar sesión</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <RegisterModal v-if="modalActive" @closeModal="activeRegisterModal"></RegisterModal>
+  <div class="gtt__button_modal">
+    <div
+      class="gtt__button"
+      :class="classToButton"
+      ref="buttonModal"
+      @click="toggleClicked"
+    >
+      <i class="mdi mdi-account"></i>
     </div>
 
+    <div
+      class="gtt__list_area_wrapper"
+      :class="{ isVisible: isVisible }"
+      v-click-outside="handleFocusOut"
+    >
+      <span class="arrow" v-if="arrow"></span>
+      <div class="gtt__list_area">
+        <div class="client-actions-wrapper">
+          <div class="client-actions-item" @click="activeRegisterModal">
+            Registrar cliente
+          </div>
+          <div class="button-close-session-wrapper">
+            <button
+              class="btn btn-danger button-close-session"
+              type="button"
+              @click="closeSession"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <RegisterModal
+      v-if="modalActive"
+      @closeModal="activeRegisterModal"
+    ></RegisterModal>
+  </div>
 </template>
 
 <script>
-import ClickOutside from 'vue-click-outside';
-import {closeSession} from '../../utils/auth'
-import RegisterModal from '../shared/Register'
-import {eventBus} from "../../main"
+import ClickOutside from "vue-click-outside";
+import { closeSession } from "../../utils/auth";
+import RegisterModal from "../shared/Register";
+import { authStore } from "../../stores/authStore";
 
 export default {
-    components:{
-        RegisterModal
+  components: {
+    RegisterModal
+  },
+  directives: {
+    ClickOutside
+  },
+  mounted() {
+    this.popupItem = this.$el;
+  },
+  props: {
+    classToButton: {
+      type: String
     },
-    directives: {
-        ClickOutside
+    value: null,
+    arrow: {
+      default: true
     },
-    mounted(){
-        this.popupItem = this.$el
-    },
-    props: {
-        classToButton: {
-            type: String
-        },
-        value: null,
-        arrow: {
-            default: true
-        },
-        user: {
-            type: Object
-        }
-    },
-    data(){
-        return {
-            isVisible: false,
-            modalActive: false
-        }
-    },
-    methods: {
-        toggleClicked(){
-            this.isVisible = !this.isVisible;
-        },
-        handleFocusOut(){
-            this.isVisible = false;
-        },
-        activeRegisterModal(){
-            this.handleFocusOut()
-            return this.modalActive = !this.modalActive;
-        },
-        closeSession(){
-            this.handleFocusOut()
-            eventBus.$emit('userLogin',null)
-            closeSession(this)
-        }
+    user: {
+      type: Object
     }
-}
+  },
+  data() {
+    return {
+      isVisible: false,
+      modalActive: false
+    };
+  },
+  methods: {
+    toggleClicked() {
+      this.isVisible = !this.isVisible;
+    },
+    handleFocusOut() {
+      this.isVisible = false;
+    },
+    activeRegisterModal() {
+      this.handleFocusOut();
+      return (this.modalActive = !this.modalActive);
+    },
+    closeSession() {
+      this.handleFocusOut();
+      authStore.logout();
+      closeSession(this);
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -116,11 +131,11 @@ export default {
   background-color: var(--color-background-white);
   margin-bottom: 0;
   color: var(--color-text-primary);
-  font-family: 'Helvetica Neue LT Std-Roman';
+  font-family: "Helvetica Neue LT Std-Roman";
   font-size: var(--font-size-sm);
 }
 
-@media(max-width: 1440px) {
+@media (max-width: 1440px) {
   .arrow {
     top: -12px;
   }

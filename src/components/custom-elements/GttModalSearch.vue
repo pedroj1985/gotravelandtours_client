@@ -36,17 +36,17 @@ import { BarLoader } from "@saeris/vue-spinners";
 
 export default {
   components: {
-    BarLoader,
+    BarLoader
   },
   data() {
     return {
-      loading: true,
+      loading: true
     };
   },
   created() {
     /* setTimeout(()=>{
         this.$emit('searchingFinished',false)
     },2000) */
-  },
+  }
 };
 </script>

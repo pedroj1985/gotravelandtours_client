@@ -220,29 +220,29 @@ export default {
   created() {},
   components: {
     Slick,
-    GttTwoRowsInfo,
+    GttTwoRowsInfo
   },
   props: {
     item: {
       type: Object,
-      default: null,
+      default: null
     },
     can: {
       type: Boolean,
-      default: false,
+      default: false
     },
     ordenId: {
-      default: -1,
+      default: -1
     },
     hasVoucher: {
       default: false,
-      type: Boolean,
-    },
+      type: Boolean
+    }
   },
   data() {
     return {
       selectedInfo: "info",
-      pos: 1,
+      pos: 1
     };
   },
   methods: {
@@ -250,7 +250,7 @@ export default {
       let totalA = 0;
       let totalN = 0;
 
-      item.reservedRooms.combinacion.listado.forEach((i) => {
+      item.reservedRooms.combinacion.listado.forEach(i => {
         totalA = totalA + i.cantidad * i.tipoHabitacion;
         totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion;
       });
@@ -260,7 +260,7 @@ export default {
     getHabitaciones(item) {
       let totalR = 0;
 
-      item.reservedRooms.combinacion.listado.forEach((i) => {
+      item.reservedRooms.combinacion.listado.forEach(i => {
         totalR = totalR + i.cantidad;
       });
 
@@ -293,8 +293,8 @@ export default {
       let decimalPart = Math.round((number - intPart) * 100);
       if (decimalPart == 0) decimalPart = "00";
       return { intPart: intPart, decimalPart: decimalPart };
-    },
-  },
+    }
+  }
 };
 </script>
 

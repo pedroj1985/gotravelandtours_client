@@ -75,7 +75,7 @@
           id="r-right-side"
           :class="{
             'col-lg-12': currentChild == 'reservation-detail',
-            'col-lg-10 col-md-7': currentChild != 'reservation-detail',
+            'col-lg-10 col-md-7': currentChild != 'reservation-detail'
           }"
         >
           <router-view
@@ -94,7 +94,7 @@ import { getUser } from "../../utils/auth";
 
 export default {
   components: {
-    NavBar2,
+    NavBar2
   },
   created() {
     this.user = getUser();
@@ -117,7 +117,7 @@ export default {
     },
     updateCurrentChild(value) {
       this.currentChild = value;
-    },
+    }
   },
   data() {
     return {
@@ -127,19 +127,19 @@ export default {
         {
           name: "index",
           displayName: "Inicio",
-          id: "home-logged-banner",
+          id: "home-logged-banner"
         },
         {
           name: "lodging",
           displayName: "alojamientos",
-          id: "home-logged-banner",
-        },
-/*         {
+          id: "home-logged-banner"
+        }
+        /*         {
           name: "car-rent",
           displayName: "renta de autos",
           id: "index-logged-rent-wrapper",
         }, */
-/*        {
+        /*        {
           name: "transfer",
           displayName: "traslados",
           id: "index-logged-transfer",
@@ -154,31 +154,31 @@ export default {
         {
           displayName: "Reservaciones",
           code: "reservation",
-          route: "myreservations",
+          route: "myreservations"
         },
         {
           displayName: "Reportes",
           code: "report",
-          route: "myreports",
+          route: "myreports"
         },
         {
           displayName: "Agenda",
           code: "agend",
-          route: "myagend",
+          route: "myagend"
         },
         {
           displayName: "Facturas",
           code: "bill",
-          route: "mybills",
+          route: "mybills"
         },
         {
           displayName: "Documentos",
           code: "document",
-          route: "mydocs",
-        },
-      ],
+          route: "mydocs"
+        }
+      ]
     };
-  },
+  }
 };
 </script>
 

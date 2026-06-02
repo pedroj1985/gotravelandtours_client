@@ -11,8 +11,8 @@ export default {
   },
   data() {
     return {
-      ht: "",
+      ht: ""
     };
-  },
+  }
 };
 </script>

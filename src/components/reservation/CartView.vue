@@ -278,18 +278,12 @@
         </div>
       </div>
     </div>
-    <div
-      class="
-        no-content
-        font24
-        hn-roman
-        general-text-opt
-        gtt-text-color
-        text-center
-      "
-      v-else
-    >
-      No existen elementos en el carrito
+    <div v-else class="text-center">
+      <GttEmptyState>
+        <template #icon><i class="mdi mdi-cart-outline"></i></template>
+        <template #title>Tu carrito está vacío</template>
+        Agrega alojamientos o renta de autos para comenzar tu reservación.
+      </GttEmptyState>
     </div>
   </div>
 </template>
@@ -312,6 +306,7 @@ import {
 } from "../../utils/auth";
 import GttEditLodgingModal from "../custom-elements/GttEditLodgingModal";
 import GttVerificationModal from "../custom-elements/GttVerificationModal";
+import GttEmptyState from "../shared/GttEmptyState";
 import NavBar2 from "../shared/NavBar2";
 import { menuLinks } from "../../menu";
 import GttEditRentModal from "../custom-elements/GttEditRentModal";
@@ -323,6 +318,7 @@ import _ from "lodash";
 import moment from "moment";
 import { orderStatusList } from "../../utils/constant";
 import { hotelecSessionService } from "../../utils/hotelecSessionService";
+import { cartStore } from "../../stores/cartStore";
 
 export default {
   created() {
@@ -337,6 +333,7 @@ export default {
     RentInfoRow,
     FlightInfoRow,
     GttVerificationModal,
+    GttEmptyState,
     NavBar2,
     GttEditLodgingModal,
     GttEditRentModal
@@ -458,7 +455,7 @@ export default {
             if (res) {
               this.$helpers.shoppingCartRemoveOne(id);
               this.updateCart();
-              this.$eventCartBus.$emit("updateCart");
+              cartStore.refresh();
             }
           })
           .finally(() => {
@@ -466,11 +463,11 @@ export default {
             this.deleteModal = false;
           });
       } else { */
-        this.$helpers.shoppingCartRemoveOne(id);
-        this.updateCart();
-        this.$eventCartBus.$emit("updateCart");
-        this.tempItemToDelete = null;
-        this.deleteModal = false;
+      this.$helpers.shoppingCartRemoveOne(id);
+      this.updateCart();
+      cartStore.refresh();
+      this.tempItemToDelete = null;
+      this.deleteModal = false;
       //}
     },
     async reserve() {
@@ -573,22 +570,20 @@ export default {
           this.$helpers.shoppingCartDeleteAll();
           this.isReserving = false;
 
-          let msg = "Orden creada y confirmada con éxito. Puede proceder al pago.";
-          let msgType = "success"
+          let msg =
+            "Orden creada y confirmada con éxito. Puede proceder al pago.";
+          let msgType = "success";
           if (createInHotetec.Estado !== orderStatusList.confirmed) {
-            msg = "Orden creada con éxito. Pendiente de aceptación por la administración.";
-            msgType = "info"
+            msg =
+              "Orden creada con éxito. Pendiente de aceptación por la administración.";
+            msgType = "info";
           }
-          this.$toasted.show(
-            msg,
-            {
+          this.$toasted.show(msg, {
+            type: msgType,
+            duration: 5000
+          });
 
-              type: msgType,
-              duration: 5000,
-            }
-          )
-
-          this.$eventCartBus.$emit("updateCart");
+          cartStore.refresh();
           this.$router.push({ name: "myreservations" });
         } catch (error) {
           authLog({
@@ -629,9 +624,10 @@ export default {
         const Cupest = res.data.Cupest;
         let orderStatus = {};
 
-        if (NumeroConfirmacionHotetec !== null
-          && Cupest !== null
-          && Cupest === orderStatusList.cm
+        if (
+          NumeroConfirmacionHotetec !== null &&
+          Cupest !== null &&
+          Cupest === orderStatusList.cm
         ) {
           const orderData = {
             OrdenId: order.OrdenId,
@@ -730,12 +726,12 @@ export default {
             po.Alojamiento = {
               ProductoId: po.Alojamiento.ProductoId,
               Nombre: i.name,
-              SKU: j.Habitacion.SKU,
+              SKU: j.Habitacion.SKU
             };
-            po.FechaInicio = po.FechaInicio.split('T')[0];
-            po.FechaFin = po.FechaFin.split('T')[0];
-            po.Checkin = po.Checkin.split('T')[0];
-            po.Checkout = po.Checkout.split('T')[0];
+            po.FechaInicio = po.FechaInicio.split("T")[0];
+            po.FechaFin = po.FechaFin.split("T")[0];
+            po.Checkin = po.Checkin.split("T")[0];
+            po.Checkout = po.Checkout.split("T")[0];
             /* po.CantAdulto = j.tipoHabitacion; */
             po.OrdenAlojamientoId = 0;
             po.CantNino = j.cantidadMenoresPorHabitacion;
@@ -749,13 +745,13 @@ export default {
             po.PlanAlimenticio = j.planAlimenticio;
             po.Habitacion = {
               HabitacionId: j.Habitacion.HabitacionId,
-              Nombre: j.Habitacion.Nombre,
+              Nombre: j.Habitacion.Nombre
             };
             po.Distribuidor = {
               DistribuidorId: po.Distribuidor
                 ? po.Distribuidor.DistribuidorId
                 : 46,
-              Nombre: "Hotetec",
+              Nombre: "Hotetec"
             };
             po.DistribuidorId = po.Distribuidor
               ? po.Distribuidor.DistribuidorId

@@ -17,6 +17,9 @@ importers:
       '@saeris/vue-spinners':
         specifier: ^1.0.8
         version: 1.0.8(emotion@9.2.6)(vue-emotion@0.4.2(emotion@9.2.6))(vue@2.7.16)
+      '@vue/composition-api':
+        specifier: ^1.7.2
+        version: 1.7.2(vue@2.7.16)
       axios:
         specifier: ^0.21.1
         version: 0.21.4
@@ -1151,6 +1154,11 @@ packages:
 
   '@vue/component-compiler-utils@3.3.0':
     resolution: {integrity: sha512-97sfH2mYNU+2PzGrmK2haqffDpVASuib9/w2/noxiFi31Z54hW+q3izKQXXQZSNhtiUpAI36uSuYepeBe4wpHQ==}
+
+  '@vue/composition-api@1.7.2':
+    resolution: {integrity: sha512-M8jm9J/laYrYT02665HkZ5l2fWTK4dcVg3BsDHm/pfz+MjDYwX+9FUaZyGwEyXEDonQYRCo0H7aLgdklcIELjw==}
+    peerDependencies:
+      vue: '>= 2.5 < 2.7'
 
   '@vue/eslint-config-prettier@6.0.0':
     resolution: {integrity: sha512-wFQmv45c3ige5EA+ngijq40YpVcIkAy0Lihupnsnd1Dao5CBbPyfCzqtejFLZX1EwH/kCJdpz3t6s+5wd3+KxQ==}
@@ -7158,6 +7166,10 @@ snapshots:
       - velocityjs
       - walrus
       - whiskers
+
+  '@vue/composition-api@1.7.2(vue@2.7.16)':
+    dependencies:
+      vue: 2.7.16
 
   '@vue/eslint-config-prettier@6.0.0(eslint-plugin-prettier@3.4.1(eslint@8.57.1)(prettier@1.19.1))(eslint@8.57.1)(prettier@1.19.1)':
     dependencies:

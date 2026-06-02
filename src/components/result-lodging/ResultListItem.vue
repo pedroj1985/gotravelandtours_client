@@ -1,22 +1,53 @@
 <template>
   <div>
+    <template v-if="loading">
+      <div class="result-item">
+        <div class="result-item-carousel">
+          <GttSkeleton type="rect" :width="100" height="200px"></GttSkeleton>
+        </div>
+        <div class="result-item-info">
+          <GttSkeleton type="text" :width="70" height="1.4em"></GttSkeleton>
+          <div class="item-other-info">
+            <GttSkeleton type="text" :width="50" height="1em"></GttSkeleton>
+            <GttSkeleton type="text" :width="40" height="1em"></GttSkeleton>
+            <GttSkeleton type="text" :width="60" height="1em"></GttSkeleton>
+          </div>
+        </div>
+        <div class="result-item-price">
+          <div class="price-wrapper">
+            <GttSkeleton type="text" :width="40" height="1em"></GttSkeleton>
+            <div class="details-btn">
+              <GttSkeleton type="rect" :width="40" height="40px"></GttSkeleton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template v-else>
     <div class="result-item">
       <div class="result-item-carousel">
-        <GttCarousel
-          :slides="item.images"
+        <Slick
+          ref="slick"
+          :slidesToShow="1"
+          :slidesToScroll="1"
+          :draggable="true"
+          :arrows="false"
           :dots="true"
           :autoplay="true"
-          :draggable="true"
         >
-          <template v-slot:slide="{ slide }">
-            <img v-if="slide" v-bind:src="slide" alt />
+          <div
+            class="result-images-carousel"
+            v-for="destinyImage in item.images"
+            :key="destinyImage"
+          >
+            <img v-if="destinyImage" v-bind:src="destinyImage" alt />
             <img
               v-else
               src="../../../public/img/icopaq_alojamiento_black.svg"
               alt="alojamiento"
             />
-          </template>
-        </GttCarousel>
+          </div>
+        </Slick>
       </div>
       <div class="result-item-info">
         <div class="item-name hn-bdcn">{{ item.name }}</div>
@@ -101,6 +132,7 @@
         </div>
       </div>
     </div>
+    </template>
     <!-- <div class="list-item-children">
       <ResultListRow
         v-for="child in filteredItems"
@@ -129,20 +161,27 @@
 </template>
 
 <script>
-import GttCarousel from "../custom-elements/GttCarousel";
+import Slick from "vue-slick-carousel";
 import ResultListRow from "./ResultListRow";
+import GttSkeleton from "../shared/GttSkeleton";
 import _ from "lodash";
 import { constructDisplay } from "../../utils/utils";
+import { addToCartItem, reserveItem } from "../../composables/useCartItem";
 export default {
   created() {},
   components: {
-    GttCarousel,
-    ResultListRow
+    Slick,
+    ResultListRow,
+    GttSkeleton
   },
   props: {
     item: Object,
     filters: Object,
-    todosTipo: Array
+    todosTipo: Array,
+    loading: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -181,23 +220,10 @@ export default {
       this.disabledItems = value;
     },
     addToCart(i, cant) {
-      i.combinacion.listado[0].precioObjOne.OrdenAlojamientoId = 0;
-      if (cant > 1) {
-        i.combinacion.listado[0].precioObjOne.CantidadHabitaciones = cant;
-        i.combinacion.total = i.combinacion.total * cant;
-        i.combinacion.listado[0].precioObjOne["sameRoom"] = true;
-      } else {
-        i.combinacion.listado[0].precioObjOne["sameRoom"] = false;
-      }
-      this.item["reservedRooms"] = i;
-      this.$helpers.shoppingCartAdd(this.item);
-      this.$eventCartBus.$emit("updateCart");
+      addToCartItem(this.item, i, cant, this.$helpers);
     },
     reserve(i, cant) {
-      this.addToCart(i, cant);
-      this.$router.push({
-        name: "reservation"
-      });
+      reserveItem(this.$router, this.item, i, cant, this.$helpers);
     },
     getMinPrice(array) {
       return _.minBy(array, function(e) {

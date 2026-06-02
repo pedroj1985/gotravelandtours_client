@@ -21,63 +21,67 @@
                 >
                   <ValidationProvider
                     name="usuario"
-                    rules="required|alpha_num"
-                    v-slot="{ errors }"
+                    rules="required"
+                    v-slot="{ errors, valid }"
                   >
                     <input
                       v-model="username"
                       type="text"
                       class="form-control"
+                      :class="{ 'is-invalid': errors[0] }"
                       name="username"
                       id="username-input"
                       placeholder="Usuario"
                     />
-                    <span>{{ errors[0] }}</span>
+                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
                   </ValidationProvider>
                   <ValidationProvider
                     name="teléfono"
-                    rules="required|numeric"
+                    rules="required"
                     v-slot="{ errors }"
                   >
                     <input
                       v-model="phone"
                       type="text"
                       class="form-control"
+                      :class="{ 'is-invalid': errors[0] }"
                       name="phone"
                       id="phone-input"
                       placeholder="Teléfono"
                     />
-                    <span>{{ errors[0] }}</span>
+                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
                   </ValidationProvider>
                   <ValidationProvider
                     name="email"
-                    rules="required|email"
+                    rules="required"
                     v-slot="{ errors }"
                   >
                     <input
                       v-model="email"
                       type="email"
                       class="form-control"
+                      :class="{ 'is-invalid': errors[0] }"
                       name="email"
                       id="email-input"
                       placeholder="Correo electrónico"
                     />
-                    <span>{{ errors[0] }}</span>
+                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
                   </ValidationProvider>
                   <ValidationProvider
                     name="contraseña"
-                    rules="required|confirmed:confirm|min:8"
+                    rules="required|confirmed:confirm"
                     v-slot="{ errors }"
                   >
                     <input
                       v-model="password"
                       type="password"
                       class="form-control"
+                      :class="{ 'is-invalid': errors[0] }"
                       name="password"
                       id="password-input"
                       placeholder="Contraseña"
                     />
-                    <span>{{ errors[0] }}</span>
+                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
                   </ValidationProvider>
                   <ValidationProvider
                     name="confirm password"
@@ -89,11 +93,12 @@
                       v-model="confirm_password"
                       type="password"
                       class="form-control"
+                      :class="{ 'is-invalid': errors[0] }"
                       name="confirm_password"
                       id="confirm-password-input"
                       placeholder="Confirme la contraseña"
                     />
-                    <span>{{ errors[0] }}</span>
+                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
                   </ValidationProvider>
                 </ValidationObserver>
               </div>
@@ -132,8 +137,6 @@
 
 <script>
 import { authRegister } from "../../utils/auth";
-import { storageService } from "../../utils/storageService";
-import logger from "../../utils/logger";
 
 export default {
   data() {
@@ -156,19 +159,19 @@ export default {
       const valid = await this.$refs.observer.validate();
       if (valid) {
         let user = {
-          username: this.username.trim(),
-          password: this.password.trim(),
-          telefono: this.phone.trim(),
-          correo: this.email.trim().toLowerCase(),
+          username: this.username,
+          password: this.password,
+          telefono: this.phone,
+          correo: this.email,
           clienteId: localStorage.getItem("cliente"),
           rolId: 3
         };
         this.loading = true;
         authRegister(user, {
-          Authorization: `Bearer ${storageService.getToken()}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         })
           .then(({ data }) => {
-            logger.log(data);
+            console.log(data);
             this.$toasted.show(
               `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
               {
@@ -186,3 +189,17 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.validation-error {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+</style>

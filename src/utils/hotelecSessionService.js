@@ -5,6 +5,8 @@
 
 import { storageService } from "./storageService";
 import { hotetecStateSession, hotetecOpenSession } from "@/utils/auth";
+import { withRetry } from "./errorHandler";
+import { logger } from "./logger";
 
 const HOTELEC_SESSION_KEY = "currentHotelecIds";
 
@@ -48,7 +50,7 @@ class HotelecSessionService {
       const response = await hotetecStateSession(currentSession);
       return response.data && response.data.Infses === true;
     } catch (error) {
-      console.error("Error validating Hotelec session:", error);
+      logger.error("Error validating Hotelec session:", error);
       return false;
     }
   }
@@ -58,7 +60,7 @@ class HotelecSessionService {
    * @returns {Promise<string|null>} The new session ID or null if failed
    */
   async openNewSession() {
-    try {
+    return withRetry(async () => {
       const response = await hotetecOpenSession();
       if (response && response.data && response.data.Ideses) {
         const sessionId = response.data.Ideses;
@@ -66,10 +68,7 @@ class HotelecSessionService {
         return sessionId;
       }
       return null;
-    } catch (error) {
-      console.error("Error opening new Hotelec session:", error);
-      return null;
-    }
+    }, 2, "hotetecOpenSession");
   }
 
   /**

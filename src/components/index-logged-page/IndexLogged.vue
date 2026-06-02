@@ -1,7 +1,7 @@
 <template>
   <div id="content">
-      <IndexLoggedBanner></IndexLoggedBanner>
-<!--      <IndexLoggedRent></IndexLoggedRent>-->
+    <IndexLoggedBanner></IndexLoggedBanner>
+    <!--      <IndexLoggedRent></IndexLoggedRent>-->
   </div>
 </template>
 
@@ -10,10 +10,10 @@ import IndexLoggedBanner from "./IndexLoggedBanner";
 import IndexLoggedRent from "./IndexLoggedRent";
 
 export default {
-    name: 'IndexLogged',
-    components: {
-        IndexLoggedBanner,
-        IndexLoggedRent,
-        }
-}
+  name: "IndexLogged",
+  components: {
+    IndexLoggedBanner,
+    IndexLoggedRent
+  }
+};
 </script>

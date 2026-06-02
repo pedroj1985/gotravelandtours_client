@@ -26,7 +26,7 @@ export default {
           name: "index",
           displayName: "Política de Privacidad",
           id: "content"
-        },
+        }
       ]
     };
   },

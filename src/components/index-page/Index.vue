@@ -21,13 +21,13 @@ export default {
     IndexServices,
     IndexPackages,
     IndexOtherServices,
-    IndexWhoAreWe,
+    IndexWhoAreWe
   },
   methods: {
     emitUserLogin(value) {
       this.$emit("userLogin", value);
       this.$router.go();
-    },
-  },
+    }
+  }
 };
 </script>

@@ -75,91 +75,90 @@
 </template>
 
 <script>
-  import RentResultList from "./RentResultList";
-  import moment from "moment";
-  import GttSelect from "../custom-elements/GttSelect";
-  import { calculateNights } from "../../utils/utils";
-  import _ from "lodash";
-  export default {
-    components: {
-      RentResultList,
-      GttSelect
-    },
-    watch: {
-      selectedOrganizeType: function(val) {
-        if (val.code == "price_desc") {
-          this.currentList = _.orderBy(
-            this.currentList,
-            function(o) {
-              return o.precio;
-            },
-            "desc"
-          );
-        } else {
-          this.currentList = _.orderBy(
-            this.currentList,
-            function(o) {
-              return o.precio;
-            },
-            "asc"
-          );
-        }
+import RentResultList from "./RentResultList";
+import moment from "moment";
+import GttSelect from "../custom-elements/GttSelect";
+import { calculateNights } from "../../utils/utils";
+import _ from "lodash";
+export default {
+  components: {
+    RentResultList,
+    GttSelect
+  },
+  watch: {
+    selectedOrganizeType: function(val) {
+      if (val.code == "price_desc") {
+        this.currentList = _.orderBy(
+          this.currentList,
+          function(o) {
+            return o.precio;
+          },
+          "desc"
+        );
+      } else {
+        this.currentList = _.orderBy(
+          this.currentList,
+          function(o) {
+            return o.precio;
+          },
+          "asc"
+        );
       }
-    },
-    created() {
-      this.filter = JSON.parse(localStorage.getItem("searchRentFilters"));
-    },
-    data() {
-      return {
-        total: 1,
-        currentList: [],
-        currentPage: 1,
-        filter: Object,
-        selectedOrganizeType: {
+    }
+  },
+  created() {
+    this.filter = JSON.parse(localStorage.getItem("searchRentFilters"));
+  },
+  data() {
+    return {
+      total: 1,
+      currentList: [],
+      currentPage: 1,
+      filter: Object,
+      selectedOrganizeType: {
+        displayName: "Precio (asc)",
+        code: "price_asc"
+      },
+
+      organizedBy: [
+        {
           displayName: "Precio (asc)",
           code: "price_asc"
         },
+        {
+          displayName: "Precio (desc)",
+          code: "price_desc"
+        }
+      ]
+    };
+  },
+  mounted() {
+    this.getList(this.currentPage);
+    this.total = this.list.length;
+    // this.$emit('resultSize',this.total)
+  },
+  props: {
+    list: Array,
+    perPage: {
+      default: 1
+    },
+    resultTotal: Number,
+    onlyToSelect: Boolean
+  },
+  methods: {
+    toMoment(date) {
+      return moment(date);
+    },
+    getOthers(event, page) {
+      this.getList(page);
+    },
+    getList(page) {
+      let min = this.perPage * page - this.perPage;
+      let max = this.perPage * page;
 
-        organizedBy: [
-          {
-            displayName: "Precio (asc)",
-            code: "price_asc"
-          },
-          {
-            displayName: "Precio (desc)",
-            code: "price_desc"
-          }
-        ]
-      };
-    },
-    mounted() {
-      this.getList(this.currentPage);
-      this.total = this.list.length;
-      // this.$emit('resultSize',this.total)
-    },
-    props: {
-      list: Array,
-      perPage: {
-        default: 1
-      },
-      resultTotal: Number,
-      onlyToSelect: Boolean
-    },
-    methods: {
-      toMoment(date) {
-        return moment(date);
-      },
-      getOthers(event, page) {
-        this.getList(page);
-      },
-      getList(page) {
-        let min = this.perPage * page - this.perPage;
-        let max = this.perPage * page;
-
-        this.currentList = this.list.slice(min, max);
-        this.$scrollTo("#right-column-list");
-      }
+      this.currentList = this.list.slice(min, max);
+      this.$scrollTo("#right-column-list");
     }
-  };
+  }
+};
 </script>
-

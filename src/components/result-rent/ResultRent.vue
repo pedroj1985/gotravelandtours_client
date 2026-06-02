@@ -56,7 +56,7 @@ import NavBar2 from "../shared/NavBar2";
 import RentForm from "./RentForm";
 import Breadcrumb from "../shared/Breadcrumb";
 import RentRightColumnList from "./RentRightColumnList";
-import { eventFiltersRent } from "../../main";
+import { filtersStore } from "../../stores/filtersStore";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 import { constructDisplay } from "../../utils/utils";
 import {
@@ -79,7 +79,7 @@ export default {
     let f = localStorage.getItem("searchRentFilters");
     if (f) {
       this.filter = JSON.parse(f);
-      eventFiltersRent.$emit("filters", this.filter);
+      filtersStore.update(this.filter);
     }
     let rt = this.$route.params["searchResult"];
     if (rt) {
@@ -180,9 +180,7 @@ export default {
       this.resultTotal = value;
     },
     listenEventFilterRent() {
-      return eventFiltersRent.$on("filters", item => {
-        return item;
-      });
+      return filtersStore.filters;
     }
   },
   data() {
@@ -204,13 +202,13 @@ export default {
           name: "lodging",
           displayName: "alojamientos",
           id: "home-logged-banner"
-        },
-/*         {
+        }
+        /*         {
           name: "car-rent",
           displayName: "renta de autos",
           id: "index-logged-rent-wrapper"
         }, */
-/*        {
+        /*        {
           name: "transfer",
           displayName: "traslados",
           id: "index-logged-transfer"

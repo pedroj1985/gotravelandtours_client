@@ -34,7 +34,9 @@
                 </div>
 
                 <a
-                  v-on:click.prevent="downloadPdf(packageItem.Paquete.UrlAdjuntoPDF)"
+                  v-on:click.prevent="
+                    downloadPdf(packageItem.Paquete.UrlAdjuntoPDF)
+                  "
                   class="btn-pdf d-flex justify-content-center align-items-center"
                   ><i class="mdi mdi-file-pdf-box" aria-hidden="true"></i
                 ></a>

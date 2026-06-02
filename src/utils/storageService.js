@@ -105,60 +105,20 @@ class StorageService {
   // Specific methods for common operations
 
   /**
-   * Encode token with simple obfuscation (Base64 reverse)
-   * Not cryptographic security, but prevents casual exposure
-   */
-  _encodeToken(token) {
-    try {
-      return btoa(token)
-        .split("")
-        .reverse()
-        .join("");
-    } catch {
-      return token;
-    }
-  }
-
-  /**
-   * Decode obfuscated token
-   */
-  _decodeToken(encoded) {
-    try {
-      return atob(
-        encoded
-          .split("")
-          .reverse()
-          .join("")
-      );
-    } catch {
-      return encoded;
-    }
-  }
-
-  /**
-   * Get authentication token (decoded)
+   * Get authentication token
    * @returns {string|null} The token or null
    */
   getToken() {
-    const encoded = this.getItem(STORAGE_KEYS.TOKEN);
-    return encoded ? this._decodeToken(encoded) : null;
+    return this.getItem(STORAGE_KEYS.TOKEN);
   }
 
   /**
-   * Set authentication token (encoded)
+   * Set authentication token
    * @param {string} token - The token to store
    * @returns {boolean} True if successful
    */
   setToken(token) {
-    return this.setItem(STORAGE_KEYS.TOKEN, this._encodeToken(token));
-  }
-
-  /**
-   * Remove authentication token
-   * @returns {boolean} True if successful
-   */
-  clearToken() {
-    return this.removeItem(STORAGE_KEYS.TOKEN);
+    return this.setItem(STORAGE_KEYS.TOKEN, token);
   }
 
   /**

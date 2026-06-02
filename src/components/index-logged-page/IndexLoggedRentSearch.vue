@@ -125,7 +125,7 @@
                 27,
                 28,
                 29,
-                30,
+                30
               ]"
               :search="false"
             >
@@ -248,7 +248,7 @@ import {
   constructDate,
   calculateNights,
   transmissionTypes,
-  hasInsurance,
+  hasInsurance
 } from "../../utils/utils";
 import {
   authSearchPuntosInteres,
@@ -256,7 +256,7 @@ import {
   authSearchCars,
   authGetImage,
   authSearchProvider,
-  authSearchMarca,
+  authSearchMarca
 } from "../../utils/auth";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { overflowText } from "../../utils/utils";
@@ -266,7 +266,7 @@ export default {
   components: {
     GttSelect,
     GttSelectDate,
-    GttModalSearch,
+    GttModalSearch
   },
   mixins: [cleanVoMixin],
   created() {
@@ -292,7 +292,7 @@ export default {
     },
     selectedNights(item) {
       this.selectedEnd = new Date(moment(this.selectedStart).add(item, "days"));
-    },
+    }
   },
   methods: {
     transmissionTypes() {
@@ -304,20 +304,20 @@ export default {
           rules: ["required"],
           name: "gttTransmision",
           value: this.selectedTransmissionType,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required"],
           name: "gttStartDate",
           value: this.selectedStart,
-          lang: "es",
+          lang: "es"
         },
         {
           rules: ["required", "dateAfter:selectedStart"],
           name: "gttEndDate",
           value: this.selectedEnd,
-          lang: "es",
-        },
+          lang: "es"
+        }
       ];
 
       return validator;
@@ -338,7 +338,7 @@ export default {
           ) {
             marca = {
               MarcaId: this.selectedCarCategory.marcaid,
-              Nombre: this.selectedCarCategory.nombre,
+              Nombre: this.selectedCarCategory.nombre
             };
           } else {
             marca = undefined;
@@ -350,16 +350,16 @@ export default {
             FechaEntrega: moment(this.selectedEnd).format("YYYY-MM-D"),
             Marca: marca,
             TipoTransmision: transmissionType,
-            Cliente: cliente,
+            Cliente: cliente
           };
           let resultList = [];
           let { data } = await authSearchCars(searchItem);
           await Promise.all(
             data
-              .filter((j) => {
+              .filter(j => {
                 return j.ValorSobreprecioAplicado > 0;
               })
-              .map(async (item) => {
+              .map(async item => {
                 let image = await authGetImage(item.Vehiculo.ProductoId);
                 let marca = await authSearchMarca(item.Vehiculo.MarcaId);
                 let provider = await authSearchProvider(
@@ -383,7 +383,7 @@ export default {
                   imagen: image.data.ImageContent,
                   provider: provider.data.Nombre,
                   providerImage: provider.data.ImageContent,
-                  orderVehiculo: item,
+                  orderVehiculo: item
                 });
                 this.cleanVO(item);
               })
@@ -422,7 +422,7 @@ export default {
             deliveryPlace: this.selectedDeliveryPlace,
             pickUpDate: this.selectedStart,
             deliveryDate: this.selectedEnd,
-            nationality: this.selectedNationality,
+            nationality: this.selectedNationality
           };
           localStorage.setItem(
             "searchRentFilters",
@@ -431,8 +431,8 @@ export default {
           this.$router.push({
             name: "resultRent",
             params: {
-              searchResult: resultList,
-            },
+              searchResult: resultList
+            }
           });
         } catch (error) {
           console.log(error);
@@ -440,7 +440,7 @@ export default {
           this.$toasted.show(
             "El servicio no está disponible en estos momentos",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -458,7 +458,7 @@ export default {
       return hasInsurance(text);
     },
     searchCountriesPlaceholder() {
-      let usa = this.countries.find((el) => {
+      let usa = this.countries.find(el => {
         return el.nombre == "Estados Unidos";
       });
 
@@ -474,11 +474,11 @@ export default {
           let { data } = await authSearchMarcas();
           let totalResult = [];
           console.log(totalResult);
-          data.forEach((item) => {
+          data.forEach(item => {
             totalResult = totalResult.concat({
               nombre: item.Nombre,
               marcaid: item.MarcaId,
-              type: "marca",
+              type: "marca"
             });
           });
           this.carsCategories = totalResult;
@@ -486,7 +486,7 @@ export default {
           this.$toasted.show(
             "El servicio no está disponible en estos momentos",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -497,12 +497,12 @@ export default {
         try {
           let { data } = await authSearchPuntosInteres();
           let totalResult = [];
-          data.forEach((item) => {
+          data.forEach(item => {
             totalResult = totalResult.concat({
               nombre: item.Nombre,
               regionid: item.id,
               puntointeresid: item.PuntoInteresId,
-              type: "punto-interes",
+              type: "punto-interes"
             });
           });
           this.pickUpDeliveryOptions = totalResult;
@@ -510,7 +510,7 @@ export default {
           this.$toasted.show(
             "El servicio no está disponible en estos momentos",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -521,12 +521,12 @@ export default {
         try {
           let { data } = await authSearchPuntosInteres();
           let totalResult = [];
-          data.forEach((item) => {
+          data.forEach(item => {
             totalResult = totalResult.concat({
               nombre: item.Nombre,
               regionid: item.id,
               puntointeresid: item.PuntoInteresId,
-              type: "punto-interes",
+              type: "punto-interes"
             });
           });
           this.pickUpDeliveryOptions = totalResult;
@@ -534,7 +534,7 @@ export default {
           this.$toasted.show(
             "El servicio no está disponible en estos momentos",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -545,7 +545,7 @@ export default {
         return `1 día`;
       }
       return `${n} días`;
-    },
+    }
   },
   data() {
     return {
@@ -566,20 +566,20 @@ export default {
       countries: [
         {
           nombre: "Afganistán",
-          flag: "flag_afganistan.jpg",
+          flag: "flag_afganistan.jpg"
         },
         {
           nombre: "Albania",
-          flag: "flag_albania.jpg",
+          flag: "flag_albania.jpg"
         },
         {
           nombre: "Alemania",
-          flag: "flag_alemania.jpg",
+          flag: "flag_alemania.jpg"
         },
         {
           nombre: "Estados Unidos",
-          flag: "flag_estadosunidos.jpg",
-        },
+          flag: "flag_estadosunidos.jpg"
+        }
       ],
       carsCategories: [],
       // transmissionTypes: [
@@ -600,9 +600,9 @@ export default {
       //     display: "Manual S/Seguro"
       //   }
       // ],
-      pickUpDeliveryOptions: [],
+      pickUpDeliveryOptions: []
     };
-  },
+  }
 };
 </script>
 

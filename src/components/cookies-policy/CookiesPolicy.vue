@@ -26,7 +26,7 @@ export default {
           name: "index",
           displayName: "Política de Cookies",
           id: "content"
-        },
+        }
       ]
     };
   },

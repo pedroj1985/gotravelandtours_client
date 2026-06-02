@@ -20,13 +20,19 @@ import "vue2-timepicker/dist/VueTimepicker.css";
 import VueLodash from "vue-lodash";
 import lodash from "lodash";
 import { helpers } from "./utils/helpers";
+import { authStore } from "./stores/authStore";
+import { cartStore } from "./stores/cartStore";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 import VueLazyLoad from "vue-lazyload";
 import "vue-image-lightbox/dist/vue-image-lightbox.min.css";
+import VueCompositionApi from "@vue/composition-api";
+import { setupGlobalErrorHandler } from "./utils/errorHandler";
 
 Vue.config.productionTip = false;
+setupGlobalErrorHandler(Vue);
 Vue.use(VueLazyLoad);
+Vue.use(VueCompositionApi);
 Vue.use(BootstrapVue);
 Vue.use(VueLodash, { lodash: lodash });
 Vue.use(Toasted, {
@@ -86,8 +92,8 @@ router.beforeEach((to, from, next) => {
           storageService.clear();
           storageService.setVersion(saveVersion);
 
-          eventCartBus.$emit("updateCart");
-          eventBus.$emit("userLogin", null);
+          cartStore.refresh();
+          authStore.logout();
           Vue.toasted.show(`Sesión expirada`, {
             type: "error"
           });
@@ -107,15 +113,6 @@ router.beforeEach((to, from, next) => {
       name: "indexLogged"
     });
 });
-
-export const eventBus = new Vue();
-export const eventUserBus = new Vue();
-export const eventFiltersRent = new Vue();
-export const eventDiffDays = new Vue();
-const eventLodgingReserve = new Vue();
-const eventCartBus = new Vue();
-Vue.prototype.$eventCartBus = eventCartBus;
-Vue.prototype.$eventLodgingReserve = eventLodgingReserve;
 
 new Vue({
   router,

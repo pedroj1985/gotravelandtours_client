@@ -20,21 +20,21 @@
 
 <script>
 export default {
-  name: 'GttInput',
+  name: "GttInput",
   props: {
     modelValue: [String, Number],
     label: String,
     id: String,
     type: {
       type: String,
-      default: 'text',
+      default: "text"
     },
     placeholder: String,
     disabled: Boolean,
     maxlength: Number,
     autocomplete: String,
-    error: String,
-  },
+    error: String
+  }
 };
 </script>
 

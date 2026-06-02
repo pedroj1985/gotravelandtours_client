@@ -26,7 +26,7 @@ export default {
           name: "index",
           displayName: "Información Legal",
           id: "content"
-        },
+        }
       ]
     };
   },

@@ -20,7 +20,10 @@
           </div>
         </div>
         <div class="gtt__toggle_arrow">
-          <i class="mdi" :class="{ 'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible }"></i>
+          <i
+            class="mdi"
+            :class="{ 'mdi-menu-down': !isVisible, 'mdi-menu-up': isVisible }"
+          ></i>
         </div>
       </div>
     </button>
@@ -31,9 +34,17 @@
     >
       <span class="arrow" v-if="arrow"></span>
       <div class="gtt__form">
-        <div class="gtt__item gtt__room" v-for="(i, index) in roomsLayout" :key="i.id">
+        <div
+          class="gtt__item gtt__room"
+          v-for="(i, index) in roomsLayout"
+          :key="i.id"
+        >
           <div class="gtt__room_name">Habitación {{ i.room }}</div>
-          <div class="row gtt__room_row" v-for="item in i.layout" :key="item.id">
+          <div
+            class="row gtt__room_row"
+            v-for="item in i.layout"
+            :key="item.id"
+          >
             <div class="gtt__item_label col-md-6">{{ item.label }}</div>
             <div class="col-md-2">
               <button
@@ -71,7 +82,9 @@
             </div>
           </div>
         </div>
-        <div class="display text-center antonio-bold mt-4">{{ constructDisplay() }}</div>
+        <div class="display text-center antonio-bold mt-4">
+          {{ constructDisplay() }}
+        </div>
       </div>
     </div>
   </div>

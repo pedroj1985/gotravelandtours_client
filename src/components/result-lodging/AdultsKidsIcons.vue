@@ -4,7 +4,9 @@
       <i class="mdi mdi-account-box" v-for="a in adults" :key="a.id"></i>
       <i class="mdi mdi-account-box-outline" v-for="k in kids" :key="k.id"></i>
     </span>
-    <b-tooltip :target="id" triggers="hover">{{ adults }} adulto(s) y {{ kids }} niño(s)</b-tooltip>
+    <b-tooltip :target="id" triggers="hover"
+      >{{ adults }} adulto(s) y {{ kids }} niño(s)</b-tooltip
+    >
   </span>
 </template>
 

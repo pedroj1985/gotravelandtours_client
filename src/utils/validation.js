@@ -1,7 +1,10 @@
 import { helpers } from "./helpers";
 import moment from "moment";
+import { ValidationObserver } from "vee-validate";
 
 export function gttIsValid(Validator, vueInstance = null) {
+  console.log(Validator);
+  console.log(vueInstance);
   if (Validator.length == 8 && vueInstance.$children.length == 4) {
     Validator.pop();
     Validator.pop();
@@ -133,14 +136,11 @@ export function renderValid(Validator, vueInstance) {
       });
     }
 
-    const errorsContainer = ref.querySelector(".gtt-errors");
-    errorsContainer.textContent = "";
+    ref.querySelector(".gtt-errors").innerHTML = "";
     if (!element.isValid) {
       element.messages.forEach(item => {
-        const span = document.createElement("span");
-        span.textContent = item;
-        errorsContainer.appendChild(span);
-        errorsContainer.appendChild(document.createElement("br"));
+        let div = ref.querySelector(".gtt-errors");
+        div.innerHTML += item + "<br>";
       });
     }
   });

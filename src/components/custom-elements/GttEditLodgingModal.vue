@@ -30,18 +30,21 @@
                       :options="destinies"
                       :alignLeft="true"
                     >
-                      <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-                      <span slot="placeholder" class="required-field">Destino o Alojamiento</span>
-                      <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
+                      <i
+                        slot="iconSelectedValue"
+                        class="mdi mdi-map-marker"
+                      ></i>
+                      <span slot="placeholder" class="required-field"
+                        >Destino o Alojamiento</span
+                      >
+                      <span slot="selectedPlaceholder"
+                        >¿Dónde desea alojarse?</span
+                      >
                       <template v-slot:option="option">
-                        {{
-                        option.option.nombre
-                        }}
+                        {{ option.option.nombre }}
                       </template>
                       <template v-slot:selectedValue="selectedValue">
-                        {{
-                        selectedValue.selectedValue.nombre
-                        }}
+                        {{ selectedValue.selectedValue.nombre }}
                       </template>
                       <span slot="error" class="gtt-errors"></span>
                     </gtt-select>
@@ -49,17 +52,35 @@
                 </b-col>
                 <b-col cols="6">
                   <div ref="gttStartDate">
-                    <GttSelectDate :mode="'single'" v-model="dateIn" class="room-form-item">
-                      <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                      <span slot="placeholder" class="required-field">Fecha de entrada</span>
+                    <GttSelectDate
+                      :mode="'single'"
+                      v-model="dateIn"
+                      class="room-form-item"
+                    >
+                      <i
+                        slot="iconSelectedValue"
+                        class="mdi mdi-calendar-today"
+                      ></i>
+                      <span slot="placeholder" class="required-field"
+                        >Fecha de entrada</span
+                      >
                     </GttSelectDate>
                   </div>
                 </b-col>
                 <b-col cols="6">
                   <div ref="gttEndDate">
-                    <GttSelectDate :mode="'single'" v-model="dateOut" class="room-form-item">
-                      <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                      <span slot="placeholder" class="required-field">Fecha de salida</span>
+                    <GttSelectDate
+                      :mode="'single'"
+                      v-model="dateOut"
+                      class="room-form-item"
+                    >
+                      <i
+                        slot="iconSelectedValue"
+                        class="mdi mdi-calendar-today"
+                      ></i>
+                      <span slot="placeholder" class="required-field"
+                        >Fecha de salida</span
+                      >
                     </GttSelectDate>
                   </div>
                 </b-col>
@@ -75,7 +96,9 @@
                     <span slot="iconSelectedValue">
                       <i class="mdi mdi-account"></i>
                     </span>
-                    <span slot="placeholder" class="required-field">Visitantes</span>
+                    <span slot="placeholder" class="required-field"
+                      >Visitantes</span
+                    >
                   </GttSelectForm2>
                 </b-col>
                 <b-col cols="6">
@@ -88,14 +111,10 @@
                     <i slot="iconSelectedValue" class="mdi mdi-bed"></i>
                     <span slot="placeholder">Habitaciones</span>
                     <template v-slot:option="option">
-                      {{
-                      option.option.display
-                      }}
+                      {{ option.option.display }}
                     </template>
                     <template v-slot:selectedValue="selectedValue">
-                      {{
-                      selectedValue.selectedValue.display
-                      }}
+                      {{ selectedValue.selectedValue.display }}
                     </template>
                   </GttSelect>
                 </b-col>
@@ -114,9 +133,20 @@
                   class="lodging-searchButton antonio-regular"
                 >
                   <template v-if="!isReserving">Buscar</template>
-                  <b-spinner small class="loading-spinner" label="Text Centered" v-else></b-spinner>
+                  <b-spinner
+                    small
+                    class="loading-spinner"
+                    label="Text Centered"
+                    v-else
+                  ></b-spinner>
                 </button>
-                <button type="button" @click="$emit('cancel')" class="antonio-regular">Cancelar</button>
+                <button
+                  type="button"
+                  @click="$emit('cancel')"
+                  class="antonio-regular"
+                >
+                  Cancelar
+                </button>
               </div>
             </div>
           </div>
@@ -145,6 +175,7 @@ import {
   authGetHotelList
 } from "../../utils/auth";
 import _ from "lodash";
+import { cartStore } from "../../stores/cartStore";
 
 export default {
   components: {
@@ -400,7 +431,7 @@ export default {
           localStorage.setItem("searchLodgingAcomodation", JSON.stringify(r));
 
           this.$helpers.shoppingCartRemoveOne(this.item.uID);
-          this.$eventCartBus.$emit("updateCart");
+          cartStore.refresh();
 
           this.$router.push({
             name: "lodging-detail",
@@ -425,7 +456,7 @@ export default {
             JSON.stringify(searchFilters)
           );
           this.$helpers.shoppingCartRemoveOne(this.item.uID);
-          this.$eventCartBus.$emit("updateCart");
+          cartStore.refresh();
           this.$router.push({
             name: "resultLodging"
           });

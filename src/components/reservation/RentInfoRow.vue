@@ -11,8 +11,13 @@
       <div ref="gttPickUp" class="input-left ir-text-input">
         <div class="ir-info-name font14 required-field">Datos de recogida</div>
 
-        <gtt-select v-on:input="$emit('inputPickUpPlace', $event)" :openedLodging.sync="pickUpOpened"
-          :options="pickUpDeliveryOptions" class="cleft" v-model="selectedPickUpPlace">
+        <gtt-select
+          v-on:input="$emit('inputPickUpPlace', $event)"
+          :openedLodging.sync="pickUpOpened"
+          :options="pickUpDeliveryOptions"
+          class="cleft"
+          v-model="selectedPickUpPlace"
+        >
           <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
 
           <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
@@ -32,15 +37,25 @@
           <div class="ir-info-name  font14">
             Hora Recogida
           </div>
-          <vue-timepicker :value="pickUp" @input="$emit('inputPickUp', $event)" :disabled="!editable" lazy
-            close-on-complete hide-clear-button />
+          <vue-timepicker
+            :value="pickUp"
+            @input="$emit('inputPickUp', $event)"
+            :disabled="!editable"
+            lazy
+            close-on-complete
+            hide-clear-button
+          />
         </div>
       </div>
 
       <div ref="gttDelivery" class="input-right ir-text-input">
         <div class="ir-info-name font14 required-field">Datos de entrega</div>
-        <gtt-select v-on:input="$emit('inputDeliveryPlace', $event)" :openedLodging.sync="deliveryOpened"
-          :options="pickUpDeliveryOptions" v-model="selectedDeliveryPlace">
+        <gtt-select
+          v-on:input="$emit('inputDeliveryPlace', $event)"
+          :openedLodging.sync="deliveryOpened"
+          :options="pickUpDeliveryOptions"
+          v-model="selectedDeliveryPlace"
+        >
           <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
 
           <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
@@ -58,8 +73,14 @@
           <div class="ir-info-name  font14">
             Hora Entrega
           </div>
-          <vue-timepicker :disabled="true" :value="deliver" @input="$emit('inputDeliver', $event)" lazy close-on-complete
-            hide-clear-button />
+          <vue-timepicker
+            :disabled="true"
+            :value="deliver"
+            @input="$emit('inputDeliver', $event)"
+            lazy
+            close-on-complete
+            hide-clear-button
+          />
         </div>
       </div>
     </div>
@@ -87,25 +108,25 @@ export default {
       deliveryOpened: false,
       selectedPickUpPlace: null,
       selectedDeliveryPlace: null,
-      pickUpDeliveryOptions: [],
+      pickUpDeliveryOptions: []
     };
   },
   props: {
     deliver: {
-      type: String,
+      type: String
     },
     pickUp: {
-      type: String,
+      type: String
     },
     editable: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   components: {
     GttSelect,
     GttSelectDate,
-    GttModalSearch,
+    GttModalSearch
   },
   mixins: [cleanVoMixin],
   methods: {
@@ -113,32 +134,32 @@ export default {
       try {
         let { data } = await authSearchPuntosInteres();
         let totalResult = [];
-        data.forEach((item) => {
+        data.forEach(item => {
           totalResult = totalResult.concat({
             nombre: item.Nombre,
             regionid: item.RegionId,
             puntointeresid: item.PuntoInteresId,
-            type: "punto-interes",
+            type: "punto-interes"
           });
         });
         this.pickUpDeliveryOptions = totalResult;
       } catch (error) {
         this.$toasted.show("El servicio no está disponible en estos momentos", {
-          type: "error",
+          type: "error"
         });
       }
-    },
+    }
   },
 
   watch: {
     // cada vez que la pregunta cambie, esta función será ejecutada
-    selectedPickUpPlace: function (newPickUpPlace, oldPickUpPlace) {
+    selectedPickUpPlace: function(newPickUpPlace, oldPickUpPlace) {
       if (this.selectedDeliveryPlace == null) {
         this.$emit("inputDeliveryPlace", newPickUpPlace);
         this.selectedDeliveryPlace = newPickUpPlace;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

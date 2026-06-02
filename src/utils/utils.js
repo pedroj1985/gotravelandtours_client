@@ -1,5 +1,5 @@
 import moment from "moment";
-import { eventDiffDays } from "../main";
+import { diffDaysEmitter } from "./emitter";
 import { storageService } from "./storageService";
 import logger from "./logger";
 
@@ -26,7 +26,7 @@ export function verifyDifferentsDates(itemToCompare, tipo = "rent") {
     let list = cart.filter(i => {
       return i.tipo == tipo;
     });
-    eventDiffDays.$emit("diffDays", checkDifferentDates(itemToCompare, list));
+    diffDaysEmitter.emit("diffDays", checkDifferentDates(itemToCompare, list));
   }
 }
 

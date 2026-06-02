@@ -115,7 +115,7 @@ export function distributeKidsToRooms(list, kids) {
 export function buildRoomComboV2(roomLayout, habitacionPorCantidadPersonas) {
   let result = [];
   let d = habitacionPorCantidadPersonas(2);
-  
+
   for (let i = 0; i < roomLayout.dobles; i++) {
     result.push({
       hab: d.Nombre,
@@ -154,7 +154,7 @@ export function buildRoomComboV2(roomLayout, habitacionPorCantidadPersonas) {
 export function buildRoomCombo(roomLayout, habitacionPorCantidadPersonas) {
   let result = [];
   let d = habitacionPorCantidadPersonas(2);
-  
+
   for (let i = 0; i < roomLayout.dobles; i++) {
     result.push({
       hab: d.Nombre,

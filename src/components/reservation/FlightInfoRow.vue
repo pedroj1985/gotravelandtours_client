@@ -91,10 +91,10 @@ import GttSelect from "../custom-elements/GttSelect.vue";
 export default {
   mounted() {
     authGetAirlines()
-      .then((json) => {
+      .then(json => {
         this.airlines = json.data;
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       });
   },
@@ -110,40 +110,40 @@ export default {
     },
     aerolinea_takeoff: function(value) {
       this.ht = { Nombre: value };
-    },
+    }
   },
   data() {
     return {
       airlines: [],
       hl: "",
-      ht: "",
+      ht: ""
     };
   },
   props: {
     hora_landing: {
-      type: String,
+      type: String
     },
     aerolinea_landing: {
-      type: String,
+      type: String
     },
     nvuelo_landing: {
-      type: String,
+      type: String
     },
     hora_takeoff: {
-      type: String,
+      type: String
     },
     aerolinea_takeoff: {
-      type: String,
+      type: String
     },
     nvuelo_takeoff: {
-      type: String,
+      type: String
     },
     editable: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
-  components: { GttSelect },
+  components: { GttSelect }
 };
 </script>
 <style scoped>

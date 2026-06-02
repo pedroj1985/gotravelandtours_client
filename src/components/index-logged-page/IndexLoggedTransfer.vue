@@ -162,7 +162,7 @@ import GttSelectForm from "../custom-elements/GttSelectForm";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import moment from "moment";
 import { constructDate, constructDisplay } from "../../utils/utils";
-import { eventBus } from "../../main";
+import { scrollStore } from "../../stores/scrollStore";
 import { getValid, renderValid, gttIsValid } from "../../utils/validation";
 
 export default {
@@ -170,7 +170,7 @@ export default {
     GttSelect,
     GttSelectDate,
     GttSelectForm,
-    GttModalSearch,
+    GttModalSearch
   },
   created() {
     window.addEventListener("scroll", this.handleScroll);
@@ -186,7 +186,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        eventBus.$emit("componentScrolled", "transfer");
+        scrollStore.scrollTo("transfer");
       }
     },
     /* TODO: llamada a la api */
@@ -201,8 +201,8 @@ export default {
           this.$router.push({
             name: "resultRent",
             params: {
-              searchResult: resultList,
-            },
+              searchResult: resultList
+            }
           });
         } catch (error) {
           console.log(error);
@@ -210,7 +210,7 @@ export default {
           this.$toasted.show(
             "El servicio no está disponible en estos momentos",
             {
-              type: "error",
+              type: "error"
             }
           );
         }
@@ -220,7 +220,7 @@ export default {
     },
     desactivateModal() {
       this.isModalActive = false;
-    },
+    }
   },
   data() {
     return {
@@ -244,38 +244,38 @@ export default {
         "Blau Varadero Hotel Cuba",
         "Iberostar Selection Varadero",
         "Royalton Hicacos Varadero Resort & Spa",
-        "Sanctuary at Grand Memories Varadero",
+        "Sanctuary at Grand Memories Varadero"
       ],
       passengersLayout: [
         {
           code: "adults",
           label: "Adultos",
           display: "Adulto(s)",
-          default: 1,
+          default: 1
         },
         {
           code: "kids",
           label: "Niños",
           display: "Niño(s)",
-          default: 0,
-        },
+          default: 0
+        }
       ],
       luggagesLayout: [
         {
           code: "big_bag",
           label: "Equipaje grande",
           display: "Equipaje(s) grande",
-          default: 0,
+          default: 0
         },
         {
           code: "small_bag",
           label: "Equipaje pequeño",
           display: "Pequeño",
-          default: 0,
-        },
-      ],
+          default: 0
+        }
+      ]
     };
-  },
+  }
 };
 </script>
 
