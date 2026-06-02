@@ -27,8 +27,10 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import VueLazyLoad from "vue-lazyload";
 import "vue-image-lightbox/dist/vue-image-lightbox.min.css";
 import VueCompositionApi from "@vue/composition-api";
+import { setupGlobalErrorHandler } from "./utils/errorHandler";
 
 Vue.config.productionTip = false;
+setupGlobalErrorHandler(Vue);
 Vue.use(VueLazyLoad);
 Vue.use(VueCompositionApi);
 Vue.use(BootstrapVue);
