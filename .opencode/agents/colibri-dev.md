@@ -103,7 +103,11 @@ Files: `.env.development` (local), `.env.production` (production).
 5. **Error handling** via `Vue.config.errorHandler` + `withRetry` utility + Axios response interceptor.
 6. **WCAG AA compliant** — color contrast (`#7fa300` primary), ARIA attributes, keyboard navigation, skip link.
 
-## Closed Issues Reference
+## Branch Strategy
+
+Each logical group of issues (fase) uses a **single branch** named `fase-{N}-{nombre}`. For example, Fase 5.3, 5.4, 5.5, 5.6 all share one branch `fase-5-vue3`. This avoids excessive branch proliferation and simplifies rebase.
+
+## Completed Issues
 
 - **#1-#6**: Fase 0 — Auditoría, .env, CSP, Husky, build
 - **#7-#11**: Fase 1 — innerHTML, logger, token, validación, router guard
@@ -111,6 +115,32 @@ Files: `.env.development` (local), `.env.production` (production).
 - **#18-#22, #25**: Fase 3 — API layer, composables, stores, error handler, skeleton
 - **#23, #24, #27**: Fase 4 — WCAG AA, ARIA, keyboard nav
 - **#26, #28, #29**: Fase 5 — Responsive, Vite migration, bootstrap-vue removal
+
+## Open Issues
+
+### Fase 5.x — Vue 3 Migration (branch: `fase-5-vue3`, prioridad: baja)
+| # | Título | Estado |
+|---|--------|--------|
+| 30 | Migrar main.js a `createApp` API | Open |
+| 31 | Migrar vee-validate v2 → v4 | Open |
+| 32 | Migrar Vue Router v3 → v4 | Open |
+| 33 | Migrar librerías carrusel y lightbox | Open |
+
+### Fase 6 — Testing (branch: `fase-6-testing`, prioridad: media/baja)
+| # | Título | Prioridad | Estado |
+|---|--------|-----------|--------|
+| 34 | Setup Vitest + Vue Test Utils | media | Open |
+| 35 | Tests unitarios servicios/utils | media | Open |
+| 36 | Tests de componentes Vue | media | Open |
+| 37 | Setup E2E con Cypress | baja | Open |
+| 38 | Setup CI/CD con GitHub Actions | media | Open |
+
+### Fase 7 — TypeScript (branch: `fase-7-typescript`, prioridad: baja)
+| # | Título | Estado |
+|---|--------|--------|
+| 39 | Setup de TypeScript | Open |
+| 40 | Migrar servicios a TypeScript | Open |
+| 41 | Interfaces y tipos compartidos | Open |
 
 ## Constraints & Warnings
 
