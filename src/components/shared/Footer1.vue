@@ -5,23 +5,18 @@
         ¿Quieres recibir ofertas exclusivas de hoteles? ¡Suscríbete a nuestro
         boletín de noticias!
       </div>
-      <ValidationObserver
-        class="form-inline"
-        ref="observer"
-        tag="form"
-        @submit.prevent="sendSubsPetition"
-      >
-        <ValidationProvider name="correo" rules="required" v-slot="{ errors }">
+      <Form class="form-inline" @submit="sendSubsPetition">
+        <Field name="correo" rules="required" v-slot="{ field, errors }">
           <div class="form-group">
             <input
+              v-bind="field"
               type="email"
-              v-model="email"
               class="form-control hn-roman"
               placeholder="Dirección de correo"
             />
           </div>
           <div>{{ errors[0] }}</div>
-        </ValidationProvider>
+        </Field>
         <button type="submit" class="btn antonio-regular">
           <template v-if="!loading">suscribirse</template>
           <span
@@ -29,50 +24,44 @@
             v-else
           ></span>
         </button>
-      </ValidationObserver>
+      </Form>
     </div>
   </div>
 </template>
 
 <script>
+import { Form, Field } from "vee-validate";
 import { subscribe } from "../../utils/auth";
 
 export default {
+  components: { Form, Field },
   data() {
     return {
-      loading: false,
-      email: ""
+      loading: false
     };
   },
   methods: {
-    clearInput() {
-      this.email = "";
-    },
-    async sendSubsPetition() {
-      const valid = await this.$refs.observer.validate();
-      if (valid) {
-        try {
-          this.loading = true;
-          await subscribe(this.email);
-          this.loading = false;
-          this.$toasted.show(
-            "Su petición se suscripción ha sido enviada con éxito. La administración pronto contactará con usted",
-            {
-              type: "success"
-            }
-          );
-        } catch (error) {
-          console.log(error);
-          this.loading = false;
-          this.$toasted.show(
-            "El servicio no está disponible en estos momentos",
-            {
-              type: "error"
-            }
-          );
-        }
+    async sendSubsPetition(values) {
+      try {
+        this.loading = true;
+        await subscribe(values.correo);
+        this.loading = false;
+        this.$toasted.show(
+          "Su petición se suscripción ha sido enviada con éxito. La administración pronto contactará con usted",
+          {
+            type: "success"
+          }
+        );
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        this.$toasted.show(
+          "El servicio no está disponible en estos momentos",
+          {
+            type: "error"
+          }
+        );
       }
-      this.clearInput();
     }
   }
 };

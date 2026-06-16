@@ -397,9 +397,8 @@ export default {
       await vm.initializeData();
     });
   }, */
-  async beforeRouteUpdate(to, from, next) {
+  async beforeRouteUpdate(to, from) {
     await this.initializeData();
-    next();
   },
   /* async created() {
     await this.initializeData();

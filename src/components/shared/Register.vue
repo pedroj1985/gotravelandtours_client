@@ -9,119 +9,91 @@
               <hr />
               <div class="form-inicio-sesion-text antonio-bold">Registro</div>
             </div>
-            <form action="/Register" method="POST">
-              <div class="form-group inputs-container hn-roman">
-                <div class="test-error" v-if="testErrorVisible">
-                  {{ testError }}
-                </div>
-                <ValidationObserver
-                  ref="observer"
-                  tag="form"
-                  @submit.prevent="submit()"
-                >
-                  <ValidationProvider
-                    name="usuario"
-                    rules="required"
-                    v-slot="{ errors, valid }"
-                  >
-                    <input
-                      v-model="username"
-                      type="text"
-                      class="form-control"
-                      :class="{ 'is-invalid': errors[0] }"
-                      name="username"
-                      id="username-input"
-                      placeholder="Usuario"
-                    />
-                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider
-                    name="teléfono"
-                    rules="required"
-                    v-slot="{ errors }"
-                  >
-                    <input
-                      v-model="phone"
-                      type="text"
-                      class="form-control"
-                      :class="{ 'is-invalid': errors[0] }"
-                      name="phone"
-                      id="phone-input"
-                      placeholder="Teléfono"
-                    />
-                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider
+            <div class="form-group inputs-container hn-roman">
+              <div class="test-error" v-if="testErrorVisible">
+                {{ testError }}
+              </div>
+              <Form @submit="submit">
+                <Field name="username" rules="required" v-slot="{ field, errors }">
+                  <input
+                    v-bind="field"
+                    type="text"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors[0] }"
+                    name="username"
+                    id="username-input"
+                    placeholder="Usuario"
+                  />
+                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                </Field>
+                <Field name="telefono" rules="required" v-slot="{ field, errors }">
+                  <input
+                    v-bind="field"
+                    type="text"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors[0] }"
+                    name="phone"
+                    id="phone-input"
+                    placeholder="Teléfono"
+                  />
+                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                </Field>
+                <Field name="email" rules="required" v-slot="{ field, errors }">
+                  <input
+                    v-bind="field"
+                    type="email"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors[0] }"
                     name="email"
-                    rules="required"
-                    v-slot="{ errors }"
+                    id="email-input"
+                    placeholder="Correo electrónico"
+                  />
+                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                </Field>
+                <Field name="password" rules="required|confirmed:@confirm" v-slot="{ field, errors }">
+                  <input
+                    v-bind="field"
+                    type="password"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors[0] }"
+                    name="password"
+                    id="password-input"
+                    placeholder="Contraseña"
+                  />
+                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                </Field>
+                <Field name="confirm" rules="required" v-slot="{ field, errors }">
+                  <input
+                    v-bind="field"
+                    type="password"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors[0] }"
+                    name="confirm_password"
+                    id="confirm-password-input"
+                    placeholder="Confirme la contraseña"
+                  />
+                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                </Field>
+                <div class="form-password-forgotten hn-roman">
+                  ¿Ya tienes una cuenta? <a href="#">Inicia Sesión</a>
+                </div>
+                <div class="home-actions antonio-regular">
+                  <button
+                    class="btn home-sign-up"
+                    type="submit"
                   >
-                    <input
-                      v-model="email"
-                      type="email"
-                      class="form-control"
-                      :class="{ 'is-invalid': errors[0] }"
-                      name="email"
-                      id="email-input"
-                      placeholder="Correo electrónico"
-                    />
-                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider
-                    name="contraseña"
-                    rules="required|confirmed:confirm"
-                    v-slot="{ errors }"
-                  >
-                    <input
-                      v-model="password"
-                      type="password"
-                      class="form-control"
-                      :class="{ 'is-invalid': errors[0] }"
-                      name="password"
-                      id="password-input"
-                      placeholder="Contraseña"
-                    />
-                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider
-                    name="confirm password"
-                    vid="confirm"
-                    rules="required"
-                    v-slot="{ errors }"
-                  >
-                    <input
-                      v-model="confirm_password"
-                      type="password"
-                      class="form-control"
-                      :class="{ 'is-invalid': errors[0] }"
-                      name="confirm_password"
-                      id="confirm-password-input"
-                      placeholder="Confirme la contraseña"
-                    />
-                    <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                </ValidationObserver>
-              </div>
-              <div class="form-password-forgotten hn-roman">
-                ¿Ya tienes una cuenta? <a href="#">Inicia Sesión</a>
-              </div>
-              <div class="home-actions antonio-regular">
-                <button
-                  class="btn home-sign-up"
-                  type="button"
-                  @click="submit()"
-                >
-                  <template v-if="!loading">registrarse</template>
-                  <span
-                    class="gtt-spinner gtt-spinner-sm loading-spinner"
-                    v-else
-                  ></span>
-                </button>
-                <button class="btn home-sign-up" type="button" @click="close">
-                  cerrar
-                </button>
-              </div>
-            </form>
+                    <template v-if="!loading">registrarse</template>
+                    <span
+                      class="gtt-spinner gtt-spinner-sm loading-spinner"
+                      v-else
+                    ></span>
+                  </button>
+                  <button class="btn home-sign-up" type="button" @click="close">
+                    cerrar
+                  </button>
+                </div>
+              </Form>
+            </div>
             <div class="terms-of-use hn-roman">
               Al iniciar sesión o al crear una cuenta, acepta nuestros Términos
               de uso y la Declaración de privacidad
@@ -134,17 +106,14 @@
 </template>
 
 <script>
+import { Form, Field } from "vee-validate";
 import { authRegister } from "../../utils/auth";
 
 export default {
+  components: { Form, Field },
   data() {
     return {
       loading: false,
-      username: "",
-      phone: "",
-      email: "",
-      password: "",
-      confirm_password: "",
       testErrorVisible: false,
       testError: ""
     };
@@ -153,36 +122,33 @@ export default {
     close() {
       this.$emit("closeModal");
     },
-    async submit() {
-      const valid = await this.$refs.observer.validate();
-      if (valid) {
-        let user = {
-          username: this.username,
-          password: this.password,
-          telefono: this.phone,
-          correo: this.email,
-          clienteId: localStorage.getItem("cliente"),
-          rolId: 3
-        };
-        this.loading = true;
-        authRegister(user, {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+    async submit(values) {
+      let user = {
+        username: values.username,
+        password: values.password,
+        telefono: values.telefono,
+        correo: values.email,
+        clienteId: localStorage.getItem("cliente"),
+        rolId: 3
+      };
+      this.loading = true;
+      authRegister(user, {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      })
+        .then(({ data }) => {
+          console.log(data);
+          this.$toasted.show(
+            `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
+            {
+              type: "success"
+            }
+          );
+          this.loading = false;
+          this.close();
         })
-          .then(({ data }) => {
-            console.log(data);
-            this.$toasted.show(
-              `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
-              {
-                type: "success"
-              }
-            );
-            this.loading = false;
-            this.close();
-          })
-          .catch(() => {
-            this.loading = false;
-          });
-      }
+        .catch(() => {
+          this.loading = false;
+        });
     }
   }
 };
