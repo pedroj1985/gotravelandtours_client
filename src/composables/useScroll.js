@@ -1,4 +1,4 @@
-import { onMounted, onBeforeUnmount } from "@vue/composition-api";
+import { onMounted, onBeforeUnmount } from "vue";
 import { scrollStore } from "../stores/scrollStore";
 
 export function useScroll(elRef) {

@@ -1,19 +1,12 @@
 <template>
   <div class="custom-margin hotel-carousel-wrapper">
-    <Slick
+    <swiper
       class="hotel-carousel"
-      ref="slick"
-      :slidesToShow="4"
-      :arrows="true"
-      :swipe="true"
+      :slides-per-view="4"
+      :navigation="true"
+      :modules="swiperModules"
     >
-      <div slot="prevArrow" class="custom-prevArrow">
-        <i class="mdi mdi-chevron-left"></i>
-      </div>
-      <div slot="nextArrow" class="custom-nextArrow">
-        <i class="mdi mdi-chevron-right"></i>
-      </div>
-      <div
+      <swiper-slide
         class="index-logged-hotel-wrapper"
         v-for="hotel in hotels"
         :key="hotel.id"
@@ -52,17 +45,20 @@
             </div>
           </div>
         </div>
-      </div>
-    </Slick>
+      </swiper-slide>
+    </swiper>
   </div>
 </template>
 
 <script>
-import Slick from "vue-slick-carousel";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css"
 
 export default {
   components: {
-    Slick
+    Swiper,
+    SwiperSlide
   },
   methods: {
     styledPrice(number) {
@@ -90,6 +86,7 @@ export default {
   },
   data() {
     return {
+      swiperModules: [Navigation, Pagination, Autoplay],
       hotels: [
         {
           name: "Hotel Jagua by Melia Hotels International",
@@ -177,7 +174,7 @@ export default {
   border-radius: 10px;
   position: relative;
 }
-.slick-active .index-logged-hotel {
+.swiper-slide-active .index-logged-hotel {
   box-shadow: 2px 0.5px 5px rgba(0, 0, 0, 35%);
 }
 .index-logged-hotel img {
@@ -228,18 +225,20 @@ export default {
   text-align: center;
 }
 
-.hotel-carousel button.slick-arrow {
+.hotel-carousel .swiper-button-next,
+.hotel-carousel .swiper-button-prev {
   z-index: 1;
   width: 45px;
   height: 45px;
 }
-.hotel-carousel button.slick-arrow::before {
+.hotel-carousel .swiper-button-next::after,
+.hotel-carousel .swiper-button-prev::after {
   font-size: 45px;
 }
-.hotel-carousel button.slick-prev {
+.hotel-carousel .swiper-button-prev {
   left: 50px;
 }
-.hotel-carousel button.slick-next {
+.hotel-carousel .swiper-button-next {
   right: 50px;
 }
 

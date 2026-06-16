@@ -146,13 +146,11 @@
 </template>
 
 <script>
-import Slick from "vue-slick-carousel";
 import { getPackages } from "@/utils/auth";
 import moment from "moment/moment";
 
 export default {
   components: {
-    Slick
   },
   methods: {
     styledPrice(number) {

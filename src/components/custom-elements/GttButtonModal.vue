@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import ClickOutside from "vue-click-outside";
+import { clickOutside } from "@/directives/clickOutside";
 import { closeSession } from "../../utils/auth";
 import RegisterModal from "../shared/Register";
 import { authStore } from "../../stores/authStore";
@@ -50,7 +50,7 @@ export default {
     RegisterModal
   },
   directives: {
-    ClickOutside
+    clickOutside
   },
   mounted() {
     this.popupItem = this.$el;

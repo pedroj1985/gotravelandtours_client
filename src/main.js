@@ -1,52 +1,28 @@
-import Vue from "vue";
+import { createApp } from "vue";
 import App from "./App.vue";
-import VueScrollTo from "vue-scrollto";
-import VueRouter from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "./routes";
 import VCalendar from "v-calendar";
 import "bootstrap/dist/css/bootstrap.css";
 import "@/assets/styles/main.scss";
-import VeeValidate from "vee-validate";
-import { ValidationProvider } from "vee-validate";
-import { ValidationObserver } from "vee-validate";
-import { Validator } from "vee-validate";
-import Toasted from "vue-toasted";
+import Vue3Toastify, { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 import { storageService } from "./utils/storageService";
-import es from "vee-validate/dist/locale/es";
-import VueTimepicker from "vue2-timepicker";
-import "vue2-timepicker/dist/VueTimepicker.css";
-import VueLodash from "vue-lodash";
 import lodash from "lodash";
 import { helpers } from "./utils/helpers";
 import { authStore } from "./stores/authStore";
 import { cartStore } from "./stores/cartStore";
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.min.css";
-import VueLazyLoad from "vue-lazyload";
-import "vue-image-lightbox/dist/vue-image-lightbox.min.css";
-import VueCompositionApi from "@vue/composition-api";
-import { setupGlobalErrorHandler } from "./utils/errorHandler";
+import { setupGlobalErrorHandler, setToastInstance } from "./utils/errorHandler";
 
-Vue.config.productionTip = false;
-setupGlobalErrorHandler(Vue);
-Vue.use(VueLazyLoad);
-Vue.use(VueCompositionApi);
-Vue.use(VueLodash, { lodash: lodash });
-Vue.use(Toasted, {
-  duration: 5000,
-  className: "gtt-notification"
-});
-Vue.use(VueScrollTo, {
-  offset: -30
+const app = createApp(App);
+
+setupGlobalErrorHandler(app);
+
+app.use(Vue3Toastify, {
+  autoClose: 5000
 });
 
-// const originalPush = VueRouter.prototype.push
-// VueRouter.prototype.push = function push(location) {
-//   return originalPush.call(this, location).catch(err => err)
-// }
-
-Vue.use(VueRouter);
-Vue.use(VCalendar, {
+app.use(VCalendar, {
   locales: {
     es: {
       masks: {
@@ -56,34 +32,32 @@ Vue.use(VCalendar, {
     }
   }
 });
-Vue.prototype.$helpers = helpers;
-Vue.use(VeeValidate, {
-  fieldsBagName: "inputs "
-});
-Vue.component("multiselect", Multiselect);
-Vue.component("ValidationProvider", ValidationProvider);
-Vue.component("ValidationObserver", ValidationObserver);
-Vue.component("VueTimepicker", VueTimepicker);
-Validator.localize("es", es);
-const router = new VueRouter({
+
+setToastInstance(toast);
+
+app.config.globalProperties.$helpers = helpers;
+app.config.globalProperties.$lodash = lodash;
+app.config.globalProperties.$toasted = {
+  show: (message, options) => toast(message, options)
+};
+
+const router = createRouter({
+  history: createWebHistory(),
   routes,
   scrollBehavior() {
     return { x: 0, y: 0 };
   }
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (storageService.getToken() == null) {
-      next({
-        name: "index",
-        params: { nextUrl: to.fullPath }
-      });
+      return { name: "index", params: { nextUrl: to.fullPath } };
     } else {
       const expiryDate = storageService.getExpiryDate();
       if (expiryDate) {
         if (new Date(expiryDate).getTime() > new Date().getTime()) {
-          next();
+          return true;
         } else {
           const saveVersion = storageService.getVersion();
           storageService.clear();
@@ -91,30 +65,19 @@ router.beforeEach((to, from, next) => {
 
           cartStore.refresh();
           authStore.logout();
-          Vue.toasted.show(`Sesión expirada`, {
-            type: "error"
-          });
-          router.push({
-            name: "index",
-            params: { nextUrl: to.fullPath }
-          });
+          toast.error("Sesión expirada");
+          return { name: "index", params: { nextUrl: to.fullPath } };
         }
       } else {
-        next();
+        return true;
       }
     }
   } else if (storageService.getToken() == null) {
-    next();
+    return true;
   } else
-    next({
-      name: "indexLogged"
-    });
+    return { name: "indexLogged" };
 });
 
-new Vue({
-  router,
-  mounted() {
-    this.$validator.localize(es);
-  },
-  render: h => h(App)
-}).$mount("#app");
+app.use(router);
+
+app.mount("#app");

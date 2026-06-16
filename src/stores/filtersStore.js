@@ -1,6 +1,6 @@
-import Vue from "vue";
+import { reactive } from "vue";
 
-const state = Vue.observable({
+const state = reactive({
   filters: {}
 });
 

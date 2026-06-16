@@ -40,17 +40,17 @@
             </div>
             <div class="filter-input">
               <!-- <input type="text" placeholder="Estado" v-model="filtroEstado"> -->
-              <multiselect
-                class="gtt__multiselect"
+              <select
+                class="gtt__multiselect form-select"
                 v-model="filtroEstado"
-                placeholder="Estados"
-                label="name"
-                track-by="value"
-                :options="estados"
-                :multiple="true"
-                :taggable="true"
-                :searchable="false"
-              ></multiselect>
+                multiple
+              >
+                <option
+                  v-for="estado in estados"
+                  :key="estado.value"
+                  :value="estado"
+                >{{ estado.name }}</option>
+              </select>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@
 <script>
 import { authGetOrders, authGetOrdersCount } from "../../utils/auth";
 import moment from "moment";
-import Vue from "vue";
+import { toast } from "vue3-toastify";
 import axios from "axios";
 
 export default {
@@ -218,9 +218,8 @@ export default {
             "http://gottours-001-site4.mtempurl.com/publicEliecer/api//Versions/1"
           );
           localStorage.setItem("version", JSON.stringify(response.data));
-          Vue.toasted.show(`Nueva version instalada`, {
-            fullWidth: true,
-            duration: 86400000
+          toast(`Nueva version instalada`, {
+            autoClose: 86400000
           });
         } else {
           const response = await axios.get(
@@ -228,25 +227,9 @@ export default {
           );
           const data = response.data;
           if (versionActual.VersionName != data.VersionName) {
-            Vue.toasted.show(`Nueva version.Actualizar?`, {
-              duration: 99999999,
-              fullWidth: true,
-              action: [
-                {
-                  text: "Si",
-                  onClick: (e, toastObject) => {
-                    localStorage.setItem("version", JSON.stringify(data));
-                    window.location.reload();
-                    toastObject.goAway(0);
-                  }
-                },
-                {
-                  text: "No",
-                  onClick: (e, toastObject) => {
-                    toastObject.goAway(0);
-                  }
-                }
-              ]
+            toast(`Nueva version.Actualizar?`, {
+              autoClose: false,
+              closeButton: true
             });
           }
         }

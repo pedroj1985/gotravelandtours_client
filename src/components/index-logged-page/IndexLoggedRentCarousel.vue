@@ -1,19 +1,12 @@
 <template>
   <div class="custom-margin">
-    <Slick
+    <swiper
       class="car-carousel"
-      ref="slick"
-      :slidesToShow="4"
-      :arrows="true"
-      :swipe="true"
+      :slides-per-view="4"
+      :navigation="true"
+      :modules="swiperModules"
     >
-      <div slot="prevArrow" class="custom-prevArrow">
-        <i class="mdi mdi-chevron-left"></i>
-      </div>
-      <div slot="nextArrow" class="custom-nextArrow">
-        <i class="mdi mdi-chevron-right"></i>
-      </div>
-      <div class="index-logged-car-wrapper" v-for="car in cars" :key="car.id">
+      <swiper-slide class="index-logged-car-wrapper" v-for="car in cars" :key="car.id">
         <div class="index-logged-car">
           <img :src="'img/' + car.img" :alt="car.model_name" />
           <div class="index-logged-car-name">
@@ -68,17 +61,20 @@
             </div>
           </div>
         </div>
-      </div>
-    </Slick>
+      </swiper-slide>
+    </swiper>
   </div>
 </template>
 
 <script>
-import Slick from "vue-slick-carousel";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css"
 
 export default {
   components: {
-    Slick
+    Swiper,
+    SwiperSlide
   },
   methods: {
     isSelected(word, list) {
@@ -95,6 +91,7 @@ export default {
   },
   data() {
     return {
+      swiperModules: [Navigation, Pagination, Autoplay],
       cars: [
         {
           model_name: "Mercedes Benz Clase C200",

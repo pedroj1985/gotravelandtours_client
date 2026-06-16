@@ -26,16 +26,14 @@
     <template v-else>
     <div class="result-item">
       <div class="result-item-carousel">
-        <Slick
-          ref="slick"
-          :slidesToShow="1"
-          :slidesToScroll="1"
-          :draggable="true"
-          :arrows="false"
-          :dots="true"
-          :autoplay="true"
+        <swiper
+          :slides-per-view="1"
+          :navigation="false"
+          :pagination="{ clickable: true }"
+          :autoplay="{ delay: 3000, disableOnInteraction: false }"
+          :modules="swiperModules"
         >
-          <div
+          <swiper-slide
             class="result-images-carousel"
             v-for="destinyImage in item.images"
             :key="destinyImage"
@@ -46,8 +44,8 @@
               src="../../../public/img/icopaq_alojamiento_black.svg"
               alt="alojamiento"
             />
-          </div>
-        </Slick>
+          </swiper-slide>
+        </swiper>
       </div>
       <div class="result-item-info">
         <div class="item-name hn-bdcn">{{ item.name }}</div>
@@ -161,7 +159,9 @@
 </template>
 
 <script>
-import Slick from "vue-slick-carousel";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css"
 import ResultListRow from "./ResultListRow";
 import GttSkeleton from "../shared/GttSkeleton";
 import _ from "lodash";
@@ -170,7 +170,8 @@ import { addToCartItem, reserveItem } from "../../composables/useCartItem";
 export default {
   created() {},
   components: {
-    Slick,
+    Swiper,
+    SwiperSlide,
     ResultListRow,
     GttSkeleton
   },
@@ -185,6 +186,7 @@ export default {
   },
   data() {
     return {
+      swiperModules: [Navigation, Pagination, Autoplay],
       isOpen: false,
       limit: 2,
       disabledItems: false

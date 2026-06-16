@@ -16,11 +16,14 @@
       @searched="updateResult"
       @errorC="errorSearch"
     ></GttLodgingDetailNewSearchModal>
-    <LightBox
-      :media="imagesTreated"
-      v-if="isModalGalleryActive"
-      @onClosed="isModalGalleryActive = false"
-    ></LightBox>
+    <div v-if="isModalGalleryActive" class="gtt-lightbox-overlay" @click="isModalGalleryActive = false">
+      <div class="gtt-lightbox-content" @click.stop>
+        <button class="gtt-lightbox-nav gtt-lightbox-prev" @click="prevImage">&lsaquo;</button>
+        <img :src="currentGalleryImage" alt="Imagen del alojamiento" />
+        <button class="gtt-lightbox-nav gtt-lightbox-next" @click="nextImage">&rsaquo;</button>
+        <button class="gtt-lightbox-close" @click="isModalGalleryActive = false">&times;</button>
+      </div>
+    </div>
     <NavBar2 :menuLinks="menuLinks"></NavBar2>
     <div class="row lodging-detail-wrapper">
       <div class="col-md-3 col-sm-5 left-side-wrapper">
@@ -107,7 +110,7 @@
                 <button
                   type="button"
                   class="to-uppercase inverse antonio-regular"
-                  v-scroll-to="{ el: '#pai', offset: -100 }"
+                  @click="document.getElementById('pai')?.scrollIntoView({ behavior: 'smooth' })"
                 >
                   Precios e información
                 </button>
@@ -118,23 +121,14 @@
         </div>
         <div class="lodging-detail-info flex-wrapper">
           <div class="lodging-info-carousel">
-            <Slick
-              ref="slick"
-              :slidesToShow="1"
-              :slidesToScroll="1"
-              :draggable="true"
-              :arrows="true"
-              :dots="false"
-              :autoplay="true"
+            <swiper
+              :slides-per-view="1"
+              :navigation="true"
+              :autoplay="{ delay: 3000, disableOnInteraction: false }"
+              :modules="swiperModules"
               class="lic-carousel"
             >
-              <div slot="prevArrow" class="custom-prevArrow">
-                <i class="mdi mdi-chevron-left"></i>
-              </div>
-              <div slot="nextArrow" class="custom-nextArrow">
-                <i class="mdi mdi-chevron-right"></i>
-              </div>
-              <div
+              <swiper-slide
                 class="result-images-carousel"
                 v-for="destinyImage in item.images"
                 :key="destinyImage"
@@ -145,8 +139,8 @@
                   @click="isModalGalleryActive = true"
                 />
                 <div class="w-100 h-100 position-absolute bgHolder"></div>
-              </div>
-            </Slick>
+              </swiper-slide>
+            </swiper>
           </div>
           <div class="lodging-info-info">
             <div class="lodging-info-name hn-ltcn font24 gtt-text-color">
@@ -355,7 +349,9 @@ import {
   hotetecBlockProduct
 } from "../../utils/auth";
 import { hotelecSessionService } from "../../utils/hotelecSessionService";
-import Slick from "vue-slick-carousel";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css"
 /* import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttSelect from "../custom-elements/GttSelect";
 import GttSelectForm2 from "../custom-elements/GttSelectForm2"; */
@@ -363,19 +359,20 @@ import GttLodgingDetailNewSearchModal from "../custom-elements/GttLodgingDetailN
 import ResultListRow2 from "../result-lodging/ResultListRow2";
 import moment from "moment";
 import SelectedRoom from "./SelectedRoom";
-import { uuid } from "vue-uuid";
+import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 import AdultsKidsIcons from "./AdultsKidsIcons";
 import LodgingForm from "./LodgingForm";
 import NavBar2 from "../shared/NavBar2";
-import LightBox from "vue-image-lightbox";
+
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import { cartStore } from "../../stores/cartStore";
 
 export default {
   mixins: [lodgingUtilsMixin],
   components: {
-    Slick,
+    Swiper,
+    SwiperSlide,
     /* GttSelectDate,
     GttSelect,
     GttSelectForm2, */
@@ -384,8 +381,7 @@ export default {
     AdultsKidsIcons,
     LodgingForm,
     NavBar2,
-    GttLodgingDetailNewSearchModal,
-    LightBox
+    GttLodgingDetailNewSearchModal
   },
   watch: {
     "$route.params.id": {
@@ -416,10 +412,12 @@ export default {
   }, */
   data() {
     return {
+      swiperModules: [Navigation, Pagination, Autoplay],
       item: null,
       clickedItem: "",
       isModalLodgingActive: false,
       isModalGalleryActive: false,
+      currentGalleryIndex: 0,
       totalToPay: 0,
       filters: null,
       totalRooms: null,
@@ -489,7 +487,11 @@ export default {
           return { src: i, thumb: i };
         });
       return [];
-    }
+    },
+    currentGalleryImage() {
+      const images = this.imagesTreated;
+      return images[this.currentGalleryIndex]?.src || "";
+    },
   },
   methods: {
     async initializeData() {
@@ -529,6 +531,14 @@ export default {
       } catch (e) {
         console.log(e);
       }
+    },
+    prevImage() {
+      const total = this.imagesTreated.length;
+      this.currentGalleryIndex = (this.currentGalleryIndex - 1 + total) % total;
+    },
+    nextImage() {
+      const total = this.imagesTreated.length;
+      this.currentGalleryIndex = (this.currentGalleryIndex + 1) % total;
     },
     changeClicked(item) {
       this.clickedItem = item;
@@ -867,7 +877,7 @@ export default {
                         CantidadMenores: cm,
                         PA: pa.data,
                         rn: el.room,
-                        id: uuid.v4()
+                        id: uuidv4()
                       });
                     } else {
                       noDisp = true;
@@ -940,7 +950,7 @@ export default {
                     CantAdultos: ca,
                     CantidadMenores: cm,
                     PA: pa.data,
-                    id: uuid.v4()
+                    id: uuidv4()
                   });
                 }
               } catch (e) {
@@ -966,3 +976,61 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.gtt-lightbox-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gtt-lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+.gtt-lightbox-content img {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+.gtt-lightbox-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 36px;
+  cursor: pointer;
+  line-height: 1;
+}
+.gtt-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  font-size: 48px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  z-index: 1;
+  transition: background 0.2s;
+}
+.gtt-lightbox-nav:hover {
+  background: rgba(255,255,255,0.4);
+}
+.gtt-lightbox-prev { left: -60px; }
+.gtt-lightbox-next { right: -60px; }
+</style>

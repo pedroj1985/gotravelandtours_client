@@ -1,21 +1,13 @@
 <template>
   <div :class="{ 'custom-margin': customMargin }">
-    <Slick
+    <swiper
       class="services-carousel"
-      ref="slick"
-      :slidesToShow="4"
-      :slidesToScroll="4"
-      :swipe="true"
-      :arrows="false"
-      :dots="true"
+      :slides-per-view="4"
+      :navigation="false"
+      :pagination="{ clickable: true }"
+      :modules="swiperModules"
     >
-      <div slot="prevArrow" class="custom-prevArrow">
-        <i class="mdi mdi-chevron-left"></i>
-      </div>
-      <div slot="nextArrow" class="custom-nextArrow">
-        <i class="mdi mdi-chevron-right"></i>
-      </div>
-      <div class="service-c" v-for="service in services" :key="service.id">
+      <swiper-slide class="service-c" v-for="service in services" :key="service.id">
         <div class="service">
           <img :src="'img/' + service.image" :alt="service.name" />
           <div class="service-content-container">
@@ -43,17 +35,20 @@
             </div>
           </div>
         </div>
-      </div>
-    </Slick>
+      </swiper-slide>
+    </swiper>
   </div>
 </template>
 
 <script>
-import Slick from "vue-slick-carousel";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css"
 
 export default {
   components: {
-    Slick
+    Swiper,
+    SwiperSlide
   },
   props: {
     customMargin: {
@@ -64,6 +59,7 @@ export default {
   name: "IndexServices",
   data() {
     return {
+      swiperModules: [Navigation, Pagination, Autoplay],
       services: [
         {
           image: "home_servicios_restaurant.jpg",

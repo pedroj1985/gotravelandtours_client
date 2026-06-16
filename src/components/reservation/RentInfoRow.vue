@@ -34,13 +34,11 @@
           <div class="ir-info-name  font14">
             Hora Recogida
           </div>
-          <vue-timepicker
+          <input
+            type="time"
             :value="pickUp"
-            @input="$emit('inputPickUp', $event)"
+            @input="$emit('inputPickUp', $event.target.value)"
             :disabled="!editable"
-            lazy
-            close-on-complete
-            hide-clear-button
           />
         </div>
       </div>
@@ -70,13 +68,11 @@
           <div class="ir-info-name  font14">
             Hora Entrega
           </div>
-          <vue-timepicker
+          <input
+            type="time"
             :disabled="true"
             :value="deliver"
-            @input="$emit('inputDeliver', $event)"
-            lazy
-            close-on-complete
-            hide-clear-button
+            @input="$emit('inputDeliver', $event.target.value)"
           />
         </div>
       </div>

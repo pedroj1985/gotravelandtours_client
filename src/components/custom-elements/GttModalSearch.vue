@@ -9,12 +9,9 @@
           <div class="second-column">
             <slot name="searching-text"></slot>
             <div class="progression-bar">
-              <BarLoader
-                :color="'#7fa300'"
-                :loading="loading"
-                :width="100"
-                :widthUnit="'%'"
-              ></BarLoader>
+              <div class="gtt-progress-bar">
+                <div class="gtt-progress-bar-inner"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -31,22 +28,32 @@
   </div>
 </template>
 
-<script>
-import { BarLoader } from "@saeris/vue-spinners";
+<style scoped>
+.gtt-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.gtt-progress-bar-inner {
+  width: 100%;
+  height: 100%;
+  background: #7fa300;
+  animation: gtt-progress-indeterminate 1.5s ease-in-out infinite;
+}
+@keyframes gtt-progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+</style>
 
+<script>
 export default {
-  components: {
-    BarLoader
-  },
   data() {
     return {
       loading: true
     };
-  },
-  created() {
-    /* setTimeout(()=>{
-        this.$emit('searchingFinished',false)
-    },2000) */
   }
 };
 </script>

@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import ClickOutside from "vue-click-outside";
+import { clickOutside } from "@/directives/clickOutside";
 // import GttSelect from '../custom-elements/GttSelect';
 import _ from "lodash";
 
@@ -100,7 +100,7 @@ export default {
     // GttSelect
   },
   directives: {
-    ClickOutside
+    clickOutside
   },
   mounted() {
     this.popupItem = this.$el;

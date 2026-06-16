@@ -1,7 +1,5 @@
 import { helpers } from "./helpers";
 import moment from "moment";
-import { ValidationObserver } from "vee-validate";
-
 export function gttIsValid(Validator, vueInstance = null) {
   console.log(Validator);
   console.log(vueInstance);

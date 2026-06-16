@@ -24,7 +24,7 @@
 
 <script>
 import AdultsKidsIcons from "./AdultsKidsIcons";
-import { uuid } from "vue-uuid";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   components: {
@@ -35,7 +35,7 @@ export default {
   //     console.log('room aqui')
   // },
   created() {
-    this.id = uuid.v4();
+    this.id = uuidv4();
   },
   data() {
     return {

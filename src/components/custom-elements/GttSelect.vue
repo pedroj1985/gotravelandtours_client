@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import ClickOutside from "vue-click-outside";
+import { clickOutside } from "@/directives/clickOutside";
 import GttSelectDropdown from "./GttSelectDropdown";
 import GttSelectSearch from "./GttSelectSearch";
 
@@ -94,7 +94,7 @@ export default {
     GttSelectSearch
   },
   directives: {
-    ClickOutside
+    clickOutside
   },
   created() {
     this.isVisible = this.opened;

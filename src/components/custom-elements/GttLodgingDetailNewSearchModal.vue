@@ -87,7 +87,7 @@ import {
   authGetRoomPrice,
   authGetLodgingEatingPlanOne
 } from "../../utils/auth";
-import { uuid } from "vue-uuid";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   components: {
@@ -249,7 +249,7 @@ export default {
                         CantidadMenores: cm,
                         PA: pa.data,
                         rn: el.room,
-                        id: uuid.v4()
+                        id: uuidv4()
                       });
                     } else {
                       noDisp = true;
