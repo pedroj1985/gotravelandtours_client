@@ -594,8 +594,7 @@ export default {
       }).value;
     },
     refreshLayout() {
-      this.selectedRoomLayout = [];
-      this.$set(this.selectedRoomLayout, 0, {
+      this.selectedRoomLayout = [{
         room: 1,
         layout: [
           {
@@ -611,7 +610,7 @@ export default {
             value: 0
           }
         ]
-      });
+      }];
       this.totalRooms = {
         value: 1,
         display: "1 habitación"
