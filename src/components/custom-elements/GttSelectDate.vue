@@ -65,12 +65,12 @@
 </template>
 
 <script>
-import ClickOutside from "vue-click-outside";
+import { clickOutside } from "@/directives/clickOutside";
 import moment from "moment";
 
 export default {
   directives: {
-    ClickOutside
+    clickOutside
   },
   mounted() {
     console.log(this.value);

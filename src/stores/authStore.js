@@ -1,7 +1,7 @@
-import Vue from "vue";
+import { reactive } from "vue";
 import { storageService } from "../utils/storageService";
 
-const state = Vue.observable({
+const state = reactive({
   user: null,
   isLoggedIn: !!storageService.getToken()
 });

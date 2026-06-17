@@ -1,46 +1,28 @@
 <template>
   <div id="home-banner">
-    <Slick
+    <swiper
       class="home-carousel"
-      :slidesToShow="1"
-      :arrows="false"
-      :dots="false"
-      :autoplay="true"
-      :swipe="true"
+      :slides-per-view="1"
+      :navigation="false"
+      :autoplay="{ delay: 3000, disableOnInteraction: false }"
+      :modules="swiperModules"
     >
-      <div class="image-review">
+      <swiper-slide class="image-review">
         <img src="/img/home_carrusel_01.jpg" alt="playa" />
-        <!-- <div class="review custom-margin">
-          <div class="home-banner-title antonio-bold">
-            península de Hicacos "Varadero"
-          </div>
-          <div class="home-banner-description hn-roman">
-            Con 30Km de extensión de los cuales 22Km son de playas. Una de las
-            mejores playas del mundo para el snorkel y el buceo.
-          </div>
-          <div class="home-banner-location hn-ltcn">
-            <i class="mdi mdi-map-marker"></i
-            ><span class="home-location">Varadero, Cuba</span>
-          </div>
-          <div class="home-banner-weather hn-ltcn">
-            <i class="mdi mdi-weather-sunny"></i
-            ><span class="home-grade">32°C</span>
-          </div>
-        </div> -->
-      </div>
-      <div>
+      </swiper-slide>
+      <swiper-slide>
         <img src="/img/home_carrusel_02.jpg" alt="hotel" />
-      </div>
-      <div>
+      </swiper-slide>
+      <swiper-slide>
         <img src="/img/home_carrusel_03.jpg" alt="habana" />
-      </div>
-      <div>
+      </swiper-slide>
+      <swiper-slide>
         <img src="/img/home_carrusel_04.jpg" alt="habana" />
-      </div>
-      <div>
+      </swiper-slide>
+      <swiper-slide>
         <img src="/img/home_carrusel_05.jpg" alt="habana" />
-      </div>
-    </Slick>
+      </swiper-slide>
+    </swiper>
     <div class="navs-wrapper">
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
     </div>
@@ -99,7 +81,9 @@ import NavBar2 from "../shared/NavBar2";
 import { authStore } from "../../stores/authStore";
 import { cartStore } from "../../stores/cartStore";
 import { scrollStore } from "../../stores/scrollStore";
-import Slick from "vue-slick-carousel";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css";
 import {
   authLogin,
   updateHeader,
@@ -115,10 +99,12 @@ export default {
   name: "IndexBanner",
   components: {
     NavBar2,
-    Slick
+    Swiper,
+    SwiperSlide
   },
   data() {
     return {
+      swiperModules: [Navigation, Pagination, Autoplay],
       loading: false,
       testError: "",
       testErrorVisible: false,

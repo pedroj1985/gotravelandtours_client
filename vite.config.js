@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import vuePlugin from "@vitejs/plugin-vue2";
+import vuePlugin from "@vitejs/plugin-vue";
 import path from "path";
 
 export default defineConfig({

@@ -1,6 +1,6 @@
 import { es } from "../lang/es";
 import { en } from "../lang/en";
-import { uuid } from "vue-uuid";
+import { v4 as uuidv4 } from "uuid";
 import lodash from "lodash";
 import { hotetecBlockProduct } from "@/utils/auth";
 import logger from "./logger";
@@ -33,7 +33,7 @@ export const helpers = {
     storageService.setCart(list);
   },
   shoppingCartAdd(value) {
-    value["uID"] = uuid.v4();
+    value["uID"] = uuidv4();
     const cart = storageService.getCart();
     cart.push(value);
     const orderedCart = this.orderList(cart);

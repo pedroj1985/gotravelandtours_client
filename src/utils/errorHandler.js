@@ -1,14 +1,21 @@
-import Vue from "vue";
 import { logger } from "./logger";
 
 const RETRY_DELAYS = [1000, 2000, 4000];
 
+let toastInstance = null;
+
+export function setToastInstance(toast) {
+  toastInstance = toast;
+}
+
 export function notifyError(message, options = {}) {
-  Vue.toasted?.show(message, {
-    type: "error",
-    duration: options.duration || 5000,
-    ...options
-  });
+  if (toastInstance) {
+    toastInstance(message, {
+      type: "error",
+      autoClose: options.duration || 5000,
+      ...options
+    });
+  }
 }
 
 export function getErrorMessage(error) {
@@ -50,14 +57,14 @@ export async function withRetry(fn, maxRetries = 2, context = "") {
   }
 }
 
-export function setupGlobalErrorHandler(Vue) {
-  Vue.config.errorHandler = (err, vm, info) => {
+export function setupGlobalErrorHandler(app) {
+  app.config.errorHandler = (err, vm, info) => {
     const componentName = vm?.$options?.name || "Unknown";
     logger.error(`[${componentName}] ${info}:`, err);
     notifyError(getErrorMessage(err));
   };
 
-  Vue.config.warnHandler = (msg, vm, trace) => {
+  app.config.warnHandler = (msg, vm, trace) => {
     if (msg?.includes("deprecated") || msg?.includes("Internal")) return;
     logger.warn(msg, trace);
   };
@@ -69,5 +76,6 @@ export default {
   isNetworkError,
   isServerError,
   withRetry,
-  setupGlobalErrorHandler
+  setupGlobalErrorHandler,
+  setToastInstance
 };

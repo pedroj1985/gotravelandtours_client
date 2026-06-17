@@ -63,20 +63,11 @@
             <label for="hora-regreso" class="input-label small">
               Hora
             </label>
-            <vue-timepicker
+            <input
+              type="time"
               v-model="departureTime"
-              close-on-complete
-              hide-clear-button
-              fixed-dropdown-button
-              :minute-interval="5"
-            >
-              <template v-slot:icon>
-                <i slot="iconSelectedValue" class="mdi mdi-alarm " />
-              </template>
-              <template v-slot:dropdownButton
-                ><i class="mdi mdi-menu-down "></i
-              ></template>
-            </vue-timepicker>
+              class="form-control"
+            />
           </div>
           <gtt-select-date
             v-model="selectedArrivalDate"
@@ -91,20 +82,11 @@
             <label for="hora-regreso" class="input-label small">
               Hora
             </label>
-            <vue-timepicker
+            <input
+              type="time"
               v-model="arrivalTime"
-              close-on-complete
-              hide-clear-button
-              fixed-dropdown-button
-              :minute-interval="5"
-            >
-              <template v-slot:icon>
-                <i slot="iconSelectedValue" class="mdi mdi-alarm " />
-              </template>
-              <template v-slot:dropdownButton
-                ><i class="mdi mdi-menu-down "></i
-              ></template>
-            </vue-timepicker>
+              class="form-control"
+            />
           </div>
         </div>
         <div class="selects-inline">

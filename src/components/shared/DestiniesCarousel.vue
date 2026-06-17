@@ -1,20 +1,12 @@
 <template>
-  <Slick
+  <swiper
     id="destinies-carousel"
-    ref="slick"
-    :slidesToShow="4"
-    :slidesToScroll="4"
-    :draggable="true"
-    :arrows="arrows"
-    :dots="dots"
+    :slides-per-view="4"
+    :navigation="arrows"
+    :pagination="swiperPagination"
+    :modules="swiperModules"
   >
-    <div slot="prevArrow" class="custom-prevArrow">
-      <i class="mdi mdi-chevron-left"></i>
-    </div>
-    <div slot="nextArrow" class="custom-nextArrow">
-      <i class="mdi mdi-chevron-right"></i>
-    </div>
-    <div
+    <swiper-slide
       class="wrapper service-c"
       v-for="destiny in destinies"
       :key="destiny.id"
@@ -35,16 +27,19 @@
           <div class="inner-text">{{ destiny.description }}</div>
         </div>
       </div>
-    </div>
-  </Slick>
+    </swiper-slide>
+  </swiper>
 </template>
 
 <script>
-import Slick from "vue-slick-carousel";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css"
 
 export default {
   components: {
-    Slick
+    Swiper,
+    SwiperSlide
   },
   props: {
     arrows: {
@@ -58,6 +53,7 @@ export default {
   },
   data() {
     return {
+      swiperModules: [Navigation, Pagination, Autoplay],
       destinies: [
         {
           name: "Cienfuegos",
@@ -111,6 +107,11 @@ export default {
       if (weather == "ccloud") {
         return "mdi-weather-cloudy";
       }
+    }
+  },
+  computed: {
+    swiperPagination() {
+      return this.dots ? { clickable: true } : false;
     }
   }
 };

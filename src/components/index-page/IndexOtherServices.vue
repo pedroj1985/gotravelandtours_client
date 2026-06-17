@@ -3,17 +3,15 @@
     <div class="other-services-title section-title hn-bdcn">
       Otros servicios
     </div>
-    <Slick
+    <swiper
       id="other-services-carousel"
-      ref="slick"
-      :slidesToShow="3"
-      :slidesToScroll="3"
-      :autoplay="true"
-      :swipe="true"
-      :arrows="false"
-      :dots="true"
+      :slides-per-view="3"
+      :autoplay="{ delay: 3000, disableOnInteraction: false }"
+      :navigation="false"
+      :pagination="{ clickable: true }"
+      :modules="swiperModules"
     >
-      <div
+      <swiper-slide
         :key="oService.id"
         class="other-services-container"
         v-for="oService in oServices"
@@ -23,21 +21,25 @@
           <hr />
           <div class="other-service-text hn-roman">{{ oService.name }}</div>
         </div>
-      </div>
-    </Slick>
+      </swiper-slide>
+    </swiper>
   </div>
 </template>
 
 <script>
-import Slick from "vue-slick-carousel";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css"
 
 export default {
   name: "IndexOtherServices",
   components: {
-    Slick
+    Swiper,
+    SwiperSlide
   },
   data() {
     return {
+      swiperModules: [Navigation, Pagination, Autoplay],
       oServices: [
         {
           name: "Buceo",

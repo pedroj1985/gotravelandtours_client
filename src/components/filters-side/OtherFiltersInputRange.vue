@@ -13,23 +13,18 @@
       <div class="currentPrices hn-roman">
         {{ constructPrices() }}
       </div>
-      <VueSlider :min="min" :max="max" v-model="value" :lazy="true"></VueSlider>
+      <div class="range-inputs">
+        <label>{{ localMin }} USD</label>
+        <input type="range" :min="min" :max="max" :value="localMin" @input="onMinInput" />
+        <input type="range" :min="min" :max="max" :value="localMax" @input="onMaxInput" />
+        <label>{{ localMax }} USD</label>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import VueSlider from "vue-slider-component";
-import "vue-slider-component/theme/antd.css";
 export default {
-  components: {
-    VueSlider
-  },
-  watch: {
-    value: function(value) {
-      this.updateValue(value);
-    }
-  },
   props: {
     label: {
       default: "Nombre"
@@ -46,17 +41,36 @@ export default {
       default: 100
     }
   },
+  emits: ["input"],
   data() {
     return {
-      isOpen: true
+      isOpen: true,
+      localMin: this.value ? this.value[0] : this.min,
+      localMax: this.value ? this.value[1] : this.max
     };
+  },
+  watch: {
+    value: {
+      handler(newVal) {
+        if (newVal) {
+          this.localMin = newVal[0];
+          this.localMax = newVal[1];
+        }
+      },
+      deep: true
+    }
   },
   methods: {
     openClose() {
       this.isOpen = !this.isOpen;
     },
-    updateValue(value) {
-      this.$emit("input", value);
+    onMinInput(event) {
+      this.localMin = Number(event.target.value);
+      this.$emit("input", [this.localMin, this.localMax]);
+    },
+    onMaxInput(event) {
+      this.localMax = Number(event.target.value);
+      this.$emit("input", [this.localMin, this.localMax]);
     },
     constructPrices() {
       return this.value[0] + " USD - " + this.value[1] + " USD";

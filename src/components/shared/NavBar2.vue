@@ -18,8 +18,7 @@
                 idPage: menuLink.id
               }
             }"
-            @click="changeSelected(menuLink.name)"
-            v-scroll-to="'#' + menuLink.id"
+            @click="changeSelected(menuLink.name); scrollTo(menuLink.id)"
           >
             {{ menuLink.displayName }}
           </router-link>
@@ -44,6 +43,10 @@ export default {
     };
   },
   methods: {
+    scrollTo(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    },
     changeSelected(item) {
       this.linkSelected = item;
     },
@@ -69,7 +72,7 @@ export default {
     if (id) {
       let elment = document.getElementById(id);
       console.log(elment);
-      this.$scrollTo(elment);
+      if (elment) elment.scrollIntoView({ behavior: "smooth" });
     }
   }
 };
