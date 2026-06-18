@@ -1063,15 +1063,10 @@ export default {
           this.$toasted.show(
             "Departure Time is greater than the Arrival Time. An extra day was charged to your vehicle order!",
             {
-              type: "alert",
+              type: "warning",
               position: "top-center",
-              duration: null,
-              action: {
-                text: "Close",
-                onClick: (e, toastObject) => {
-                  toastObject.goAway(0);
-                },
-              },
+              autoClose: false,
+              closeButton: true,
             }
           );
         } else {
@@ -1130,15 +1125,10 @@ export default {
           this.$toasted.show(
             "Departure Time is greater than the Arrival Time. An extra day was charged to your vehicle order!",
             {
-              type: "alert",
+              type: "warning",
               position: "top-center",
-              duration: null,
-              action: {
-                text: "Close",
-                onClick: (e, toastObject) => {
-                  toastObject.goAway(0);
-                }
-              }
+              autoClose: false,
+              closeButton: true
             }
           );
         } else {
