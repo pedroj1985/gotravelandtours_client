@@ -154,12 +154,12 @@ export default {
       this.emitValue = this.value;
     },
     updateValue(item) {
-      this.$set(this.emitValue, item.code, {
+      this.emitValue[item.code] = {
         display: item.display,
         code: item.code,
         label: item.label,
         value: item.value
-      });
+      };
       this.$emit("input", this.emitValue);
     },
     add(item, step = 1) {
