@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import { createPinia } from "pinia";
 import { routes } from "./routes";
 import "bootstrap/dist/css/bootstrap.css";
 import "@/assets/styles/main.scss";
@@ -9,14 +10,17 @@ import "vue3-toastify/dist/index.css";
 import { storageService } from "./utils/storageService";
 import lodash from "lodash";
 import { helpers } from "./utils/helpers";
-import { authStore } from "./stores/authStore";
-import { cartStore } from "./stores/cartStore";
 import {
   setupGlobalErrorHandler,
   setToastInstance
 } from "./utils/errorHandler";
+import { useAuthStore } from "./stores/authStore";
+import { useCartStore } from "./stores/cartStore";
 
 const app = createApp(App);
+const pinia = createPinia();
+
+app.use(pinia);
 
 setupGlobalErrorHandler(app);
 
@@ -54,8 +58,8 @@ router.beforeEach(to => {
           storageService.clear();
           storageService.setVersion(saveVersion);
 
-          cartStore.refresh();
-          authStore.logout();
+          useCartStore().refresh();
+          useAuthStore().logout();
           toast.error("Sesión expirada");
           return { name: "index", params: { nextUrl: to.fullPath } };
         }

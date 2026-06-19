@@ -12,7 +12,7 @@
 <script>
 import IndexLoggedRentSearch from "../index-logged-page/IndexLoggedRentSearch";
 import IndexLoggedRentCarousel from "./IndexLoggedRentCarousel";
-import { scrollStore } from "../../stores/scrollStore";
+import { useScrollStore } from "../../stores/scrollStore";
 
 export default {
   components: {
@@ -26,7 +26,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        scrollStore.scrollTo("car-rent");
+        useScrollStore().scrollTo("car-rent");
       }
     }
   },

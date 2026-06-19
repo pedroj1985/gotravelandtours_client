@@ -312,7 +312,7 @@
 </template>
 
 <script>
-import { scrollStore } from "../../stores/scrollStore";
+import { useScrollStore } from "../../stores/scrollStore";
 
 export default {
   name: "privacy-content",
@@ -323,7 +323,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        scrollStore.scrollTo(this.$el.id);
+        useScrollStore().scrollTo(this.$el.id);
       }
     }
   },

@@ -1,4 +1,4 @@
-import { cartStore } from "../stores/cartStore";
+import { useCartStore } from "../stores/cartStore";
 
 export function addToCartItem(item, i, cant, helpers) {
   i.combinacion.listado[0].precioObjOne.OrdenAlojamientoId = 0;
@@ -11,7 +11,7 @@ export function addToCartItem(item, i, cant, helpers) {
   }
   item["reservedRooms"] = i;
   helpers.shoppingCartAdd(item);
-  cartStore.refresh();
+  useCartStore().refresh();
 }
 
 export function reserveItem(router, item, i, cant, helpers) {

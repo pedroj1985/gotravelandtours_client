@@ -173,7 +173,7 @@ import {
   authGetHotelList
 } from "../../utils/auth";
 import _ from "lodash";
-import { cartStore } from "../../stores/cartStore";
+import { useCartStore } from "../../stores/cartStore";
 
 export default {
   components: {
@@ -429,7 +429,7 @@ export default {
           localStorage.setItem("searchLodgingAcomodation", JSON.stringify(r));
 
           this.$helpers.shoppingCartRemoveOne(this.item.uID);
-          cartStore.refresh();
+          useCartStore().refresh();
 
           this.$router.push({
             name: "lodging-detail",
@@ -454,7 +454,7 @@ export default {
             JSON.stringify(searchFilters)
           );
           this.$helpers.shoppingCartRemoveOne(this.item.uID);
-          cartStore.refresh();
+          useCartStore().refresh();
           this.$router.push({
             name: "resultLodging"
           });

@@ -203,7 +203,7 @@ import GttSelectForm from "../custom-elements/GttSelectForm";
 import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import moment from "moment";
-import { scrollStore } from "../../stores/scrollStore";
+import { useScrollStore } from "../../stores/scrollStore";
 import {
   authSearchRegions,
   authGetRoomTypes,
@@ -342,7 +342,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        scrollStore.scrollTo("lodging");
+        useScrollStore().scrollTo("lodging");
       }
     },
     async activateModal() {

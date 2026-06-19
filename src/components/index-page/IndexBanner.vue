@@ -78,9 +78,9 @@
 
 <script>
 import NavBar2 from "../shared/NavBar2";
-import { authStore } from "../../stores/authStore";
-import { cartStore } from "../../stores/cartStore";
-import { scrollStore } from "../../stores/scrollStore";
+import { useAuthStore } from "../../stores/authStore";
+import { useCartStore } from "../../stores/cartStore";
+import { useScrollStore } from "../../stores/scrollStore";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/swiper-bundle.css";
@@ -168,9 +168,9 @@ export default {
                 localStorage.setItem("usuarioObjeto", uEncode);
                 this.loading = false;
                 let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
-                authStore.login(uS);
+                useAuthStore().login(uS);
                 updateHeader(localStorage.getItem("token"));
-                cartStore.refresh();
+                useCartStore().refresh();
                 this.$router.push({ name: "indexLogged" });
               })
               .catch(() => {
@@ -183,9 +183,9 @@ export default {
                 );
                 let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
                 let u = uS;
-                authStore.login(u);
+                useAuthStore().login(u);
                 updateHeader(localStorage.getItem("token"));
-                cartStore.refresh();
+                useCartStore().refresh();
                 this.$router.push({ name: "indexLogged" });
               });
           } else {
@@ -231,7 +231,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        scrollStore.scrollTo("index");
+        useScrollStore().scrollTo("index");
       }
     },
     cleanInputs() {

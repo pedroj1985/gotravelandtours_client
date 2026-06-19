@@ -12,7 +12,7 @@
 <script>
 import IndexLoggedExcursionSearch from "./IndexLoggedExcursionSearch";
 import IndexServicesCarousel from "../index-page/IndexServicesCarousel";
-import { scrollStore } from "../../stores/scrollStore";
+import { useScrollStore } from "../../stores/scrollStore";
 
 export default {
   components: {
@@ -26,7 +26,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        scrollStore.scrollTo("excursions");
+        useScrollStore().scrollTo("excursions");
       }
     }
   },

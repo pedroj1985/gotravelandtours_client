@@ -55,7 +55,7 @@ import NavBar2 from "../shared/NavBar2";
 import RentForm from "./RentForm";
 import Breadcrumb from "../shared/Breadcrumb";
 import RentRightColumnList from "./RentRightColumnList";
-import { filtersStore } from "../../stores/filtersStore";
+import { useFiltersStore } from "../../stores/filtersStore";
 import { cleanVoMixin } from "../../mixins/cleanVoMixin";
 import { constructDisplay } from "../../utils/utils";
 import {
@@ -78,7 +78,7 @@ export default {
     let f = localStorage.getItem("searchRentFilters");
     if (f) {
       this.filter = JSON.parse(f);
-      filtersStore.update(this.filter);
+      useFiltersStore().update(this.filter);
     }
     let rt = this.$route.params["searchResult"];
     if (rt) {
@@ -179,7 +179,7 @@ export default {
       this.resultTotal = value;
     },
     listenEventFilterRent() {
-      return filtersStore.filters;
+      return useFiltersStore().filters;
     }
   },
   data() {

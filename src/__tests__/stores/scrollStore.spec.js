@@ -1,28 +1,30 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { scrollStore } from "../../stores/scrollStore";
+import { setActivePinia, createPinia } from "pinia";
+import { useScrollStore } from "../../stores/scrollStore";
 
 describe("scrollStore", () => {
   beforeEach(() => {
-    scrollStore.activeSection = null;
+    setActivePinia(createPinia());
+    useScrollStore().activeSection = null;
   });
 
   it("should start with no active section", () => {
-    expect(scrollStore.activeSection).toBeNull();
+    expect(useScrollStore().activeSection).toBeNull();
   });
 
   it("should scroll to a section", () => {
-    scrollStore.scrollTo("section-1");
-    expect(scrollStore.activeSection).toBe("section-1");
+    useScrollStore().scrollTo("section-1");
+    expect(useScrollStore().activeSection).toBe("section-1");
   });
 
   it("should update active section on multiple scrolls", () => {
-    scrollStore.scrollTo("first");
-    scrollStore.scrollTo("second");
-    expect(scrollStore.activeSection).toBe("second");
+    useScrollStore().scrollTo("first");
+    useScrollStore().scrollTo("second");
+    expect(useScrollStore().activeSection).toBe("second");
   });
 
   it("should set active section directly", () => {
-    scrollStore.activeSection = "direct-set";
-    expect(scrollStore.activeSection).toBe("direct-set");
+    useScrollStore().activeSection = "direct-set";
+    expect(useScrollStore().activeSection).toBe("direct-set");
   });
 });

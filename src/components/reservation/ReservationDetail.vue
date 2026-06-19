@@ -327,7 +327,7 @@ import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { transmissionTypes } from "../../utils/utils";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 import { paymentData, orderStatusList } from "../../utils/constant";
-import { cartStore } from "../../stores/cartStore";
+import { useCartStore } from "../../stores/cartStore";
 
 import { PaymentLinkRequest } from "../../utils/paymentLinkRequest";
 import { ClientRequest } from "../../utils/clientRequest";
@@ -610,7 +610,7 @@ export default {
     },
     cancelOnHotetec: async function() {
       await this.$helpers.shoppingCartDeleteAll(true);
-      cartStore.refresh();
+      useCartStore().refresh();
       try {
         console.info("this->", this);
         console.info("this.order->", this.order);
@@ -1223,7 +1223,7 @@ export default {
             }
           }
           this.isOpenModalToPay = false;
-          cartStore.refresh();
+          useCartStore().refresh();
         })
         .catch(error => {
           if (window) {

@@ -316,7 +316,7 @@ import _ from "lodash";
 import moment from "moment";
 import { orderStatusList } from "../../utils/constant";
 import { hotelecSessionService } from "../../utils/hotelecSessionService";
-import { cartStore } from "../../stores/cartStore";
+import { useCartStore } from "../../stores/cartStore";
 
 export default {
   created() {
@@ -453,7 +453,7 @@ export default {
             if (res) {
               this.$helpers.shoppingCartRemoveOne(id);
               this.updateCart();
-              cartStore.refresh();
+    useCartStore().refresh();
             }
           })
           .finally(() => {
@@ -463,7 +463,7 @@ export default {
       } else { */
       this.$helpers.shoppingCartRemoveOne(id);
       this.updateCart();
-      cartStore.refresh();
+      useCartStore().refresh();
       this.tempItemToDelete = null;
       this.deleteModal = false;
       //}
@@ -581,7 +581,7 @@ export default {
             duration: 5000
           });
 
-          cartStore.refresh();
+          useCartStore().refresh();
           this.$router.push({ name: "myreservations" });
         } catch (error) {
           authLog({

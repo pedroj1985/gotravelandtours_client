@@ -366,7 +366,7 @@ import LodgingForm from "./LodgingForm";
 import NavBar2 from "../shared/NavBar2";
 
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
-import { cartStore } from "../../stores/cartStore";
+import { useCartStore } from "../../stores/cartStore";
 
 export default {
   mixins: [lodgingUtilsMixin],
@@ -775,7 +775,7 @@ export default {
 
       this.refreshLayout();
       this.$helpers.shoppingCartAdd(l);
-      cartStore.refresh();
+      useCartStore().refresh();
       this.roomSelectedToDis = [];
       this.roomsToReserve = [];
       this.roomsResult = [];

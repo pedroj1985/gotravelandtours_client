@@ -144,7 +144,7 @@ import GttSelectForm from "../custom-elements/GttSelectForm";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 import moment from "moment";
 import { constructDate, constructDisplay } from "../../utils/utils";
-import { scrollStore } from "../../stores/scrollStore";
+import { useScrollStore } from "../../stores/scrollStore";
 import { getValid, renderValid, gttIsValid } from "../../utils/validation";
 
 export default {
@@ -168,7 +168,7 @@ export default {
         height * 0.25 > this.$el.getBoundingClientRect().top &&
         height * 0 < this.$el.getBoundingClientRect().top
       ) {
-        scrollStore.scrollTo("transfer");
+        useScrollStore().scrollTo("transfer");
       }
     },
     /* TODO: llamada a la api */

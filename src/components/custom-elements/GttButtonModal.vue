@@ -43,7 +43,7 @@
 import { clickOutside } from "@/directives/clickOutside";
 import { closeSession } from "../../utils/auth";
 import RegisterModal from "../shared/Register";
-import { authStore } from "../../stores/authStore";
+import { useAuthStore } from "../../stores/authStore";
 
 export default {
   components: {
@@ -86,7 +86,7 @@ export default {
     },
     closeSession() {
       this.handleFocusOut();
-      authStore.logout();
+      useAuthStore().logout();
       closeSession(this);
     }
   }

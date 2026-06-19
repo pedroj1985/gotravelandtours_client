@@ -1,5 +1,5 @@
 import { onMounted, onBeforeUnmount } from "vue";
-import { scrollStore } from "../stores/scrollStore";
+import { useScrollStore } from "../stores/scrollStore";
 
 export function useScroll(elRef) {
   function handleScroll() {
@@ -8,7 +8,7 @@ export function useScroll(elRef) {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     if (height * 0.25 > rect.top && 0 < rect.top) {
-      scrollStore.scrollTo(el.id);
+      useScrollStore().scrollTo(el.id);
     }
   }
 

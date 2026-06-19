@@ -113,7 +113,7 @@
 <script>
 // import {authReserve} from '../../utils/auth'
 import { diffDaysEmitter } from "../../utils/emitter";
-import { cartStore } from "../../stores/cartStore";
+import { useCartStore } from "../../stores/cartStore";
 import { verifyDifferentsDates } from "../../utils/utils";
 
 export default {
@@ -183,7 +183,7 @@ export default {
       // vo.ListaPreciosRentaAutos = arrLPRA;
 
       this.$helpers.shoppingCartAdd(this.child);
-      cartStore.refresh();
+      useCartStore().refresh();
     },
     styledPrice(number) {
       let intPart = Math.ceil(number);

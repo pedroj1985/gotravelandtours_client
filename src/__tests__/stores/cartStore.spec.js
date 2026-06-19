@@ -1,49 +1,51 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { cartStore } from "../../stores/cartStore";
+import { setActivePinia, createPinia } from "pinia";
+import { useCartStore } from "../../stores/cartStore";
 import { storageService } from "../../utils/storageService";
 
 describe("cartStore", () => {
   beforeEach(() => {
-    cartStore.reset();
+    setActivePinia(createPinia());
+    useCartStore().reset();
     localStorage.clear();
   });
 
   it("should start with empty cart", () => {
-    expect(cartStore.count).toBe(0);
-    expect(cartStore.items).toEqual([]);
+    expect(useCartStore().count).toBe(0);
+    expect(useCartStore().items).toEqual([]);
   });
 
   it("should refresh from storage", () => {
     const cart = [{ id: 1, name: "Item 1", tipo: "rent" }];
     storageService.setCart(cart);
-    cartStore.refresh();
-    expect(cartStore.items).toEqual(cart);
-    expect(cartStore.count).toBe(1);
+    useCartStore().refresh();
+    expect(useCartStore().items).toEqual(cart);
+    expect(useCartStore().count).toBe(1);
   });
 
   it("should update count", () => {
-    cartStore.update();
-    expect(cartStore.count).toBe(1);
-    cartStore.update();
-    expect(cartStore.count).toBe(2);
+    useCartStore().update();
+    expect(useCartStore().count).toBe(1);
+    useCartStore().update();
+    expect(useCartStore().count).toBe(2);
   });
 
   it("should reset to initial state", () => {
-    cartStore.update();
-    cartStore.items = [{ id: 1 }];
-    cartStore.reset();
-    expect(cartStore.count).toBe(0);
-    expect(cartStore.items).toEqual([]);
+    useCartStore().update();
+    useCartStore().items = [{ id: 1 }];
+    useCartStore().reset();
+    expect(useCartStore().count).toBe(0);
+    expect(useCartStore().items).toEqual([]);
   });
 
   it("should set items", () => {
     const items = [{ id: 1 }, { id: 2 }];
-    cartStore.items = items;
-    expect(cartStore.items).toEqual(items);
+    useCartStore().items = items;
+    expect(useCartStore().items).toEqual(items);
   });
 
   it("should set count", () => {
-    cartStore.count = 5;
-    expect(cartStore.count).toBe(5);
+    useCartStore().count = 5;
+    expect(useCartStore().count).toBe(5);
   });
 });

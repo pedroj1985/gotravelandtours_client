@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { scrollStore } from "../../stores/scrollStore";
+import { useScrollStore } from "../../stores/scrollStore";
 
 export default {
   name: "NavBar2",
@@ -59,7 +59,7 @@ export default {
   },
   computed: {
     activeSection() {
-      return scrollStore.activeSection;
+      return useScrollStore().activeSection;
     }
   },
   watch: {

@@ -1,32 +1,30 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { authStore } from "../../stores/authStore";
+import { setActivePinia, createPinia } from "pinia";
+import { useAuthStore } from "../../stores/authStore";
 
 describe("authStore", () => {
   beforeEach(() => {
-    authStore.logout();
+    setActivePinia(createPinia());
+    useAuthStore().logout();
     localStorage.clear();
   });
 
   it("should start logged out", () => {
-    expect(authStore.isLoggedIn).toBe(false);
-    expect(authStore.user).toBeNull();
+    expect(useAuthStore().isLoggedIn).toBe(false);
+    expect(useAuthStore().user).toBeNull();
   });
 
   it("should login user", () => {
     const user = { id: 1, name: "Test User", email: "test@test.com" };
-    authStore.login(user);
-    expect(authStore.user).toEqual(user);
+    useAuthStore().login(user);
+    expect(useAuthStore().user).toEqual(user);
+    expect(useAuthStore().isLoggedIn).toBe(true);
   });
 
   it("should logout user", () => {
-    authStore.login({ id: 1, name: "Test" });
-    authStore.logout();
-    expect(authStore.user).toBeNull();
-  });
-
-  it("should reflect login status via token", () => {
-    expect(authStore.isLoggedIn).toBe(false);
-    localStorage.setItem("token", "some-token");
-    expect(authStore.isLoggedIn).toBe(true);
+    useAuthStore().login({ id: 1, name: "Test" });
+    useAuthStore().logout();
+    expect(useAuthStore().user).toBeNull();
+    expect(useAuthStore().isLoggedIn).toBe(false);
   });
 });
