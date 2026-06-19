@@ -17,7 +17,7 @@ export function constructDisplay(d) {
     s = s + " · " + d[element].value + " " + d[element].display;
   });
 
-  return s.substring(2);
+  return s.substring(3);
 }
 
 export function verifyDifferentsDates(itemToCompare, tipo = "rent") {
