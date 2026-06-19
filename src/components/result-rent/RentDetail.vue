@@ -167,7 +167,7 @@ onMounted(async () => {
   try {
     let { data } = await authGetCar(carId)
     car.value = data
-    console.log({ data })
+    if (import.meta.env.DEV) { console.log({ data }) }
     isLoaded.value = true
     image.value = await getImage()
     imageProvider.value = await getProviderImage(car.value.ProveedorId)

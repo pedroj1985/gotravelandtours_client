@@ -210,7 +210,7 @@ function selectInfo(section: string) {
 }
 
 function reserve() {
-  console.log(props.child)
+  if (import.meta.env.DEV) { console.log(props.child) }
 }
 
 function findPrecio(item: any, listadoPrecios: any[]) {

@@ -145,8 +145,8 @@ if (!props.value || props.value.length == 0) {
   roomsLayout.value = props.value
   updateValue()
 }
-console.log(roomsLayout.value)
-console.log("asjdasdhka")
+if (import.meta.env.DEV) { console.log(roomsLayout.value) }
+if (import.meta.env.DEV) { console.log("asjdasdhka") }
 
 watch(() => props.rooms, (item) => {
   const d = item - roomsLayout.value.length

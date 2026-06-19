@@ -221,7 +221,7 @@ async function activateModal() {
   if (true) {
     try {
       isModalActive.value = true
-      console.log(iv)
+      if (import.meta.env.DEV) { console.log(iv) }
       /* let { data } = await authSearchCars(searchItem); */
       desactivateModal()
       router.push({
@@ -231,7 +231,7 @@ async function activateModal() {
         }
       })
     } catch (error) {
-      console.log(error)
+      if (import.meta.env.DEV) { console.log(error) }
       desactivateModal()
       toast("El servicio no está disponible en estos momentos", {
         type: "error"

@@ -332,7 +332,7 @@ async function searchResultSameCar() {
     }
     isReserving.value = false
   } catch (error) {
-    console.log("error en la busqueda: ", error)
+    if (import.meta.env.DEV) { console.log("error en la busqueda: ", error) }
     isReserving.value = false
     toast("El servicio no está disponible en estos momentos", { type: "error" })
   }
@@ -447,8 +447,8 @@ async function searchResult() {
         isReserving.value = false
         showResult.value = true
       } catch (error) {
-        console.log(error)
-        console.log("error en el boton: ", error)
+        if (import.meta.env.DEV) { console.log(error) }
+        if (import.meta.env.DEV) { console.log("error en el boton: ", error) }
         isReserving.value = false
         toast("El servicio no está disponible en estos momentos", { type: "error" })
       }

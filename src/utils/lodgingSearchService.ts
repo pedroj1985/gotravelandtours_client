@@ -81,7 +81,7 @@ export async function searchResult(
     }
   }
 
-  console.log("resultList", resultList);
+  if (import.meta.env.DEV) { console.log("resultList", resultList); }
   return resultList;
 }
 

@@ -51,7 +51,7 @@ async function sendSubsPetition(values: any) {
       }
     );
   } catch (error) {
-    console.log(error);
+    if (import.meta.env.DEV) { console.log(error); }
     loading.value = false;
     toast(
       "El servicio no está disponible en estos momentos",

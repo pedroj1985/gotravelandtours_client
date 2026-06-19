@@ -6,16 +6,20 @@ You are an agent for the **colibri Viajes** (GoTravelAndTours) B2B travel reserv
 
 | Attribute | Value |
 |---|---|
-| Framework | Vue 2.7 + `@vue/composition-api` |
-| Build Tool | Vite 5 (`@vitejs/plugin-vue2`) |
+| Framework | Vue 3.5 + Composition API (`<script setup lang="ts">`) |
+| Build Tool | Vite 5 (`@vitejs/plugin-vue`) |
 | Package Manager | pnpm >= 10 |
 | CSS | SCSS (Dart Sass) + Bootstrap 5 (grid/utilities only) |
 | HTTP | Axios 0.21 |
-| Dates | Day.js 1 (replaces Moment.js) |
-| Linter | ESLint 8 + Prettier |
+| Dates | Day.js 1 (Moment.js via shim for legacy compat) |
+| Linter | ESLint 9 + Prettier 3 (flat config) |
 | Git Hooks | Husky 9 + lint-staged |
-| Routing | Vue Router 3 (lazy loading all 16 routes) |
-| State | Stores reactivos (authStore, cartStore, filtersStore, scrollStore) |
+| Routing | Vue Router 4 (lazy loading all 16 routes) |
+| State | Pinia 3 (authStore, cartStore, filtersStore, scrollStore) |
+| TypeScript | 6.0.3 (strict mode, `allowJs`) |
+| Unit Tests | Vitest + Vue Test Utils 2 (282 tests) |
+| E2E | Cypress 14 |
+| CI/CD | GitHub Actions |
 
 ## Commands
 
@@ -23,9 +27,12 @@ You are an agent for the **colibri Viajes** (GoTravelAndTours) B2B travel reserv
 pnpm dev              # Vite dev server
 pnpm build            # Production build
 pnpm preview          # Preview production build
-pnpm lint             # ESLint
+pnpm lint             # ESLint 9
 pnpm lint:fix         # ESLint auto-fix
-pnpm install --ignore-scripts   # Install deps (lockfile ~1350 deps, slow resolution)
+pnpm test:unit        # Vitest unit tests
+pnpm test:e2e         # Cypress E2E
+pnpm typecheck        # vue-tsc --noEmit
+pnpm install --ignore-scripts   # Install deps
 ```
 
 ## Git Workflow
@@ -63,26 +70,26 @@ Invoke-RestMethod -Uri "https://api.github.com/repos/pedroj1985/gotravelandtours
 
 ```
 src/
-├── api/              # Axios client + barrel export (10 files)
-│   ├── client.js     # Axios instance + interceptors
-│   └── ...           # Domain-specific API modules
-├── assets/styles/    # SCSS (main.scss, _variables.scss, _mixins.scss, pages/)
-├── components/       # Vue SFCs organized by feature
-│   ├── shared/       # NavBar1, Footer1/2, Register, MyAdminPanel
-│   ├── index-page/   # Index, IndexBanner, IndexOffers, etc.
-│   ├── result-lodging/  # ResultLodging, ResultListItem, LodgingForm, etc.
+├── api/              # Axios client + barrel export (10 .ts)
+├── assets/styles/    # SCSS (main.scss, _variables.scss, _mixins.scss)
+├── components/       # 98 Vue SFCs, all <script setup lang="ts">
+│   ├── shared/       # NavBar1/2, Footer1/2, Register, GttModal, GttInput, etc.
+│   ├── index-page/   # Index, IndexBanner, Destinies, Services, Packages
+│   ├── result-lodging/  # ResultLodging, LodgingForm, LodgingDetail, etc.
 │   ├── result-rent/     # ResultRent, RentForm, RentDetail, etc.
-│   ├── reservation/     # CartView, ReservationDetail, LodgingReservationView2
+│   ├── reservation/     # CartView, ReservationDetail, InfoRow, etc.
 │   ├── admin-panel/     # MyReservations, MyDashboard
-│   ├── custom-elements/ # GttSelect, GttModal, GttCarousel, GttSkeleton, etc.
+│   ├── custom-elements/ # GttSelect, GttModal, GttCarousel, GttSkeleton (16)
 │   ├── filters-side/    # Filter components
 │   └── index-logged-page/ # IndexLogged*, IndexLoggedBanner, etc.
-├── composables/      # useForm, useLodging, useScroll, useCleanup, useHelpers
-├── mixins/           # Legacy mixins (deprecated — prefer composables)
-├── stores/           # authStore, cartStore, filtersStore, scrollStore
-├── utils/            # logger, errorHandler, helpers, storageService, etc.
-├── routes.js         # Vue Router config (lazy loading)
-├── main.js           # App entry
+├── composables/      # 8 composables (useForm, useLodging, useScroll, etc.)
+├── stores/           # 4 Pinia stores (auth, cart, filters, scroll)
+├── types/            # 7 shared type files (api, auth, lodging, order, payment, rent, visitor)
+├── utils/            # 17 utility modules (.ts)
+├── directives/       # Custom directives (clickOutside)
+├── lang/             # i18n translations (es, en)
+├── routes.ts         # Vue Router config (lazy loading)
+├── main.ts           # App entry (createApp, Pinia, Router, Toastify)
 └── App.vue
 ```
 
@@ -96,51 +103,60 @@ Files: `.env.development` (local), `.env.production` (production).
 
 ## Key Architectural Decisions
 
-1. **No `bootstrap-vue`** — all Vue components were replaced with native HTML + CSS (spinner, tooltip, pagination, table). Only Bootstrap CSS grid/utilities remain.
-2. **Day.js instead of Moment.js** — 82% smaller bundle. Shim at `src/utils/momentShim.js` for legacy code expecting `moment`.
-3. **Axios interceptors** for auth token injection, error handling, and toast notifications.
-4. **IDB (IndexedDB)** for search result persistence via `searchPersistenceService.js`.
-5. **Error handling** via `Vue.config.errorHandler` + `withRetry` utility + Axios response interceptor.
-6. **WCAG AA compliant** — color contrast (`#7fa300` primary), ARIA attributes, keyboard navigation, skip link.
-
-## Branch Strategy
-
-Each logical group of issues (fase) uses a **single branch** named `fase-{N}-{nombre}`. For example, Fase 5.3, 5.4, 5.5, 5.6 all share one branch `fase-5-vue3`. This avoids excessive branch proliferation and simplifies rebase.
+1. **No `bootstrap-vue`** — all Vue components replaced with native HTML + CSS.
+2. **Day.js instead of Moment.js** — 82% smaller bundle. Shim at `src/utils/momentShim.js`.
+3. **Pinia** for state management (4 stores).
+4. **Axios interceptors** for auth token injection, error handling, toast.
+5. **IDB** for search result persistence via `searchPersistenceService.ts`.
+6. **Error handling**: `app.config.errorHandler` + `withRetry` + Axios interceptor.
+7. **WCAG AA compliant** — color contrast, ARIA, keyboard nav, skip link.
+8. **All JS migrated to TypeScript** — 0 `.js` files in `src/` (except test specs).
+9. **All 98 components use `<script setup lang="ts">`** — 0 Options API components.
+10. **ESLint 9 flat config** — `eslint.config.js`.
 
 ## Completed Issues
 
-- **#1-#6**: Fase 0 — Auditoría, .env, CSP, Husky, build
-- **#7-#11**: Fase 1 — innerHTML, logger, token, validación, router guard
-- **#12-#16**: Fase 2 — Day.js, ESLint v8, lazy loading, GttCarousel
-- **#18-#22, #25**: Fase 3 — API layer, composables, stores, error handler, skeleton
-- **#23, #24, #27**: Fase 4 — WCAG AA, ARIA, keyboard nav
-- **#26, #28, #29**: Fase 5 — Responsive, Vite migration, bootstrap-vue removal
-
-## Open Issues
-
-### Fase 5.x — Vue 3 Migration (branch: `fase-5-vue3`, prioridad: baja)
+### Fase 0-5 (Initial phases)
 | # | Título | Estado |
 |---|--------|--------|
-| 30 | Migrar main.js a `createApp` API | Open |
-| 31 | Migrar vee-validate v2 → v4 | Open |
-| 32 | Migrar Vue Router v3 → v4 | Open |
-| 33 | Migrar librerías carrusel y lightbox | Open |
+| 1–6 | Fase 0 — Auditoría, .env, CSP, Husky, build | Closed |
+| 7–11 | Fase 1 — Seguridad (innerHTML, logger, token, validación) | Closed |
+| 12–16 | Fase 2 — Deuda técnica (Day.js, ESLint 8, lazy loading) | Closed |
+| 18–22, 25 | Fase 3 — API layer, composables, stores, error handler | Closed |
+| 23, 24, 27 | Fase 4 — WCAG AA, ARIA, keyboard nav | Closed |
+| 26, 28, 29 | Fase 5 — Responsive, Vite migration, bootstrap-vue removal | Closed |
 
-### Fase 6 — Testing (branch: `fase-6-testing`, prioridad: media/baja)
-| # | Título | Prioridad | Estado |
-|---|--------|-----------|--------|
-| 34 | Setup Vitest + Vue Test Utils | media | Open |
-| 35 | Tests unitarios servicios/utils | media | Open |
-| 36 | Tests de componentes Vue | media | Open |
-| 37 | Setup E2E con Cypress | baja | Open |
-| 38 | Setup CI/CD con GitHub Actions | media | Open |
-
-### Fase 7 — TypeScript (branch: `fase-7-typescript`, prioridad: baja)
+### Fase 6 — Testing (PR #56)
 | # | Título | Estado |
 |---|--------|--------|
-| 39 | Setup de TypeScript | Open |
-| 40 | Migrar servicios a TypeScript | Open |
-| 41 | Interfaces y tipos compartidos | Open |
+| 34 | Setup Vitest + Vue Test Utils | Closed |
+| 35 | Tests unitarios servicios/utils | Closed |
+| 36 | Tests de componentes Vue | Closed |
+| 37 | Setup E2E con Cypress | Closed |
+| 38 | Setup CI/CD con GitHub Actions | Closed |
+
+### Fase 7 — TypeScript (PR #57)
+| # | Título | Estado |
+|---|--------|--------|
+| 39 | Setup de TypeScript | Closed |
+| 40 | Migrar servicios a TypeScript | Closed |
+| 41 | Interfaces y tipos compartidos | Closed |
+
+### Fase 8 — Modernización (PR #58)
+| Sub-fase | Título | Estado |
+|----------|--------|--------|
+| 8A | Migrar ESLint 8 → 9 + flat config | Closed |
+| 8B | Migrar stores a Pinia + TS | Closed |
+| 8C | Migrar mixins → composables | Closed |
+| 8D | Migrar 40 .js → .ts | Closed |
+| 8E | Migrar 98 componentes a `<script setup>` | Closed |
+| 8F | Limpiar deuda técnica (console.logs, validation.js) | Closed |
+
+## Known Issues
+
+- **Typecheck**: ~270 type errors from strict TS in components. Build and tests pass.
+- **moment imports**: 22 components still import "moment" (resolves to momentShim.js). Future: migrate to dayjs.
+- **console.log**: 68 calls guarded with `import.meta.env.DEV` — consider removing entirely.
 
 ## Constraints & Warnings
 
@@ -148,4 +164,5 @@ Each logical group of issues (fase) uses a **single branch** named `fase-{N}-{no
 - **ALWAYS** use `--no-verify` with git commit and git push (hooks are slow)
 - **NEVER** modify `pnpm-lock.yaml` manually
 - **NEVER** commit secrets or tokens
-- **ALWAYS** rebase on `pedroj1985/main` before creating a PR to avoid merge conflicts
+- **ALWAYS** rebase on `pedroj1985/main` before creating a PR
+- Typecheck has known errors (~270) — do not attempt to fix them as part of other tasks

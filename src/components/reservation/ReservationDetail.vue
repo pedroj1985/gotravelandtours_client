@@ -406,7 +406,7 @@ watch(isOpenModalToPay, (newVal) => {
 emit("adminPanelInfo", "reservation-detail")
 let id = route.params.id
 let { data } = await authGetOrder(id)
-console.log("thisAll: ", data)
+if (import.meta.env.DEV) { console.log("thisAll: ", data) }
 order.value = data
 clientPasaporte.value = data.NumeroPasaporte
 numeroOrden.value = order.value.NumeroOrden
@@ -581,7 +581,7 @@ async function cancelateOrder() {
     router.push({ name: "myreservations" })
   } catch (error) {
     isReserving.value = false
-    console.log(error)
+    if (import.meta.env.DEV) { console.log(error) }
     toast("Ha ocurrido un problema con la orden", {
       type: "error"
     })
@@ -622,7 +622,7 @@ async function cancelOnHotetec() {
               })
               router.push({ name: "myreservations" })
             } catch (error) {
-              console.log(error)
+              if (import.meta.env.DEV) { console.log(error) }
             }
           } else {
             toast(res.data.Txterr, {
@@ -631,7 +631,7 @@ async function cancelOnHotetec() {
           }
         })
         .catch((error: any) => {
-          console.log(error)
+          if (import.meta.env.DEV) { console.log(error) }
         })
         .finally(() => {
           cancelationModal.value = false
@@ -860,7 +860,7 @@ async function reserve() {
       try {
         await authUpdateQbEstimated(onlyOrdenId)
       } catch (error) {
-        console.log(error)
+        if (import.meta.env.DEV) { console.log(error) }
       }
       isReserving.value = false
       toast("Orden editada con éxito.", {
@@ -869,7 +869,7 @@ async function reserve() {
       router.push({ name: "myreservations" })
     } catch (error) {
       isReserving.value = false
-      console.log(error)
+      if (import.meta.env.DEV) { console.log(error) }
       toast("Ha ocurrido un problema con la orden", {
         type: "error"
       })
@@ -1002,7 +1002,7 @@ function confirmExternalPay(type: string, room: any) {
 function sendPaymentLinkByEmail(type: string, orderParam: any) {
   validateEmail()
   if (!emailError.value) {
-    console.log(`Enviando correo a: ${email.value}`)
+    if (import.meta.env.DEV) { console.log(`Enviando correo a: ${email.value}`) }
     tropipayPayment(type, orderParam, true)
   } else {
     toast(emailError.value, {
@@ -1141,7 +1141,7 @@ function tropipayPayment(type: string, orderParam: any, sendPaymentLInk: boolean
       if (window) {
         window.close()
       }
-      console.log("Error al generar el link de pago:", error)
+      if (import.meta.env.DEV) { console.log("Error al generar el link de pago:", error) }
       toast("Error al generar el link de pago.", {
         type: "error"
       })

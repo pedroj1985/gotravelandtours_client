@@ -141,7 +141,7 @@ const adminElements = ref([
 
 onMounted(() => {
   user.value = getUser();
-  console.log(user.value.name);
+  if (import.meta.env.DEV) { console.log(user.value.name); }
 });
 
 function constructDisplaySection(item: string) {

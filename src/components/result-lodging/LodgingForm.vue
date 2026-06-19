@@ -244,7 +244,7 @@ onMounted(async () => {
   todosTipo.value = t.data
   selectedRoomLayout.value = props.propRoomLayout
   getSearchResults().then((res: any) => {
-    console.log("getSearchResults", res)
+    if (import.meta.env.DEV) { console.log("getSearchResults", res) }
     if (Array.isArray(res) && res.length > 0 && route.name === "lodging-detail") {
       hasSearchResults.value = true
     }
@@ -286,7 +286,7 @@ async function returnToPreviousSearch() {
   }
   let resultList = await searchPreviousResult()
   localStorage.setItem("searchLodgingFilters", JSON.stringify(searchFilters))
-  console.log("desactivateModal")
+  if (import.meta.env.DEV) { console.log("desactivateModal") }
   desactivateModal()
   router.push({ name: "lodgingResultHolder", params: { searchResult: resultList } })
 }
@@ -329,7 +329,7 @@ async function activateModal() {
         if (roomComb.value != "ERROR") {
           resultList = await searchResult(searchItem, roomComb.value, roomComb2)
           localStorage.setItem("searchLodgingFilters", JSON.stringify(searchFilters))
-          console.log("desactivateModal")
+          if (import.meta.env.DEV) { console.log("desactivateModal") }
           desactivateModal()
           router.push({ name: "lodgingResultHolder", params: { searchResult: resultList } })
         } else {
@@ -363,7 +363,7 @@ async function activateModal() {
           toast("Demasiados niños", { type: "error" })
         }
       } catch (error) {
-        console.log(error)
+        if (import.meta.env.DEV) { console.log(error) }
         desactivateModal()
         toast("El servicio no está disponible en estos momentos", { type: "error" })
       }

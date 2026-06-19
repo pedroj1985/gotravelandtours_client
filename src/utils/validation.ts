@@ -16,8 +16,8 @@ interface PassResult {
 }
 
 export function gttIsValid(Validator: ValidatorElement[], vueInstance: Record<string, unknown> | null = null): ValidatorElement[] {
-  console.log(Validator);
-  console.log(vueInstance);
+  if (import.meta.env.DEV) { console.log(Validator); }
+  if (import.meta.env.DEV) { console.log(vueInstance); }
   if (Validator.length == 8 && (vueInstance as Record<string, unknown>)["$children"] && ((vueInstance as Record<string, unknown>)["$children"] as unknown[]).length == 4) {
     Validator.pop();
     Validator.pop();
@@ -154,12 +154,12 @@ export function renderValid(Validator: ValidatorElement[], vueInstance: { $refs:
 
     const errorsEl = ref?.querySelector(".gtt-errors");
     if (errorsEl) {
-      errorsEl.innerHTML = "";
+      errorsEl.textContent = "";
     }
     if (!element.isValid) {
       element.messages?.forEach(item => {
         if (errorsEl) {
-          errorsEl.innerHTML += item + "<br>";
+          errorsEl.textContent += item + "\n";
         }
       });
     }

@@ -417,7 +417,7 @@ const currentGalleryImage = computed(() => {
 })
 
 watch(() => route.params.id, async () => {
-  console.log("id changed")
+  if (import.meta.env.DEV) { console.log("id changed") }
   await initializeData()
 }, { immediate: true })
 
@@ -441,15 +441,15 @@ async function initializeData() {
   item.value = { images: imgs_array, lodging: data }
   try {
     roomsSelecting.value = true
-    console.log("sR init")
+    if (import.meta.env.DEV) { console.log("sR init") }
     await sR()
-    console.log("sR init done")
+    if (import.meta.env.DEV) { console.log("sR init done") }
     if (roomsResult.value.length == 0) {
       roomsSelecting.value = false
     }
     emit("searchingFinished", false)
   } catch (e) {
-    console.log(e)
+    if (import.meta.env.DEV) { console.log(e) }
   }
 }
 
@@ -661,7 +661,7 @@ async function addToCart(item: any) {
     roomsToReserve.value.push(i)
     roomSelectedToDis.value.push(i.rn)
   })
-  console.log("item5", item)
+  if (import.meta.env.DEV) { console.log("item5", item) }
 }
 
 async function btnSearch() {
@@ -670,7 +670,7 @@ async function btnSearch() {
   try {
     await sR()
   } catch (e) {
-    console.log(e)
+    if (import.meta.env.DEV) { console.log(e) }
   }
 }
 
@@ -683,10 +683,10 @@ async function sR() {
   try {
     await Promise.all(
       active_rooms.map(async (j: any) => {
-        console.log("--- j ---", j)
+        if (import.meta.env.DEV) { console.log("--- j ---", j) }
         await Promise.all(
           listaPlanesAlimenticios.map(async (i: any) => {
-            console.log("--- i ---", i)
+            if (import.meta.env.DEV) { console.log("--- i ---", i) }
             let pa = await authGetLodgingEatingPlanOne(i.PlanesAlimenticiosId)
             let noDisp = false
             let c = 0
@@ -742,7 +742,7 @@ async function sR() {
       })
     )
   } catch (e) {
-    console.log(e)
+    if (import.meta.env.DEV) { console.log(e) }
   }
   loading.value = false
 }
@@ -786,7 +786,7 @@ async function searchRooms(room: any) {
               })
             }
           } catch (e) {
-            console.log(e)
+            if (import.meta.env.DEV) { console.log(e) }
           }
         })
       )

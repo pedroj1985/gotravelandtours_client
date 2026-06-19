@@ -237,7 +237,7 @@ async function addToCart() {
     }
   }
 
-  console.log("blockProduct", props.child)
+  if (import.meta.env.DEV) { console.log("blockProduct", props.child) }
 
   hotetecBlockProduct(blockProduct)
     .then((res: any) => {

@@ -420,7 +420,7 @@ async function activateModal() {
     isModalActive.value = true
     await clearResults()
     if (selectedLodgingDestinyValue.value.type == "RGN") {
-      console.log("RGN")
+      if (import.meta.env.DEV) { console.log("RGN") }
       let region = {
         RegionId: selectedLodgingDestinyValue.value.id
       }
@@ -489,14 +489,14 @@ async function activateModal() {
           })
         }
       } catch (error) {
-        console.log(error)
+        if (import.meta.env.DEV) { console.log(error) }
         desactivateModal()
         toast("El servicio no está disponible en estos momentos", {
           type: "error"
         })
       }
     } else if (selectedLodgingDestinyValue.value.type == "HTL") {
-      console.log("HTL")
+      if (import.meta.env.DEV) { console.log("HTL") }
       let searchFilters = {
         Destiny: selectedLodgingDestinyValue.value,
         NombreHotel: selectedLodgingDestinyValue.value.nombre,
@@ -534,7 +534,7 @@ async function activateModal() {
           })
         }
       } catch (error) {
-        console.log(error)
+        if (import.meta.env.DEV) { console.log(error) }
         desactivateModal()
         toast("El servicio no está disponible en estos momentos", {
           type: "error"

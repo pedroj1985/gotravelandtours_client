@@ -593,7 +593,7 @@ async function createOrderInHotelect(order: any) {
       return orderStatus
     }
   } catch (error) {
-    console.log(error)
+    if (import.meta.env.DEV) { console.log(error) }
     hotelecSessionService.clearSessionId()
   }
 }
@@ -645,7 +645,7 @@ function getListaAlojamientosOrden() {
     .forEach((i: any) => {
       i.reservedRooms.combinacion.listado.forEach((j: any) => {
         let po = j.precioObjOne
-        console.log("precio object", po)
+        if (import.meta.env.DEV) { console.log("precio object", po) }
         po.Alojamiento = { ProductoId: po.Alojamiento.ProductoId, Nombre: i.name, SKU: j.Habitacion.SKU }
         po.FechaInicio = po.FechaInicio.split("T")[0]
         po.FechaFin = po.FechaFin.split("T")[0]
@@ -765,13 +765,13 @@ function constructFilterDataObj(item: any) {
 }
 
 function editOrder(item: any) {
-  console.log("objeto a editar: ", item)
+  if (import.meta.env.DEV) { console.log("objeto a editar: ", item) }
   if (item.tipo == "rent") {
     if (!verifyDifferentsDatesNoCartReturnBoolean(
       { FechaRecogida: item.nI.orderVehiculo.FechaRecogida, FechaEntrega: item.nI.orderVehiculo.FechaEntrega },
       allTypesOrders.value.filter((i: any) => i.uID != tempItemToEdit.value.uID)
     )) {
-      console.log("actualiza")
+      if (import.meta.env.DEV) { console.log("actualiza") }
       updateSelectedEdit(item.nI)
       tempItemToEdit.value.orderVehiculo = item.nI.orderVehiculo
       revertFn(tempItemToEdit.value.orderVehiculo)

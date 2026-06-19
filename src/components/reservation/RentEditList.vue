@@ -54,7 +54,7 @@ function displayName(data: string) {
 }
 
 function search(filters: any) {
-  console.log(filters)
+  if (import.meta.env.DEV) { console.log(filters) }
   return []
 }
 

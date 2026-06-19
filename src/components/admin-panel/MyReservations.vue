@@ -267,7 +267,7 @@ function constructFilterObj() {
 
   filters.value.FechaI = (filtroFechaInicio.value as Date).toISOString().split("T")[0];
   if (filters.value.FechaF) {
-    console.log("hay fecha fin ");
+    if (import.meta.env.DEV) { console.log("hay fecha fin "); }
     filters.value.FechaF = toMoment(filtroFechaFin.value);
   }
 
@@ -325,9 +325,9 @@ async function searchOrdersCount(filters: any) {
 
 async function searchOrders(filters: any) {
   try {
-    console.log("filtros", filters);
+    if (import.meta.env.DEV) { console.log("filtros", filters); }
     let { data } = await authGetOrders(filters);
-    console.log(data);
+    if (import.meta.env.DEV) { console.log(data); }
     return data.map((item: any) => {
       return {
         númeroOrden: item.NumeroOrden,
@@ -342,7 +342,7 @@ async function searchOrders(filters: any) {
       };
     });
   } catch (error) {
-    console.log(error);
+    if (import.meta.env.DEV) { console.log(error); }
   }
 }
 

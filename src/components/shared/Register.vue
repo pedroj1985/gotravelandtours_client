@@ -139,7 +139,7 @@ async function submit(values: any) {
     Authorization: `Bearer ${localStorage.getItem("token")}`
   })
     .then(({ data }) => {
-      console.log(data);
+      if (import.meta.env.DEV) { console.log(data); }
       toast(
         `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
         {

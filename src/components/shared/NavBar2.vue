@@ -55,7 +55,7 @@ onMounted(() => {
   let id = route.params.idPage as string;
   if (id) {
     let elment = document.getElementById(id);
-    console.log(elment);
+    if (import.meta.env.DEV) { console.log(elment); }
     if (elment) elment.scrollIntoView({ behavior: "smooth" });
   }
 });

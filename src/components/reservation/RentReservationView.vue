@@ -303,7 +303,7 @@ function displayName(data: string) {
 async function getVoucher() {
   try {
     let v = await voucher(props.ordenId)
-    console.log(v.data)
+    if (import.meta.env.DEV) { console.log(v.data) }
     if (v.data.length == 0) {
       UrlVoucher.value =
         `//admin.gotravelandtours.com/#/dasboard/admin/voucher?id=` +
@@ -313,7 +313,7 @@ async function getVoucher() {
       UrlVoucher.value = v.data[0].UrlVoucher
     }
   } catch (e) {
-    console.log(e)
+    if (import.meta.env.DEV) { console.log(e) }
     return null
   }
 }

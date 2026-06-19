@@ -150,7 +150,7 @@ async function btnSearch() {
   loading.value = true
   try {
     const r = await sR()
-    console.log("resultado busqueda", r)
+    if (import.meta.env.DEV) { console.log("resultado busqueda", r) }
     if (r.length > 0) {
       emit("searched", {
         result: r,
@@ -165,7 +165,7 @@ async function btnSearch() {
       emit("errorC")
     }
   } catch (e) {
-    console.log(e)
+    if (import.meta.env.DEV) { console.log(e) }
   }
 }
 
@@ -213,7 +213,7 @@ async function sR() {
               }
               try {
                 const result = await authGetRoomPrice(so)
-                console.log("get room price", result)
+                if (import.meta.env.DEV) { console.log("get room price", result) }
                 if (
                   result.data.length != 0 &&
                   result.data[0].PrecioOrden != 0
@@ -231,7 +231,7 @@ async function sR() {
                 }
               } catch (e) {
                 noDisp = true
-                console.log(e)
+                if (import.meta.env.DEV) { console.log(e) }
               }
               c++
             }
@@ -243,7 +243,7 @@ async function sR() {
       })
     )
   } catch (e) {
-    console.log(e)
+    if (import.meta.env.DEV) { console.log(e) }
   }
   loading.value = false
   return roomsResultArr

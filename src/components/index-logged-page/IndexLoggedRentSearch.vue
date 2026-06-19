@@ -305,7 +305,7 @@ const pickUpDeliveryOptions = ref<unknown[]>([])
 
 watch(selectedPickUpPlace, (val) => {
   selectedDeliveryPlace.value = val
-  console.log(selectedDeliveryPlace.value)
+  if (import.meta.env.DEV) { console.log(selectedDeliveryPlace.value) }
 })
 
 watch(selectedEnd, () => {
@@ -433,7 +433,7 @@ async function activateModal() {
         }
       })
     } catch (error) {
-      console.log(error)
+      if (import.meta.env.DEV) { console.log(error) }
       desactivateModal()
       toast("El servicio no está disponible en estos momentos", {
         type: "error"
@@ -464,7 +464,7 @@ async function loadMarcas() {
     try {
       let { data } = await authSearchMarcas()
       let totalResult: unknown[] = []
-      console.log(totalResult)
+      if (import.meta.env.DEV) { console.log(totalResult) }
       data.forEach((item: { Nombre: unknown; MarcaId: unknown }) => {
         totalResult = totalResult.concat({
           nombre: item.Nombre,

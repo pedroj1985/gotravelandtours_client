@@ -120,7 +120,7 @@ function goDetails(id: number) {
 }
 
 function hasInsurance(tString: string) {
-  console.log(tString)
+  if (import.meta.env.DEV) { console.log(tString) }
   let t = tString.split(" ").length
   return t > 1
 }

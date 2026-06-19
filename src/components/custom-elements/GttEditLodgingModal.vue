@@ -445,7 +445,7 @@ async function sR() {
               }
             } catch (e) {
               noDisp = true
-              console.log(e)
+              if (import.meta.env.DEV) { console.log(e) }
             }
             c++
           }

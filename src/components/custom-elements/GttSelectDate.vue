@@ -144,8 +144,8 @@ watch(() => props.value, () => {
 })
 
 onMounted(() => {
-  console.log(props.value)
-  console.log(props.opened)
+  if (import.meta.env.DEV) { console.log(props.value) }
+  if (import.meta.env.DEV) { console.log(props.opened) }
   isVisible.value = props.opened
 })
 </script>
