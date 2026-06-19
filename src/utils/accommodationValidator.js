@@ -74,7 +74,7 @@ export function isRoomCombinationAvailable(adults, kids, availableCombos) {
 export function validateRoomLayout(roomLayout) {
   if (!roomLayout) return false;
 
-  const { adults = 0, kids = 0 } = roomLayout;
+  const { adults = 0 } = roomLayout;
 
   // Must have at least one adult
   return adults > 0;

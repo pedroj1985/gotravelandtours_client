@@ -11,7 +11,10 @@ import lodash from "lodash";
 import { helpers } from "./utils/helpers";
 import { authStore } from "./stores/authStore";
 import { cartStore } from "./stores/cartStore";
-import { setupGlobalErrorHandler, setToastInstance } from "./utils/errorHandler";
+import {
+  setupGlobalErrorHandler,
+  setToastInstance
+} from "./utils/errorHandler";
 
 const app = createApp(App);
 
@@ -37,7 +40,7 @@ const router = createRouter({
   }
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach(to => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (storageService.getToken() == null) {
       return { name: "index", params: { nextUrl: to.fullPath } };
@@ -62,8 +65,7 @@ router.beforeEach((to, from) => {
     }
   } else if (storageService.getToken() == null) {
     return true;
-  } else
-    return { name: "indexLogged" };
+  } else return { name: "indexLogged" };
 });
 
 app.use(router);
