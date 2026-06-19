@@ -155,423 +155,324 @@
   </div>
 </template>
 
-<script>
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttSelectForm2 from "../custom-elements/GttSelectForm2";
-import moment from "moment";
-import { useHelpers } from "../../composables/useHelpers";
-import { useLodging } from "../../composables/useLodging";
-
-import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+<script setup lang="ts">
+import { ref, watch } from "vue"
+import { useRouter } from "vue-router"
+import GttSelect from "../custom-elements/GttSelect.vue"
+import GttSelectDate from "../custom-elements/GttSelectDate.vue"
+import GttSelectForm2 from "../custom-elements/GttSelectForm2.vue"
+import moment from "moment"
+import { useLodging } from "../../composables/useLodging"
+import { gttIsValid, renderValid, getValid } from "../../utils/validation"
 import {
   authSearchRoomsByLodging,
   authGetLodgingEatingPlanOne,
   authGetRoomPrice,
-  authSearchRegions,
-  authGetLodgingsAll,
   authGetHotelList
-} from "../../utils/auth";
-import _ from "lodash";
-import { useCartStore } from "../../stores/cartStore";
+} from "../../utils/auth"
+import _ from "lodash"
+import { useCartStore } from "../../stores/cartStore"
+import { toast } from "vue3-toastify"
+import { helpers } from "../../utils/helpers"
+import { visitantesToAcomodation } from "../../utils/visitorTransformer"
 
-export default {
-  components: {
-    GttSelect,
-    GttSelectDate,
-    GttSelectForm2
-  },
-  watch: {
-    selectedDestiny(item) {
-      if (item.type == "RGN") {
-        this.disableByRegion = true;
-      } else {
-        this.disableByRegion = false;
-      }
-    }
-  },
-  created() {
-    this.item = this.filterData.item;
-    if (this.filterData.needPre)
-      this.fillRoomLayout(this.filterData.propVisitantes);
-    else {
-      this.visitantes = this.filterData.propVisitantes;
-      let total = this.visitantes.length;
-      this.totalRooms = {
-        value: total,
-        display: total > 1 ? `${total} habitaciones` : `${total} habitación`
-      };
-    }
-    this.roomsOpt = this.generateRooms();
-    this.selectedDestiny = {
-      nombre: this.item.lodging.Nombre,
-      id: this.item.lodging.IdObjeto,
-      type: this.item.lodging.TipoObjeto
-    };
-  },
-  data() {
-    return {
-      result: [],
-      showResult: false,
-      isReserving: false,
-      useSameItem: true,
-      roomLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
-        }
-      ],
-      totalRooms: {},
-      roomsOpt: [],
-      item: null,
-      dateIn: new Date(this.filterData.propDateIn),
-      dateOut: new Date(this.filterData.propDateOut),
-      visitantes: null,
-      habitaciones: this.filterData.propHabitaciones,
-      lodgingOpened: false,
-      destinies: [],
-      selectedDestiny: null,
-      disableByRegion: false
-    };
-  },
-  props: {
-    filterData: {
-      type: Object,
-      default() {
-        return {
-          propDateIn: moment(),
-          propDateOut: moment().add(1, "day"),
-          propVisitantes: {},
-          propHabitaciones: {},
-          id: undefined,
-          item: {},
-          name: "",
-          needPre: true
-        };
-      }
-    }
-  },
-  methods: {
-    ...useHelpers(),
-    ...useLodging(),
-    async performSearch(query) {
-      const res = await useLodging().executeQuery(query);
-      this.searchResult = res;
-      return res;
-    },
-    generateRooms() {
-      let i = [];
-      for (let key = 1; key <= 10; key++) {
-        let d = ``;
-        if (key == 1) d = `${key} habitación`;
-        else d = `${key} habitaciones`;
-        i.push({
-          value: key,
-          display: d
-        });
-      }
+const props = withDefaults(defineProps<{
+  filterData?: any
+}>(), {
+  filterData: () => ({
+    propDateIn: moment(),
+    propDateOut: moment().add(1, "day"),
+    propVisitantes: {},
+    propHabitaciones: {},
+    id: undefined,
+    item: {},
+    name: "",
+    needPre: true
+  })
+})
 
-      return i;
-    },
-    addRoom() {
-      let currrentValue = this.totalRooms.value;
-      let v = this.roomsOpt.find(i => {
-        return i.value == currrentValue + 1;
-      });
-      this.totalRooms = v;
-    },
-    refreshRoomLayout(roomLayout) {
-      roomLayout.forEach((element, i) => {
-        element.room = i + 1;
-      });
-    },
-    removeRoom(indexRoomLayout) {
-      this.visitantes.splice(indexRoomLayout, 1);
-      this.refreshRoomLayout(this.visitantes);
-      let currrentValue = this.totalRooms.value;
-      let v = this.roomsOpt.find(i => {
-        return i.value == currrentValue - 1;
-      });
-      this.totalRooms = v;
-    },
-    fillRoomLayout(acomodation) {
-      let total = _.sumBy(acomodation, i => i.cantidad);
-      this.totalRooms = {
-        value: total,
-        display: total > 1 ? `${total} habitaciones` : `${total} habitación`
-      };
-      let count = 1;
-      let a = [];
-      acomodation.forEach(i => {
-        for (let t = 0; t < i.cantidad; t++) {
-          a.push({
-            room: count,
-            layout: [
-              {
-                code: "adults",
-                display: "Adulto(s)",
-                label: "Adultos",
-                value: i.adults
-              },
-              {
-                code: "kids",
-                display: "Niño(s)",
-                label: "Niños",
-                value: i.kids
-              }
-            ]
-          });
-          count++;
-        }
-      });
+const emit = defineEmits<{
+  (e: "editedItem", val: any): void
+  (e: "cancel"): void
+}>()
 
-      if (a.length > 0) {
-        this.visitantes = a;
-      }
-    },
-    gttValidate() {
-      let validator = [
-        {
-          rules: ["required"],
-          name: "gttLodging",
-          value: this.selectedDestiny,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttStartDate",
-          value: this.dateIn,
-          lang: "es"
-        },
-        {
-          rules: ["required", "dateAfter:dateIn"],
-          name: "gttEndDate",
-          value: this.dateOut,
-          lang: "es"
-        }
-      ];
+const router = useRouter()
 
-      return validator;
-    },
-    handleSelected(value) {
-      this.edited(value);
-    },
-    async searchResultSameItem() {
-      this.sR().then(v => {
-        this.isReserving = false;
-        let fr = v.filter(i => {
-          return !i.l.some(u => u.habitacion.PrecioOrden < 0);
-        });
-        if (fr.length == 0) {
-          this.$toasted.show("No hay disponibilidad para esta búsqueda", {
-            type: "error"
-          });
-        }
-      });
-    },
-    edited(value) {
-      this.showResult = false;
-      this.$emit("editedItem", {
-        tipo: "lodging",
-        pItemId: this.filterData.id,
-        nI: value
-      });
-    },
-    async editVehiculoOrder(item) {},
-    async searchResult() {
-      let iv = gttIsValid(this.gttValidate(), this);
-      if (getValid(iv)) {
-        this.isReserving = true;
-        let totalA = 0;
-        let totalK = 0;
-        this.visitantes.forEach(i => {
-          let a = i.layout.find(j => {
-            return j.code == "adults";
-          }).value;
-          totalA += a;
-        });
-        this.visitantes.forEach(i => {
-          let k = i.layout.find(j => {
-            return j.code == "kids";
-          }).value;
-          totalK += k;
-        });
-        let sl = {
-          adults: {
-            code: "adults",
-            display: "Adulto(s)",
-            label: "Adultos",
-            value: totalA
-          },
-          kids: {
-            code: "kids",
-            display: "Niño(s)",
-            label: "Niños",
-            value: totalK
-          }
-        };
+const gttLodging = ref<HTMLElement | null>(null)
+const gttStartDate = ref<HTMLElement | null>(null)
+const gttEndDate = ref<HTMLElement | null>(null)
 
-        if (this.selectedDestiny.type == "HTL") {
-          let r = this.visitantesToAcomodation(this.visitantes);
-          let searchFilters = {
-            Destiny: this.selectedDestiny,
-            Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.dateIn,
-            Salida: this.dateOut,
-            Visitantes: sl
-          };
-          localStorage.setItem(
-            "searchLodgingFilters",
-            JSON.stringify(searchFilters)
-          );
-          localStorage.setItem("searchLodgingAcomodation", JSON.stringify(r));
+const result = ref<any[]>([])
+const showResult = ref(false)
+const isReserving = ref(false)
+const useSameItem = ref(true)
+const roomLayout = [
+  { code: "adults", label: "Adultos", display: "Adulto(s)", default: 1 },
+  { code: "kids", label: "Niños", display: "Niño(s)", default: 0 }
+]
+const totalRooms = ref<any>({})
+const roomsOpt = ref<any[]>([])
+const item = ref<any>(props.filterData.item)
+const dateIn = ref(new Date(props.filterData.propDateIn))
+const dateOut = ref(new Date(props.filterData.propDateOut))
+const visitantes = ref<any>(null)
+const lodgingOpened = ref(false)
+const destinies = ref<any[]>([])
+const selectedDestiny = ref<any>(null)
+const disableByRegion = ref(false)
 
-          this.$helpers.shoppingCartRemoveOne(this.item.uID);
-          useCartStore().refresh();
-
-          this.$router.push({
-            name: "lodging-detail",
-            params: {
-              id: this.selectedDestiny.id
-            }
-          });
-        } else {
-          let searchFilters = {
-            Destiny: this.selectedDestiny,
-            Region: {
-              RegionId: this.selectedDestiny.id,
-              RegionNombre: this.selectedDestiny.nombre
-            },
-            Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.dateIn,
-            Salida: this.dateOut,
-            Visitantes: sl
-          };
-          localStorage.setItem(
-            "searchLodgingFilters",
-            JSON.stringify(searchFilters)
-          );
-          this.$helpers.shoppingCartRemoveOne(this.item.uID);
-          useCartStore().refresh();
-          this.$router.push({
-            name: "resultLodging"
-          });
-        }
-      } else {
-        renderValid(iv, this);
-      }
-    },
-    async sR() {
-      let roomsResult = [];
-      let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;
-      let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId);
-      await Promise.all(
-        rooms.data.map(async j => {
-          await Promise.all(
-            listaPlanesAlimenticios.map(async i => {
-              let pa = await authGetLodgingEatingPlanOne(
-                i.PlanesAlimenticiosId
-              );
-              let noDisp = false;
-              let c = 0;
-              let temp = [];
-              while (!noDisp && c < this.visitantes.length) {
-                let el = this.visitantes[c];
-                let ca = el.layout.find(p => p.code == "adults").value;
-                let cm = el.layout.find(p => p.code == "kids").value;
-                let so = {
-                  Cliente: { ClienteId: localStorage.getItem("cliente") },
-                  PlanAlimenticio: {
-                    PlanesAlimenticiosId: i.PlanesAlimenticiosId
-                  },
-                  Alojamiento: { ProductoId: this.item.lodging.ProductoId },
-                  TipoHabitacion: { TipoHabitacionId: ca },
-                  CantidadAdultos: ca,
-                  CantidadMenores: cm,
-                  CantidadInfantes: 0,
-                  CantidadHabitaciones: 1,
-                  Habitacion: { HabitacionId: j.HabitacionId },
-                  Entrada: this.dateIn,
-                  Salida: this.dateOut
-                };
-                try {
-                  let result = await authGetRoomPrice(so);
-                  if (
-                    result.data.length != 0 &&
-                    // && r.data[0].OrdenAlojamientoId != -1
-                    result.data[0].PrecioOrden != 0
-                  ) {
-                    temp.push({
-                      habitacion: result.data[0],
-                      CantAdultos: ca,
-                      CantidadMenores: cm,
-                      PA: pa.data,
-                      rn: el.room
-                    });
-                  } else {
-                    noDisp = true;
-                  }
-                } catch (e) {
-                  noDisp = true;
-                  console.log(e);
-                }
-
-                c++;
-              }
-
-              if (!noDisp) {
-                roomsResult.push({
-                  rO: j,
-                  pA: pa.data,
-                  l: temp
-                });
-              }
-            })
-          );
-        })
-      );
-      return roomsResult;
-    },
-    async loadDestinies() {
-      if (this.lodgingOpened == true) {
-        //let { data } = await authSearchRegions();
-        let totalResult = [];
-        /* data.forEach(item => {
-          totalResult = totalResult.concat({
-            nombre: item.Nombre,
-            regionid: item.RegionId,
-            type: "RGN"
-          });
-        }); */
-        /* let l = await authGetLodgingsAll();
-        l.data.forEach(i => {
-          totalResult = totalResult.concat({
-            nombre: i.Nombre,
-            id: i.ProductoId,
-            type: "HTL"
-          });
-        }); */
-        let l = await authGetHotelList();
-        l.data.forEach(i => {
-          totalResult = totalResult.concat({
-            nombre: i.Nombre,
-            id: i.IdObjeto,
-            type: "HTL"
-          });
-        });
-        this.destinies = totalResult;
-      }
-    }
+if (props.filterData.needPre) {
+  fillRoomLayout(props.filterData.propVisitantes)
+} else {
+  visitantes.value = props.filterData.propVisitantes
+  const total = visitantes.value.length
+  totalRooms.value = {
+    value: total,
+    display: total > 1 ? `${total} habitaciones` : `${total} habitación`
   }
-};
+}
+roomsOpt.value = generateRooms()
+selectedDestiny.value = {
+  nombre: item.value.lodging.Nombre,
+  id: item.value.lodging.IdObjeto,
+  type: item.value.lodging.TipoObjeto
+}
+
+watch(selectedDestiny, (item) => {
+  if (item?.type == "RGN") {
+    disableByRegion.value = true
+  } else {
+    disableByRegion.value = false
+  }
+})
+
+async function performSearch(query: any) {
+  const res = await useLodging().executeQuery(query)
+  result.value = res
+  return res
+}
+
+function generateRooms() {
+  const i: any[] = []
+  for (let key = 1; key <= 10; key++) {
+    let d = ``
+    if (key == 1) d = `${key} habitación`
+    else d = `${key} habitaciones`
+    i.push({ value: key, display: d })
+  }
+  return i
+}
+
+function addRoom() {
+  const currrentValue = totalRooms.value.value
+  const v = roomsOpt.value.find((i: any) => i.value == currrentValue + 1)
+  totalRooms.value = v
+}
+
+function refreshRoomLayout(roomLayout: any[]) {
+  roomLayout.forEach((element, i) => {
+    element.room = i + 1
+  })
+}
+
+function removeRoom(indexRoomLayout: number) {
+  visitantes.value.splice(indexRoomLayout, 1)
+  refreshRoomLayout(visitantes.value)
+  const currrentValue = totalRooms.value.value
+  const v = roomsOpt.value.find((i: any) => i.value == currrentValue - 1)
+  totalRooms.value = v
+}
+
+function fillRoomLayout(acomodation: any[]) {
+  const total = _.sumBy(acomodation, (i: any) => i.cantidad)
+  totalRooms.value = {
+    value: total,
+    display: total > 1 ? `${total} habitaciones` : `${total} habitación`
+  }
+  let count = 1
+  const a: any[] = []
+  acomodation.forEach((i: any) => {
+    for (let t = 0; t < i.cantidad; t++) {
+      a.push({
+        room: count,
+        layout: [
+          { code: "adults", display: "Adulto(s)", label: "Adultos", value: i.adults },
+          { code: "kids", display: "Niño(s)", label: "Niños", value: i.kids }
+        ]
+      })
+      count++
+    }
+  })
+  if (a.length > 0) {
+    visitantes.value = a
+  }
+}
+
+function gttValidate() {
+  return [
+    { rules: ["required"], name: "gttLodging", value: selectedDestiny.value, lang: "es" },
+    { rules: ["required"], name: "gttStartDate", value: dateIn.value, lang: "es" },
+    { rules: ["required", "dateAfter:dateIn"], name: "gttEndDate", value: dateOut.value, lang: "es" }
+  ]
+}
+
+function handleSelected(value: any) {
+  edited(value)
+}
+
+async function searchResultSameItem() {
+  const v = await sR()
+  isReserving.value = false
+  const fr = v.filter((i: any) => !i.l.some((u: any) => u.habitacion.PrecioOrden < 0))
+  if (fr.length == 0) {
+    toast("No hay disponibilidad para esta búsqueda", { type: "error" })
+  }
+}
+
+function edited(value: any) {
+  showResult.value = false
+  emit("editedItem", {
+    tipo: "lodging",
+    pItemId: props.filterData.id,
+    nI: value
+  })
+}
+
+async function editVehiculoOrder(item: any) {}
+
+async function searchResult() {
+  const iv = gttIsValid(gttValidate(), null as any)
+  if (getValid(iv)) {
+    isReserving.value = true
+    let totalA = 0
+    let totalK = 0
+    visitantes.value.forEach((i: any) => {
+      const a = i.layout.find((j: any) => j.code == "adults").value
+      totalA += a
+    })
+    visitantes.value.forEach((i: any) => {
+      const k = i.layout.find((j: any) => j.code == "kids").value
+      totalK += k
+    })
+    const sl = {
+      adults: { code: "adults", display: "Adulto(s)", label: "Adultos", value: totalA },
+      kids: { code: "kids", display: "Niño(s)", label: "Niños", value: totalK }
+    }
+
+    if (selectedDestiny.value.type == "HTL") {
+      const r = visitantesToAcomodation(visitantes.value)
+      const searchFilters = {
+        Destiny: selectedDestiny.value,
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: dateIn.value,
+        Salida: dateOut.value,
+        Visitantes: sl
+      }
+      localStorage.setItem("searchLodgingFilters", JSON.stringify(searchFilters))
+      localStorage.setItem("searchLodgingAcomodation", JSON.stringify(r))
+
+      helpers.shoppingCartRemoveOne(item.value.uID)
+      useCartStore().refresh()
+
+      router.push({ name: "lodging-detail", params: { id: selectedDestiny.value.id } })
+    } else {
+      const searchFilters = {
+        Destiny: selectedDestiny.value,
+        Region: { RegionId: selectedDestiny.value.id, RegionNombre: selectedDestiny.value.nombre },
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: dateIn.value,
+        Salida: dateOut.value,
+        Visitantes: sl
+      }
+      localStorage.setItem("searchLodgingFilters", JSON.stringify(searchFilters))
+      helpers.shoppingCartRemoveOne(item.value.uID)
+      useCartStore().refresh()
+      router.push({ name: "resultLodging" })
+    }
+  } else {
+    renderValid(iv, {
+      $refs: {
+        gttLodging: gttLodging.value,
+        gttStartDate: gttStartDate.value,
+        gttEndDate: gttEndDate.value
+      },
+      $children: []
+    } as any)
+  }
+}
+
+async function sR() {
+  const roomsResult: any[] = []
+  const listaPlanesAlimenticios = item.value.lodging.ListaPlanesAlimenticios
+  const rooms = await authSearchRoomsByLodging(item.value.lodging.ProductoId)
+  await Promise.all(
+    rooms.data.map(async (j: any) => {
+      await Promise.all(
+        listaPlanesAlimenticios.map(async (i: any) => {
+          const pa = await authGetLodgingEatingPlanOne(i.PlanesAlimenticiosId)
+          let noDisp = false
+          let c = 0
+          const temp: any[] = []
+          while (!noDisp && c < visitantes.value.length) {
+            const el = visitantes.value[c]
+            const ca = el.layout.find((p: any) => p.code == "adults").value
+            const cm = el.layout.find((p: any) => p.code == "kids").value
+            const so = {
+              Cliente: { ClienteId: localStorage.getItem("cliente") },
+              PlanAlimenticio: { PlanesAlimenticiosId: i.PlanesAlimenticiosId },
+              Alojamiento: { ProductoId: item.value.lodging.ProductoId },
+              TipoHabitacion: { TipoHabitacionId: ca },
+              CantidadAdultos: ca,
+              CantidadMenores: cm,
+              CantidadInfantes: 0,
+              CantidadHabitaciones: 1,
+              Habitacion: { HabitacionId: j.HabitacionId },
+              Entrada: dateIn.value,
+              Salida: dateOut.value
+            }
+            try {
+              const result = await authGetRoomPrice(so)
+              if (result.data.length != 0 && result.data[0].PrecioOrden != 0) {
+                temp.push({
+                  habitacion: result.data[0],
+                  CantAdultos: ca,
+                  CantidadMenores: cm,
+                  PA: pa.data,
+                  rn: el.room
+                })
+              } else {
+                noDisp = true
+              }
+            } catch (e) {
+              noDisp = true
+              console.log(e)
+            }
+            c++
+          }
+          if (!noDisp) {
+            roomsResult.push({ rO: j, pA: pa.data, l: temp })
+          }
+        })
+      )
+    })
+  )
+  return roomsResult
+}
+
+async function loadDestinies() {
+  if (lodgingOpened.value == true) {
+    const totalResult: any[] = []
+    const l = await authGetHotelList()
+    l.data.forEach((i: any) => {
+      totalResult.push({
+        nombre: i.Nombre,
+        id: i.IdObjeto,
+        type: "HTL"
+      })
+    })
+    destinies.value = totalResult
+  }
+}
 </script>
 
 <style lang="scss" scoped>

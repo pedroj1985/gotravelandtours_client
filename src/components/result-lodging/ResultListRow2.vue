@@ -143,94 +143,86 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted } from "vue"
 import { useLodging } from "../../composables/useLodging";
 import { authGetRoomTypes } from "../../utils/auth";
-import AdultsKidsIcons from "./AdultsKidsIcons";
+import AdultsKidsIcons from "./AdultsKidsIcons.vue";
 import _ from "lodash";
-export default {
-  components: {
-    AdultsKidsIcons
-  },
-  data() {
-    return {
-      amoung: 1,
-      selectedInfo: "",
-      todosTiposHabitaciones: [],
-      totalPrecio: 0
-    };
-  },
-  async created() {
-    let tth = await authGetRoomTypes();
-    this.todosTiposHabitaciones = tth.data;
-    this.totalPrecio = _.sumBy(this.child.l, i => i.habitacion.PrecioOrden);
-  },
-  props: {
-    child: Object,
-    roomSelectedToDis: Array
-  },
-  watch: {
-    child(item) {
-      this.totalPrecio = _.sumBy(
-        item.l,
-        i => i.habitacion.PrecioOrden * this.amoung
-      );
-    }
-  },
-  methods: {
-    ...useLodging(),
-    async performSearch(query) {
-      const res = await useLodging().executeQuery(query);
-      this.searchResult = res;
-      return res;
-    },
-    addToCart() {
-      // const Habitacion = this.child.rO;
-      this.child.l[0].habitacion.CantidadHabitaciones = this.amoung;
-      /* this.child.l.forEach((i) => {console.log('i-child', i);
-        //i.habitacion.CantidadHabitaciones = 30;console.log('i-habitacion', Habitacion);
-        i.Habitacion = Habitacion;
-      });
-      console.log('child', this.child); */
-      this.$emit("listReserve", this.child);
-    },
-    addToCartOneRoom(one) {
-      this.selectInfo("roomLayout");
-      this.$emit("reserveOne", one);
-    },
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = Math.round((number - intPart) * 100);
 
-      if (decimalPart == 0) decimalPart = "00";
+const { habitacionPorCantidadPersonas } = useLodging()
 
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    isIn(n) {
-      return this.roomSelectedToDis.includes(n);
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
-      }
-    },
-    reserve() {
-      console.log(this.child);
-    },
-    findPrecio(item, listadoPrecios) {
-      let tipoHabitacion = this.habitacionPorCantidadPersonas(
-        item.CantAdult,
-        this.todosTiposHabitaciones
-      );
-      let r = listadoPrecios.find(i => {
-        return i.tipoHabitacion == tipoHabitacion.TipoHabitacionId;
-      });
-      return r.price;
-    }
+const props = defineProps<{
+  child: any
+  roomSelectedToDis: any[]
+}>()
+
+const emit = defineEmits<{
+  (e: "listReserve", child: any): void
+  (e: "reserveOne", one: any): void
+}>()
+
+const amoung = ref(1)
+const selectedInfo = ref("")
+const todosTiposHabitaciones = ref<any[]>([])
+const totalPrecio = ref(0)
+
+onMounted(async () => {
+  let tth = await authGetRoomTypes()
+  todosTiposHabitaciones.value = tth.data
+  totalPrecio.value = _.sumBy(props.child.l, (i: any) => i.habitacion.PrecioOrden)
+})
+
+watch(() => props.child, (item: any) => {
+  totalPrecio.value = _.sumBy(
+    item.l,
+    (i: any) => i.habitacion.PrecioOrden * amoung.value
+  )
+}, { deep: true })
+
+function addToCart() {
+  props.child.l[0].habitacion.CantidadHabitaciones = amoung.value
+  emit("listReserve", props.child)
+}
+
+function addToCartOneRoom(one: any) {
+  selectInfo("roomLayout")
+  emit("reserveOne", one)
+}
+
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number)
+  let decimalPart = Math.round((number - intPart) * 100)
+  if (decimalPart == 0) decimalPart = "00"
+  return { intPart, decimalPart }
+}
+
+function isIn(n: number) {
+  return props.roomSelectedToDis.includes(n)
+}
+
+function selectInfo(section: string) {
+  if (selectedInfo.value == section) {
+    selectedInfo.value = ""
+  } else {
+    selectedInfo.value = section
   }
-};
+}
+
+function reserve() {
+  console.log(props.child)
+}
+
+function findPrecio(item: any, listadoPrecios: any[]) {
+  let tipoHabitacion = habitacionPorCantidadPersonas(
+    item.CantAdult,
+    todosTiposHabitaciones.value
+  )
+  let r = listadoPrecios.find((i: any) => {
+    return i.tipoHabitacion == tipoHabitacion.TipoHabitacionId
+  })
+  return r?.price
+}
 </script>
 
 <style scoped>

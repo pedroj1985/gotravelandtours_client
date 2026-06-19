@@ -141,90 +141,61 @@
     </div>
   </div>
 </template>
-<script>
-import NavBar2 from "../shared/NavBar2";
-import RentForm from "./RentForm";
+<script setup lang="ts">
+import { ref, onMounted } from "vue"
+import { useRoute } from "vue-router"
+import { toast } from "vue3-toastify"
+import NavBar2 from "../shared/NavBar2.vue";
+import RentForm from "./RentForm.vue";
 import { authGetCar, authGetImage, authSearchProvider } from "../../utils/auth";
 
-export default {
-  components: {
-    NavBar2,
-    RentForm
-  },
-  async created() {
-    let carId = this.$route.params.id;
-    try {
-      let { data } = await authGetCar(carId);
-      this.car = data;
-      console.log({ data });
-      this.isLoaded = true;
-      this.image = await this.getImage();
-      this.imageProvider = await this.getProviderImage(this.car.ProveedorId);
-    } catch (error) {
-      if (error) {
-        this.$toasted.show("Su petición no se ha podido procesar", {
-          type: "error"
-        });
-      }
-    }
-  },
-  methods: {
-    displayTransmission(item) {
-      return item.split(" ")[0].toLowerCase();
-    },
-    displayName(data) {
-      let data_splitted = data.split("-");
-      let sp = data_splitted.slice(1, data_splitted.lenght);
+const route = useRoute()
 
-      return sp.join("-");
-    },
-    async getImage() {
-      let { data } = await authGetImage(this.$route.params.id);
+const car = ref<any>({})
+const isLoadingImage = ref(true)
+const image = ref<any>(null)
+const imageProvider = ref<any>(null)
+const isLoaded = ref(false)
+const filter = ref<any>({})
+const menuLinks = ref([
+  { name: "index", displayName: "Inicio", id: "home-logged-banner" },
+  { name: "lodging", displayName: "alojamientos", id: "home-logged-banner" }
+])
 
-      this.isLoadingImage = false;
-      return data.ImageContent;
-    },
-    async getProviderImage(id) {
-      let { data } = await authSearchProvider(id);
-      return data.ImageContent;
+onMounted(async () => {
+  let carId = route.params.id as string
+  try {
+    let { data } = await authGetCar(carId)
+    car.value = data
+    console.log({ data })
+    isLoaded.value = true
+    image.value = await getImage()
+    imageProvider.value = await getProviderImage(car.value.ProveedorId)
+  } catch (error) {
+    if (error) {
+      toast("Su petición no se ha podido procesar", { type: "error" })
     }
-  },
-  data() {
-    return {
-      car: {},
-      isLoadingImage: true,
-      image: null,
-      imageProvider: null,
-      isLoaded: false,
-      filter: {},
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Inicio",
-          id: "home-logged-banner"
-        },
-        {
-          name: "lodging",
-          displayName: "alojamientos",
-          id: "home-logged-banner"
-        }
-        /*         {
-          name: "car-rent",
-          displayName: "renta de autos",
-          id: "index-logged-rent-wrapper",
-        }, */
-        /*        {
-          name: "transfer",
-          displayName: "traslados",
-          id: "index-logged-transfer",
-        },
-        {
-          name: "excursions",
-          displayName: "Excursiones y actividades",
-          id: "index-logged-excursion",
-        },*/
-      ]
-    };
   }
-};
+})
+
+function displayTransmission(item: string) {
+  return item.split(" ")[0].toLowerCase()
+}
+
+function displayName(data: string) {
+  let data_splitted = data.split("-")
+  let sp = data_splitted.slice(1, data_splitted.length)
+  return sp.join("-")
+}
+
+async function getImage() {
+  let { data } = await authGetImage(route.params.id as string)
+  isLoadingImage.value = false
+  return data.ImageContent
+}
+
+async function getProviderImage(id: number) {
+  let { data } = await authSearchProvider(id)
+  return data.ImageContent
+}
 </script>

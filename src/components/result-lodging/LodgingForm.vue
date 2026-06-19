@@ -122,11 +122,14 @@
   </div>
 </template>
 
-<script>
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttSelectForm from "../custom-elements/GttSelectForm";
-import GttModalSearch from "../custom-elements/GttModalSearch";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from "vue"
+import { useRouter, useRoute } from "vue-router"
+import { toast } from "vue3-toastify"
+import GttSelect from "../custom-elements/GttSelect.vue";
+import GttSelectDate from "../custom-elements/GttSelectDate.vue";
+import GttSelectForm from "../custom-elements/GttSelectForm.vue";
+import GttModalSearch from "../custom-elements/GttModalSearch.vue";
 import {
   authSearchRegions,
   authGetRoomTypes,
@@ -140,433 +143,260 @@ import {
 } from "../../utils/utils";
 import { useLodging } from "../../composables/useLodging";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import { helpers } from "../../utils/helpers";
 import moment from "moment";
 
-export default {
-  components: {
-    GttSelect,
-    GttSelectDate,
-    GttSelectForm,
-    GttModalSearch
-  },
-  computed: {
-    minArriveDate() {
-      return moment()
-        .add(4, "days")
-        .format("YYYY-MM-DD");
-    },
-    minDepartureDate() {
-      let minDepartureDate = moment()
-        .add(7, "days")
-        .format("YYYY-MM-DD");
-      if (this.selectedArriveDate) {
-        minDepartureDate = moment(this.selectedArriveDate)
-          .add(this.selectedNights, "days")
-          .format("YYYY-MM-DD");
-      }
-      return minDepartureDate;
+const $helpers = helpers
+const router = useRouter()
+const route = useRoute()
+
+const {
+  searchResult, searchPrev, searchPreviousResult,
+  getResults, getSearchResults, clearResults, clearSerchResults,
+  roomCombination, buildCombo, buildRoomCombo, toAcomodation
+} = useLodging()
+
+const props = defineProps<{
+  propLodgingDestinyValue?: any
+  propArriveDate?: any
+  propDepartureDate?: any
+  propRoomLayout?: any
+  propNationality?: any
+}>()
+
+const selectedLodgingDestinyValue = ref(props.propLodgingDestinyValue)
+const selectedArriveDate = ref(new Date(moment(props.propArriveDate)))
+const selectedDepartureDate = ref(new Date(moment(props.propDepartureDate)))
+const selectedRoomLayout = ref<any>(null)
+const selectedNationality = ref(props.propNationality)
+const selectedNights = ref(3)
+const roomComb = ref<any>(null)
+const todosTipo = ref<any[]>([])
+const hasSearchResults = ref(false)
+const isModalActive = ref(false)
+const lodgingOpened = ref(false)
+const destinies = ref<any[]>([])
+const defaultFlagImgPath = ref("img/flags/")
+const roomLayout = ref([
+  { code: "adults", label: "Adultos", display: "Adulto(s)", default: 1 },
+  { code: "kids", label: "Niños", display: "Niño(s)", default: 0 }
+])
+const countries = ref([
+  { nombre: "Afganistán", flag: "flag_afganistan.jpg" },
+  { nombre: "Albania", flag: "flag_albania.jpg" },
+  { nombre: "Alemania", flag: "flag_alemania.jpg" },
+  { nombre: "Estados Unidos", flag: "flag_estadosunidos.jpg" }
+])
+
+const minArriveDate = computed(() => moment().add(4, "days").format("YYYY-MM-DD"))
+
+const minDepartureDate = computed(() => {
+  let minDepartureDate = moment().add(7, "days").format("YYYY-MM-DD")
+  if (selectedArriveDate.value) {
+    minDepartureDate = moment(selectedArriveDate.value)
+      .add(selectedNights.value, "days")
+      .format("YYYY-MM-DD")
+  }
+  return minDepartureDate
+})
+
+watch(() => props.propNationality, (sn: any) => {
+  selectedNationality.value = sn
+})
+
+watch(() => props.propArriveDate, (i: any) => {
+  if (i) selectedArriveDate.value = new Date(i)
+})
+
+watch(() => props.propDepartureDate, (i: any) => {
+  if (i) selectedDepartureDate.value = new Date(i)
+})
+
+watch(() => props.propLodgingDestinyValue, (i: any) => {
+  selectedLodgingDestinyValue.value = i
+})
+
+watch(selectedArriveDate, (i: any) => {
+  if (i && moment(i).isAfter(selectedDepartureDate.value)) {
+    selectedNights.value = 3
+    selectedDepartureDate.value = moment(i).add(selectedNights.value, "days").toDate()
+    let n = moment(selectedDepartureDate.value).diff(selectedArriveDate.value, "days")
+    selectedNights.value = n
+  }
+})
+
+watch(selectedDepartureDate, (i: any) => {
+  let n = moment(selectedDepartureDate.value).diff(selectedArriveDate.value, "days")
+  selectedNights.value = n
+})
+
+watch(selectedNights, (i: number) => {
+  selectedDepartureDate.value = new Date(moment(selectedArriveDate.value).add(i, "days"))
+})
+
+watch(selectedLodgingDestinyValue, (i: any) => {
+  console.info("watch", i)
+  return i
+})
+
+onMounted(async () => {
+  let t = await authGetRoomTypes()
+  todosTipo.value = t.data
+  selectedRoomLayout.value = props.propRoomLayout
+  getSearchResults().then((res: any) => {
+    console.log("getSearchResults", res)
+    if (Array.isArray(res) && res.length > 0 && route.name === "lodging-detail") {
+      hasSearchResults.value = true
     }
-  },
-  watch: {
-    propNationality: function(sn) {
-      this.selectedNationality = sn;
+  })
+})
+
+function goToDetail(f: any, a: any, id: any) {
+  const currentRoute = route
+  localStorage.setItem("searchLodgingFilters", JSON.stringify(f))
+  localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a))
+  if (currentRoute.params.id != parseInt(id)) {
+    router.push({ name: "lodging-detail", params: { id } })
+  } else {
+    router.go(0)
+    router.push({ name: "lodging-detail", params: { id } })
+  }
+}
+
+function gttValidate() {
+  return [
+    { rules: ["required"], name: "gttDestinyLodging", value: selectedLodgingDestinyValue.value, lang: "es" },
+    { rules: ["required", "dateAfter:selectedArriveDate"], name: "gttEndDate", value: selectedDepartureDate.value, lang: "es" },
+    { rules: ["required"], name: "gttStartDate", value: selectedArriveDate.value, lang: "es" }
+  ]
+}
+
+async function returnToPreviousSearch() {
+  let searchFilters = {
+    Destiny: selectedLodgingDestinyValue.value,
+    Region: {
+      RegionId: selectedLodgingDestinyValue.value.id,
+      RegionNombre: selectedLodgingDestinyValue.value.nombre
     },
-    propArriveDate(i) {
-      this.selectedArriveDate = new Date(i);
-    },
-    propDepartureDate(i) {
-      this.selectedDepartureDate = new Date(i);
-    },
-    propLodgingDestinyValue(i) {
-      this.selectedLodgingDestinyValue = i;
-    },
-    selectedArriveDate(i) {
-      if (moment(i).isAfter(this.selectedDepartureDate)) {
-        this.selectedNights = 3;
-        this.selectedDepartureDate = moment(i)
-          .add(this.selectedNights, "days")
-          .toDate();
-        let n = moment(this.selectedDepartureDate).diff(
-          this.selectedArriveDate,
-          "days"
-        );
-        this.selectedNights = n;
+    Cliente: { ClienteId: localStorage.getItem("cliente") },
+    Entrada: selectedArriveDate.value,
+    Salida: selectedDepartureDate.value,
+    Visitantes: selectedRoomLayout.value,
+    Nacionalidad: selectedNationality.value
+  }
+  let resultList = await searchPreviousResult()
+  localStorage.setItem("searchLodgingFilters", JSON.stringify(searchFilters))
+  console.log("desactivateModal")
+  desactivateModal()
+  router.push({ name: "lodgingResultHolder", params: { searchResult: resultList } })
+}
+
+async function activateModal() {
+  let iv = gttIsValid(gttValidate(), { $el: null, $refs: {} } as any)
+  if (getValid(iv)) {
+    isModalActive.value = true
+    await clearSerchResults()
+    if (selectedLodgingDestinyValue.value.type == "RGN") {
+      console.info("RGN")
+      let region = { RegionId: selectedLodgingDestinyValue.value.id }
+      let cliente = { ClienteId: localStorage.getItem("cliente") }
+      let searchItem = {
+        Entrada: selectedArriveDate.value,
+        Salida: selectedDepartureDate.value,
+        Region: region,
+        Cliente: cliente
       }
-    },
-    selectedDepartureDate(i) {
-      let n = moment(this.selectedDepartureDate).diff(
-        this.selectedArriveDate,
-        "days"
-      );
-
-      this.selectedNights = n;
-
-      //return new Date(i);
-    },
-    selectedNights(i) {
-      this.selectedDepartureDate = new Date(
-        moment(this.selectedArriveDate).add(i, "days")
-      );
-    },
-    selectedLodgingDestinyValue(i) {
-      console.info("watch", i);
-      return i;
-    }
-  },
-  async created() {
-    let t = await authGetRoomTypes();
-    this.todosTipo = t.data;
-    this.selectedRoomLayout = this.propRoomLayout;
-    this.getSearchResults().then(res => {
-      console.log("getSearchResults", res);
-      if (
-        Array.isArray(res) &&
-        res.length > 0 &&
-        this.$route.name === "lodging-detail"
-      ) {
-        this.hasSearchResults = true;
-      }
-    });
-  },
-  methods: {
-    ...useLodging(),
-    async performSearch(query) {
-      const res = await useLodging().executeQuery(query);
-      this.searchResult = res;
-      return res;
-    },
-    constructDate,
-    calculateNights,
-    constructDisplay,
-    goToDetail(f, a, id) {
-      const currentRoute = this.$route;
-
-      localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
-
-      localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
-
-      if (currentRoute.params.id != parseInt(id)) {
-        this.$router.push({
-          name: "lodging-detail",
-          params: {
-            id: id
-          }
-        });
-      } else {
-        this.$router.go(0);
-        this.$router.push({
-          name: "lodging-detail",
-          params: {
-            id: id
-          }
-        });
-      }
-    },
-    gttValidate() {
-      let validator = [
-        {
-          rules: ["required"],
-          name: "gttDestinyLodging",
-          value: this.selectedLodgingDestinyValue,
-          lang: "es"
-        },
-        {
-          rules: ["required", "dateAfter:selectedArriveDate"],
-          name: "gttEndDate",
-          value: this.selectedDepartureDate,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttStartDate",
-          value: this.selectedArriveDate,
-          lang: "es"
-        }
-      ];
-
-      return validator;
-    },
-    async returnToPreviousSearch() {
       let searchFilters = {
-        Destiny: this.selectedLodgingDestinyValue,
+        Destiny: selectedLodgingDestinyValue.value,
         Region: {
-          RegionId: this.selectedLodgingDestinyValue.id,
-          RegionNombre: this.selectedLodgingDestinyValue.nombre
+          RegionId: selectedLodgingDestinyValue.value.id,
+          RegionNombre: selectedLodgingDestinyValue.value.nombre
         },
         Cliente: { ClienteId: localStorage.getItem("cliente") },
-        Entrada: this.selectedArriveDate,
-        Salida: this.selectedDepartureDate,
-        Visitantes: this.selectedRoomLayout,
-        Nacionalidad: this.selectedNationality
-      };
-
-      let resultList = await this.searchPreviousResult();
-      localStorage.setItem(
-        "searchLodgingFilters",
-        JSON.stringify(searchFilters)
-      );
-      console.log("desactivateModal");
-      this.desactivateModal();
-      this.$router.push({
-        name: "lodgingResultHolder",
-        params: {
-          searchResult: resultList
-        }
-      });
-    },
-    async activateModal() {
-      let iv = gttIsValid(this.gttValidate(), this);
-      if (getValid(iv)) {
-        this.isModalActive = true;
-        await this.clearSerchResults();
-        if (this.selectedLodgingDestinyValue.type == "RGN") {
-          console.info("RGN", this);
-          let region = { RegionId: this.selectedLodgingDestinyValue.id };
-          let cliente = { ClienteId: localStorage.getItem("cliente") };
-          let searchItem = {
-            Entrada: this.selectedArriveDate,
-            Salida: this.selectedDepartureDate,
-            Region: region,
-            Cliente: cliente
-          };
-          let searchFilters = {
-            Destiny: this.selectedLodgingDestinyValue,
-            Region: {
-              RegionId: this.selectedLodgingDestinyValue.id,
-              RegionNombre: this.selectedLodgingDestinyValue.nombre
-            },
-            Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.selectedArriveDate,
-            Salida: this.selectedDepartureDate,
-            Visitantes: this.selectedRoomLayout,
-            Nacionalidad: this.selectedNationality
-          };
-          let resultList = [];
-          try {
-            if (
-              searchFilters.Visitantes.adults.value >=
-              searchFilters.Visitantes.kids.value
-            ) {
-              this.roomComb = this.$helpers.roomCombination(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            } else {
-              this.roomComb = this.$helpers.roomCombination2kids(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            }
-            let roomComb2 = this.$helpers.roomCombinationV2(
-              searchFilters.Visitantes.adults.value,
-              searchFilters.Visitantes.kids.value || 0
-            );
-            if (this.roomComb != "ERROR") {
-              resultList = await this.searchResult(
-                searchItem,
-                this.roomComb,
-                roomComb2
-              );
-              localStorage.setItem(
-                "searchLodgingFilters",
-                JSON.stringify(searchFilters)
-              );
-              console.log("desactivateModal");
-              this.desactivateModal();
-              this.$router.push({
-                name: "lodgingResultHolder",
-                params: {
-                  searchResult: resultList
-                }
-              });
-            } else {
-              this.desactivateModal();
-              this.$toasted.show("Demasiados niños", {
-                type: "error"
-              });
-            }
-          } catch (error) {
-            this.desactivateModal();
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        } else if (this.selectedLodgingDestinyValue.type == "HTL") {
-          let searchFilters = {
-            Destiny: this.selectedLodgingDestinyValue,
-            NombreHotel: this.selectedLodgingDestinyValue.nombre,
-            Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.selectedArriveDate,
-            Salida: this.selectedDepartureDate,
-            Visitantes: this.selectedRoomLayout,
-            Nacionalidad: this.selectedNationality
-          };
-          try {
-            if (
-              searchFilters.Visitantes.adults.value >=
-              searchFilters.Visitantes.kids.value
-            ) {
-              this.roomComb = this.$helpers.roomCombination(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            } else {
-              this.roomComb = this.$helpers.roomCombination2kids(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            }
-            if (this.roomComb != "ERROR") {
-              this.goToDetail(
-                searchFilters,
-                this.buildRoomCombo(this.roomComb),
-                this.selectedLodgingDestinyValue.id
-              );
-            } else {
-              this.desactivateModal();
-              this.$toasted.show("Demasiados niños", {
-                type: "error"
-              });
-            }
-          } catch (error) {
-            console.log(error);
-            this.desactivateModal();
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        }
-      } else {
-        renderValid(iv, this);
+        Entrada: selectedArriveDate.value,
+        Salida: selectedDepartureDate.value,
+        Visitantes: selectedRoomLayout.value,
+        Nacionalidad: selectedNationality.value
       }
-    },
-    desactivateModal() {
-      this.isModalActive = false;
-    },
-    async loadDestinies() {
-      if (this.lodgingOpened == true) {
-        //let { data } = await authSearchRegions();
-        let totalResult = [];
-        /* data.forEach(item => {
-          totalResult = totalResult.concat({
-            nombre: item.Nombre,
-            regionid: item.RegionId,
-            type: "region"
-          });
-        }); */
-        /* let l = await authGetLodgingsAll();
-        l.data.forEach(i => {
-          totalResult = totalResult.concat({
-            nombre: i.Nombre,
-            id: i.ProductoId,
-            type: "alojamiento"
-          });
-        }); */
-        let l = await authGetHotelList();
-        l.data.forEach(i => {
-          totalResult = totalResult.concat({
-            nombre: i.Nombre,
-            id: i.IdObjeto,
-            type: i.TipoObjeto
-          });
-        });
-        this.destinies = totalResult;
+      let resultList: any[] = []
+      try {
+        if (searchFilters.Visitantes.adults.value >= searchFilters.Visitantes.kids.value) {
+          roomComb.value = roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+        } else {
+          roomComb.value = roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+        }
+        let roomComb2 = roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+        if (roomComb.value != "ERROR") {
+          resultList = await searchResult(searchItem, roomComb.value, roomComb2)
+          localStorage.setItem("searchLodgingFilters", JSON.stringify(searchFilters))
+          console.log("desactivateModal")
+          desactivateModal()
+          router.push({ name: "lodgingResultHolder", params: { searchResult: resultList } })
+        } else {
+          desactivateModal()
+          toast("Demasiados niños", { type: "error" })
+        }
+      } catch (error) {
+        desactivateModal()
+        toast("El servicio no está disponible en estos momentos", { type: "error" })
       }
-    },
-    searchCountriesPlaceholder() {
-      let usa = this.countries.find(el => {
-        return el.value == "Estados Unidos";
-      });
-
-      if (usa) {
-        return usa;
-      } else {
-        return this.countries[0];
+    } else if (selectedLodgingDestinyValue.value.type == "HTL") {
+      let searchFilters = {
+        Destiny: selectedLodgingDestinyValue.value,
+        NombreHotel: selectedLodgingDestinyValue.value.nombre,
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: selectedArriveDate.value,
+        Salida: selectedDepartureDate.value,
+        Visitantes: selectedRoomLayout.value,
+        Nacionalidad: selectedNationality.value
+      }
+      try {
+        if (searchFilters.Visitantes.adults.value >= searchFilters.Visitantes.kids.value) {
+          roomComb.value = roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+        } else {
+          roomComb.value = roomCombination(searchFilters.Visitantes.adults.value, searchFilters.Visitantes.kids.value || 0)
+        }
+        if (roomComb.value != "ERROR") {
+          goToDetail(searchFilters, buildRoomCombo(roomComb.value), selectedLodgingDestinyValue.value.id)
+        } else {
+          desactivateModal()
+          toast("Demasiados niños", { type: "error" })
+        }
+      } catch (error) {
+        console.log(error)
+        desactivateModal()
+        toast("El servicio no está disponible en estos momentos", { type: "error" })
       }
     }
-  },
-  props: {
-    propLodgingDestinyValue: {
-      default: null
-    },
-    propArriveDate: {
-      default: function() {
-        return moment();
-      }
-    },
-    propDepartureDate: {
-      default: function() {
-        return moment().add(3, "days");
-      }
-    },
-    propRoomLayout: {
-      default: null
-    },
-    propNationality: {
-      default: function() {
-        return {
-          nombre: "Estados Unidos",
-          flag: "flag_estadosunidos.jpg"
-        };
-      }
-    }
-  },
-  data() {
-    return {
-      selectedLodgingDestinyValue: this.propLodgingDestinyValue,
-      selectedArriveDate: new Date(moment(this.propArriveDate)),
-      selectedDepartureDate: new Date(moment(this.propDepartureDate)),
-      selectedRoomLayout: null,
-      selectedNationality: this.propNationality,
-      selectedNights: 3,
-      roomComb: null,
-      todosTipo: [],
-      hasSearchResults: false,
-      isModalActive: false,
-      lodgingOpened: false,
-      destinies: [],
-      defaultFlagImgPath: "img/flags/",
-      countries: [
-        {
-          nombre: "Afganistán",
-          flag: "flag_afganistan.jpg"
-        },
-        {
-          nombre: "Albania",
-          flag: "flag_albania.jpg"
-        },
-        {
-          nombre: "Alemania",
-          flag: "flag_alemania.jpg"
-        },
-        {
-          nombre: "Estados Unidos",
-          flag: "flag_estadosunidos.jpg"
-        }
-      ],
-      roomLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
-        }
-      ]
-    };
+  } else {
+    renderValid(iv, { $el: null, $refs: {} } as any)
   }
-};
+}
+
+function desactivateModal() {
+  isModalActive.value = false
+}
+
+async function loadDestinies() {
+  if (lodgingOpened.value == true) {
+    let totalResult: any[] = []
+    let l = await authGetHotelList()
+    l.data.forEach((i: any) => {
+      totalResult = totalResult.concat({
+        nombre: i.Nombre,
+        id: i.IdObjeto,
+        type: i.TipoObjeto
+      })
+    })
+    destinies.value = totalResult
+  }
+}
+
+function searchCountriesPlaceholder() {
+  let usa = countries.value.find((el: any) => el.value == "Estados Unidos")
+  if (usa) return usa
+  return countries.value[0]
+}
 </script>
 
 <style scoped>

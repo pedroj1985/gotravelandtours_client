@@ -78,210 +78,176 @@
   </div>
 </template>
 
-<script>
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttSelectForm2 from "../custom-elements/GttSelectForm2";
-import GttSelect from "../custom-elements/GttSelect";
+<script setup lang="ts">
+import { ref } from "vue"
+import GttSelectDate from "../custom-elements/GttSelectDate.vue"
+import GttSelectForm2 from "../custom-elements/GttSelectForm2.vue"
+import GttSelect from "../custom-elements/GttSelect.vue"
 import {
   authSearchRoomsByLodging,
   authGetRoomPrice,
   authGetLodgingEatingPlanOne
-} from "../../utils/auth";
-import { v4 as uuidv4 } from "uuid";
+} from "../../utils/auth"
+import { v4 as uuidv4 } from "uuid"
 
-export default {
-  components: {
-    GttSelectDate,
-    GttSelectForm2,
-    GttSelect
-  },
-  created() {
-    this.roomsOpt = this.generateRooms();
-    this.selectedRoomLayout = this.sRL;
-    this.totalRooms = this.tR;
-    this.dateIn = this.inDate;
-    this.dateOut = this.outDate;
-    this.cI = this.clickedItem;
-  },
-  data() {
-    return {
-      roomsOpt: [],
-      roomsResult: [],
-      dateIn: null,
-      dateOut: null,
-      selectedRoomLayout: null,
-      totalRooms: null,
-      loading: false,
-      cI: "",
-      roomLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
+const props = withDefaults(defineProps<{
+  item?: any
+  inDate?: Date
+  outDate?: Date
+  sRL?: any[]
+  tR?: any
+  clickedItem?: string
+}>(), {
+  clickedItem: ""
+})
+
+const emit = defineEmits<{
+  (e: "searched", val: any): void
+  (e: "errorC"): void
+}>()
+
+const roomsOpt = ref<any[]>([])
+const roomsResult = ref<any[]>([])
+const dateIn = ref(props.inDate ?? null)
+const dateOut = ref(props.outDate ?? null)
+const selectedRoomLayout = ref(props.sRL ?? null)
+const totalRooms = ref(props.tR ?? null)
+const loading = ref(false)
+const cI = ref(props.clickedItem)
+const roomLayout = [
+  { code: "adults", label: "Adultos", display: "Adulto(s)", default: 1 },
+  { code: "kids", label: "Niños", display: "Niño(s)", default: 0 }
+]
+
+roomsOpt.value = generateRooms()
+selectedRoomLayout.value = props.sRL ?? null
+totalRooms.value = props.tR ?? null
+dateIn.value = props.inDate ?? null
+dateOut.value = props.outDate ?? null
+cI.value = props.clickedItem
+
+function refreshRoomLayout(roomLayout: any[]) {
+  roomLayout.forEach((element, i) => {
+    element.room = i + 1
+  })
+}
+
+function addRoom() {
+  const currrentValue = totalRooms.value.value
+  const v = roomsOpt.value.find((i: any) => i.value == currrentValue + 1)
+  totalRooms.value = v
+}
+
+function removeRoom(indexRoomLayout: number) {
+  selectedRoomLayout.value.splice(indexRoomLayout, 1)
+  refreshRoomLayout(selectedRoomLayout.value)
+  const currrentValue = totalRooms.value.value
+  const v = roomsOpt.value.find((i: any) => i.value == currrentValue - 1)
+  totalRooms.value = v
+}
+
+async function btnSearch() {
+  loading.value = true
+  try {
+    const r = await sR()
+    console.log("resultado busqueda", r)
+    if (r.length > 0) {
+      emit("searched", {
+        result: r,
+        filters: {
+          inDate: dateIn.value,
+          outDate: dateOut.value,
+          selectedRoomLayout: selectedRoomLayout.value,
+          totalRooms: totalRooms.value
         }
-      ]
-    };
-  },
-  props: {
-    item: Object,
-    inDate: Date,
-    outDate: Date,
-    sRL: Array,
-    tR: Object,
-    clickedItem: {
-      type: String,
-      default: ""
+      })
+    } else {
+      emit("errorC")
     }
-  },
-  methods: {
-    refreshRoomLayout(roomLayout) {
-      roomLayout.forEach((element, i) => {
-        element.room = i + 1;
-      });
-    },
-    addRoom() {
-      let currrentValue = this.totalRooms.value;
-      let v = this.roomsOpt.find(i => {
-        return i.value == currrentValue + 1;
-      });
-      this.totalRooms = v;
-    },
-    removeRoom(indexRoomLayout) {
-      this.selectedRoomLayout.splice(indexRoomLayout, 1);
-      this.refreshRoomLayout(this.selectedRoomLayout);
-      let currrentValue = this.totalRooms.value;
-      let v = this.roomsOpt.find(i => {
-        return i.value == currrentValue - 1;
-      });
-      this.totalRooms = v;
-    },
-    async btnSearch() {
-      this.loading = true;
-      try {
-        let r = await this.sR();
-        console.log("resultado busqueda", r);
-        if (r.length > 0) {
-          this.$emit("searched", {
-            result: r,
-            filters: {
-              inDate: this.dateIn,
-              outDate: this.dateOut,
-              selectedRoomLayout: this.selectedRoomLayout,
-              totalRooms: this.totalRooms
-            }
-          });
-        } else {
-          this.$emit("errorC");
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    generateRooms() {
-      let i = [];
-      for (let key = 1; key <= 10; key++) {
-        let d = ``;
-        if (key == 1) d = `${key} habitación`;
-        else d = `${key} habitaciones`;
-        i.push({
-          value: key,
-          display: d
-        });
-      }
-
-      return i;
-    },
-    async sR() {
-      let roomsResult = [];
-      let listaPlanesAlimenticios = this.item.lodging.ListaPlanesAlimenticios;
-      let rooms = await authSearchRoomsByLodging(this.item.lodging.ProductoId);
-      let active_rooms = rooms.data.filter(i => {
-        return i.IsActiva == true;
-      });
-      try {
-        await Promise.all(
-          active_rooms.map(async j => {
-            await Promise.all(
-              listaPlanesAlimenticios.map(async i => {
-                let pa = await authGetLodgingEatingPlanOne(
-                  i.PlanesAlimenticiosId
-                );
-                let noDisp = false;
-                let c = 0;
-                let temp = [];
-                while (!noDisp && c < this.selectedRoomLayout.length) {
-                  let el = this.selectedRoomLayout[c];
-                  let ca = el.layout.find(p => p.code == "adults").value;
-                  let cm = el.layout.find(p => p.code == "kids").value;
-                  let so = {
-                    Cliente: { ClienteId: localStorage.getItem("cliente") },
-                    PlanAlimenticio: {
-                      PlanesAlimenticiosId: i.PlanesAlimenticiosId
-                    },
-                    Alojamiento: { ProductoId: this.item.lodging.ProductoId },
-                    TipoHabitacion: { TipoHabitacionId: ca },
-                    CantidadAdultos: ca,
-                    CantidadMenores: cm,
-                    CantidadInfantes: 0,
-                    CantidadHabitaciones: 1,
-                    Habitacion: { HabitacionId: j.HabitacionId },
-                    Entrada: this.dateIn,
-                    Salida: this.dateOut
-                  };
-                  try {
-                    let result = await authGetRoomPrice(so);
-                    console.log("get room price", result);
-                    if (
-                      result.data.length != 0 &&
-                      // && r.data[0].OrdenAlojamientoId != -1
-                      result.data[0].PrecioOrden != 0
-                    ) {
-                      temp.push({
-                        habitacion: result.data[0],
-                        CantAdultos: ca,
-                        CantidadMenores: cm,
-                        PA: pa.data,
-                        rn: el.room,
-                        id: uuidv4()
-                      });
-                    } else {
-                      noDisp = true;
-                    }
-                  } catch (e) {
-                    noDisp = true;
-                    console.log(e);
-                  }
-
-                  c++;
-                }
-
-                if (!noDisp) {
-                  roomsResult.push({
-                    rO: j,
-                    pA: pa.data,
-                    l: temp
-                  });
-                }
-              })
-            );
-          })
-        );
-      } catch (e) {
-        console.log(e);
-      }
-
-      this.loading = false;
-      return roomsResult;
-    }
+  } catch (e) {
+    console.log(e)
   }
-};
+}
+
+function generateRooms() {
+  const i: any[] = []
+  for (let key = 1; key <= 10; key++) {
+    let d = ``
+    if (key == 1) d = `${key} habitación`
+    else d = `${key} habitaciones`
+    i.push({ value: key, display: d })
+  }
+  return i
+}
+
+async function sR() {
+  const roomsResultArr: any[] = []
+  const listaPlanesAlimenticios = props.item!.lodging.ListaPlanesAlimenticios
+  const rooms = await authSearchRoomsByLodging(props.item!.lodging.ProductoId)
+  const active_rooms = rooms.data.filter((i: any) => i.IsActiva == true)
+  try {
+    await Promise.all(
+      active_rooms.map(async (j: any) => {
+        await Promise.all(
+          listaPlanesAlimenticios.map(async (i: any) => {
+            const pa = await authGetLodgingEatingPlanOne(i.PlanesAlimenticiosId)
+            let noDisp = false
+            let c = 0
+            const temp: any[] = []
+            while (!noDisp && c < selectedRoomLayout.value.length) {
+              const el = selectedRoomLayout.value[c]
+              const ca = el.layout.find((p: any) => p.code == "adults").value
+              const cm = el.layout.find((p: any) => p.code == "kids").value
+              const so = {
+                Cliente: { ClienteId: localStorage.getItem("cliente") },
+                PlanAlimenticio: { PlanesAlimenticiosId: i.PlanesAlimenticiosId },
+                Alojamiento: { ProductoId: props.item!.lodging.ProductoId },
+                TipoHabitacion: { TipoHabitacionId: ca },
+                CantidadAdultos: ca,
+                CantidadMenores: cm,
+                CantidadInfantes: 0,
+                CantidadHabitaciones: 1,
+                Habitacion: { HabitacionId: j.HabitacionId },
+                Entrada: dateIn.value,
+                Salida: dateOut.value
+              }
+              try {
+                const result = await authGetRoomPrice(so)
+                console.log("get room price", result)
+                if (
+                  result.data.length != 0 &&
+                  result.data[0].PrecioOrden != 0
+                ) {
+                  temp.push({
+                    habitacion: result.data[0],
+                    CantAdultos: ca,
+                    CantidadMenores: cm,
+                    PA: pa.data,
+                    rn: el.room,
+                    id: uuidv4()
+                  })
+                } else {
+                  noDisp = true
+                }
+              } catch (e) {
+                noDisp = true
+                console.log(e)
+              }
+              c++
+            }
+            if (!noDisp) {
+              roomsResultArr.push({ rO: j, pA: pa.data, l: temp })
+            }
+          })
+        )
+      })
+    )
+  } catch (e) {
+    console.log(e)
+  }
+  loading.value = false
+  return roomsResultArr
+}
 </script>
 
 <style scoped>

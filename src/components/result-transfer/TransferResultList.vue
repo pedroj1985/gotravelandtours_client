@@ -4,15 +4,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  setup() {
-    return {};
-  },
-  data() {
-    return {
-      ht: ""
-    };
-  }
-};
+<script setup lang="ts">
+import { ref } from "vue"
+
+const ht = ref("")
 </script>

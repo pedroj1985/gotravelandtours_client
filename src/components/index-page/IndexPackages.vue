@@ -18,61 +18,59 @@
   </div>
 </template>
 
-<script>
-import { useScrollStore } from "../../stores/scrollStore";
-export default {
-  name: "IndexPackages",
-  data() {
-    return {
-      packages: [
-        {
-          name: "Alojamiento",
-          description:
-            "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
-          icon: "icopaq_alojamiento_color.svg"
-        },
-        {
-          name: "Renta de Autos",
-          description:
-            "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
-          icon: "icopaq_renta_color.svg"
-        },
-        {
-          name: "Traslados",
-          description:
-            "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
-          icon: "icopaq_traslado_color.svg"
-        },
-        {
-          name: "Actividades y Excursiones",
-          description:
-            "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
-          icon: "icopaq_excursiones_color.svg"
-        }
-      ]
-    };
-  },
-  methods: {
-    isNotLastPackage(index) {
-      let s = this.packages.length;
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue"
+import { useScrollStore } from "../../stores/scrollStore"
 
-      return index !== s - 1;
-    },
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        useScrollStore().scrollTo(this.$el.id);
-      }
-    }
+defineOptions({ name: "IndexPackages" })
+
+const packages = ref([
+  {
+    name: "Alojamiento",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
+    icon: "icopaq_alojamiento_color.svg"
   },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
+  {
+    name: "Renta de Autos",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
+    icon: "icopaq_renta_color.svg"
   },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
+  {
+    name: "Traslados",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
+    icon: "icopaq_traslado_color.svg"
+  },
+  {
+    name: "Actividades y Excursiones",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
+    icon: "icopaq_excursiones_color.svg"
   }
-};
+])
+
+function isNotLastPackage(index: number) {
+  let s = packages.value.length
+  return index !== s - 1
+}
+
+function handleScroll() {
+  const el = document.getElementById("gtt-packages")
+  if (!el) return
+  let height = window.innerHeight
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo(el.id)
+  }
+}
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll)
+})
 </script>

@@ -145,51 +145,45 @@
   </section>
 </template>
 
-<script>
-import { getPackages } from "@/utils/auth";
-import moment from "moment/moment";
+<script setup lang="ts">
+import { ref, onMounted } from "vue"
+import { getPackages } from "@/utils/auth"
+import moment from "moment/moment"
 
-export default {
-  components: {
-  },
-  methods: {
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+const loading = ref(true)
+const packages = ref([])
 
-      if (decimalPart == 0) decimalPart = "00";
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number)
+  let decimalPart = (number - intPart).toFixed(2) * 100
 
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    downloadPdf(url) {
-      const a = document.createElement("a");
-      a.href = url;
-      a.target = "_blank";
-      a.click();
-    }
-  },
-  data() {
-    return {
-      loading: true,
-      packages: []
-    };
-  },
-  mounted() {
-    const currentDate = new Date();
-    const query = {
-      Nombre: null,
-      IsActivo: true,
-      FechaI: moment(currentDate).format("YYYY-MM-D")
-    };
-    getPackages(query)
-      .then(response => {
-        this.packages = response.data;
-      })
-      .finally(() => {
-        this.loading = false;
-      });
+  if (decimalPart == 0) decimalPart = "00"
+
+  return { intPart: intPart, decimalPart: decimalPart }
+}
+
+function downloadPdf(url: string) {
+  const a = document.createElement("a")
+  a.href = url
+  a.target = "_blank"
+  a.click()
+}
+
+onMounted(() => {
+  const currentDate = new Date()
+  const query = {
+    Nombre: null,
+    IsActivo: true,
+    FechaI: moment(currentDate).format("YYYY-MM-D")
   }
-};
+  getPackages(query)
+    .then(response => {
+      packages.value = response.data
+    })
+    .finally(() => {
+      loading.value = false
+    })
+})
 </script>
 
 <style scoped>

@@ -18,27 +18,19 @@
   </div>
 </template>
 
-<script>
-import OtherFiltersInput from "../filters-side/OtherFiltersInput";
-import OtherFiltersInputRange from "../filters-side/OtherFiltersInputRange";
-import OtherFiltersInputStars from "../filters-side/OtherFiltersInputStars";
-export default {
-  components: {
-    OtherFiltersInput,
-    OtherFiltersInputRange,
-    OtherFiltersInputStars
-  },
-  mounted() {
-    this.range = [this.min_range, this.max_range];
-  },
-  data() {
-    return {
-      min_range: 50,
-      max_range: 100,
-      range: []
-    };
-  }
-};
+<script setup lang="ts">
+import OtherFiltersInput from "../filters-side/OtherFiltersInput.vue";
+import OtherFiltersInputRange from "../filters-side/OtherFiltersInputRange.vue";
+import OtherFiltersInputStars from "../filters-side/OtherFiltersInputStars.vue";
+import { ref, onMounted } from "vue";
+
+const min_range = 50
+const max_range = 100
+const range = ref<number[]>([])
+
+onMounted(() => {
+  range.value = [min_range, max_range]
+})
 </script>
 
 <style scoped>

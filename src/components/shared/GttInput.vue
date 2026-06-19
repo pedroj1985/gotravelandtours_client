@@ -18,24 +18,26 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttInput",
-  props: {
-    modelValue: [String, Number],
-    label: String,
-    id: String,
-    type: {
-      type: String,
-      default: "text"
-    },
-    placeholder: String,
-    disabled: Boolean,
-    maxlength: Number,
-    autocomplete: String,
-    error: String
-  }
-};
+<script setup lang="ts">
+defineOptions({ name: "GttInput" });
+
+withDefaults(defineProps<{
+  modelValue?: string | number
+  label?: string
+  id?: string
+  type?: string
+  placeholder?: string
+  disabled?: boolean
+  maxlength?: number
+  autocomplete?: string
+  error?: string
+}>(), {
+  type: "text"
+});
+
+const emit = defineEmits<{
+  (e: "update:modelValue", value: string | number): void
+}>();
 </script>
 
 <style lang="scss" scoped>

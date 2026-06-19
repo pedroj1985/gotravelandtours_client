@@ -73,122 +73,104 @@
   </div>
 </template>
 
-<script>
-import { clickOutside } from "@/directives/clickOutside";
-import GttSelect from "../custom-elements/GttSelect";
-import { constructDisplay } from "../../utils/utils";
+<script setup lang="ts">
+import { ref, watch } from "vue"
+import { clickOutside as vClickOutside } from "@/directives/clickOutside"
+import GttSelect from "../custom-elements/GttSelect.vue"
+import { constructDisplay } from "../../utils/utils"
 
-export default {
-  components: {
-    GttSelect
-  },
-  directives: {
-    clickOutside
-  },
-  mounted() {
-    this.popupItem = this.$el;
-  },
-  props: {
-    options: Array,
-    value: {
-      type: Object,
-      default: null
-    }
-  },
-  watch: {
-    value(v) {
-      if (v) {
-        this.finalValue = [];
-        for (const item of Object.entries(v)) {
-          this.finalValue.push(item[1]);
-        }
-      } else {
-      }
-      this.finalValue.forEach(element => {
-        this.updateValue(element);
-      });
-    }
-  },
-  created() {
-    if (!this.value) {
-      for (let index = 0; index < this.options.length; index++) {
-        let code = this.options[index].code;
-        let d = this.options[index].default;
-        this.finalValue.push({
-          code: code,
-          label: this.options[index].label,
-          display: this.options[index].display,
-          value: d
-        });
-      }
-    } else {
-      for (const item of Object.entries(this.value)) {
-        this.finalValue.push(item[1]);
-      }
-    }
+const props = withDefaults(defineProps<{ options?: any[]; value?: Record<string, any> | null }>(), {
+  value: null
+})
 
-    this.finalValue.forEach(element => {
-      this.updateValue(element);
-    });
-  },
-  data() {
-    return {
-      kids: [],
-      kidsAgeList: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      isChanged: false,
-      isVisible: false,
-      arrow: true,
-      emitValue: {},
-      finalValue: []
-    };
-  },
-  methods: {
-    constructDisplay,
-    toggleClicked() {
-      this.isVisible = !this.isVisible;
-    },
-    handleFocusOut() {
-      this.isVisible = false;
-    },
-    uValue() {
-      this.emitValue = this.value;
-    },
-    updateValue(item) {
-      this.emitValue[item.code] = {
-        display: item.display,
-        code: item.code,
-        label: item.label,
-        value: item.value
-      };
-      this.$emit("input", this.emitValue);
-    },
-    add(item, step = 1) {
-      if (item.code == "kids") {
-        this.kids.push({
-          age: null
-        });
-      }
-      item.value += step;
-      this.isChanged = true;
-      this.updateValue(item);
-    },
-    remove(item, step = 1) {
-      if (item.code == "kids") {
-        this.kids.pop();
-      }
-      let r = item.value - step;
-      if (r >= 1 && item.code != "kids") {
-        item.value -= step;
-        this.isChanged = true;
-        this.updateValue(item);
-      } else if (r >= 0 && item.code == "kids") {
-        item.value -= step;
-        this.isChanged = true;
-        this.updateValue(item);
-      }
+const emit = defineEmits<{ (e: "input", val: any): void }>()
+
+const kids = ref<any[]>([])
+const kidsAgeList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+const isChanged = ref(false)
+const isVisible = ref(false)
+const arrow = ref(true)
+const emitValue = ref<Record<string, any>>({})
+const finalValue = ref<any[]>([])
+
+if (!props.value) {
+  for (let index = 0; index < (props.options || []).length; index++) {
+    const opt = props.options![index]
+    finalValue.value.push({
+      code: opt.code,
+      label: opt.label,
+      display: opt.display,
+      value: opt.default
+    })
+  }
+} else {
+  for (const item of Object.entries(props.value)) {
+    finalValue.value.push(item[1])
+  }
+}
+
+finalValue.value.forEach(element => {
+  updateValue(element)
+})
+
+watch(() => props.value, (v) => {
+  if (v) {
+    finalValue.value = []
+    for (const item of Object.entries(v)) {
+      finalValue.value.push(item[1])
     }
   }
-};
+  finalValue.value.forEach(element => {
+    updateValue(element)
+  })
+})
+
+function toggleClicked() {
+  isVisible.value = !isVisible.value
+}
+
+function handleFocusOut() {
+  isVisible.value = false
+}
+
+function uValue() {
+  emitValue.value = props.value || {}
+}
+
+function updateValue(item: any) {
+  emitValue.value[item.code] = {
+    display: item.display,
+    code: item.code,
+    label: item.label,
+    value: item.value
+  }
+  emit("input", emitValue.value)
+}
+
+function add(item: any, step = 1) {
+  if (item.code == "kids") {
+    kids.value.push({ age: null })
+  }
+  item.value += step
+  isChanged.value = true
+  updateValue(item)
+}
+
+function remove(item: any, step = 1) {
+  if (item.code == "kids") {
+    kids.value.pop()
+  }
+  const r = item.value - step
+  if (r >= 1 && item.code != "kids") {
+    item.value -= step
+    isChanged.value = true
+    updateValue(item)
+  } else if (r >= 0 && item.code == "kids") {
+    item.value -= step
+    isChanged.value = true
+    updateValue(item)
+  }
+}
 </script>
 
 <style lang="scss" scoped>

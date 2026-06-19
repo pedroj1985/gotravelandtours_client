@@ -19,15 +19,8 @@
     </div>
   </div>
 </template>
-<script>
-export default {
-  props: {
-    value: {
-      type: String,
-      default: "Aquí va su valor"
-    }
-  }
-};
+<script setup lang="ts">
+withDefaults(defineProps<{ value?: string }>(), { value: "Aquí va su valor" })
 </script>
 <style lang="scss" scoped>
 .twoRowsDiv {

@@ -9,20 +9,20 @@
   </button>
 </template>
 
-<script>
-export default {
-  name: "GttButton",
-  props: {
-    type: {
-      type: String,
-      default: "button"
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    }
-  }
-};
+<script setup lang="ts">
+defineOptions({ name: "GttButton" });
+
+withDefaults(defineProps<{
+  type?: string
+  disabled?: boolean
+}>(), {
+  type: "button",
+  disabled: false
+});
+
+const emit = defineEmits<{
+  (e: "click", event: MouseEvent): void
+}>();
 </script>
 
 <style lang="scss" scoped>

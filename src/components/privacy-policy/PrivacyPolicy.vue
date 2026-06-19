@@ -6,35 +6,32 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import Breadcrumb from "@/components/shared/Breadcrumb.vue";
 import NavBar2 from "@/components/shared/NavBar2.vue";
 import PrivacyContent from "./PrivacyContent.vue";
 
-export default {
-  name: "Index",
-  components: {
-    NavBar2,
-    Breadcrumb,
-    PrivacyContent
-  },
-  data() {
-    return {
-      breadcrumbList: ["Inicio", "Política de Privacidad"],
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Política de Privacidad",
-          id: "content"
-        }
-      ]
-    };
-  },
-  methods: {
-    emitUserLogin(value) {
-      this.$emit("userLogin", value);
-      this.$router.go();
-    }
+defineOptions({ name: "PrivacyPolicy" });
+
+const router = useRouter();
+
+const emit = defineEmits<{
+  (e: "userLogin", value: any): void
+}>();
+
+const breadcrumbList = ref(["Inicio", "Política de Privacidad"]);
+const menuLinks = ref([
+  {
+    name: "index",
+    displayName: "Política de Privacidad",
+    id: "content"
   }
-};
+]);
+
+function emitUserLogin(value: any) {
+  emit("userLogin", value);
+  router.go(0);
+}
 </script>

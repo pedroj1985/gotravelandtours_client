@@ -2,20 +2,19 @@
   <div></div>
 </template>
 
-<script>
-export default {
-  created() {
-    let f = this.$route.params["filters"];
-    let temp = this.$route.params["searchResult"];
+<script setup lang="ts">
+import { useRoute, useRouter } from "vue-router"
 
-    this.$router.push({
-      name: "resultRent",
-      key: "changed",
-      params: {
-        searchResult: temp,
-        filters: f
-      }
-    });
+const route = useRoute()
+const router = useRouter()
+const f = route.params["filters"]
+const temp = route.params["searchResult"]
+router.push({
+  name: "resultRent",
+  key: "changed",
+  params: {
+    searchResult: temp,
+    filters: f
   }
-};
+})
 </script>

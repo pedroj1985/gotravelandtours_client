@@ -90,204 +90,162 @@
   </div>
 </template>
 
-<script>
-import { clickOutside } from "@/directives/clickOutside";
-// import GttSelect from '../custom-elements/GttSelect';
-import _ from "lodash";
+<script setup lang="ts">
+import { ref, watch } from "vue"
+import { clickOutside as vClickOutside } from "@/directives/clickOutside"
+import _ from "lodash"
 
-export default {
-  components: {
-    // GttSelect
-  },
-  directives: {
-    clickOutside
-  },
-  mounted() {
-    this.popupItem = this.$el;
-  },
-  watch: {
-    rooms: function(item) {
-      let d = item - this.roomsLayout.length;
-      let r = [];
-      if (d > 0) {
-        for (
-          let i = this.roomsLayout.length + 1;
-          i <= this.roomsLayout.length + d;
-          i++
-        ) {
-          let Hs = [];
-          for (let pos = 0; pos < this.options.length; pos++) {
-            let code = this.options[pos].code;
-            let d = this.options[pos].default;
-            Hs.push({
-              code: code,
-              label: this.options[pos].label,
-              display: this.options[pos].display,
-              value: d
-            });
-          }
-          // console.log(this.roomsLayout)
-          r.push({
-            room: i,
-            layout: Hs
-          });
-        }
+const props = withDefaults(defineProps<{
+  dsb?: boolean
+  clickable?: boolean
+  opened?: boolean
+  options?: any[]
+  value?: any[]
+  rooms?: number
+}>(), {
+  dsb: false,
+  clickable: true,
+  opened: false,
+  rooms: 1
+})
 
-        r.forEach(j => {
-          this.roomsLayout.push(j);
-        });
-      } else if (d < 0) {
-        for (let o = 1; o <= Math.abs(d); o++) {
-          this.roomsLayout.pop();
-        }
-      }
-      this.updateValue();
-    }
-  },
-  props: {
-    dsb: {
-      type: Boolean,
-      default: false
-    },
-    clickable: {
-      type: Boolean,
-      default: true
-    },
-    opened: {
-      type: Boolean,
-      default: false
-    },
-    options: Array,
-    value: {
-      type: Array,
-      default: function() {
-        return [];
-      }
-    },
-    rooms: {
-      type: Number,
-      default: 1
-    }
-  },
-  created() {
-    this.isVisible = this.opened;
-    let r = [];
-    if (this.value.length == 0) {
-      for (let index = 1; index <= this.rooms; index++) {
-        let Hs = [];
-        for (let pos = 0; pos < this.options.length; pos++) {
-          let code = this.options[pos].code;
-          let d = this.options[pos].default;
-          Hs.push({
-            code: code,
-            label: this.options[pos].label,
-            display: this.options[pos].display,
-            value: d
-          });
-        }
-        r.push({
-          room: index,
-          layout: Hs
-        });
-      }
-      this.roomsLayout = r;
-      this.updateValue();
-    } else {
-      this.roomsLayout = this.value;
-      this.updateValue();
-    }
-    console.log(this.roomsLayout);
-    console.log("asjdasdhka");
-  },
-  data() {
-    return {
-      kids: [],
-      kidsAgeList: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      isChanged: false,
-      isVisible: false,
-      arrow: true,
-      emitValue: {},
-      finalValue: [],
-      roomsLayout: []
-    };
-  },
-  methods: {
-    toggleClicked() {
-      if (this.clickable) this.isVisible = !this.isVisible;
-    },
-    handleFocusOut() {
-      if (!this.opened) this.isVisible = false;
-    },
-    uValue() {
-      this.emitValue = this.value;
-    },
-    updateValue() {
-      this.$emit("input", this.roomsLayout);
-    },
-    constructDisplay() {
-      let totalAdults = _.sumBy(this.roomsLayout, i => {
-        return i.layout.find(j => {
-          return j.code == "adults";
-        }).value;
-      });
-      let totalKids = _.sumBy(this.roomsLayout, i => {
-        return i.layout.find(j => {
-          return j.code == "kids";
-        }).value;
-      });
-      let s = `${totalAdults} adultos · ${totalKids} niños`;
+const emit = defineEmits<{
+  (e: "input", val: any): void
+  (e: "roomAdded"): void
+  (e: "roomRemoved", index: number): void
+}>()
 
-      return s;
-    },
-    add(item, index) {
-      if (item.code == "kids") {
-        this.kids.push({
-          age: null
-        });
-        item.value += 1;
-        this.isChanged = true;
-        this.updateValue(item);
-      } else {
-        if (item.value == 3) {
-          let indexElementToAddOneMore = this.roomsLayout.findIndex(i => {
-            let adults = i.layout.find(i => i.code == "adults");
-            return adults && adults.value < 3;
-          });
-          if (indexElementToAddOneMore <= index) {
-            this.$emit("roomAdded");
-            this.isChanged = true;
-          } else {
-            this.roomsLayout[indexElementToAddOneMore].layout.find(
-              i => i.code == "adults"
-            ).value += 1;
-            this.isChanged = true;
-            this.updateValue(item);
-          }
-        } else if (item.value < 3) {
-          item.value += 1;
-          this.isChanged = true;
-          this.updateValue(item);
-        }
+const kids = ref<any[]>([])
+const kidsAgeList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+const isChanged = ref(false)
+const isVisible = ref(props.opened)
+const arrow = ref(true)
+const emitValue = ref({})
+const finalValue = ref<any[]>([])
+const roomsLayout = ref<any[]>([])
+
+if (!props.value || props.value.length == 0) {
+  const r: any[] = []
+  for (let index = 1; index <= props.rooms; index++) {
+    const Hs: any[] = []
+    for (let pos = 0; pos < (props.options || []).length; pos++) {
+      const opt = props.options![pos]
+      Hs.push({
+        code: opt.code,
+        label: opt.label,
+        display: opt.display,
+        value: opt.default
+      })
+    }
+    r.push({ room: index, layout: Hs })
+  }
+  roomsLayout.value = r
+  updateValue()
+} else {
+  roomsLayout.value = props.value
+  updateValue()
+}
+console.log(roomsLayout.value)
+console.log("asjdasdhka")
+
+watch(() => props.rooms, (item) => {
+  const d = item - roomsLayout.value.length
+  const r: any[] = []
+  if (d > 0) {
+    for (let i = roomsLayout.value.length + 1; i <= roomsLayout.value.length + d; i++) {
+      const Hs: any[] = []
+      for (let pos = 0; pos < (props.options || []).length; pos++) {
+        const opt = props.options![pos]
+        Hs.push({
+          code: opt.code,
+          label: opt.label,
+          display: opt.display,
+          value: opt.default
+        })
       }
-    },
-    remove(item, index) {
-      if (item.code == "kids") {
-        this.kids.pop();
-        item.value -= 1;
-        this.isChanged = true;
-        this.updateValue(item);
-      } else {
-        item.value -= 1;
-        if (item.value == 0) {
-          this.$emit("roomRemoved", index);
-        } else {
-          this.isChanged = true;
-          this.updateValue(item);
-        }
-      }
+      r.push({ room: i, layout: Hs })
+    }
+    r.forEach(j => { roomsLayout.value.push(j) })
+  } else if (d < 0) {
+    for (let o = 1; o <= Math.abs(d); o++) {
+      roomsLayout.value.pop()
     }
   }
-};
+  updateValue()
+})
+
+function toggleClicked() {
+  if (props.clickable) isVisible.value = !isVisible.value
+}
+
+function handleFocusOut() {
+  if (!props.opened) isVisible.value = false
+}
+
+function uValue() {
+  emitValue.value = props.value || []
+}
+
+function updateValue(item?: any) {
+  emit("input", roomsLayout.value)
+}
+
+function constructDisplay() {
+  const totalAdults = _.sumBy(roomsLayout.value, (i: any) => {
+    return i.layout.find((j: any) => j.code == "adults").value
+  })
+  const totalKids = _.sumBy(roomsLayout.value, (i: any) => {
+    return i.layout.find((j: any) => j.code == "kids").value
+  })
+  return `${totalAdults} adultos · ${totalKids} niños`
+}
+
+function add(item: any, index: number) {
+  if (item.code == "kids") {
+    kids.value.push({ age: null })
+    item.value += 1
+    isChanged.value = true
+    updateValue(item)
+  } else {
+    if (item.value == 3) {
+      const indexElementToAddOneMore = roomsLayout.value.findIndex((i: any) => {
+        const adults = i.layout.find((i: any) => i.code == "adults")
+        return adults && adults.value < 3
+      })
+      if (indexElementToAddOneMore <= index) {
+        emit("roomAdded")
+        isChanged.value = true
+      } else {
+        roomsLayout.value[indexElementToAddOneMore].layout.find(
+          (i: any) => i.code == "adults"
+        ).value += 1
+        isChanged.value = true
+        updateValue(item)
+      }
+    } else if (item.value < 3) {
+      item.value += 1
+      isChanged.value = true
+      updateValue(item)
+    }
+  }
+}
+
+function remove(item: any, index: number) {
+  if (item.code == "kids") {
+    kids.value.pop()
+    item.value -= 1
+    isChanged.value = true
+    updateValue(item)
+  } else {
+    item.value -= 1
+    if (item.value == 0) {
+      emit("roomRemoved", index)
+    } else {
+      isChanged.value = true
+      updateValue(item)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

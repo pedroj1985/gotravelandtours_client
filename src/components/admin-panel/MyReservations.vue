@@ -143,208 +143,215 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { authGetOrders, authGetOrdersCount } from "../../utils/auth";
+import { helpers } from "../../utils/helpers";
 import moment from "moment";
 import { toast } from "vue3-toastify";
 import axios from "axios";
 
-export default {
-  async created() {
-    this.$emit("adminPanelInfo", "reservation");
+defineOptions({ name: "MyReservations" });
 
-    this.searching = true;
-    await this.search();
-    this.searching = false;
+const props = defineProps<{
+  user?: any
+}>();
+
+const router = useRouter();
+
+const emit = defineEmits<{
+  (e: "adminPanelInfo", value: string): void
+}>();
+
+const currentPage = ref(1);
+const searching = ref(false);
+const totalItems = ref(0);
+const filters = ref({
+  IsRiesgo: null,
+  TipoServicio: 0,
+  col: 0,
+  pageIndex: 1,
+  pageSize: 20
+});
+const estados = ref([
+  {
+    value: "Open",
+    name: helpers.traducir("Open")
   },
-  props: {
-    user: {
-      type: Object
-    }
+  {
+    value: "Confirmed",
+    name: helpers.traducir("Confirmed")
   },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.totalItems / 10);
-    }
+  {
+    value: "Accepted",
+    name: helpers.traducir("Accepted")
   },
-  methods: {
-    goDetails(item) {
-      this.$router.push({
-        name: "reservation-detail",
-        params: {
-          id: item.ordenId
-        }
-      });
-    },
-    getOthers(event, page) {
-      this.getList(page);
-    },
-    async getList(page) {
-      this.filters.pageIndex = page;
-      await this.search();
-    },
-    constructFilterObj() {
-      this.filters.Nombre = this.filtroNombreOrden;
-      this.filters.NumeroOrden = this.filtroNumeroOrden;
-      this.filters.Estados = this.filtroEstado.map(item => {
-        return item.value;
-      });
-      /*  this.filters.FechaI = new Date("2022-01-01").toISOString().split("T")[0]; */
-
-      /* this.filters.FechaI = this.toMoment(this.filtroFechaInicio); */
-      this.filters.FechaI = this.filtroFechaInicio.toISOString().split("T")[0];
-      /* this.filters.FechaF = new Date(Date.now()).toISOString().split("T")[0]; */
-      if (this.filters.FechaF) {
-        console.log("hay fecha fin ");
-        this.filters.FechaF = this.toMoment(this.filtroFechaFin);
-      }
-
-      this.filters.ClienteId = this.user.clienteId;
-    },
-    traducir(item) {
-      return this.$helpers.traducir(item);
-    },
-    toMoment(date) {
-      return moment(date);
-    },
-    async search() {
-      if (this.filtroEstado.length == 0) {
-        alert("Debe introducir un estado");
-      } else {
-        const versionActual = JSON.parse(localStorage.getItem("version"));
-
-        if (!versionActual) {
-          const response = await axios.get(
-            "http://gottours-001-site4.mtempurl.com/publicEliecer/api//Versions/1"
-          );
-          localStorage.setItem("version", JSON.stringify(response.data));
-          toast(`Nueva version instalada`, {
-            autoClose: 86400000
-          });
-        } else {
-          const response = await axios.get(
-            "http://gottours-001-site4.mtempurl.com/publicEliecer/api//Versions/1"
-          );
-          const data = response.data;
-          if (versionActual.VersionName != data.VersionName) {
-            toast(`Nueva version.Actualizar?`, {
-              autoClose: false,
-              closeButton: true
-            });
-          }
-        }
-
-        this.constructFilterObj();
-        this.searching = true;
-        /* TODO filter */
-        this.totalItems = await this.searchOrdersCount(this.filters);
-        this.items = await this.searchOrders(this.filters);
-        this.searching = false;
-      }
-    },
-    async searchOrdersCount(filters) {
-      let { data } = await authGetOrdersCount(filters);
-
-      return data;
-    },
-    async searchOrders(filters) {
-      try {
-        console.log("filtros", filters);
-        let { data } = await authGetOrders(filters);
-        console.log(data);
-        return data.map(item => {
-          return {
-            númeroOrden: item.NumeroOrden,
-            nombreOrden: item.OrdenNombre,
-            fechaInicio: this.toMoment(item.FechaInicio).format("DD/MM/YYYY"),
-            fechaFin: this.toMoment(item.FechaFin).format("DD/MM/YYYY"),
-            fechaCreación: this.toMoment(item.FechaCreacion).format(
-              "DD/MM/YYYY"
-            ),
-            ordenId: item.OrdenId,
-            estado: item.Estado
-          };
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    rowClass(item, type) {
-      if (!item || type !== "row") return;
-      if (item.estado === "Confirmed") return "r-table-success";
-      if (item.estado === "Rejected") return "r-table-danger";
-      if (item.estado === "Open") return "r-table-open";
-      if (item.estado === "Closed") return "r-table-close";
-      if (item.estado === "Pending") return "r-table-pending";
-    }
+  {
+    value: "Rejected",
+    name: helpers.traducir("Rejected")
   },
-  data() {
-    return {
-      currentPage: 1,
-      searching: false,
-      totalItems: 0,
-      filters: {
-        IsRiesgo: null,
-        TipoServicio: 0,
-        col: 0,
-        pageIndex: 1,
-        pageSize: 20
-      },
-      estados: [
-        {
-          value: "Open",
-          name: this.traducir("Open")
-        },
-        {
-          value: "Confirmed",
-          name: this.traducir("Confirmed")
-        },
-        {
-          value: "Accepted",
-          name: this.traducir("Accepted")
-        },
-        {
-          value: "Rejected",
-          name: this.traducir("Rejected")
-        },
-        {
-          value: "Autorized",
-          name: this.traducir("Autorized")
-        },
-        {
-          value: "Closed",
-          name: this.traducir("Closed")
-        },
-        {
-          value: "Pending",
-          name: this.traducir("Pending")
-        }
-      ],
-      fields: [
-        "númeroOrden",
-        "nombreOrden",
-        "fechaCreación",
-        "fechaInicio",
-        "fechaFin",
-        "estado"
-      ],
-      items: [],
-      filtroNombreOrden: "",
-      filtroNumeroOrden: "",
-      filtroEstado: [
-        { value: "Open", name: "Abierta" },
-        { value: "Confirmed", name: "Confirmada" },
-        { value: "Pending", name: "Pendiente" },
-        { value: "Rejected", name: "Rechazada" }
-      ],
-      /* filtroFechaInicio: new Date(Date.now() - 1440 * 60 * 60000), */
-      filtroFechaInicio: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth() - 2,
-        1
-      ),
-      filtroFechaFin: ""
-    };
+  {
+    value: "Autorized",
+    name: helpers.traducir("Autorized")
+  },
+  {
+    value: "Closed",
+    name: helpers.traducir("Closed")
+  },
+  {
+    value: "Pending",
+    name: helpers.traducir("Pending")
   }
-};
+]);
+const fields = ref([
+  "númeroOrden",
+  "nombreOrden",
+  "fechaCreación",
+  "fechaInicio",
+  "fechaFin",
+  "estado"
+]);
+const items = ref<any[]>([]);
+const filtroNombreOrden = ref("");
+const filtroNumeroOrden = ref("");
+const filtroEstado = ref([
+  { value: "Open", name: "Abierta" },
+  { value: "Confirmed", name: "Confirmada" },
+  { value: "Pending", name: "Pendiente" },
+  { value: "Rejected", name: "Rechazada" }
+]);
+const filtroFechaInicio = ref(new Date(
+  new Date().getFullYear(),
+  new Date().getMonth() - 2,
+  1
+));
+const filtroFechaFin = ref("");
+
+const totalPages = computed(() => {
+  return Math.ceil(totalItems.value / 10);
+});
+
+onMounted(async () => {
+  emit("adminPanelInfo", "reservation");
+
+  searching.value = true;
+  await search();
+  searching.value = false;
+});
+
+function goDetails(item: any) {
+  router.push({
+    name: "reservation-detail",
+    params: {
+      id: item.ordenId
+    }
+  });
+}
+
+function getOthers(event: Event, page: number) {
+  getList(page);
+}
+
+async function getList(page: number) {
+  filters.value.pageIndex = page;
+  await search();
+}
+
+function constructFilterObj() {
+  filters.value.Nombre = filtroNombreOrden.value;
+  filters.value.NumeroOrden = filtroNumeroOrden.value;
+  filters.value.Estados = filtroEstado.value.map(item => {
+    return item.value;
+  });
+
+  filters.value.FechaI = (filtroFechaInicio.value as Date).toISOString().split("T")[0];
+  if (filters.value.FechaF) {
+    console.log("hay fecha fin ");
+    filters.value.FechaF = toMoment(filtroFechaFin.value);
+  }
+
+  filters.value.ClienteId = props.user.clienteId;
+}
+
+function traducir(item: string) {
+  return helpers.traducir(item);
+}
+
+function toMoment(date: any) {
+  return moment(date);
+}
+
+async function search() {
+  if (filtroEstado.value.length == 0) {
+    alert("Debe introducir un estado");
+  } else {
+    const versionActual = JSON.parse(localStorage.getItem("version") || "null");
+
+    if (!versionActual) {
+      const response = await axios.get(
+        "http://gottours-001-site4.mtempurl.com/publicEliecer/api//Versions/1"
+      );
+      localStorage.setItem("version", JSON.stringify(response.data));
+      toast(`Nueva version instalada`, {
+        autoClose: 86400000
+      });
+    } else {
+      const response = await axios.get(
+        "http://gottours-001-site4.mtempurl.com/publicEliecer/api//Versions/1"
+      );
+      const data = response.data;
+      if (versionActual.VersionName != data.VersionName) {
+        toast(`Nueva version.Actualizar?`, {
+          autoClose: false,
+          closeButton: true
+        });
+      }
+    }
+
+    constructFilterObj();
+    searching.value = true;
+    totalItems.value = await searchOrdersCount(filters.value);
+    items.value = await searchOrders(filters.value);
+    searching.value = false;
+  }
+}
+
+async function searchOrdersCount(filters: any) {
+  let { data } = await authGetOrdersCount(filters);
+
+  return data;
+}
+
+async function searchOrders(filters: any) {
+  try {
+    console.log("filtros", filters);
+    let { data } = await authGetOrders(filters);
+    console.log(data);
+    return data.map((item: any) => {
+      return {
+        númeroOrden: item.NumeroOrden,
+        nombreOrden: item.OrdenNombre,
+        fechaInicio: toMoment(item.FechaInicio).format("DD/MM/YYYY"),
+        fechaFin: toMoment(item.FechaFin).format("DD/MM/YYYY"),
+        fechaCreación: toMoment(item.FechaCreacion).format(
+          "DD/MM/YYYY"
+        ),
+        ordenId: item.OrdenId,
+        estado: item.Estado
+      };
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function rowClass(item: any, type: string) {
+  if (!item || type !== "row") return;
+  if (item.estado === "Confirmed") return "r-table-success";
+  if (item.estado === "Rejected") return "r-table-danger";
+  if (item.estado === "Open") return "r-table-open";
+  if (item.estado === "Closed") return "r-table-close";
+  if (item.estado === "Pending") return "r-table-pending";
+}
 </script>

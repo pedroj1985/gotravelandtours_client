@@ -10,10 +10,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttEmptyState"
-};
+<script setup lang="ts">
+defineOptions({ name: "GttEmptyState" });
 </script>
 
 <style scoped>

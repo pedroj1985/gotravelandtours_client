@@ -23,58 +23,45 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    label: {
-      default: "Nombre"
-    },
-    value: {
-      type: Array
-    },
-    min: {
-      type: Number,
-      default: 0
-    },
-    max: {
-      type: Number,
-      default: 100
-    }
-  },
-  emits: ["input"],
-  data() {
-    return {
-      isOpen: true,
-      localMin: this.value ? this.value[0] : this.min,
-      localMax: this.value ? this.value[1] : this.max
-    };
-  },
-  watch: {
-    value: {
-      handler(newVal) {
-        if (newVal) {
-          this.localMin = newVal[0];
-          this.localMax = newVal[1];
-        }
-      },
-      deep: true
-    }
-  },
-  methods: {
-    openClose() {
-      this.isOpen = !this.isOpen;
-    },
-    onMinInput(event) {
-      this.localMin = Number(event.target.value);
-      this.$emit("input", [this.localMin, this.localMax]);
-    },
-    onMaxInput(event) {
-      this.localMax = Number(event.target.value);
-      this.$emit("input", [this.localMin, this.localMax]);
-    },
-    constructPrices() {
-      return this.value[0] + " USD - " + this.value[1] + " USD";
-    }
+<script setup lang="ts">
+import { ref, watch } from "vue"
+
+const props = withDefaults(defineProps<{ label?: string; value?: number[]; min?: number; max?: number }>(), {
+  min: 0,
+  max: 100
+})
+
+const emit = defineEmits<{ (e: "input", val: number[]): void }>()
+
+const isOpen = ref(true)
+const localMin = ref(props.value ? props.value[0] : props.min)
+const localMax = ref(props.value ? props.value[1] : props.max)
+
+watch(() => props.value, (newVal) => {
+  if (newVal) {
+    localMin.value = newVal[0]
+    localMax.value = newVal[1]
   }
-};
+}, { deep: true })
+
+function openClose() {
+  isOpen.value = !isOpen.value
+}
+
+function onMinInput(event: Event) {
+  const target = event.target as HTMLInputElement
+  localMin.value = Number(target.value)
+  emit("input", [localMin.value, localMax.value])
+}
+
+function onMaxInput(event: Event) {
+  const target = event.target as HTMLInputElement
+  localMax.value = Number(target.value)
+  emit("input", [localMin.value, localMax.value])
+}
+
+function constructPrices() {
+  const v = props.value || []
+  return (v[0] || 0) + " USD - " + (v[1] || 0) + " USD"
+}
 </script>

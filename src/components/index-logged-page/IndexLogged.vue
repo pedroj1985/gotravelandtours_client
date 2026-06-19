@@ -5,15 +5,9 @@
   </div>
 </template>
 
-<script>
-import IndexLoggedBanner from "./IndexLoggedBanner";
-import IndexLoggedRent from "./IndexLoggedRent";
+<script setup lang="ts">
+import IndexLoggedBanner from "./IndexLoggedBanner.vue"
+import IndexLoggedRent from "./IndexLoggedRent.vue"
 
-export default {
-  name: "IndexLogged",
-  components: {
-    IndexLoggedBanner,
-    IndexLoggedRent
-  }
-};
+defineOptions({ name: "IndexLogged" })
 </script>

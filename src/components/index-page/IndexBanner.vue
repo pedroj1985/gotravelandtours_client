@@ -76,174 +76,167 @@
   </div>
 </template>
 
-<script>
-import NavBar2 from "../shared/NavBar2";
-import { useAuthStore } from "../../stores/authStore";
-import { useCartStore } from "../../stores/cartStore";
-import { useScrollStore } from "../../stores/scrollStore";
-import { Swiper, SwiperSlide } from "swiper/vue";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/swiper-bundle.css";
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue"
+import { useRouter } from "vue-router"
+import { toast } from "vue3-toastify"
+import NavBar2 from "../shared/NavBar2.vue"
+import { useAuthStore } from "../../stores/authStore"
+import { useCartStore } from "../../stores/cartStore"
+import { useScrollStore } from "../../stores/scrollStore"
+import { Swiper, SwiperSlide } from "swiper/vue"
+import { Navigation, Pagination, Autoplay } from "swiper/modules"
+import "swiper/swiper-bundle.css"
 import {
   authLogin,
   updateHeader,
   authGetUser,
   authLog
-} from "../../utils/auth";
-import { authConfig } from "../../../public/js/auth_config";
-import { codes } from "../../utils/codes";
-import moment from "moment";
-import { storageService } from "../../utils/storageService";
+} from "../../utils/auth"
+import { authConfig } from "../../../public/js/auth_config"
+import { codes } from "../../utils/codes"
+import moment from "moment"
+import { storageService } from "../../utils/storageService"
 
-export default {
-  name: "IndexBanner",
-  components: {
-    NavBar2,
-    Swiper,
-    SwiperSlide
-  },
-  data() {
-    return {
-      swiperModules: [Navigation, Pagination, Autoplay],
-      loading: false,
-      testError: "",
-      testErrorVisible: false,
-      username: "",
-      password: "",
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Inicio",
-          id: "content"
-        },
-        {
-          name: "who-we-are",
-          displayName: "Colibri viajes",
-          id: "who-we-are"
-        }
-      ]
-    };
-  },
-  methods: {
-    login() {
-      if (!this.username.trim() || !this.password.trim()) {
-        this.$toasted.show("Usuario y contraseña son requeridos", {
-          type: "error"
-        });
-        return;
-      }
-      let user = {
-        usuario: this.username.trim(),
-        password: this.password.trim()
-      };
-      this.loading = true;
-      authLogin(user)
-        .then(({ data }) => {
-          const { rol } = data;
+defineOptions({ name: "IndexBanner" })
 
-          if (rol == "Cliente") {
-            storageService.setToken(data.token);
-            localStorage.setItem("nombre", data.nombre);
-            localStorage.setItem("userid", data.Id);
-            localStorage.setItem("cliente", data.clienteId);
-            localStorage.setItem("fecha_exp", data.fechaF);
-            authLog({
-              Fecha: moment().format(),
-              FuncionCreador: "Login",
-              FuncionParam: JSON.stringify(user),
-              Usuario: data.nombre,
-              Tipo: "Info"
-            });
-            authGetUser(data.clienteId)
-              .then(r => {
-                let u = r.data;
-                let userToSave = {
-                  name: data.nombre,
-                  clienteId: data.clienteId,
-                  clienteNombre: u.Nombre,
-                  clienteCorreo: u.Correo,
-                  photo: u.ImageContent
-                };
-                let uEncode = JSON.stringify(userToSave);
-                localStorage.setItem("usuarioObjeto", uEncode);
-                this.loading = false;
-                let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
-                useAuthStore().login(uS);
-                updateHeader(localStorage.getItem("token"));
-                useCartStore().refresh();
-                this.$router.push({ name: "indexLogged" });
-              })
-              .catch(() => {
-                localStorage.setItem(
-                  "usuarioObjeto",
-                  JSON.stringify({
-                    name: data.nombre,
-                    clienteId: data.clienteId
-                  })
-                );
-                let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
-                let u = uS;
-                useAuthStore().login(u);
-                updateHeader(localStorage.getItem("token"));
-                useCartStore().refresh();
-                this.$router.push({ name: "indexLogged" });
-              });
-          } else {
-            window.location.replace(
-              authConfig.externalURL +
-                "?" +
-                authConfig.userParam +
-                "=" +
-                user.usuario +
-                "&" +
-                authConfig.passParam +
-                "=" +
-                user.password
-            );
-          }
-        })
-        .catch(({ response }) => {
-          this.loading = false;
-          const { status } = response;
-          if (status == codes.invalidCredentials) {
-            authLog({
-              Fecha: moment().format(),
-              FuncionCreador: "Login",
-              Tipo: "Error",
-              FuncionParam: JSON.stringify(user)
-            });
-            this.$toasted.show(
-              `Lo sentimos, usuario y/o contraseña incorrectos.`,
-              {
-                type: "error"
-              }
-            );
-            // this.testError = 'Credenciales inválidas'
-            this.cleanInputs();
-            // this.testErrorVisible = true
-            // setTimeout(()=>this.testErrorVisible = false,3000)
-          }
-        });
-    },
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        useScrollStore().scrollTo("index");
-      }
-    },
-    cleanInputs() {
-      this.username = "";
-      this.password = "";
-    }
+const router = useRouter()
+
+const swiperModules = [Navigation, Pagination, Autoplay]
+const loading = ref(false)
+const testError = ref("")
+const testErrorVisible = ref(false)
+const username = ref("")
+const password = ref("")
+const menuLinks = [
+  {
+    name: "index",
+    displayName: "Inicio",
+    id: "content"
   },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
+  {
+    name: "who-we-are",
+    displayName: "Colibri viajes",
+    id: "who-we-are"
   }
-};
+]
+
+function login() {
+  if (!username.value.trim() || !password.value.trim()) {
+    toast("Usuario y contraseña son requeridos", {
+      type: "error"
+    })
+    return
+  }
+  let user = {
+    usuario: username.value.trim(),
+    password: password.value.trim()
+  }
+  loading.value = true
+  authLogin(user)
+    .then(({ data }) => {
+      const { rol } = data
+
+      if (rol == "Cliente") {
+        storageService.setToken(data.token)
+        localStorage.setItem("nombre", data.nombre)
+        localStorage.setItem("userid", data.Id)
+        localStorage.setItem("cliente", data.clienteId)
+        localStorage.setItem("fecha_exp", data.fechaF)
+        authLog({
+          Fecha: moment().format(),
+          FuncionCreador: "Login",
+          FuncionParam: JSON.stringify(user),
+          Usuario: data.nombre,
+          Tipo: "Info"
+        })
+        authGetUser(data.clienteId)
+          .then(r => {
+            let u = r.data
+            let userToSave = {
+              name: data.nombre,
+              clienteId: data.clienteId,
+              clienteNombre: u.Nombre,
+              clienteCorreo: u.Correo,
+              photo: u.ImageContent
+            }
+            let uEncode = JSON.stringify(userToSave)
+            localStorage.setItem("usuarioObjeto", uEncode)
+            loading.value = false
+            let uS = JSON.parse(localStorage.getItem("usuarioObjeto"))
+            useAuthStore().login(uS)
+            updateHeader(localStorage.getItem("token"))
+            useCartStore().refresh()
+            router.push({ name: "indexLogged" })
+          })
+          .catch(() => {
+            localStorage.setItem(
+              "usuarioObjeto",
+              JSON.stringify({
+                name: data.nombre,
+                clienteId: data.clienteId
+              })
+            )
+            let uS = JSON.parse(localStorage.getItem("usuarioObjeto"))
+            let u = uS
+            useAuthStore().login(u)
+            updateHeader(localStorage.getItem("token"))
+            useCartStore().refresh()
+            router.push({ name: "indexLogged" })
+          })
+      } else {
+        window.location.replace(
+          authConfig.externalURL +
+            "?" +
+            authConfig.userParam +
+            "=" +
+            user.usuario +
+            "&" +
+            authConfig.passParam +
+            "=" +
+            user.password
+        )
+      }
+    })
+    .catch(({ response }) => {
+      loading.value = false
+      const { status } = response
+      if (status == codes.invalidCredentials) {
+        authLog({
+          Fecha: moment().format(),
+          FuncionCreador: "Login",
+          Tipo: "Error",
+          FuncionParam: JSON.stringify(user)
+        })
+        toast(`Lo sentimos, usuario y/o contraseña incorrectos.`, {
+          type: "error"
+        })
+        cleanInputs()
+      }
+    })
+}
+
+function handleScroll() {
+  const el = document.getElementById("home-banner")
+  if (!el) return
+  let height = window.innerHeight
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo("index")
+  }
+}
+
+function cleanInputs() {
+  username.value = ""
+  password.value = ""
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll)
+})
 </script>

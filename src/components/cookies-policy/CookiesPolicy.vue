@@ -6,35 +6,32 @@
   </div>
 </template>
 
-<script>
-import CookiesContent from "./CookiesContent";
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import CookiesContent from "./CookiesContent.vue";
 import Breadcrumb from "@/components/shared/Breadcrumb.vue";
 import NavBar2 from "@/components/shared/NavBar2.vue";
 
-export default {
-  name: "Index",
-  components: {
-    NavBar2,
-    Breadcrumb,
-    CookiesContent
-  },
-  data() {
-    return {
-      breadcrumbList: ["Inicio", "Política de Cookies"],
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Política de Cookies",
-          id: "content"
-        }
-      ]
-    };
-  },
-  methods: {
-    emitUserLogin(value) {
-      this.$emit("userLogin", value);
-      this.$router.go();
-    }
+defineOptions({ name: "CookiesPolicy" });
+
+const router = useRouter();
+
+const emit = defineEmits<{
+  (e: "userLogin", value: any): void
+}>();
+
+const breadcrumbList = ref(["Inicio", "Política de Cookies"]);
+const menuLinks = ref([
+  {
+    name: "index",
+    displayName: "Política de Cookies",
+    id: "content"
   }
-};
+]);
+
+function emitUserLogin(value: any) {
+  emit("userLogin", value);
+  router.go(0);
+}
 </script>

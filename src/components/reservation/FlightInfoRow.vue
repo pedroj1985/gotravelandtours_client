@@ -84,67 +84,57 @@
     </div>
   </div>
 </template>
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted } from "vue"
 import { authGetAirlines } from "../../utils/auth";
 import GttSelect from "../custom-elements/GttSelect.vue";
 
-export default {
-  mounted() {
-    authGetAirlines()
-      .then(json => {
-        this.airlines = json.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  },
-  watch: {
-    hl: function(value) {
-      this.$emit("inputAerolineaLanding", value.Nombre);
-    },
-    ht: function(value) {
-      this.$emit("inputAerolineaTakeoff", value.Nombre);
-    },
-    aerolinea_landing: function(value) {
-      this.hl = { Nombre: value };
-    },
-    aerolinea_takeoff: function(value) {
-      this.ht = { Nombre: value };
-    }
-  },
-  data() {
-    return {
-      airlines: [],
-      hl: "",
-      ht: ""
-    };
-  },
-  props: {
-    hora_landing: {
-      type: String
-    },
-    aerolinea_landing: {
-      type: String
-    },
-    nvuelo_landing: {
-      type: String
-    },
-    hora_takeoff: {
-      type: String
-    },
-    aerolinea_takeoff: {
-      type: String
-    },
-    nvuelo_takeoff: {
-      type: String
-    },
-    editable: {
-      type: Boolean,
-      default: true
-    }
-  },
-  components: { GttSelect }
-};
+const props = defineProps<{
+  hora_landing?: string
+  aerolinea_landing?: string
+  nvuelo_landing?: string
+  hora_takeoff?: string
+  aerolinea_takeoff?: string
+  nvuelo_takeoff?: string
+  editable?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: "inputAerolineaLanding", val: string): void
+  (e: "inputAerolineaTakeoff", val: string): void
+  (e: "inputNvueloLanding", val: string): void
+  (e: "inputNvueloTakeoff", val: string): void
+}>()
+
+const airlines = ref<any[]>([])
+const hl = ref<any>("")
+const ht = ref<any>("")
+
+onMounted(() => {
+  authGetAirlines()
+    .then(json => {
+      airlines.value = json.data
+    })
+    .catch(error => {
+      console.log(error)
+    })
+})
+
+watch(hl, (value: any) => {
+  emit("inputAerolineaLanding", value?.Nombre)
+})
+
+watch(ht, (value: any) => {
+  emit("inputAerolineaTakeoff", value?.Nombre)
+})
+
+watch(() => props.aerolinea_landing, (value) => {
+  if (value) hl.value = { Nombre: value }
+})
+
+watch(() => props.aerolinea_takeoff, (value) => {
+  if (value) ht.value = { Nombre: value }
+})
 </script>
 <style scoped>
 .info-row {

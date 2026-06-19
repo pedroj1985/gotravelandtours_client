@@ -29,10 +29,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Footer2"
-};
+<script setup lang="ts">
+defineOptions({ name: "Footer2" });
 </script>
 
 <style lang="scss" scoped>

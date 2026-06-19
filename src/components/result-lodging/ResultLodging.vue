@@ -111,183 +111,133 @@
   </div>
 </template>
 
-<script>
-import NavBar2 from "../shared/NavBar2";
-import LeftColumnFilters from "./LeftColumnFilters";
-import RightColumnList from "./RightColumnList";
-import Breadcrumb from "../shared/Breadcrumb";
-import GttSelect from "../custom-elements/GttSelect";
-import GttSkeleton from "../shared/GttSkeleton";
-import GttEmptyState from "../shared/GttEmptyState";
-import GttErrorState from "../shared/GttErrorState";
-// import { authSearchLodging } from '../../utils/auth';
+<script setup lang="ts">
+import { ref, onMounted } from "vue"
+import { useRoute } from "vue-router"
+import { toast } from "vue3-toastify"
+import NavBar2 from "../shared/NavBar2.vue";
+import LeftColumnFilters from "./LeftColumnFilters.vue";
+import RightColumnList from "./RightColumnList.vue";
+import Breadcrumb from "../shared/Breadcrumb.vue";
+import GttSelect from "../custom-elements/GttSelect.vue";
+import GttSkeleton from "../shared/GttSkeleton.vue";
+import GttEmptyState from "../shared/GttEmptyState.vue";
+import GttErrorState from "../shared/GttErrorState.vue";
 import { useLodging } from "../../composables/useLodging";
 import moment from "moment";
 import { authGetRoomTypes } from "../../utils/auth";
 import { constructDisplay } from "../../utils/utils";
 
-export default {
-  components: {
-    NavBar2,
-    LeftColumnFilters,
-    RightColumnList,
-    Breadcrumb,
-    GttSelect,
-    GttSkeleton,
-    GttEmptyState,
-    GttErrorState
-  },
-  async created() {
-    this.isLoading = true;
-    this.hasError = false;
-    try {
-      let t = await authGetRoomTypes();
-      this.todosTipo = t.data;
-      let f = localStorage.getItem("searchLodgingFilters");
-      if (f) {
-        this.filters = JSON.parse(f);
-      }
-      let r = this.$route.params["searchResult"];
-      if (r) {
-        let temp = r;
-        this.createList(temp);
-        this.resultTotal = this.resultList.length;
+const { searchResult, searchPrev, roomCombination } = useLodging()
+const route = useRoute()
+
+const dataLoaded = ref(false)
+const isLoading = ref(false)
+const hasError = ref(false)
+const roomComb = ref<any>({})
+const roomComb2 = ref<any>({})
+const todosTipo = ref<any[]>([])
+const resultList = ref<any[]>([])
+const organizedBy = ref([
+  { displayName: "Precio (asc)", code: "price_asc" },
+  { displayName: "Precio (desc)", code: "price_desc" }
+])
+const selectedOrganizeType = ref({ displayName: "Precio (asc)", code: "price_asc" })
+const resultTotal = ref(0)
+const filters = ref<any>({})
+const breadcrumbList = ["Inicio", "Alojamientos", "Resultados de la búsqueda"]
+const menuLinks = ref([
+  { name: "index", displayName: "Inicio", id: "home-logged-banner" },
+  { name: "lodging", displayName: "alojamientos", id: "home-logged-banner" }
+])
+
+onMounted(async () => {
+  isLoading.value = true
+  hasError.value = false
+  try {
+    let t = await authGetRoomTypes()
+    todosTipo.value = t.data
+    let f = localStorage.getItem("searchLodgingFilters")
+    if (f) {
+      filters.value = JSON.parse(f)
+    }
+    let r = route.params["searchResult"] as any
+    if (r) {
+      let temp = r
+      createList(temp)
+      resultTotal.value = resultList.value.length
+    } else {
+      let temp = await searchCResult()
+      if (temp) {
+        createList(temp)
+        resultTotal.value = resultList.value.length
       } else {
-        let temp = await this.searchCResult();
-        if (temp) {
-          this.createList(temp);
-          this.resultTotal = this.resultList.length;
-        } else {
-          this.dataLoaded = true;
-        }
-      }
-    } catch (error) {
-      this.hasError = true;
-      this.dataLoaded = true;
-    } finally {
-      this.isLoading = false;
-    }
-  },
-  methods: {
-    ...useLodging(),
-    async performSearch(query) {
-      const res = await useLodging().executeQuery(query);
-      this.searchResult = res;
-      return res;
-    },
-    constructDisplay,
-    toMoment(date) {
-      return moment(date);
-    },
-    async searchCResult() {
-      try {
-        if (this.roomComb != "ERROR") {
-          let ff = {
-            Region: this.filters.Region,
-            Cliente: this.filters.Cliente,
-            Entrada: this.filters.Entrada,
-            Salida: this.filters.Salida
-          };
-          let result = await this.searchResult(
-            ff,
-            this.roomComb,
-            this.roomComb2
-          );
-          return result;
-        } else {
-          this.$toasted.show("Demasiados niños", {
-            type: "error"
-          });
-          return null;
-        }
-      } catch (error) {
-        this.$toasted.show("El servicio no está disponible en estos momentos", {
-          type: "error"
-        });
-        return null;
-      }
-    },
-    setResultTotal(value) {
-      this.resultTotal = value;
-    },
-    createList(list) {
-      this.resultList = list || [];
-      this.dataLoaded = true;
-    },
-    async retrySearch() {
-      this.isLoading = true;
-      this.hasError = false;
-      this.dataLoaded = false;
-      try {
-        let temp = await this.searchCResult();
-        if (temp) {
-          this.createList(temp);
-          this.resultTotal = this.resultList.length;
-        } else {
-          this.dataLoaded = true;
-        }
-      } catch (error) {
-        this.hasError = true;
-        this.dataLoaded = true;
-      } finally {
-        this.isLoading = false;
+        dataLoaded.value = true
       }
     }
-  },
-  data() {
-    return {
-      dataLoaded: false,
-      isLoading: false,
-      hasError: false,
-      roomComb: Object,
-      roomComb2: Object,
-      todosTipo: [],
-      resultList: [],
-      organizedBy: [
-        {
-          displayName: "Precio (asc)",
-          code: "price_asc"
-        },
-        {
-          displayName: "Precio (desc)",
-          code: "price_desc"
-        }
-      ],
-      selectedOrganizeType: {
-        displayName: "Precio (asc)",
-        code: "price_asc"
-      },
-      resultTotal: 0,
-      filters: {},
-      breadcrumbList: ["Inicio", "Alojamientos", "Resultados de la búsqueda"],
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Inicio",
-          id: "home-logged-banner"
-        },
-        {
-          name: "lodging",
-          displayName: "alojamientos",
-          id: "home-logged-banner"
-        }
-        /*           {
-            name: "car-rent",
-            displayName: "renta de autos",
-            id: "index-logged-rent-wrapper"
-          }, */
-        /*          {
-            name: "transfer",
-            displayName: "traslados",
-            id: "index-logged-transfer"
-          },
-          {
-            name: "excursions",
-            displayName: "Excursiones y actividades",
-            id: "index-logged-excursion"
-          }*/
-      ]
-    };
+  } catch (error) {
+    hasError.value = true
+    dataLoaded.value = true
+  } finally {
+    isLoading.value = false
   }
-};
+})
+
+function toMoment(date: string) {
+  return moment(date)
+}
+
+async function searchCResult() {
+  try {
+    if (roomComb.value != "ERROR") {
+      let ff = {
+        Region: filters.value.Region,
+        Cliente: filters.value.Cliente,
+        Entrada: filters.value.Entrada,
+        Salida: filters.value.Salida
+      }
+      let result = await searchResult(
+        ff,
+        roomComb.value,
+        roomComb2.value
+      )
+      return result
+    } else {
+      toast("Demasiados niños", { type: "error" })
+      return null
+    }
+  } catch (error) {
+    toast("El servicio no está disponible en estos momentos", { type: "error" })
+    return null
+  }
+}
+
+function setResultTotal(value: number) {
+  resultTotal.value = value
+}
+
+function createList(list: any[]) {
+  resultList.value = list || []
+  dataLoaded.value = true
+}
+
+async function retrySearch() {
+  isLoading.value = true
+  hasError.value = false
+  dataLoaded.value = false
+  try {
+    let temp = await searchCResult()
+    if (temp) {
+      createList(temp)
+      resultTotal.value = resultList.value.length
+    } else {
+      dataLoaded.value = true
+    }
+  } catch (error) {
+    hasError.value = true
+    dataLoaded.value = true
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>

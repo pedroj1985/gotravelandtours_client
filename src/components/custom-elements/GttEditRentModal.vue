@@ -154,13 +154,13 @@
   </div>
 </template>
 
-<script>
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import moment from "moment";
-import { useHelpers } from "../../composables/useHelpers";
-import { cleanVO } from "../../composables/useCleanup";
-import { transmissionTypes, overflowText } from "../../utils/utils";
+<script setup lang="ts">
+import { ref, watch } from "vue"
+import GttSelect from "../custom-elements/GttSelect.vue"
+import GttSelectDate from "../custom-elements/GttSelectDate.vue"
+import moment from "moment"
+import { cleanVO } from "../../composables/useCleanup"
+import { transmissionTypes as transmissionTypesUtil, overflowText } from "../../utils/utils"
 import {
   authSearchPuntosInteres,
   authSearchMarcas,
@@ -169,331 +169,300 @@ import {
   authGetImage,
   authSearchProvider,
   authUpdateCar
-} from "../../utils/auth";
+} from "../../utils/auth"
+import RentEditList from "../reservation/RentEditList.vue"
+import { gttIsValid, renderValid, getValid } from "../../utils/validation"
+import _ from "lodash"
+import { toast } from "vue3-toastify"
 
-import RentEditList from "../reservation/RentEditList";
-import { gttIsValid, renderValid, getValid } from "../../utils/validation";
-import _ from "lodash";
+const props = withDefaults(defineProps<{
+  filterData?: any
+  age?: number
+}>(), {
+  filterData: () => ({
+    propPickUpDate: moment(),
+    propDeliveryDate: moment().add(1, "days"),
+    propPickUpPlace: null,
+    propDeliveryPlace: null,
+    propCarCategory: null,
+    propTransmission: null,
+    id: undefined,
+    name: ""
+  })
+})
 
-export default {
-  components: {
-    GttSelect,
-    GttSelectDate,
-    RentEditList
-  },
-  data() {
-    return {
-      result: [],
-      showResult: false,
-      isReserving: false,
-      useSameCar: true,
-      pickUpOpened: false,
-      deliveryOpened: false,
-      categoriesOpened: false,
-      selectedPickUpPlace: this.filterData.propPickUpPlace,
-      selectedDeliveryPlace: this.filterData.propDeliveryPlace,
-      selectedPickUpDate: new Date(this.filterData.propPickUpDate),
-      selectedDeliveryDate: new Date(this.filterData.propDeliveryDate),
-      selectedTransmissionType: this.filterData.propTransmission,
-      selectedCarCategory: this.filterData.propCarCategory,
-      pickUpDeliveryOptions: [],
-      carsCategories: []
-    };
-  },
-  props: {
-    filterData: {
-      type: Object,
-      default() {
-        return {
-          propPickUpDate: moment(),
-          propDeliveryDate: moment().add(1, "days"),
-          propPickUpPlace: null,
-          propDeliveryPlace: null,
-          propCarCategory: null,
-          propTransmission: null,
-          id: undefined,
-          name: ""
-        };
-      }
+const emit = defineEmits<{
+  (e: "editedItem", val: any): void
+  (e: "cancel"): void
+}>()
+
+const gttPickUpDate = ref<HTMLElement | null>(null)
+const gttDeliveryDate = ref<HTMLElement | null>(null)
+
+const result = ref<any[]>([])
+const showResult = ref(false)
+const isReserving = ref(false)
+const useSameCar = ref(true)
+const pickUpOpened = ref(false)
+const deliveryOpened = ref(false)
+const categoriesOpened = ref(false)
+const selectedPickUpPlace = ref(props.filterData?.propPickUpPlace ?? null)
+const selectedDeliveryPlace = ref(props.filterData?.propDeliveryPlace ?? null)
+const selectedPickUpDate = ref(new Date(props.filterData?.propPickUpDate))
+const selectedDeliveryDate = ref(new Date(props.filterData?.propDeliveryDate))
+const selectedTransmissionType = ref(props.filterData?.propTransmission ?? null)
+const selectedCarCategory = ref(props.filterData?.propCarCategory ?? null)
+const pickUpDeliveryOptions = ref<any[]>([])
+const carsCategories = ref<any[]>([])
+
+watch(selectedPickUpPlace, (val) => {
+  selectedDeliveryPlace.value = val
+})
+
+function cleanVOWrapper(order: any, pickUpPlace?: any, DeliveryPlace?: any) {
+  cleanVO(order, pickUpPlace || selectedPickUpPlace.value, DeliveryPlace || selectedDeliveryPlace.value)
+}
+
+function transmissionTypes() { return transmissionTypesUtil }
+
+function gttValidate() {
+  return [
+    {
+      rules: ["required", "dateAfter:selectedPickUpDate"],
+      name: "gttDeliveryDate",
+      value: selectedDeliveryDate.value,
+      lang: "es"
     },
-    age: Number
-  },
-  watch: {
-    selectedPickUpPlace: function(val) {
-      this.selectedDeliveryPlace = val;
+    {
+      rules: ["required"],
+      name: "gttPickUpDate",
+      value: selectedPickUpDate.value,
+      lang: "es"
     }
-  },
-  methods: {
-    ...useHelpers(),
-    cleanVO(order, pickUpPlace, DeliveryPlace) {
-      cleanVO(order, pickUpPlace || this.selectedPickUpPlace, DeliveryPlace || this.selectedDeliveryPlace);
-    },
-    transmissionTypes() {
-      return transmissionTypes;
-    },
-    gttValidate() {
-      let validator = [
-        {
-          rules: ["required", "dateAfter:selectedPickUpDate"],
-          name: "gttDeliveryDate",
-          value: this.selectedDeliveryDate,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttPickUpDate",
-          value: this.selectedPickUpDate,
-          lang: "es"
-        }
-      ];
+  ]
+}
 
-      return validator;
-    },
-    handleSelected(value) {
-      this.edited(value);
-    },
-    displayName(data) {
-      let data_splitted = data.split("-");
-      let sp = data_splitted.slice(1, data_splitted.lenght);
+function handleSelected(value: any) {
+  edited(value)
+}
 
-      return sp.join("-");
-    },
-    async loadMarcas() {
-      if (this.categoriesOpened == true) {
-        let { data } = await authSearchMarcas();
-        let totalResult = [];
-        data.forEach(item => {
-          totalResult = totalResult.concat({
-            nombre: item.Nombre,
-            marcaid: item.MarcaId,
-            type: "marca"
-          });
-        });
-        this.carsCategories = totalResult;
-      }
-    },
-    async loadPickUpPlaces() {
-      if (this.pickUpOpened == true) {
-        let { data } = await authSearchPuntosInteres();
-        let totalResult = [];
-        data.forEach(item => {
-          totalResult = totalResult.concat({
-            nombre: item.Nombre,
-            regionid: item.RegionId,
-            puntointeresid: item.PuntoInteresId,
-            type: "punto-interes"
-          });
-        });
-        this.pickUpDeliveryOptions = totalResult;
-      }
-    },
-    async loadDeliveryPlaces() {
-      if (this.deliveryOpened == true) {
-        let { data } = await authSearchPuntosInteres();
-        let totalResult = [];
-        data.forEach(item => {
-          totalResult = totalResult.concat({
-            nombre: item.Nombre,
-            regionid: item.RegionId,
-            puntointeresid: item.PuntoInteresId,
-            type: "punto-interes"
-          });
-        });
-        this.pickUpDeliveryOptions = totalResult;
-      }
-    },
-    async searchResultSameCar() {
+function displayName(data: string) {
+  const data_splitted = data.split("-")
+  const sp = data_splitted.slice(1, data_splitted.length)
+  return sp.join("-")
+}
+
+async function loadMarcas() {
+  if (categoriesOpened.value == true) {
+    const { data } = await authSearchMarcas()
+    const totalResult: any[] = []
+    data.forEach((item: any) => {
+      totalResult.push({
+        nombre: item.Nombre,
+        marcaid: item.MarcaId,
+        type: "marca"
+      })
+    })
+    carsCategories.value = totalResult
+  }
+}
+
+async function loadPickUpPlaces() {
+  if (pickUpOpened.value == true) {
+    const { data } = await authSearchPuntosInteres()
+    const totalResult: any[] = []
+    data.forEach((item: any) => {
+      totalResult.push({
+        nombre: item.Nombre,
+        regionid: item.RegionId,
+        puntointeresid: item.PuntoInteresId,
+        type: "punto-interes"
+      })
+    })
+    pickUpDeliveryOptions.value = totalResult
+  }
+}
+
+async function loadDeliveryPlaces() {
+  if (deliveryOpened.value == true) {
+    const { data } = await authSearchPuntosInteres()
+    const totalResult: any[] = []
+    data.forEach((item: any) => {
+      totalResult.push({
+        nombre: item.Nombre,
+        regionid: item.RegionId,
+        puntointeresid: item.PuntoInteresId,
+        type: "punto-interes"
+      })
+    })
+    pickUpDeliveryOptions.value = totalResult
+  }
+}
+
+async function searchResultSameCar() {
+  try {
+    const marca = {
+      MarcaId: props.filterData.propCarCategory.marcaid,
+      Nombre: props.filterData.propCarCategory.nombre
+    }
+    const cliente = { ClienteId: localStorage.getItem("cliente") }
+    const transmissionType = props.filterData.propTransmission.nombre
+
+    const searchItem = {
+      FechaRecogida: selectedPickUpDate.value,
+      FechaEntrega: selectedDeliveryDate.value,
+      Marca: marca,
+      TipoTransmision: transmissionType,
+      Cliente: cliente,
+      EdadCliente: props.age,
+      ProductoId: props.filterData.ProductoId,
+      DistribuidorId: props.filterData.DistribuidorId,
+      HoraEntrega: props.filterData.HoraEntrega == "" ? "00:00" : props.filterData.HoraEntrega,
+      HoraRecogida: props.filterData.HoraRecogida == "" ? "00:00" : props.filterData.HoraRecogida
+    }
+    isReserving.value = true
+
+    const { data } = await authUpdateCar(searchItem)
+    data.FechaEntrega = selectedDeliveryDate.value
+    const car = data
+    if (car) {
+      await editVehiculoOrder(car)
+    } else {
+      toast("No hay disponibilidad para esta fecha con este auto", { type: "error" })
+    }
+    isReserving.value = false
+  } catch (error) {
+    console.log("error en la busqueda: ", error)
+    isReserving.value = false
+    toast("El servicio no está disponible en estos momentos", { type: "error" })
+  }
+}
+
+function findCarById(list: any[], id: any) {
+  return list.find((item: any) => item.Vehiculo.ProductoId == id)
+}
+
+function edited(value: any) {
+  showResult.value = false
+  emit("editedItem", {
+    tipo: "rent",
+    pItemId: props.filterData.id,
+    nI: value
+  })
+}
+
+async function editVehiculoOrder(item: any) {
+  const image = await authGetImage(item.Vehiculo.ProductoId)
+  const marca = await authSearchMarca(item.Vehiculo.MarcaId)
+  const provider = await authSearchProvider(item.Vehiculo.ProveedorId)
+
+  const editedItem = {
+    orderId: props.filterData.orderId,
+    nombre: item.Vehiculo.Nombre,
+    tipo: "rent",
+    id: item.Vehiculo.ProductoId,
+    plazas: item.Vehiculo.CantidadPlazas,
+    descripcion: item.Vehiculo.Descripcion,
+    cancelation: item.Vehiculo.DescripcionCorta,
+    transmision: item.Vehiculo.TipoTransmision,
+    modeloId: item.Vehiculo.ModeloId,
+    marca: marca.data.Nombre,
+    marcaid: marca.data.MarcaId,
+    precio: item.PrecioOrden,
+    distribuidor: item.Distribuidor.Nombre,
+    distribuidorId: item.Distribuidor.DistribuidorId,
+    imagen: image.data.ImageContent,
+    provider: provider.data.Nombre,
+    providerImage: provider.data.ImageContent,
+    orderVehiculo: item
+  }
+  cleanVOWrapper(item)
+  emit("editedItem", {
+    tipo: "rent",
+    pItemId: props.filterData.id,
+    nI: editedItem
+  })
+}
+
+async function searchResult() {
+  const iv = gttIsValid(gttValidate(), null as any)
+  if (getValid(iv)) {
+    if (useSameCar.value) {
+      await searchResultSameCar()
+    } else {
       try {
-        let marca = {
-          MarcaId: this.filterData.propCarCategory.marcaid,
-          Nombre: this.filterData.propCarCategory.nombre
-        };
-        let cliente = { ClienteId: localStorage.getItem("cliente") };
-        let transmissionType = this.filterData.propTransmission.nombre;
-
-        let searchItem = {
-          FechaRecogida: this.selectedPickUpDate,
-          FechaEntrega: this.selectedDeliveryDate,
+        let marca = null
+        if (selectedCarCategory.value && selectedCarCategory.value != "ALL_ITEMS") {
+          marca = {
+            MarcaId: selectedCarCategory.value.marcaid,
+            Nombre: selectedCarCategory.value.nombre
+          }
+        } else {
+          marca = { MarcaId: undefined, Nombre: undefined }
+        }
+        const cliente = { ClienteId: localStorage.getItem("cliente") }
+        const transmissionType = selectedTransmissionType.value.nombre
+        const searchItem = {
+          FechaRecogida: selectedPickUpDate.value,
+          FechaEntrega: selectedDeliveryDate.value,
           Marca: marca,
           TipoTransmision: transmissionType,
-          Cliente: cliente,
-          /* TODO: agregar los nuevos campos */
-          EdadCliente: this.age,
-          ProductoId: this.filterData.ProductoId,
-          DistribuidorId: this.filterData.DistribuidorId,
-          HoraEntrega:
-            this.filterData.HoraEntrega == ""
-              ? "00:00"
-              : this.filterData.HoraEntrega,
-          HoraRecogida:
-            this.filterData.HoraRecogida == ""
-              ? "00:00"
-              : this.filterData.HoraRecogida
-        };
-        this.isReserving = true;
-
-        let { data } = await authUpdateCar(searchItem);
-        data.FechaEntrega = this.selectedDeliveryDate;
-        let car = data;
-        // TODO aqui cambiar la forma de ver si es el mismo carro
-        if (car) {
-          await this.editVehiculoOrder(car);
-        } else {
-          this.$toasted.show(
-            "No hay disponibilidad para esta fecha con este auto",
-            {
-              type: "error"
-            }
-          );
+          Cliente: cliente
         }
-        this.isReserving = false;
+        const resultList: any[] = []
+        isReserving.value = true
+        const { data } = await authSearchCars(searchItem)
+        await Promise.all(
+          data
+            .filter((i: any) => i.Sobreprecio)
+            .map(async (item: any) => {
+              const image = await authGetImage(item.Vehiculo.ProductoId)
+              const marca = await authSearchMarca(item.Vehiculo.MarcaId)
+              const provider = await authSearchProvider(item.Vehiculo.ProveedorId)
+              resultList.push({
+                orderId: props.filterData.orderId,
+                nombre: item.Vehiculo.Nombre,
+                tipo: "rent",
+                id: item.Vehiculo.ProductoId,
+                plazas: item.Vehiculo.CantidadPlazas,
+                descripcion: item.Vehiculo.Descripcion,
+                cancelation: item.Vehiculo.DescripcionCorta,
+                transmision: item.Vehiculo.TipoTransmision,
+                modeloId: item.Vehiculo.ModeloId,
+                marca: marca.data.Nombre,
+                seguro: item.Vehiculo.TieneSeguro,
+                marcaid: marca.data.MarcaId,
+                precio: item.PrecioOrden,
+                distribuidor: item.Distribuidor.Nombre,
+                distribuidorId: item.Distribuidor.DistribuidorId,
+                imagen: image.data.ImageContent,
+                provider: provider.data.Nombre,
+                providerImage: provider.data.ImageContent,
+                orderVehiculo: item
+              })
+              cleanVOWrapper(item)
+            })
+        )
+        result.value = _.orderBy(resultList, (o: any) => o.precio, "asc")
+        isReserving.value = false
+        showResult.value = true
       } catch (error) {
-        console.log("error en la busqueda: ", error);
-        this.isReserving = false;
-        this.$toasted.show("El servicio no está disponible en estos momentos", {
-          type: "error"
-        });
-      }
-    },
-    findCarById(list, id) {
-      return list.find(item => {
-        return item.Vehiculo.ProductoId == id;
-      });
-    },
-    edited(value) {
-      this.showResult = false;
-      this.$emit("editedItem", {
-        tipo: "rent",
-        pItemId: this.filterData.id,
-        nI: value
-      });
-    },
-    async editVehiculoOrder(item) {
-      let image = await authGetImage(item.Vehiculo.ProductoId);
-      let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-      let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
-
-      let editedItem = {
-        orderId: this.filterData.orderId,
-        nombre: item.Vehiculo.Nombre,
-        tipo: "rent",
-        id: item.Vehiculo.ProductoId,
-        plazas: item.Vehiculo.CantidadPlazas,
-        descripcion: item.Vehiculo.Descripcion,
-        cancelation: item.Vehiculo.DescripcionCorta,
-        transmision: item.Vehiculo.TipoTransmision,
-        modeloId: item.Vehiculo.ModeloId,
-        marca: marca.data.Nombre,
-        marcaid: marca.data.MarcaId,
-        precio: item.PrecioOrden,
-        distribuidor: item.Distribuidor.Nombre,
-        distribuidorId: item.Distribuidor.DistribuidorId,
-        imagen: image.data.ImageContent,
-        provider: provider.data.Nombre,
-        providerImage: provider.data.ImageContent,
-        orderVehiculo: item
-      };
-      this.cleanVO(item);
-      this.$emit("editedItem", {
-        tipo: "rent",
-        pItemId: this.filterData.id,
-        nI: editedItem
-      });
-    },
-    async searchResult() {
-      let iv = gttIsValid(this.gttValidate(), this);
-      if (getValid(iv)) {
-        if (this.useSameCar) {
-          this.searchResultSameCar();
-        } else {
-          try {
-            let marca = null;
-            if (
-              this.selectedCarCategory &&
-              this.selectedCarCategory != "ALL_ITEMS"
-            ) {
-              marca = {
-                MarcaId: this.selectedCarCategory.marcaid,
-                Nombre: this.selectedCarCategory.nombre
-              };
-            } else {
-              marca = { MarcaId: undefined, Nombre: undefined };
-            }
-            let cliente = { ClienteId: localStorage.getItem("cliente") };
-            let transmissionType = this.selectedTransmissionType.nombre;
-            let searchItem = {
-              FechaRecogida: this.selectedPickUpDate,
-              FechaEntrega: this.selectedDeliveryDate,
-              Marca: marca,
-              TipoTransmision: transmissionType,
-              Cliente: cliente
-            };
-            let resultList = [];
-            this.isReserving = true;
-            let { data } = await authSearchCars(searchItem);
-            await Promise.all(
-              data
-                .filter(i => {
-                  return i.Sobreprecio;
-                })
-                .map(async item => {
-                  let image = await authGetImage(item.Vehiculo.ProductoId);
-                  let marca = await authSearchMarca(item.Vehiculo.MarcaId);
-                  let provider = await authSearchProvider(
-                    item.Vehiculo.ProveedorId
-                  );
-                  resultList.push({
-                    orderId: this.filterData.orderId,
-                    nombre: item.Vehiculo.Nombre,
-                    tipo: "rent",
-                    id: item.Vehiculo.ProductoId,
-                    plazas: item.Vehiculo.CantidadPlazas,
-                    descripcion: item.Vehiculo.Descripcion,
-                    cancelation: item.Vehiculo.DescripcionCorta,
-                    transmision: item.Vehiculo.TipoTransmision,
-                    modeloId: item.Vehiculo.ModeloId,
-                    marca: marca.data.Nombre,
-                    seguro: item.Vehiculo.TieneSeguro,
-                    marcaid: marca.data.MarcaId,
-                    precio: item.PrecioOrden,
-                    distribuidor: item.Distribuidor.Nombre,
-                    distribuidorId: item.Distribuidor.DistribuidorId,
-                    imagen: image.data.ImageContent,
-                    provider: provider.data.Nombre,
-                    providerImage: provider.data.ImageContent,
-                    orderVehiculo: item
-                  });
-                  this.cleanVO(item);
-                })
-            );
-            resultList = _.orderBy(
-              resultList,
-              function(o) {
-                return o.precio;
-              },
-              "asc"
-            );
-            this.isReserving = false;
-            this.result = resultList;
-            this.showResult = true;
-          } catch (error) {
-            console.log(error);
-            console.log("error en el boton: ", error);
-            this.isReserving = false;
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        }
-      } else {
-        renderValid(iv, this);
+        console.log(error)
+        console.log("error en el boton: ", error)
+        isReserving.value = false
+        toast("El servicio no está disponible en estos momentos", { type: "error" })
       }
     }
+  } else {
+    renderValid(iv, {
+      $refs: {
+        gttDeliveryDate: gttDeliveryDate.value,
+        gttPickUpDate: gttPickUpDate.value
+      },
+      $children: []
+    } as any)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

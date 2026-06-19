@@ -36,66 +36,58 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    options: {
-      type: Array
-    },
-    nullable: {
-      type: Boolean,
-      default: false
-    },
-    searchQuery: {
-      type: String,
-      default: ""
-    },
-    opened: {
-      type: Boolean,
-      default: false
-    },
-    selectedValue: {
-      default: null
-    }
-  },
-  data() {
-    return {
-      searchResult: []
-    };
-  },
-  mounted() {
-    this.searchResult = this.options;
-    if (this.$refs.gttinput) {
-      this.$refs.gttinput.focus();
-    }
-  },
-  watch: {
-    options: function(val) {
-      this.searchResult = val;
-    }
-  },
-  methods: {
-    isSelected(option) {
-      if (option === 'ALL_ITEMS') {
-        return this.selectedValue === 'ALL_ITEMS';
-      }
-      if (typeof option === 'object' && typeof this.selectedValue === 'object') {
-        return option.id === this.selectedValue.id;
-      }
-      return option === this.selectedValue;
-    },
-    onInput(e) {
-      this.$emit("update:searchQuery", e.target.value);
-      this.$emit("search", e.target.value);
-    },
-    submitSearch(e) {
-      let query = e.target.value;
-      this.searchResult = this.options.filter(opt =>
-        opt.nombre.toLowerCase().includes(query.toLowerCase())
-      );
-    }
+<script setup lang="ts">
+import { ref, watch, onMounted } from "vue"
+
+const props = withDefaults(defineProps<{ options?: any[]; nullable?: boolean; searchQuery?: string; opened?: boolean; selectedValue?: any }>(), {
+  nullable: false,
+  searchQuery: "",
+  opened: false
+})
+
+const emit = defineEmits<{
+  (e: "update:searchQuery", value: string): void
+  (e: "search", value: string): void
+  (e: "select", option: any): void
+}>()
+
+const searchResult = ref<any[]>([])
+const gttinput = ref<HTMLInputElement | null>(null)
+
+onMounted(() => {
+  searchResult.value = props.options || []
+  if (gttinput.value) {
+    gttinput.value.focus()
   }
-};
+})
+
+watch(() => props.options, (val) => {
+  searchResult.value = val || []
+})
+
+function isSelected(option: any) {
+  if (option === 'ALL_ITEMS') {
+    return props.selectedValue === 'ALL_ITEMS'
+  }
+  if (typeof option === 'object' && typeof props.selectedValue === 'object') {
+    return option.id === props.selectedValue.id
+  }
+  return option === props.selectedValue
+}
+
+function onInput(e: Event) {
+  const target = e.target as HTMLInputElement
+  emit("update:searchQuery", target.value)
+  emit("search", target.value)
+}
+
+function submitSearch(e: Event) {
+  const target = e.target as HTMLInputElement
+  const query = target.value
+  searchResult.value = (props.options || []).filter((opt: any) =>
+    opt.nombre.toLowerCase().includes(query.toLowerCase())
+  )
+}
 </script>
 
 <style lang="scss" scoped>

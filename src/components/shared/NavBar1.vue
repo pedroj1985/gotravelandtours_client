@@ -54,39 +54,31 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from "vue";
 import GttButtonModal from "../custom-elements/GttButtonModal.vue";
 import GttBubbleNotification from "../custom-elements/GttBubbleNotification.vue";
 
-export default {
-  components: {
-    GttButtonModal,
-    GttBubbleNotification
-  },
-  name: "NavBar1",
-  props: {
-    itemsInCart: {
-      type: Number,
-      default: 0
-    },
-    user: Object,
-    isUserLogged: {
-      type: Boolean,
-      default: false
-    }
-  },
+defineOptions({ name: "NavBar1" });
 
-  data() {
-    return {
-      menuOpen: false
-    };
-  },
-  methods: {
-    emitUserLogin(value) {
-      this.$emit("userLogin", value);
-    }
-  }
-};
+const props = withDefaults(defineProps<{
+  itemsInCart?: number
+  user?: any
+  isUserLogged?: boolean
+}>(), {
+  itemsInCart: 0,
+  isUserLogged: false
+});
+
+const emit = defineEmits<{
+  (e: "userLogin", value: any): void
+}>();
+
+const menuOpen = ref(false);
+
+function emitUserLogin(value: any) {
+  emit("userLogin", value);
+}
 </script>
 
 <style lang="scss" scoped>

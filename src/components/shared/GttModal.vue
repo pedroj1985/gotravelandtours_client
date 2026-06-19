@@ -19,33 +19,33 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttModal",
-  props: {
-    show: {
-      type: Boolean,
-      required: true
-    },
-    title: {
-      type: String,
-      default: ""
-    }
-  },
-  methods: {
-    onKeydown(e) {
-      if (e.key === "Escape" && this.show) {
-        this.$emit("close");
-      }
-    }
-  },
-  mounted() {
-    document.addEventListener("keydown", this.onKeydown);
-  },
-  beforeDestroy() {
-    document.removeEventListener("keydown", this.onKeydown);
+<script setup lang="ts">
+import { onMounted, onBeforeUnmount } from "vue";
+
+defineOptions({ name: "GttModal" });
+
+const props = defineProps<{
+  show: boolean
+  title?: string
+}>();
+
+const emit = defineEmits<{
+  (e: "close"): void
+}>();
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape" && props.show) {
+    emit("close");
   }
-};
+}
+
+onMounted(() => {
+  document.addEventListener("keydown", onKeydown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("keydown", onKeydown);
+});
 </script>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
 <template>
-  <div class="hn-roman custom-margin">
+  <div ref="el" class="hn-roman custom-margin">
     <h2 data-cy="heading-panel-element" class="">
       Política de Cookies
     </h2>
@@ -334,27 +334,30 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
 import { useScrollStore } from "../../stores/scrollStore";
 
-export default {
-  name: "cookies-content",
-  methods: {
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        useScrollStore().scrollTo(this.$el.id);
-      }
-    }
-  },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
+defineOptions({ name: "CookiesContent" });
+
+const el = ref<HTMLElement | null>(null);
+const scrollStore = useScrollStore();
+
+function handleScroll() {
+  let height = window.innerHeight;
+  if (
+    height * 0.25 > (el.value?.getBoundingClientRect().top ?? 0) &&
+    height * 0 < (el.value?.getBoundingClientRect().top ?? 0)
+  ) {
+    scrollStore.scrollTo(el.value?.id ?? "");
   }
-};
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>

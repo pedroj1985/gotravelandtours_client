@@ -10,18 +10,11 @@
   </div>
 </template>
 
-<script>
-import LodgingForm from "./LodgingForm";
-import OtherFilters from "./OtherFilters";
-export default {
-  components: {
-    LodgingForm,
-    OtherFilters
-  },
-  props: {
-    filters: {
-      type: Object
-    }
-  }
-};
+<script setup lang="ts">
+import LodgingForm from "./LodgingForm.vue";
+import OtherFilters from "./OtherFilters.vue";
+
+defineProps<{
+  filters: any
+}>()
 </script>

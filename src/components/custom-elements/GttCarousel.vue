@@ -29,140 +29,133 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    slides: {
-      type: Array,
-      default: () => []
-    },
-    dots: {
-      type: Boolean,
-      default: false
-    },
-    autoplay: {
-      type: Boolean,
-      default: false
-    },
-    autoplaySpeed: {
-      type: Number,
-      default: 3000
-    },
-    draggable: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      currentSlide: 0,
-      autoplayTimer: null,
-      isDragging: false,
-      startX: 0,
-      currentX: 0
-    };
-  },
-  computed: {
-    hasMultiple() {
-      return this.slides.length > 1;
-    }
-  },
-  watch: {
-    slides: {
-      immediate: true,
-      handler() {
-        this.resetAutoplay();
-      }
-    }
-  },
-  mounted() {
-    if (this.autoplay && this.hasMultiple) {
-      this.startAutoplay();
-    }
-    if (this.draggable) {
-      this.setupDrag();
-    }
-  },
-  beforeDestroy() {
-    this.stopAutoplay();
-    if (this.draggable) {
-      this.teardownDrag();
-    }
-  },
-  methods: {
-    goTo(index) {
-      this.currentSlide = index;
-      this.resetAutoplay();
-    },
-    next() {
-      if (this.currentSlide < this.slides.length - 1) {
-        this.currentSlide++;
-      } else {
-        this.currentSlide = 0;
-      }
-    },
-    startAutoplay() {
-      this.autoplayTimer = setInterval(() => {
-        this.next();
-      }, this.autoplaySpeed);
-    },
-    stopAutoplay() {
-      if (this.autoplayTimer) {
-        clearInterval(this.autoplayTimer);
-        this.autoplayTimer = null;
-      }
-    },
-    resetAutoplay() {
-      if (this.autoplay && this.hasMultiple) {
-        this.stopAutoplay();
-        this.startAutoplay();
-      }
-    },
-    setupDrag() {
-      this._onMouseDown = e => {
-        this.isDragging = true;
-        this.startX = e.clientX || e.touches?.[0]?.clientX;
-      };
-      this._onMouseMove = e => {
-        if (!this.isDragging) return;
-        this.currentX = e.clientX || e.touches?.[0]?.clientX;
-      };
-      this._onMouseUp = () => {
-        if (!this.isDragging) return;
-        this.isDragging = false;
-        const diff = this.startX - this.currentX;
-        if (Math.abs(diff) > 50) {
-          if (diff > 0) {
-            this.next();
-          } else if (this.currentSlide > 0) {
-            this.currentSlide--;
-          }
-        }
-        this.resetAutoplay();
-      };
-      const el = this.$refs.track;
-      el.addEventListener("mousedown", this._onMouseDown);
-      document.addEventListener("mousemove", this._onMouseMove);
-      document.addEventListener("mouseup", this._onMouseUp);
-      el.addEventListener("touchstart", this._onMouseDown, { passive: true });
-      document.addEventListener("touchmove", this._onMouseMove, {
-        passive: true
-      });
-      document.addEventListener("touchend", this._onMouseUp);
-    },
-    teardownDrag() {
-      const el = this.$refs.track;
-      if (el) {
-        el.removeEventListener("mousedown", this._onMouseDown);
-        el.removeEventListener("touchstart", this._onMouseDown);
-      }
-      document.removeEventListener("mousemove", this._onMouseMove);
-      document.removeEventListener("mouseup", this._onMouseUp);
-      document.removeEventListener("touchmove", this._onMouseMove);
-      document.removeEventListener("touchend", this._onMouseUp);
-    }
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue"
+
+const props = withDefaults(defineProps<{
+  slides?: any[]
+  dots?: boolean
+  autoplay?: boolean
+  autoplaySpeed?: number
+  draggable?: boolean
+}>(), {
+  slides: () => [],
+  dots: false,
+  autoplay: false,
+  autoplaySpeed: 3000,
+  draggable: false
+})
+
+const currentSlide = ref(0)
+const autoplayTimer = ref<ReturnType<typeof setInterval> | null>(null)
+const isDragging = ref(false)
+const startX = ref(0)
+const currentX = ref(0)
+const track = ref<HTMLElement | null>(null)
+
+let _onMouseDown: ((e: any) => void) | null = null
+let _onMouseMove: ((e: any) => void) | null = null
+let _onMouseUp: (() => void) | null = null
+
+const hasMultiple = computed(() => props.slides!.length > 1)
+
+watch(() => props.slides, () => {
+  resetAutoplay()
+}, { immediate: true })
+
+onMounted(() => {
+  if (props.autoplay && hasMultiple.value) {
+    startAutoplay()
   }
-};
+  if (props.draggable) {
+    setupDrag()
+  }
+})
+
+onBeforeUnmount(() => {
+  stopAutoplay()
+  if (props.draggable) {
+    teardownDrag()
+  }
+})
+
+function goTo(index: number) {
+  currentSlide.value = index
+  resetAutoplay()
+}
+
+function next() {
+  if (currentSlide.value < props.slides!.length - 1) {
+    currentSlide.value++
+  } else {
+    currentSlide.value = 0
+  }
+}
+
+function startAutoplay() {
+  autoplayTimer.value = setInterval(() => {
+    next()
+  }, props.autoplaySpeed)
+}
+
+function stopAutoplay() {
+  if (autoplayTimer.value) {
+    clearInterval(autoplayTimer.value)
+    autoplayTimer.value = null
+  }
+}
+
+function resetAutoplay() {
+  if (props.autoplay && hasMultiple.value) {
+    stopAutoplay()
+    startAutoplay()
+  }
+}
+
+function setupDrag() {
+  _onMouseDown = (e: any) => {
+    isDragging.value = true
+    startX.value = e.clientX || e.touches?.[0]?.clientX
+  }
+  _onMouseMove = (e: any) => {
+    if (!isDragging.value) return
+    currentX.value = e.clientX || e.touches?.[0]?.clientX
+  }
+  _onMouseUp = () => {
+    if (!isDragging.value) return
+    isDragging.value = false
+    const diff = startX.value - currentX.value
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        next()
+      } else if (currentSlide.value > 0) {
+        currentSlide.value--
+      }
+    }
+    resetAutoplay()
+  }
+  const el = track.value
+  if (el) {
+    el.addEventListener("mousedown", _onMouseDown)
+    document.addEventListener("mousemove", _onMouseMove)
+    document.addEventListener("mouseup", _onMouseUp)
+    el.addEventListener("touchstart", _onMouseDown, { passive: true })
+    document.addEventListener("touchmove", _onMouseMove, { passive: true })
+    document.addEventListener("touchend", _onMouseUp)
+  }
+}
+
+function teardownDrag() {
+  const el = track.value
+  if (el) {
+    el.removeEventListener("mousedown", _onMouseDown!)
+    el.removeEventListener("touchstart", _onMouseDown!)
+  }
+  document.removeEventListener("mousemove", _onMouseMove!)
+  document.removeEventListener("mouseup", _onMouseUp!)
+  document.removeEventListener("touchmove", _onMouseMove!)
+  document.removeEventListener("touchend", _onMouseUp!)
+}
 </script>
 
 <style scoped>

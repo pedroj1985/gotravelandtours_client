@@ -196,394 +196,400 @@
   </div>
 </template>
 
-<script>
-import NavBar2 from "../shared/NavBar2";
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectForm from "../custom-elements/GttSelectForm";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttModalSearch from "../custom-elements/GttModalSearch";
-import moment from "moment";
-import { useScrollStore } from "../../stores/scrollStore";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted } from "vue"
+import { useRouter } from "vue-router"
+import { toast } from "vue3-toastify"
+import NavBar2 from "../shared/NavBar2.vue"
+import GttSelect from "../custom-elements/GttSelect.vue"
+import GttSelectForm from "../custom-elements/GttSelectForm.vue"
+import GttSelectDate from "../custom-elements/GttSelectDate.vue"
+import GttModalSearch from "../custom-elements/GttModalSearch.vue"
+import moment from "moment"
+import { useScrollStore } from "../../stores/scrollStore"
 import {
-  authSearchRegions,
   authGetRoomTypes,
-  authGetLodgingsAll,
   authGetHotelList
-} from "../../utils/auth";
+} from "../../utils/auth"
 import {
   constructDate,
   calculateNights,
   constructDisplay
-} from "../../utils/utils";
-import { useLodging } from "../../composables/useLodging";
-import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+} from "../../utils/utils"
+import { helpers } from "../../utils/helpers"
+import { useLodging } from "../../composables/useLodging"
+import { gttIsValid, renderValid, getValid } from "../../utils/validation"
 
-export default {
-  components: {
-    NavBar2,
-    GttSelect,
-    GttSelectForm,
-    GttSelectDate,
-    GttModalSearch
-  },
-  async created() {
-    this.searchCountriesPlaceholder();
-    window.addEventListener("scroll", this.handleScroll);
-    let t = await authGetRoomTypes();
-    this.todosTipo = t.data;
-    await this.clearSerchResults();
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
-  },
-  computed: {
-    minStartDate() {
-      return moment()
-        .add(4, "days")
-        .format("YYYY-MM-DD");
-    },
-    minEndDate() {
-      let minEndDate = moment()
-        .add(7, "days")
-        .format("YYYY-MM-DD");
-      if (this.selectedStartDate) {
-        minEndDate = moment(this.selectedStartDate)
-          .add(this.selectedNights, "days")
-          .format("YYYY-MM-DD");
-      }
-      return minEndDate;
-    }
-  },
-  watch: {
-    selectedEndDate(item) {
-      let n = moment(this.selectedEndDate).diff(this.selectedStartDate, "days");
+const router = useRouter()
 
-      this.selectedNights = n;
-    },
-    selectedStartDate(item) {
-      this.selectedNights = 3;
-      this.selectedEndDate = moment(item)
-        .add(this.selectedNights, "days")
-        .toDate();
-      let n = moment(this.selectedEndDate).diff(this.selectedStartDate, "days");
-      this.selectedNights = n;
-    },
-    selectedNights(item) {
-      this.selectedEndDate = new Date(
-        moment(this.selectedStartDate).add(item, "days")
-      );
-    }
+const gttDestinyLodging = ref<HTMLElement | null>(null)
+const gttStartDate = ref<HTMLElement | null>(null)
+const gttEndDate = ref<HTMLElement | null>(null)
+
+const {
+  roomCombination,
+  getTotalRooms,
+  recursiveBuildRoom,
+  buildComboV2,
+  buildCombo,
+  buildIdCombo,
+  existenCombinaciones,
+  existeAcomodacionEnLista,
+  validateRoom,
+  validateLayout,
+  canFulfill,
+  search,
+  searchPrev,
+  saveResult,
+  executeQuery,
+  getResults,
+  clearResults,
+  deleteDB,
+  toAcomodation
+} = useLodging()
+
+const menuLinks = [
+  {
+    name: "index",
+    displayName: "Inicio",
+    id: "home-logged-banner"
   },
-  methods: {
-    ...useLodging(),
-    async performSearch(query) {
-      const res = await useLodging().executeQuery(query);
-      this.searchResult = res;
-      return res;
-    },
-    constructDate,
-    calculateNights,
-    constructDisplay,
-    gttValidate() {
-      let validator = [
-        {
-          rules: ["required"],
-          name: "gttDestinyLodging",
-          value: this.selectedLodgingDestinyValue,
-          lang: "es"
-        },
-        {
-          rules: ["required", "dateAfter:selectedStartDate"],
-          name: "gttEndDate",
-          value: this.selectedEndDate,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttStartDate",
-          value: this.selectedStartDate,
-          lang: "es"
-        }
-      ];
-
-      return validator;
-    },
-    async loadDestinies() {
-      if (this.lodgingOpened == true) {
-        //let { data } = await authSearchRegions();
-        let totalResult = [];
-        /*data.forEach(item => {
-          totalResult = totalResult.concat({
-            nombre: item.Nombre,
-            regionid: item.RegionId,
-            type: "RGN"
-          });
-        }); */
-        /* let l = await authGetLodgingsAll();
-        l.data.forEach(i => {
-          totalResult = totalResult.concat({
-            nombre: i.Nombre,
-            id: i.ProductoId,
-            type: "alojamiento"
-          });
-        }); */
-        let l = await authGetHotelList();
-        l.data.forEach(i => {
-          totalResult = totalResult.concat({
-            nombre: i.Nombre,
-            id: i.IdObjeto,
-            type: i.TipoObjeto
-          });
-        });
-        this.destinies = totalResult;
-      }
-    },
-    handleLodgingClose() {
-      this.lodgingOpened = false;
-    },
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        useScrollStore().scrollTo("lodging");
-      }
-    },
-    async activateModal() {
-      let iv = gttIsValid(this.gttValidate(), this);
-      if (getValid(iv)) {
-        this.isModalActive = true;
-        await this.clearSerchResults();
-        if (this.selectedLodgingDestinyValue.type == "RGN") {
-          console.log("RGN", this);
-          let region = {
-            RegionId: this.selectedLodgingDestinyValue.id
-          };
-          let cliente = { ClienteId: localStorage.getItem("cliente") };
-          let searchItem = {
-            Entrada: this.selectedStartDate,
-            Salida: this.selectedEndDate,
-            Region: region,
-            Cliente: cliente
-          };
-          let searchFilters = {
-            Destiny: this.selectedLodgingDestinyValue,
-            Region: {
-              RegionId: this.selectedLodgingDestinyValue.id,
-              RegionNombre: this.selectedLodgingDestinyValue.nombre
-            },
-            Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.selectedStartDate,
-            Salida: this.selectedEndDate,
-            Visitantes: this.selectedRoomLayout,
-            Nacionalidad: this.selectedNationality
-          };
-          let resultList = [];
-          try {
-            if (
-              searchFilters.Visitantes.adults.value >=
-              searchFilters.Visitantes.kids.value
-            ) {
-              this.roomComb = this.$helpers.roomCombination(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            } else {
-              this.roomComb = this.$helpers.roomCombination2kids(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            }
-            let roomComb2 = this.$helpers.roomCombinationV2(
-              searchFilters.Visitantes.adults.value,
-              searchFilters.Visitantes.kids.value || 0
-            );
-            if (this.roomComb != "ERROR") {
-              resultList = await this.searchResult(
-                searchItem,
-                this.roomComb,
-                roomComb2
-              );
-              localStorage.setItem(
-                "searchLodgingFilters",
-                JSON.stringify(searchFilters)
-              );
-              this.desactivateModal();
-              this.$router.push({
-                name: "resultLodging",
-                params: {
-                  searchResult: resultList
-                }
-              });
-            } else {
-              this.desactivateModal();
-              this.$toasted.show("Demasiados niños", {
-                type: "error"
-              });
-            }
-          } catch (error) {
-            console.log(error);
-            this.desactivateModal();
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        } else if (this.selectedLodgingDestinyValue.type == "HTL") {
-          console.log("HTL", this);
-          let searchFilters = {
-            Destiny: this.selectedLodgingDestinyValue,
-            NombreHotel: this.selectedLodgingDestinyValue.nombre,
-            Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.selectedStartDate,
-            Salida: this.selectedEndDate,
-            Visitantes: this.selectedRoomLayout,
-            Nacionalidad: this.selectedNationality
-          };
-          try {
-            if (
-              searchFilters.Visitantes.adults.value >=
-              searchFilters.Visitantes.kids.value
-            ) {
-              this.roomComb = this.$helpers.roomCombination(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            } else {
-              this.roomComb = this.$helpers.roomCombination2kids(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            }
-            if (this.roomComb != "ERROR") {
-              this.goToDetail(
-                searchFilters,
-                this.buildRoomCombo(this.roomComb),
-                this.selectedLodgingDestinyValue.id
-              );
-            } else {
-              this.desactivateModal();
-              this.$toasted.show("Demasiados niños", {
-                type: "error"
-              });
-            }
-          } catch (error) {
-            console.log(error);
-            this.desactivateModal();
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        }
-      } else {
-        renderValid(iv, this);
-      }
-    },
-    goToDetail(f, a, id) {
-      localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
-
-      localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
-
-      this.$router.push({
-        name: "lodging-detail",
-        params: {
-          id: id
-        }
-      });
-    },
-    desactivateModal() {
-      this.isModalActive = false;
-    },
-    constructDisplayNights(n) {
-      if (n == 1) {
-        return `1 noche`;
-      }
-      return `${n} noches`;
-    },
-    searchCountriesPlaceholder() {
-      let usa = this.countries.find(el => {
-        return el.nombre == "Estados Unidos";
-      });
-
-      if (usa) {
-        this.selectedNationality = usa;
-      } else {
-        this.selectedNationality = this.countries[0];
-      }
-    }
-  },
-  data() {
-    return {
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Inicio",
-          id: "home-logged-banner"
-        },
-        {
-          name: "lodging",
-          displayName: "alojamientos",
-          id: "home-logged-banner"
-        }
-        /* {
-           name: "car-rent",
-           displayName: "renta de autos",
-           id: "index-logged-rent-wrapper"
-         },*/
-      ],
-      isModalActive: false,
-      lodgingOpened: false,
-      defaultFlagImgPath: "img/flags/",
-      todosTipo: [],
-      selectedLodgingDestinyValue: "",
-      selectedRoomLayout: null,
-      selectedStartDate: new Date(moment().add(4, "days")),
-      selectedEndDate: new Date(moment().add(7, "days")),
-      selectedNationality: null,
-      destinies: [],
-      selectedNights: 3,
-      roomComb: null,
-      roomLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
-        }
-      ],
-      countries: [
-        {
-          nombre: "Afganistán",
-          flag: "flag_afganistan.jpg"
-        },
-        {
-          nombre: "Albania",
-          flag: "flag_albania.jpg"
-        },
-        {
-          nombre: "Alemania",
-          flag: "flag_alemania.jpg"
-        },
-        {
-          nombre: "Estados Unidos",
-          flag: "flag_estadosunidos.jpg"
-        }
-      ]
-    };
+  {
+    name: "lodging",
+    displayName: "alojamientos",
+    id: "home-logged-banner"
   }
-};
+]
+const isModalActive = ref(false)
+const lodgingOpened = ref(false)
+const defaultFlagImgPath = "img/flags/"
+const todosTipo = ref<unknown[]>([])
+const selectedLodgingDestinyValue = ref("")
+const selectedRoomLayout = ref(null)
+const selectedStartDate = ref(new Date(moment().add(4, "days")))
+const selectedEndDate = ref(new Date(moment().add(7, "days")))
+const selectedNationality = ref(null)
+const destinies = ref<unknown[]>([])
+const selectedNights = ref(3)
+const roomComb = ref<unknown>(null)
+const roomLayout = [
+  {
+    code: "adults",
+    label: "Adultos",
+    display: "Adulto(s)",
+    default: 1
+  },
+  {
+    code: "kids",
+    label: "Niños",
+    display: "Niño(s)",
+    default: 0
+  }
+]
+const countries = [
+  {
+    nombre: "Afganistán",
+    flag: "flag_afganistan.jpg"
+  },
+  {
+    nombre: "Albania",
+    flag: "flag_albania.jpg"
+  },
+  {
+    nombre: "Alemania",
+    flag: "flag_alemania.jpg"
+  },
+  {
+    nombre: "Estados Unidos",
+    flag: "flag_estadosunidos.jpg"
+  }
+]
+
+const minStartDate = computed(() => {
+  return moment()
+    .add(4, "days")
+    .format("YYYY-MM-DD")
+})
+
+const minEndDate = computed(() => {
+  let minEndDateVal = moment()
+    .add(7, "days")
+    .format("YYYY-MM-DD")
+  if (selectedStartDate.value) {
+    minEndDateVal = moment(selectedStartDate.value)
+      .add(selectedNights.value, "days")
+      .format("YYYY-MM-DD")
+  }
+  return minEndDateVal
+})
+
+watch(selectedEndDate, () => {
+  let n = moment(selectedEndDate.value).diff(selectedStartDate.value, "days")
+  selectedNights.value = n
+})
+
+watch(selectedStartDate, (item) => {
+  selectedNights.value = 3
+  selectedEndDate.value = moment(item)
+    .add(selectedNights.value, "days")
+    .toDate()
+  let n = moment(selectedEndDate.value).diff(selectedStartDate.value, "days")
+  selectedNights.value = n
+})
+
+watch(selectedNights, (item) => {
+  selectedEndDate.value = new Date(
+    moment(selectedStartDate.value).add(item, "days")
+  )
+})
+
+async function performSearch(query: Record<string, unknown>) {
+  const res = await executeQuery(query)
+  return res
+}
+
+function gttValidate() {
+  let validator = [
+    {
+      rules: ["required"],
+      name: "gttDestinyLodging",
+      value: selectedLodgingDestinyValue.value,
+      lang: "es"
+    },
+    {
+      rules: ["required", "dateAfter:selectedStartDate"],
+      name: "gttEndDate",
+      value: selectedEndDate.value,
+      lang: "es"
+    },
+    {
+      rules: ["required"],
+      name: "gttStartDate",
+      value: selectedStartDate.value,
+      lang: "es"
+    }
+  ]
+  return validator
+}
+
+async function loadDestinies() {
+  if (lodgingOpened.value == true) {
+    let totalResult: unknown[] = []
+    let l = await authGetHotelList()
+    l.data.forEach((i: { Nombre: unknown; IdObjeto: unknown; TipoObjeto: unknown }) => {
+      totalResult = totalResult.concat({
+        nombre: i.Nombre,
+        id: i.IdObjeto,
+        type: i.TipoObjeto
+      })
+    })
+    destinies.value = totalResult
+  }
+}
+
+function handleLodgingClose() {
+  lodgingOpened.value = false
+}
+
+function handleScroll() {
+  const el = document.getElementById("home-logged-banner")
+  if (!el) return
+  let height = window.innerHeight
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo("lodging")
+  }
+}
+
+function getRefsProxy() {
+  return {
+    $refs: {
+      gttDestinyLodging: gttDestinyLodging.value,
+      gttStartDate: gttStartDate.value,
+      gttEndDate: gttEndDate.value
+    },
+    $children: []
+  }
+}
+
+async function activateModal() {
+  let iv = gttIsValid(gttValidate(), getRefsProxy())
+  if (getValid(iv)) {
+    isModalActive.value = true
+    await clearResults()
+    if (selectedLodgingDestinyValue.value.type == "RGN") {
+      console.log("RGN")
+      let region = {
+        RegionId: selectedLodgingDestinyValue.value.id
+      }
+      let cliente = { ClienteId: localStorage.getItem("cliente") }
+      let searchItem = {
+        Entrada: selectedStartDate.value,
+        Salida: selectedEndDate.value,
+        Region: region,
+        Cliente: cliente
+      }
+      let searchFilters = {
+        Destiny: selectedLodgingDestinyValue.value,
+        Region: {
+          RegionId: selectedLodgingDestinyValue.value.id,
+          RegionNombre: selectedLodgingDestinyValue.value.nombre
+        },
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: selectedStartDate.value,
+        Salida: selectedEndDate.value,
+        Visitantes: selectedRoomLayout.value,
+        Nacionalidad: selectedNationality.value
+      }
+      let resultList: unknown[] = []
+      try {
+        if (
+          searchFilters.Visitantes.adults.value >=
+          searchFilters.Visitantes.kids.value
+        ) {
+          roomComb.value = helpers.roomCombination(
+            searchFilters.Visitantes.adults.value,
+            searchFilters.Visitantes.kids.value || 0
+          )
+        } else {
+          roomComb.value = helpers.roomCombination2kids(
+            searchFilters.Visitantes.adults.value,
+            searchFilters.Visitantes.kids.value || 0
+          )
+        }
+        let roomComb2 = helpers.roomCombinationV2(
+          searchFilters.Visitantes.adults.value,
+          searchFilters.Visitantes.kids.value || 0
+        )
+        if (roomComb.value != "ERROR") {
+          resultList = await search(
+            searchItem,
+            roomComb.value,
+            roomComb2,
+            todosTipo.value,
+            helpers
+          )
+          localStorage.setItem(
+            "searchLodgingFilters",
+            JSON.stringify(searchFilters)
+          )
+          desactivateModal()
+          router.push({
+            name: "resultLodging",
+            params: {
+              searchResult: resultList
+            }
+          })
+        } else {
+          desactivateModal()
+          toast("Demasiados niños", {
+            type: "error"
+          })
+        }
+      } catch (error) {
+        console.log(error)
+        desactivateModal()
+        toast("El servicio no está disponible en estos momentos", {
+          type: "error"
+        })
+      }
+    } else if (selectedLodgingDestinyValue.value.type == "HTL") {
+      console.log("HTL")
+      let searchFilters = {
+        Destiny: selectedLodgingDestinyValue.value,
+        NombreHotel: selectedLodgingDestinyValue.value.nombre,
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: selectedStartDate.value,
+        Salida: selectedEndDate.value,
+        Visitantes: selectedRoomLayout.value,
+        Nacionalidad: selectedNationality.value
+      }
+      try {
+        if (
+          searchFilters.Visitantes.adults.value >=
+          searchFilters.Visitantes.kids.value
+        ) {
+          roomComb.value = helpers.roomCombination(
+            searchFilters.Visitantes.adults.value,
+            searchFilters.Visitantes.kids.value || 0
+          )
+        } else {
+          roomComb.value = helpers.roomCombination2kids(
+            searchFilters.Visitantes.adults.value,
+            searchFilters.Visitantes.kids.value || 0
+          )
+        }
+        if (roomComb.value != "ERROR") {
+          goToDetail(
+            searchFilters,
+            buildRoomCombo(roomComb.value),
+            selectedLodgingDestinyValue.value.id
+          )
+        } else {
+          desactivateModal()
+          toast("Demasiados niños", {
+            type: "error"
+          })
+        }
+      } catch (error) {
+        console.log(error)
+        desactivateModal()
+        toast("El servicio no está disponible en estos momentos", {
+          type: "error"
+        })
+      }
+    }
+  } else {
+    renderValid(iv, getRefsProxy())
+  }
+}
+
+function goToDetail(f: unknown, a: unknown, id: unknown) {
+  localStorage.setItem("searchLodgingFilters", JSON.stringify(f))
+  localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a))
+  router.push({
+    name: "lodging-detail",
+    params: {
+      id: id
+    }
+  })
+}
+
+function desactivateModal() {
+  isModalActive.value = false
+}
+
+function constructDisplayNights(n: number) {
+  if (n == 1) {
+    return `1 noche`
+  }
+  return `${n} noches`
+}
+
+function searchCountriesPlaceholder() {
+  let usa = countries.find(el => {
+    return el.nombre == "Estados Unidos"
+  })
+  if (usa) {
+    selectedNationality.value = usa
+  } else {
+    selectedNationality.value = countries[0]
+  }
+}
+
+onMounted(async () => {
+  searchCountriesPlaceholder()
+  window.addEventListener("scroll", handleScroll)
+  let t = await authGetRoomTypes()
+  todosTipo.value = t.data
+  await clearResults()
+})
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll)
+})
 </script>
 
 <style scoped>

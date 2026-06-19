@@ -137,128 +137,121 @@
   </div>
 </template>
 
-<script>
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttSelectForm from "../custom-elements/GttSelectForm";
-import GttModalSearch from "../custom-elements/GttModalSearch";
-import moment from "moment";
-import { constructDate, constructDisplay } from "../../utils/utils";
-import { useScrollStore } from "../../stores/scrollStore";
-import { getValid, renderValid, gttIsValid } from "../../utils/validation";
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue"
+import { useRouter } from "vue-router"
+import { toast } from "vue3-toastify"
+import GttSelect from "../custom-elements/GttSelect.vue"
+import GttSelectDate from "../custom-elements/GttSelectDate.vue"
+import GttSelectForm from "../custom-elements/GttSelectForm.vue"
+import GttModalSearch from "../custom-elements/GttModalSearch.vue"
+import moment from "moment"
+import { constructDate, constructDisplay } from "../../utils/utils"
+import { useScrollStore } from "../../stores/scrollStore"
+import { getValid, renderValid, gttIsValid } from "../../utils/validation"
 
-export default {
-  components: {
-    GttSelect,
-    GttSelectDate,
-    GttSelectForm,
-    GttModalSearch
+const router = useRouter()
+
+const arrivalTime = ref("")
+const departureTime = ref("")
+const isModalActive = ref(false)
+const selectedPickUpPlace = ref("")
+const selectedDestinyPlace = ref("")
+const selectedDepartureDate = ref(moment())
+const selectedDepartureHour = ref(null)
+const selectedArrivalDate = ref(moment().add(1, "days"))
+const selectedArrivalHour = ref(null)
+const selectedPassengers = ref(null)
+const selectedLuggages = ref(null)
+const selectedJourneyType = ref(null)
+const selectedTransferType = ref(null)
+const journeyTypes = ["Ida y regreso", "Solo ida"]
+const transferTypes = ["Compartido", "Privado"]
+const pickUpDeliveryOptions = [
+  "Aeropuerto Internacional",
+  "Blau Varadero Hotel Cuba",
+  "Iberostar Selection Varadero",
+  "Royalton Hicacos Varadero Resort & Spa",
+  "Sanctuary at Grand Memories Varadero"
+]
+const passengersLayout = [
+  {
+    code: "adults",
+    label: "Adultos",
+    display: "Adulto(s)",
+    default: 1
   },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
-  },
-  methods: {
-    constructDisplay,
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        useScrollStore().scrollTo("transfer");
-      }
-    },
-    /* TODO: llamada a la api */
-    async activateModal() {
-      //let iv = gttIsValid(this.gttValidate());  getValid(iv
-      if (true) {
-        try {
-          this.isModalActive = true;
-          console.log(iv);
-          /* let { data } = await authSearchCars(searchItem); */
-          this.desactivateModal();
-          this.$router.push({
-            name: "resultRent",
-            params: {
-              searchResult: resultList
-            }
-          });
-        } catch (error) {
-          console.log(error);
-          this.desactivateModal();
-          this.$toasted.show(
-            "El servicio no está disponible en estos momentos",
-            {
-              type: "error"
-            }
-          );
-        }
-      } else {
-        renderValid(iv, this);
-      }
-    },
-    desactivateModal() {
-      this.isModalActive = false;
-    }
-  },
-  data() {
-    return {
-      arrivalTime: "",
-      departureTime: "",
-      isModalActive: false,
-      selectedPickUpPlace: "",
-      selectedDestinyPlace: "",
-      selectedDepartureDate: moment(),
-      selectedDepartureHour: null,
-      selectedArrivalDate: moment().add(1, "days"),
-      selectedArrivalHour: null,
-      selectedPassengers: null,
-      selectedLuggages: null,
-      selectedJourneyType: null,
-      selectedTransferType: null,
-      journeyTypes: ["Ida y regreso", "Solo ida"],
-      transferTypes: ["Compartido", "Privado"],
-      pickUpDeliveryOptions: [
-        "Aeropuerto Internacional",
-        "Blau Varadero Hotel Cuba",
-        "Iberostar Selection Varadero",
-        "Royalton Hicacos Varadero Resort & Spa",
-        "Sanctuary at Grand Memories Varadero"
-      ],
-      passengersLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
-        }
-      ],
-      luggagesLayout: [
-        {
-          code: "big_bag",
-          label: "Equipaje grande",
-          display: "Equipaje(s) grande",
-          default: 0
-        },
-        {
-          code: "small_bag",
-          label: "Equipaje pequeño",
-          display: "Pequeño",
-          default: 0
-        }
-      ]
-    };
+  {
+    code: "kids",
+    label: "Niños",
+    display: "Niño(s)",
+    default: 0
   }
-};
+]
+const luggagesLayout = [
+  {
+    code: "big_bag",
+    label: "Equipaje grande",
+    display: "Equipaje(s) grande",
+    default: 0
+  },
+  {
+    code: "small_bag",
+    label: "Equipaje pequeño",
+    display: "Pequeño",
+    default: 0
+  }
+]
+
+function handleScroll() {
+  const el = document.getElementById("index-logged-transfer")
+  if (!el) return
+  let height = window.innerHeight
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo("transfer")
+  }
+}
+
+/* TODO: llamada a la api */
+async function activateModal() {
+  //let iv = gttIsValid(this.gttValidate());  getValid(iv
+  if (true) {
+    try {
+      isModalActive.value = true
+      console.log(iv)
+      /* let { data } = await authSearchCars(searchItem); */
+      desactivateModal()
+      router.push({
+        name: "resultRent",
+        params: {
+          searchResult: resultList
+        }
+      })
+    } catch (error) {
+      console.log(error)
+      desactivateModal()
+      toast("El servicio no está disponible en estos momentos", {
+        type: "error"
+      })
+    }
+  } else {
+    renderValid(iv)
+  }
+}
+
+function desactivateModal() {
+  isModalActive.value = false
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll)
+})
 </script>
 
 <style scoped>

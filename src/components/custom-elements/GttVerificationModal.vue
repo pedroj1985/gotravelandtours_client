@@ -17,8 +17,11 @@
   </div>
 </template>
 
-<script>
-export default {};
+<script setup lang="ts">
+defineEmits<{
+  (e: "next"): void
+  (e: "closeModal"): void
+}>()
 </script>
 
 <style lang="scss" scoped>

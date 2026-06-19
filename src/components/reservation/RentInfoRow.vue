@@ -80,82 +80,68 @@
   </div>
 </template>
 
-<script>
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttModalSearch from "../custom-elements/GttModalSearch";
+<script setup lang="ts">
+import { ref, watch, onMounted } from "vue"
+import { toast } from "vue3-toastify"
+import GttSelect from "../custom-elements/GttSelect.vue";
+import GttSelectDate from "../custom-elements/GttSelectDate.vue";
+import GttModalSearch from "../custom-elements/GttModalSearch.vue";
 
-import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { cleanVO } from "../../composables/useCleanup";
-
 import { authSearchPuntosInteres } from "../../utils/auth";
 import { overflowText } from "../../utils/utils";
 
-export default {
-  created() {
-    this.loadPuntosInteres();
-  },
-  data() {
-    return {
-      pickUpOpened: false,
-      deliveryOpened: false,
-      selectedPickUpPlace: null,
-      selectedDeliveryPlace: null,
-      pickUpDeliveryOptions: []
-    };
-  },
-  props: {
-    deliver: {
-      type: String
-    },
-    pickUp: {
-      type: String
-    },
-    editable: {
-      type: Boolean,
-      default: true
-    }
-  },
-  components: {
-    GttSelect,
-    GttSelectDate,
-    GttModalSearch
-  },
-  methods: {
-    cleanVO(order, pickUpPlace, DeliveryPlace) {
-      cleanVO(order, pickUpPlace || this.selectedPickUpPlace, DeliveryPlace || this.selectedDeliveryPlace);
-    },
-    async loadPuntosInteres() {
-      try {
-        let { data } = await authSearchPuntosInteres();
-        let totalResult = [];
-        data.forEach(item => {
-          totalResult = totalResult.concat({
-            nombre: item.Nombre,
-            regionid: item.RegionId,
-            puntointeresid: item.PuntoInteresId,
-            type: "punto-interes"
-          });
-        });
-        this.pickUpDeliveryOptions = totalResult;
-      } catch (error) {
-        this.$toasted.show("El servicio no está disponible en estos momentos", {
-          type: "error"
-        });
-      }
-    }
-  },
+const props = defineProps<{
+  deliver?: string
+  pickUp?: string
+  editable?: boolean
+}>()
 
-  watch: {
-    // cada vez que la pregunta cambie, esta función será ejecutada
-    selectedPickUpPlace: function(newPickUpPlace, oldPickUpPlace) {
-      if (this.selectedDeliveryPlace == null) {
-        this.$emit("inputDeliveryPlace", newPickUpPlace);
-        this.selectedDeliveryPlace = newPickUpPlace;
-      }
-    }
+const emit = defineEmits<{
+  (e: "inputDeliveryPlace", val: any): void
+  (e: "inputPickUpPlace", val: any): void
+  (e: "inputPickUp", val: string): void
+  (e: "inputDeliver", val: string): void
+}>()
+
+const pickUpOpened = ref(false)
+const deliveryOpened = ref(false)
+const selectedPickUpPlace = ref<any>(null)
+const selectedDeliveryPlace = ref<any>(null)
+const pickUpDeliveryOptions = ref<any[]>([])
+
+onMounted(() => {
+  loadPuntosInteres()
+})
+
+watch(selectedPickUpPlace, (newPickUpPlace) => {
+  if (selectedDeliveryPlace.value == null) {
+    emit("inputDeliveryPlace", newPickUpPlace)
+    selectedDeliveryPlace.value = newPickUpPlace
   }
-};
+})
+
+function cleanOrder(order: any, pickUpPlace: any, DeliveryPlace: any) {
+  cleanVO(order, pickUpPlace || selectedPickUpPlace.value, DeliveryPlace || selectedDeliveryPlace.value)
+}
+
+async function loadPuntosInteres() {
+  try {
+    let { data } = await authSearchPuntosInteres()
+    let totalResult: any[] = []
+    data.forEach((item: any) => {
+      totalResult = totalResult.concat({
+        nombre: item.Nombre,
+        regionid: item.RegionId,
+        puntointeresid: item.PuntoInteresId,
+        type: "punto-interes"
+      })
+    })
+    pickUpDeliveryOptions.value = totalResult
+  } catch (error) {
+    toast("El servicio no está disponible en estos momentos", { type: "error" })
+  }
+}
 </script>
 
 <style scoped>

@@ -4,24 +4,18 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttSkeleton",
-  props: {
-    type: {
-      type: String,
-      default: "text"
-    },
-    width: {
-      type: Number,
-      default: 100
-    },
-    height: {
-      type: String,
-      default: "1em"
-    }
-  }
-};
+<script setup lang="ts">
+defineOptions({ name: "GttSkeleton" });
+
+withDefaults(defineProps<{
+  type?: string
+  width?: number
+  height?: string
+}>(), {
+  type: "text",
+  width: 100,
+  height: "1em"
+});
 </script>
 
 <style scoped>

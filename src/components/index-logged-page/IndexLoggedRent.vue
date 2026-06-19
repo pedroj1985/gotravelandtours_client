@@ -9,34 +9,29 @@
   </div>
 </template>
 
-<script>
-import IndexLoggedRentSearch from "../index-logged-page/IndexLoggedRentSearch";
-import IndexLoggedRentCarousel from "./IndexLoggedRentCarousel";
-import { useScrollStore } from "../../stores/scrollStore";
+<script setup lang="ts">
+import { onMounted, onUnmounted } from "vue"
+import IndexLoggedRentSearch from "../index-logged-page/IndexLoggedRentSearch.vue"
+import IndexLoggedRentCarousel from "./IndexLoggedRentCarousel.vue"
+import { useScrollStore } from "../../stores/scrollStore"
 
-export default {
-  components: {
-    IndexLoggedRentSearch,
-    IndexLoggedRentCarousel
-  },
-  methods: {
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        useScrollStore().scrollTo("car-rent");
-      }
-    }
-  },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
+function handleScroll() {
+  const el = document.getElementById("index-logged-rent-wrapper")
+  if (!el) return
+  let height = window.innerHeight
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo("car-rent")
   }
-};
+}
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll)
+})
 </script>
 
 <style scoped>

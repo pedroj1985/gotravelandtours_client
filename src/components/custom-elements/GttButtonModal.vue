@@ -39,58 +39,38 @@
   </div>
 </template>
 
-<script>
-import { clickOutside } from "@/directives/clickOutside";
-import { closeSession } from "../../utils/auth";
-import RegisterModal from "../shared/Register";
-import { useAuthStore } from "../../stores/authStore";
+<script setup lang="ts">
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+import { clickOutside as vClickOutside } from "@/directives/clickOutside"
+import { closeSession as closeSessionUtil } from "../../utils/auth"
+import RegisterModal from "../shared/Register.vue"
+import { useAuthStore } from "../../stores/authStore"
 
-export default {
-  components: {
-    RegisterModal
-  },
-  directives: {
-    clickOutside
-  },
-  mounted() {
-    this.popupItem = this.$el;
-  },
-  props: {
-    classToButton: {
-      type: String
-    },
-    value: null,
-    arrow: {
-      default: true
-    },
-    user: {
-      type: Object
-    }
-  },
-  data() {
-    return {
-      isVisible: false,
-      modalActive: false
-    };
-  },
-  methods: {
-    toggleClicked() {
-      this.isVisible = !this.isVisible;
-    },
-    handleFocusOut() {
-      this.isVisible = false;
-    },
-    activeRegisterModal() {
-      this.handleFocusOut();
-      return (this.modalActive = !this.modalActive);
-    },
-    closeSession() {
-      this.handleFocusOut();
-      useAuthStore().logout();
-      closeSession(this);
-    }
-  }
-};
+defineProps<{ classToButton?: string; value?: any; arrow?: any; user?: any }>()
+
+const router = useRouter()
+const isVisible = ref(false)
+const modalActive = ref(false)
+
+function toggleClicked() {
+  isVisible.value = !isVisible.value
+}
+
+function handleFocusOut() {
+  isVisible.value = false
+}
+
+function activeRegisterModal() {
+  handleFocusOut()
+  return (modalActive.value = !modalActive.value)
+}
+
+function closeSession() {
+  handleFocusOut()
+  useAuthStore().logout()
+  closeSessionUtil({ $router: router })
+}
 </script>
 
 <style lang="scss" scoped>

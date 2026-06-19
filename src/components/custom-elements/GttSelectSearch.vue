@@ -31,52 +31,47 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    options: {
-      type: Array
-    },
-    searchQuery: {
-      type: String,
-      default: ""
-    },
-    selectedValue: {
-      default: null
-    }
-  },
-  data() {
-    return {
-      searchResult: []
-    };
-  },
-  mounted() {
-    this.searchResult = this.options;
-  },
-  watch: {
-    options: function(val) {
-      this.searchResult = val;
-    }
-  },
-  methods: {
-    isSelected(option) {
-      if (typeof option === 'object' && typeof this.selectedValue === 'object') {
-        return option.id === this.selectedValue.id;
-      }
-      return option === this.selectedValue;
-    },
-    onInput(e) {
-      this.$emit("update:searchQuery", e.target.value);
-      this.$emit("search", e.target.value);
-    },
-    submitSearch(e) {
-      let query = e.target.value;
-      this.searchResult = this.options.filter(opt =>
-        opt.nombre.toLowerCase().includes(query.toLowerCase())
-      );
-    }
+<script setup lang="ts">
+import { ref, watch, onMounted } from "vue"
+
+const props = withDefaults(defineProps<{ options?: any[]; searchQuery?: string; selectedValue?: any }>(), { searchQuery: "" })
+
+const emit = defineEmits<{
+  (e: "update:searchQuery", value: string): void
+  (e: "search", value: string): void
+  (e: "select", option: any): void
+}>()
+
+const searchResult = ref<any[]>([])
+
+onMounted(() => {
+  searchResult.value = props.options || []
+})
+
+watch(() => props.options, (val) => {
+  searchResult.value = val || []
+})
+
+function isSelected(option: any) {
+  if (typeof option === 'object' && typeof props.selectedValue === 'object') {
+    return option.id === props.selectedValue.id
   }
-};
+  return option === props.selectedValue
+}
+
+function onInput(e: Event) {
+  const target = e.target as HTMLInputElement
+  emit("update:searchQuery", target.value)
+  emit("search", target.value)
+}
+
+function submitSearch(e: Event) {
+  const target = e.target as HTMLInputElement
+  const query = target.value
+  searchResult.value = (props.options || []).filter((opt: any) =>
+    opt.nombre.toLowerCase().includes(query.toLowerCase())
+  )
+}
 </script>
 
 <style lang="scss" scoped>

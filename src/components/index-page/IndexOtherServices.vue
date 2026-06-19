@@ -26,39 +26,31 @@
   </div>
 </template>
 
-<script>
-import { Swiper, SwiperSlide } from "swiper/vue";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+<script setup lang="ts">
+import { ref } from "vue"
+import { Swiper, SwiperSlide } from "swiper/vue"
+import { Navigation, Pagination, Autoplay } from "swiper/modules"
 import "swiper/swiper-bundle.css"
 
-export default {
-  name: "IndexOtherServices",
-  components: {
-    Swiper,
-    SwiperSlide
+defineOptions({ name: "IndexOtherServices" })
+
+const swiperModules = [Navigation, Pagination, Autoplay]
+const oServices = ref([
+  {
+    name: "Buceo",
+    image: "home_otrosservicios_buceo.jpg"
   },
-  data() {
-    return {
-      swiperModules: [Navigation, Pagination, Autoplay],
-      oServices: [
-        {
-          name: "Buceo",
-          image: "home_otrosservicios_buceo.jpg"
-        },
-        {
-          name: "Senderismo",
-          image: "home_otrosservicios_senderismo.jpg"
-        },
-        {
-          name: "Torcedor de tabaco",
-          image: "home_otrosservicios_tabaco.jpg"
-        },
-        {
-          name: "Senderismo",
-          image: "home_otrosservicios_senderismo.jpg"
-        }
-      ]
-    };
+  {
+    name: "Senderismo",
+    image: "home_otrosservicios_senderismo.jpg"
+  },
+  {
+    name: "Torcedor de tabaco",
+    image: "home_otrosservicios_tabaco.jpg"
+  },
+  {
+    name: "Senderismo",
+    image: "home_otrosservicios_senderismo.jpg"
   }
-};
+])
 </script>

@@ -105,53 +105,54 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from "vue";
 import { Form, Field } from "vee-validate";
 import { authRegister } from "../../utils/auth";
+import { toast } from "vue3-toastify";
 
-export default {
-  components: { Form, Field },
-  data() {
-    return {
-      loading: false,
-      testErrorVisible: false,
-      testError: ""
-    };
-  },
-  methods: {
-    close() {
-      this.$emit("closeModal");
-    },
-    async submit(values) {
-      let user = {
-        username: values.username,
-        password: values.password,
-        telefono: values.telefono,
-        correo: values.email,
-        clienteId: localStorage.getItem("cliente"),
-        rolId: 3
-      };
-      this.loading = true;
-      authRegister(user, {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      })
-        .then(({ data }) => {
-          console.log(data);
-          this.$toasted.show(
-            `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
-            {
-              type: "success"
-            }
-          );
-          this.loading = false;
-          this.close();
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    }
-  }
-};
+defineOptions({ name: "Register" });
+
+const emit = defineEmits<{
+  (e: "closeModal"): void
+}>();
+
+const loading = ref(false);
+const testErrorVisible = ref(false);
+const testError = ref("");
+
+function close() {
+  emit("closeModal");
+}
+
+async function submit(values: any) {
+  let user = {
+    username: values.username,
+    password: values.password,
+    telefono: values.telefono,
+    correo: values.email,
+    clienteId: localStorage.getItem("cliente"),
+    rolId: 3
+  };
+  loading.value = true;
+  authRegister(user, {
+    Authorization: `Bearer ${localStorage.getItem("token")}`
+  })
+    .then(({ data }) => {
+      console.log(data);
+      toast(
+        `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
+        {
+          type: "success"
+        }
+      );
+      loading.value = false;
+      close();
+    })
+    .catch(() => {
+      loading.value = false;
+    });
+}
 </script>
 
 <style scoped>

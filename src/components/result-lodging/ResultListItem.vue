@@ -158,98 +158,87 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from "vue"
+import { useRouter } from "vue-router"
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/swiper-bundle.css"
-import ResultListRow from "./ResultListRow";
-import GttSkeleton from "../shared/GttSkeleton";
+import ResultListRow from "./ResultListRow.vue";
+import GttSkeleton from "../shared/GttSkeleton.vue";
 import _ from "lodash";
 import { constructDisplay } from "../../utils/utils";
 import { addToCartItem, reserveItem } from "../../composables/useCartItem";
-export default {
-  created() {},
-  components: {
-    Swiper,
-    SwiperSlide,
-    ResultListRow,
-    GttSkeleton
-  },
-  props: {
-    item: Object,
-    filters: Object,
-    todosTipo: Array,
-    loading: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      swiperModules: [Navigation, Pagination, Autoplay],
-      isOpen: false,
-      limit: 2,
-      disabledItems: false
-    };
-  },
-  computed: {
-    filteredItems: function() {
-      return this.item.habitaciones.slice(0, this.limit);
-    }
-  },
-  methods: {
-    constructDisplay,
-    blockingOthers(status) {
-      this.disabledItems = status;
-    },
-    goToDetail() {
-      let f = this.filters;
-      let a = this.item.acomodation;
-      let id = this.item.lodging.ProductoId;
+import { helpers } from "../../utils/helpers";
 
-      localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
+const router = useRouter()
+const $helpers = helpers
 
-      localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
+const props = defineProps<{
+  item: any
+  filters: any
+  todosTipo: any[]
+  loading?: boolean
+}>()
 
-      this.$router.push({
-        name: "lodging-detail",
-        params: {
-          id: id
-        }
-      });
-    },
-    onLoading(value) {
-      this.disabledItems = value;
-    },
-    addToCart(i, cant) {
-      addToCartItem(this.item, i, cant, this.$helpers);
-    },
-    reserve(i, cant) {
-      reserveItem(this.$router, this.item, i, cant, this.$helpers);
-    },
-    getMinPrice(array) {
-      return _.minBy(array, function(e) {
-        return e.combinacion.listado[0].precioObjOne.PrecioOrden;
-      });
-    },
-    openList() {
-      if (!this.isOpen) {
-        this.limit = this.item.habitaciones.length;
-      } else {
-        this.limit = 2;
-      }
-      this.isOpen = !this.isOpen;
-    },
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = Math.round((number - intPart) * 100);
+const swiperModules = [Navigation, Pagination, Autoplay]
+const isOpen = ref(false)
+const limit = ref(2)
+const disabledItems = ref(false)
 
-      if (decimalPart == 0) decimalPart = "00";
+const filteredItems = computed(() => {
+  return props.item.habitaciones.slice(0, limit.value)
+})
 
-      return { intPart: intPart, decimalPart: decimalPart };
-    }
+function blockingOthers(status: boolean) {
+  disabledItems.value = status
+}
+
+function goToDetail() {
+  let f = props.filters
+  let a = props.item.acomodation
+  let id = props.item.lodging.ProductoId
+  localStorage.setItem("searchLodgingFilters", JSON.stringify(f))
+  localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a))
+  router.push({
+    name: "lodging-detail",
+    params: { id }
+  })
+}
+
+function onLoading(value: boolean) {
+  disabledItems.value = value
+}
+
+function addToCart(i: any, cant: number) {
+  addToCartItem(props.item, i, cant, $helpers)
+}
+
+function reserve(i: any, cant: number) {
+  reserveItem(router, props.item, i, cant, $helpers)
+}
+
+function getMinPrice(array: any[]) {
+  return _.minBy(array, function(e: any) {
+    return e.combinacion.listado[0].precioObjOne.PrecioOrden
+  })
+}
+
+function openList() {
+  if (!isOpen.value) {
+    limit.value = props.item.habitaciones.length
+  } else {
+    limit.value = 2
   }
-};
+  isOpen.value = !isOpen.value
+}
+
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number)
+  let decimalPart = Math.round((number - intPart) * 100)
+  if (decimalPart == 0) decimalPart = "00"
+  return { intPart, decimalPart }
+}
 </script>
 
 <style lang="scss" scoped>

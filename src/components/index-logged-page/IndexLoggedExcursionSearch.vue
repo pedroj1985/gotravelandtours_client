@@ -103,73 +103,58 @@
   </div>
 </template>
 
-<script>
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectForm from "../custom-elements/GttSelectForm";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttModalSearch from "../custom-elements/GttModalSearch";
-import moment from "moment";
+<script setup lang="ts">
+import { ref } from "vue"
+import GttSelect from "../custom-elements/GttSelect.vue"
+import GttSelectForm from "../custom-elements/GttSelectForm.vue"
+import GttSelectDate from "../custom-elements/GttSelectDate.vue"
+import GttModalSearch from "../custom-elements/GttModalSearch.vue"
+import moment from "moment"
 import {
   constructDate,
   constructDisplay,
   calculateNights
-} from "../../utils/utils";
+} from "../../utils/utils"
 
-export default {
-  components: {
-    GttSelect,
-    GttSelectForm,
-    GttSelectDate,
-    GttModalSearch
+const isModalActive = ref(false)
+const selectedPickUpPlace = ref("")
+const selectedDeliveryPlace = ref("")
+const selectedDestiny = ref("")
+const selectedActivityType = ref("")
+const selectedDate = ref(moment())
+const selectedPassengers = ref(null)
+const activityTypes = ["Compartida", "Privada"]
+const pickUpDeliveryOptions = [
+  "Aeropuerto Internacional",
+  "Blau Varadero Hotel Cuba",
+  "Iberostar Selection Varadero",
+  "Royalton Hicacos Varadero Resort & Spa",
+  "Sanctuary at Grand Memories Varadero"
+]
+const passengersLayout = [
+  {
+    code: "adults",
+    label: "Adultos",
+    display: "Adulto(s)",
+    default: 1
   },
-  methods: {
-    activateModal() {
-      this.isModalActive = true;
-    },
-    desactivateModal() {
-      this.isModalActive = false;
-    },
-    constructDate(date) {
-      return constructDate(date);
-    },
-    constructDisplay(d) {
-      return constructDisplay(d);
-    }
-  },
-  data() {
-    return {
-      isModalActive: false,
-      selectedPickUpPlace: "",
-      selectedDeliveryPlace: "",
-      selectedDestiny: "",
-      selectedActivityType: "",
-      selectedDate: moment(),
-      selectedPassengers: null,
-      activityTypes: ["Compartida", "Privada"],
-      pickUpDeliveryOptions: [
-        "Aeropuerto Internacional",
-        "Blau Varadero Hotel Cuba",
-        "Iberostar Selection Varadero",
-        "Royalton Hicacos Varadero Resort & Spa",
-        "Sanctuary at Grand Memories Varadero"
-      ],
-      passengersLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
-        }
-      ]
-    };
+  {
+    code: "kids",
+    label: "Niños",
+    display: "Niño(s)",
+    default: 0
   }
-};
+]
+
+function activateModal() {
+  isModalActive.value = true
+}
+
+function desactivateModal() {
+  isModalActive.value = false
+}
+
+
 </script>
 
 <style scoped>

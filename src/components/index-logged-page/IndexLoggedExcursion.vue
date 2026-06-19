@@ -9,34 +9,29 @@
   </div>
 </template>
 
-<script>
-import IndexLoggedExcursionSearch from "./IndexLoggedExcursionSearch";
-import IndexServicesCarousel from "../index-page/IndexServicesCarousel";
-import { useScrollStore } from "../../stores/scrollStore";
+<script setup lang="ts">
+import { onMounted, onUnmounted } from "vue"
+import IndexLoggedExcursionSearch from "./IndexLoggedExcursionSearch.vue"
+import IndexServicesCarousel from "../index-page/IndexServicesCarousel.vue"
+import { useScrollStore } from "../../stores/scrollStore"
 
-export default {
-  components: {
-    IndexLoggedExcursionSearch,
-    IndexServicesCarousel
-  },
-  methods: {
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        useScrollStore().scrollTo("excursions");
-      }
-    }
-  },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
+function handleScroll() {
+  const el = document.getElementById("index-logged-excursion")
+  if (!el) return
+  let height = window.innerHeight
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo("excursions")
   }
-};
+}
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll)
+})
 </script>
 
 <style scoped>

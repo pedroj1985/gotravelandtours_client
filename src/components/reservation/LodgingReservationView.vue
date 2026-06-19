@@ -209,95 +209,76 @@
   </div>
 </template>
 
-<script>
-import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
+<script setup lang="ts">
+import { ref } from "vue"
+import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/swiper-bundle.css"
 import moment from "moment";
 
-export default {
-  created() {},
-  components: {
-    Swiper,
-    SwiperSlide,
-    GttTwoRowsInfo
-  },
-  props: {
-    item: {
-      type: Object,
-      default: null
-    },
-    can: {
-      type: Boolean,
-      default: false
-    },
-    ordenId: {
-      default: -1
-    },
-    hasVoucher: {
-      default: false,
-      type: Boolean
-    }
-  },
-  data() {
-    return {
-      swiperModules: [Navigation, Pagination, Autoplay],
-      selectedInfo: "info",
-      pos: 1
-    };
-  },
-  methods: {
-    getVisitantes(item) {
-      let totalA = 0;
-      let totalN = 0;
+const props = defineProps<{
+  item: any
+  can?: boolean
+  ordenId?: any
+  hasVoucher?: boolean
+}>()
 
-      item.reservedRooms.combinacion.listado.forEach(i => {
-        totalA = totalA + i.cantidad * i.tipoHabitacion;
-        totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion;
-      });
+const swiperModules = [Navigation, Pagination, Autoplay]
+const selectedInfo = ref("info")
+const pos = ref(1)
 
-      return `${totalA} Adulto(s) · ${totalN} Niño(s)`;
-    },
-    getHabitaciones(item) {
-      let totalR = 0;
+function getVisitantes(item: any) {
+  let totalA = 0
+  let totalN = 0
+  item.reservedRooms.combinacion.listado.forEach((i: any) => {
+    totalA = totalA + i.cantidad * i.tipoHabitacion
+    totalN = totalN + i.cantidad * i.cantidadMenoresPorHabitacion
+  })
+  return `${totalA} Adulto(s) · ${totalN} Niño(s)`
+}
 
-      item.reservedRooms.combinacion.listado.forEach(i => {
-        totalR = totalR + i.cantidad;
-      });
+function getHabitaciones(item: any) {
+  let totalR = 0
+  item.reservedRooms.combinacion.listado.forEach((i: any) => {
+    totalR = totalR + i.cantidad
+  })
+  return `${totalR} Habitación(es)`
+}
 
-      return `${totalR} Habitación(es)`;
-    },
-    addPos() {
-      this.pos = this.pos + 1;
-      return this.pos;
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
-      }
-    },
-    toMoment(date) {
-      return moment(date);
-    },
-    getDateEntrada(item) {
-      moment.locale("es");
-      return this.toMoment(item.entrada).format("DD MMMM YYYY");
-    },
-    getDateSalida(item) {
-      moment.locale("es");
-      return this.toMoment(item.salida).format("DD MMMM YYYY");
-    },
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = Math.round((number - intPart) * 100);
-      if (decimalPart == 0) decimalPart = "00";
-      return { intPart: intPart, decimalPart: decimalPart };
-    }
+function addPos() {
+  pos.value = pos.value + 1
+  return pos.value
+}
+
+function selectInfo(section: string) {
+  if (selectedInfo.value == section) {
+    selectedInfo.value = ""
+  } else {
+    selectedInfo.value = section
   }
-};
+}
+
+function toMoment(date: string) {
+  return moment(date)
+}
+
+function getDateEntrada(item: any) {
+  moment.locale("es")
+  return toMoment(item.entrada).format("DD MMMM YYYY")
+}
+
+function getDateSalida(item: any) {
+  moment.locale("es")
+  return toMoment(item.salida).format("DD MMMM YYYY")
+}
+
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number)
+  let decimalPart = Math.round((number - intPart) * 100)
+  if (decimalPart == 0) decimalPart = "00"
+  return { intPart, decimalPart }
+}
 </script>
 
 <style scoped>

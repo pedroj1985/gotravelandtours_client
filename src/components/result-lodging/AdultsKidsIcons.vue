@@ -5,21 +5,10 @@
   </span>
 </template>
 
-<script>
-export default {
-  props: {
-    id: {
-      type: String,
-      default: "a-k"
-    },
-    adults: {
-      type: Number,
-      default: 1
-    },
-    kids: {
-      type: Number,
-      default: 0
-    }
-  }
-};
+<script setup lang="ts">
+defineProps<{
+  id?: string
+  adults?: number
+  kids?: number
+}>()
 </script>

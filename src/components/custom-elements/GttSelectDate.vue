@@ -64,110 +64,90 @@
   </div>
 </template>
 
-<script>
-import { clickOutside } from "@/directives/clickOutside";
-import moment from "moment";
+<script setup lang="ts">
+import { ref, watch, onMounted } from "vue"
+import { clickOutside as vClickOutside } from "@/directives/clickOutside"
+import moment from "moment"
 
-export default {
-  directives: {
-    clickOutside
-  },
-  mounted() {
-    console.log(this.value);
-    this.popupItem = this.$el;
-    console.log(this.opened);
-    this.isVisible = this.opened;
-  },
-  props: {
-    value: {
-      default: moment()
-    },
-    clickable: {
-      type: Boolean,
-      default: true
-    },
-    opened: {
-      type: Boolean,
-      default: false
-    },
-    dsb: {
-      type: Boolean,
-      default: false
-    },
-    day: {
-      type: Boolean,
-      default: false
-    },
-    mode: {
-      type: String,
-      default: "range"
-    },
-    minDate: {
-      default: function() {
-        return moment().format("DD/MM/YYYY");
-      }
-    }
-  },
-  data() {
-    return {
-      isVisible: false,
-      arrow: true,
-      dates: this.value
-    };
-  },
-  watch: {
-    dates: function(val, oldVal) {
-      if (val && val !== oldVal) {
-        this.isVisible = false;
-      }
-      if (!val) {
-        this.$emit("input", this.minDate);
-      }
-      this.$emit("input", val);
-    },
-    value: function() {
-      this.updateValue();
-    }
-  },
-  methods: {
-    toggleClicked() {
-      if (this.clickable) this.isVisible = !this.isVisible;
-    },
-    handleFocusOut() {
-      if (!this.opened) this.isVisible = false;
-    },
-    toMoment(date) {
-      return moment(date);
-    },
-    formatDate(stringDate) {
-      return this.toMoment(stringDate)
-        .locale("es")
-        .format("dddd, DD MMM YYYY");
-    },
-    constructDates(startDate, endDate) {
-      let start = this.formatDate(startDate);
-      let end = this.formatDate(endDate);
-      let diff =
-        this.toMoment(startDate).diff(this.toMoment(endDate), "days") * -1;
-      let dayNightString = "";
-      if (diff > 1) dayNightString = this.day ? " días)" : " noches)";
-      else dayNightString = this.day ? " día)" : " noche)";
+const props = withDefaults(defineProps<{
+  value?: any
+  clickable?: boolean
+  opened?: boolean
+  dsb?: boolean
+  day?: boolean
+  mode?: string
+  minDate?: string
+}>(), {
+  clickable: true,
+  opened: false,
+  dsb: false,
+  day: false,
+  mode: "range"
+})
 
-      return start + " - " + end + " (" + diff + dayNightString;
-    },
-    constructSingleDate(date) {
-      return this.toMoment(date)
-        .locale("es")
-        .format("DD MMM YYYY");
-    },
-    updateValue() {
-      this.dates = this.value;
-    },
-    setScreensByMode() {
-      return this.mode == "range" ? 2 : 1;
-    }
+const emit = defineEmits<{ (e: "input", val: any): void }>()
+
+const isVisible = ref(props.opened)
+const arrow = ref(true)
+const dates = ref(props.value !== undefined ? props.value : moment())
+
+function toggleClicked() {
+  if (props.clickable) isVisible.value = !isVisible.value
+}
+
+function handleFocusOut() {
+  if (!props.opened) isVisible.value = false
+}
+
+function toMoment(date: any) {
+  return moment(date)
+}
+
+function formatDate(stringDate: any) {
+  return toMoment(stringDate).locale("es").format("dddd, DD MMM YYYY")
+}
+
+function constructDates(startDate: any, endDate: any) {
+  const start = formatDate(startDate)
+  const end = formatDate(endDate)
+  let diff = toMoment(startDate).diff(toMoment(endDate), "days") * -1
+  let dayNightString = ""
+  if (diff > 1) dayNightString = props.day ? " días)" : " noches)"
+  else dayNightString = props.day ? " día)" : " noche)"
+  return start + " - " + end + " (" + diff + dayNightString
+}
+
+function constructSingleDate(date: any) {
+  return toMoment(date).locale("es").format("DD MMM YYYY")
+}
+
+function updateValue() {
+  dates.value = props.value !== undefined ? props.value : moment()
+}
+
+function setScreensByMode() {
+  return props.mode == "range" ? 2 : 1
+}
+
+watch(dates, (val, oldVal) => {
+  if (val && val !== oldVal) {
+    isVisible.value = false
   }
-};
+  if (!val) {
+    emit("input", props.minDate || moment().format("DD/MM/YYYY"))
+  }
+  emit("input", val)
+})
+
+watch(() => props.value, () => {
+  updateValue()
+})
+
+onMounted(() => {
+  console.log(props.value)
+  console.log(props.opened)
+  isVisible.value = props.opened
+})
 </script>
 
 <style lang="scss" scoped>

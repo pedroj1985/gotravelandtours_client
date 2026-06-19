@@ -11,17 +11,18 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttErrorState",
-  props: {
-    retryable: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ["retry"]
-};
+<script setup lang="ts">
+defineOptions({ name: "GttErrorState" });
+
+withDefaults(defineProps<{
+  retryable?: boolean
+}>(), {
+  retryable: false
+});
+
+const emit = defineEmits<{
+  (e: "retry"): void
+}>();
 </script>
 
 <style scoped>

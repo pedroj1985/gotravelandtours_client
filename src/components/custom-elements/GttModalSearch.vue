@@ -48,12 +48,8 @@
 }
 </style>
 
-<script>
-export default {
-  data() {
-    return {
-      loading: true
-    };
-  }
-};
+<script setup lang="ts">
+import { ref } from "vue"
+
+const loading = ref(true)
 </script>
