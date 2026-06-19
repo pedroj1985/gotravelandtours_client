@@ -10,7 +10,9 @@
       @closeModal="closeCancelationModal"
       @next="cancelateOrder()"
     >
-      <span slot="question">{{ $helpers.traducir("cancelateQuestion") }}</span>
+      <template v-slot:question>
+        <span>{{ $helpers.traducir("cancelateQuestion") }}</span>
+      </template>
     </GttVerificationModal>
     <component
       :is="currentModalComponent"
@@ -24,14 +26,7 @@
         <div id="reserve-total-preview" class="pr-30">
           <div class="background-yellow br-10 pad-15">
             <div
-              class="
-                reserve-title
-                text-center
-                hn-roman
-                gtt-first-color
-                font24
-                general-text-opt
-              "
+              class="reserve-title text-center hn-roman gtt-first-color font24 general-text-opt"
             >
               Usted ha reservado:
             </div>
@@ -46,22 +41,12 @@
                 </div>
                 <div class="reserve-card-info pad-5 bg-white">
                   <div
-                    class="
-                      reserve-card-item-name
-                      hn-roman
-                      font14
-                      gtt-text-color
-                    "
+                    class="reserve-card-item-name hn-roman font14 gtt-text-color"
                   >
                     {{ item.nombre }}
                   </div>
                   <div
-                    class="
-                      reserve-card-item-price
-                      hn-roman
-                      font16
-                      gtt-text-color
-                    "
+                    class="reserve-card-item-price hn-roman font16 gtt-text-color"
                   >
                     {{ styledPrice(item.precio).intPart }} USD
                   </div>
@@ -73,22 +58,12 @@
                 </div>
                 <div class="reserve-card-info pad-5 bg-white">
                   <div
-                    class="
-                      reserve-card-item-name
-                      hn-roman
-                      font14
-                      gtt-text-color
-                    "
+                    class="reserve-card-item-name hn-roman font14 gtt-text-color"
                   >
                     {{ item.name }}
                   </div>
                   <div
-                    class="
-                      reserve-card-item-price
-                      hn-roman
-                      font16
-                      gtt-text-color
-                    "
+                    class="reserve-card-item-price hn-roman font16 gtt-text-color"
                   >
                     {{ getTotal(item) }} USD
                   </div>
@@ -97,14 +72,7 @@
             </div>
             <div class="reserve-total-to-pay">
               <span
-                class="
-                  total-to-pay-text
-                  hn-roman
-                  font18
-                  gtt-first-color
-                  to-uppercase
-                  general-text-opt
-                "
+                class="total-to-pay-text hn-roman font18 gtt-first-color to-uppercase general-text-opt"
                 >Total a pagar</span
               >
               <span class="antonio-light gtt-first-color font48">
@@ -117,15 +85,7 @@
       <div class="reserve-right-row col-md-9 col-sm-7">
         <div class="verify-step">
           <div
-            class="
-              verify-step-title
-              gtt-first-color
-              general-text-opt
-              hn-bdcn
-              font24
-              pad-15
-              flex-wrapper
-            "
+            class="verify-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15 flex-wrapper"
           >
             <span class="to-uppercase">Detalles orden </span
             ><span class="ml-auto">No.{{ numeroOrden }}</span>
@@ -202,14 +162,7 @@
         </div>
         <div class="create-order-step">
           <div
-            class="
-              create-order-step-title
-              gtt-first-color
-              general-text-opt
-              hn-bdcn
-              font24
-              pad-15
-            "
+            class="create-order-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15"
           >
             <div class="flex-wrapper">
               <span>Datos del pasajero</span>
@@ -232,7 +185,9 @@
                   :onlyOne="true"
                   :editable="editing"
                 >
-                  <span slot="error" class="gtt-errors"> </span>
+                  <template v-slot:error>
+                    <span class="gtt-errors"> </span>
+                  </template>
                 </InfoRow>
               </div>
               <FlightInfoRow
@@ -299,9 +254,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { toast } from "vue3-toastify"
+import { ref, reactive, computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { toast } from "vue3-toastify";
 import {
   authGetOrder,
   authGetImage,
@@ -317,131 +272,133 @@ import {
   hotetecUpdateDataOnGtt,
   updateIsPagadoAlojamiento,
   getTropiPayToken,
-  generatePaymentPage
-} from "../../utils/auth"
-import { useHelpers } from "../../composables/useHelpers"
-import RentReservationView from "./RentReservationView.vue"
-import LodgingReservationView2 from "./LodgingReservationView2.vue"
-import InfoRow from "./InfoRow.vue"
-import FlightInfoRow from "./FlightInfoRow.vue"
-import GttVerificationModal from "../custom-elements/GttVerificationModal.vue"
-import GttEditRentModal from "../custom-elements/GttEditRentModal.vue"
-import { gttIsValid, renderValid, getValid } from "../../utils/validation"
-import { transmissionTypes } from "../../utils/utils"
-import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils"
-import { paymentData, orderStatusList } from "../../utils/constant"
-import { useCartStore } from "../../stores/cartStore"
-import { PaymentLinkRequest } from "../../utils/paymentLinkRequest"
-import { ClientRequest } from "../../utils/clientRequest"
-import { helpers } from "../../utils/helpers"
-import _ from "lodash"
-import moment from "moment"
+  generatePaymentPage,
+} from "../../utils/auth";
+import { useHelpers } from "../../composables/useHelpers";
+import RentReservationView from "./RentReservationView.vue";
+import LodgingReservationView2 from "./LodgingReservationView2.vue";
+import InfoRow from "./InfoRow.vue";
+import FlightInfoRow from "./FlightInfoRow.vue";
+import GttVerificationModal from "../custom-elements/GttVerificationModal.vue";
+import GttEditRentModal from "../custom-elements/GttEditRentModal.vue";
+import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import { transmissionTypes } from "../../utils/utils";
+import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
+import { paymentData, orderStatusList } from "../../utils/constant";
+import { useCartStore } from "../../stores/cartStore";
+import { PaymentLinkRequest } from "../../utils/paymentLinkRequest";
+import { ClientRequest } from "../../utils/clientRequest";
+import { helpers } from "../../utils/helpers";
+import _ from "lodash";
+import moment from "moment";
 
-const $helpers = helpers
-const emit = defineEmits(["adminPanelInfo"])
-const route = useRoute()
-const router = useRouter()
-const { calculatePrice, constructSpacedVal, styledPrice } = useHelpers()
+const $helpers = helpers;
+const emit = defineEmits(["adminPanelInfo"]);
+const route = useRoute();
+const router = useRouter();
+const { calculatePrice, constructSpacedVal, styledPrice } = useHelpers();
 
-const cancelationModal = ref(false)
-const deleteModal = ref(false)
-const editModal = ref(false)
-const currentModalComponent = ref("")
-const currentFilterData = ref<any>(null)
-const tempItemToEdit = ref<any>(null)
-const order = ref<any>(null)
-const orderIndex = ref<number | null>(null)
-const allTypesOrders = ref<any[]>([])
-const idsToDelete = ref<any[]>([])
-const numeroOrden = ref("")
-const priceTotal = ref(0)
-const editing = ref(false)
-const clientName = ref("")
-const clientPasaporte = ref("")
-const clientNacimiento = ref("")
-const horaLanding = ref("")
-const horaTakeoff = ref("")
-const aerolineaLanding = ref("")
-const aerolineaTakeoff = ref("")
-const nvueloLanding = ref("")
-const nvueloTakeoff = ref("")
-const state = ref("")
-const isReserving = ref(false)
-const somethingChanged = ref(false)
-const tempIdToDelete = ref(-1)
-const isOpenModalToPay = ref(false)
-const email = ref<string | null>(null)
-const emailError = ref<string | null>(null)
+const cancelationModal = ref(false);
+const deleteModal = ref(false);
+const editModal = ref(false);
+const currentModalComponent = ref("");
+const currentFilterData = ref<any>(null);
+const tempItemToEdit = ref<any>(null);
+const order = ref<any>(null);
+const orderIndex = ref<number | null>(null);
+const allTypesOrders = ref<any[]>([]);
+const idsToDelete = ref<any[]>([]);
+const numeroOrden = ref("");
+const priceTotal = ref(0);
+const editing = ref(false);
+const clientName = ref("");
+const clientPasaporte = ref("");
+const clientNacimiento = ref("");
+const horaLanding = ref("");
+const horaTakeoff = ref("");
+const aerolineaLanding = ref("");
+const aerolineaTakeoff = ref("");
+const nvueloLanding = ref("");
+const nvueloTakeoff = ref("");
+const state = ref("");
+const isReserving = ref(false);
+const somethingChanged = ref(false);
+const tempIdToDelete = ref(-1);
+const isOpenModalToPay = ref(false);
+const email = ref<string | null>(null);
+const emailError = ref<string | null>(null);
 const local_data = reactive({
   Cliente: {} as any,
-  NombreClienteFinal: ""
-})
-const ordenAlojamiento = ref<any>({})
-const tropiPayToken = ref<any>(null)
-const isVisibleCancelButton = ref(false)
-const gttName = ref<HTMLElement | null>(null)
+  NombreClienteFinal: "",
+});
+const ordenAlojamiento = ref<any>({});
+const tropiPayToken = ref<any>(null);
+const isVisibleCancelButton = ref(false);
+const gttName = ref<HTMLElement | null>(null);
 
 const checkIfRentExist = computed(() => {
-  return allTypesOrders.value.some((i: any) => i.tipo == "rent")
-})
+  return allTypesOrders.value.some((i: any) => i.tipo == "rent");
+});
 
 function getTotal(item: any) {
-  let total = 0
+  let total = 0;
   item.reservedRooms.map((x: any) => {
-    total += x.CantidadHabitaciones * x.PrecioOrden
-  })
-  return total
+    total += x.CantidadHabitaciones * x.PrecioOrden;
+  });
+  return total;
 }
 
 watch(isOpenModalToPay, (newVal) => {
   if (newVal === false) {
-    email.value = ""
-    emailError.value = null
-    order.value = {}
-    ordenAlojamiento.value = {}
-    orderIndex.value = -1
+    email.value = "";
+    emailError.value = null;
+    order.value = {};
+    ordenAlojamiento.value = {};
+    orderIndex.value = -1;
   }
-})
+});
 
-emit("adminPanelInfo", "reservation-detail")
-let id = route.params.id
-let { data } = await authGetOrder(id)
-if (import.meta.env.DEV) { console.log("thisAll: ", data) }
-order.value = data
-clientPasaporte.value = data.NumeroPasaporte
-numeroOrden.value = order.value.NumeroOrden
-state.value = order.value.Estado
-local_data.Cliente = data.Cliente
-local_data.NombreClienteFinal = data.NombreClienteFinal
+emit("adminPanelInfo", "reservation-detail");
+let id = route.params.id;
+let { data } = await authGetOrder(id);
+if (import.meta.env.DEV) {
+  console.log("thisAll: ", data);
+}
+order.value = data;
+clientPasaporte.value = data.NumeroPasaporte;
+numeroOrden.value = order.value.NumeroOrden;
+state.value = order.value.Estado;
+local_data.Cliente = data.Cliente;
+local_data.NombreClienteFinal = data.NombreClienteFinal;
 
 isVisibleCancelButton.value = [
   orderStatusList.open,
   orderStatusList.confirmed,
-  orderStatusList.pending
-].includes(state.value)
+  orderStatusList.pending,
+].includes(state.value);
 
-await preproccesingLists(order.value.ListaVehiculosOrden)
-await preproccesingLists(order.value.ListaAlojamientoOrden, "lodging")
-calculatePrice(allTypesOrders.value)
-updateName(order.value.NombreClienteFinal)
+await preproccesingLists(order.value.ListaVehiculosOrden);
+await preproccesingLists(order.value.ListaAlojamientoOrden, "lodging");
+calculatePrice(allTypesOrders.value);
+updateName(order.value.NombreClienteFinal);
 
 if (!tropiPayToken.value) {
-  getTropiPayToken()
+  fetchTropiPayToken();
 }
 
 if (hasListaVehiculosOrden()) {
-  let nacimiento = data.ListaVehiculosOrden[0].FechaNacimiento.split("T")
-  clientNacimiento.value = nacimiento[0]
-  updateHoraLanding(order.value.ListaVehiculosOrden[0].HoraInicio)
-  updateHoraTakeoff(order.value.ListaVehiculosOrden[0].HoraFin)
-  updateAerolineaLanding(order.value.ListaVehiculosOrden[0].InformacionLlegada)
-  updateNvueloLanding(order.value.ListaVehiculosOrden[0].NumeroVueloEntrada)
-  updateAerolineaTakeoff(order.value.ListaVehiculosOrden[0].InformacionSalida)
-  updateNvueloTakeoff(order.value.ListaVehiculosOrden[0].NumeroVueloSalida)
+  let nacimiento = data.ListaVehiculosOrden[0].FechaNacimiento.split("T");
+  clientNacimiento.value = nacimiento[0];
+  updateHoraLanding(order.value.ListaVehiculosOrden[0].HoraInicio);
+  updateHoraTakeoff(order.value.ListaVehiculosOrden[0].HoraFin);
+  updateAerolineaLanding(order.value.ListaVehiculosOrden[0].InformacionLlegada);
+  updateNvueloLanding(order.value.ListaVehiculosOrden[0].NumeroVueloEntrada);
+  updateAerolineaTakeoff(order.value.ListaVehiculosOrden[0].InformacionSalida);
+  updateNvueloTakeoff(order.value.ListaVehiculosOrden[0].NumeroVueloSalida);
 }
 
 function getOrderId() {
-  return order.value
+  return order.value;
 }
 
 function editOrder(item: any) {
@@ -450,31 +407,31 @@ function editOrder(item: any) {
       !verifyDifferentsDatesNoCartReturnBoolean(
         {
           FechaRecogida: item.nI.orderVehiculo.FechaRecogida,
-          FechaEntrega: item.nI.orderVehiculo.FechaEntrega
+          FechaEntrega: item.nI.orderVehiculo.FechaEntrega,
         },
         allTypesOrders.value.filter((i: any) => {
           return (
             i.orderVehiculo.OrdenVehiculoId !=
             tempItemToEdit.value.orderVehiculo.OrdenVehiculoId
-          )
-        })
+          );
+        }),
       )
     ) {
-      let OrdenId = tempItemToEdit.value.orderVehiculo.OrdenId
-      let OrdenVehiculoId = tempItemToEdit.value.orderVehiculo.OrdenVehiculoId
+      let OrdenId = tempItemToEdit.value.orderVehiculo.OrdenId;
+      let OrdenVehiculoId = tempItemToEdit.value.orderVehiculo.OrdenVehiculoId;
 
-      updateSelectedEdit(item.nI)
-      tempItemToEdit.value.orderVehiculo = item.nI.orderVehiculo
-      revert(tempItemToEdit.value.orderVehiculo)
-      tempItemToEdit.value.orderVehiculo.OrdenId = OrdenId
-      tempItemToEdit.value.orderVehiculo.OrdenVehiculoId = OrdenVehiculoId
-      calculatePrice(allTypesOrders.value)
-      somethingChanged.value = true
-      closeEditModal()
+      updateSelectedEdit(item.nI);
+      tempItemToEdit.value.orderVehiculo = item.nI.orderVehiculo;
+      revert(tempItemToEdit.value.orderVehiculo);
+      tempItemToEdit.value.orderVehiculo.OrdenId = OrdenId;
+      tempItemToEdit.value.orderVehiculo.OrdenVehiculoId = OrdenVehiculoId;
+      calculatePrice(allTypesOrders.value);
+      somethingChanged.value = true;
+      closeEditModal();
     } else {
       toast("Ya tiene un auto reservado dentro de esa misma fecha", {
-        type: "error"
-      })
+        type: "error",
+      });
     }
   }
 }
@@ -483,54 +440,54 @@ function revert(o: any) {
   if (o.LugarRecogida) {
     o.LugarRecogida = {
       nombre: o.LugarRecogida.nombre,
-      puntointeresid: o.LugarRecogida.PuntoInteresId
-    }
+      puntointeresid: o.LugarRecogida.PuntoInteresId,
+    };
   }
   if (o.LugarEntrega) {
     o.LugarEntrega = {
       nombre: o.LugarEntrega.nombre,
-      puntointeresid: o.LugarEntrega.PuntoInteresId
-    }
+      puntointeresid: o.LugarEntrega.PuntoInteresId,
+    };
   }
 }
 
 function updateSelectedEdit(item: any) {
-  tempItemToEdit.value.nombre = item.nombre
-  tempItemToEdit.value.cancelation = item.cancelation
-  tempItemToEdit.value.descripcion = item.descripcion
-  tempItemToEdit.value.distribuidor = item.distribuidor
-  tempItemToEdit.value.distribuidorId = item.distribuidorId
-  tempItemToEdit.value.id = item.id
-  tempItemToEdit.value.imagen = item.imagen
-  tempItemToEdit.value.marca = item.marca
-  tempItemToEdit.value.modeloId = item.modeloId
-  tempItemToEdit.value.plazas = item.plazas
-  tempItemToEdit.value.precio = item.precio
-  tempItemToEdit.value.provider = item.provider
-  tempItemToEdit.value.providerImage = item.providerImage
-  tempItemToEdit.value.tipo = item.tipo
-  tempItemToEdit.value.transmision = item.transmision
+  tempItemToEdit.value.nombre = item.nombre;
+  tempItemToEdit.value.cancelation = item.cancelation;
+  tempItemToEdit.value.descripcion = item.descripcion;
+  tempItemToEdit.value.distribuidor = item.distribuidor;
+  tempItemToEdit.value.distribuidorId = item.distribuidorId;
+  tempItemToEdit.value.id = item.id;
+  tempItemToEdit.value.imagen = item.imagen;
+  tempItemToEdit.value.marca = item.marca;
+  tempItemToEdit.value.modeloId = item.modeloId;
+  tempItemToEdit.value.plazas = item.plazas;
+  tempItemToEdit.value.precio = item.precio;
+  tempItemToEdit.value.provider = item.provider;
+  tempItemToEdit.value.providerImage = item.providerImage;
+  tempItemToEdit.value.tipo = item.tipo;
+  tempItemToEdit.value.transmision = item.transmision;
 }
 
 function closeEditModal() {
-  editModal.value = false
-  currentFilterData.value = null
+  editModal.value = false;
+  currentFilterData.value = null;
 }
 
 function showEditModal(item: any) {
   if (item.tipo == "rent") {
-    currentFilterData.value = constructFilterDataObj(item)
-    currentModalComponent.value = "GttEditRentModal"
+    currentFilterData.value = constructFilterDataObj(item);
+    currentModalComponent.value = "GttEditRentModal";
   }
-  editModal.value = true
-  tempItemToEdit.value = item
+  editModal.value = true;
+  tempItemToEdit.value = item;
 }
 
 function constructFilterDataObj(item: any) {
   if (item.tipo == "rent") {
     let transmision = transmissionTypes.find((i: any) => {
-      return i.nombre == item.transmision
-    })
+      return i.nombre == item.transmision;
+    });
 
     return {
       propPickUpDate: item.orderVehiculo.FechaRecogida,
@@ -540,13 +497,13 @@ function constructFilterDataObj(item: any) {
       propCarCategory: {
         marcaid: item.marcaid,
         nombre: item.marca,
-        type: "marca"
+        type: "marca",
       },
       propTransmission: transmision,
       id: item.id,
       orderId: item.orderVehiculo.OrdenVehiculoId,
-      name: item.nombre
-    }
+      name: item.nombre,
+    };
   }
 }
 
@@ -556,51 +513,53 @@ function gttValidate() {
       rules: ["required"],
       name: "gttName",
       value: clientName.value,
-      lang: "es"
-    }
-  ]
+      lang: "es",
+    },
+  ];
 
-  return validator
+  return validator;
 }
 
 async function cancelateOrder() {
   if (state.value === orderStatusList.confirmed) {
-    return cancelOnHotetec()
+    return cancelOnHotetec();
   }
-  let listaVehiculosOrden = getListaVehiculosOrden()
+  let listaVehiculosOrden = getListaVehiculosOrden();
 
   listaVehiculosOrden.forEach((vo: any) => {
-    cleanVO(vo)
-  })
+    cleanVO(vo);
+  });
   try {
-    order.value.Estado = orderStatusList.rejected
-    let ordenSaveIt = await authPutReserve(route.params.id, order.value)
+    order.value.Estado = orderStatusList.rejected;
+    let ordenSaveIt = await authPutReserve(route.params.id, order.value);
     toast("Orden cancelada con éxito.", {
-      type: "success"
-    })
-    router.push({ name: "myreservations" })
+      type: "success",
+    });
+    router.push({ name: "myreservations" });
   } catch (error) {
-    isReserving.value = false
-    if (import.meta.env.DEV) { console.log(error) }
+    isReserving.value = false;
+    if (import.meta.env.DEV) {
+      console.log(error);
+    }
     toast("Ha ocurrido un problema con la orden", {
-      type: "error"
-    })
+      type: "error",
+    });
   }
 }
 
 async function cancelOnHotetec() {
-  await $helpers.shoppingCartDeleteAll(true)
-  useCartStore().refresh()
+  await $helpers.shoppingCartDeleteAll(true);
+  useCartStore().refresh();
   try {
-    console.info("order->", order.value)
-    const response = await hotetecOpenSession()
+    console.info("order->", order.value);
+    const response = await hotetecOpenSession();
     if (response && response.data && response.data.Ideses) {
-      const currentHotelec = response.data.Ideses
-      let cancelHotetecReserve: any = {}
-      cancelHotetecReserve.Accion = "C"
-      cancelHotetecReserve.Codtou = "HTT"
-      cancelHotetecReserve.Locata = order.value.NumeroConfirmacionHotetec
-      cancelHotetecReserve.Ideses = currentHotelec
+      const currentHotelec = response.data.Ideses;
+      let cancelHotetecReserve: any = {};
+      cancelHotetecReserve.Accion = "C";
+      cancelHotetecReserve.Codtou = "HTT";
+      cancelHotetecReserve.Locata = order.value.NumeroConfirmacionHotetec;
+      cancelHotetecReserve.Ideses = currentHotelec;
 
       hotetecCancelReserve(cancelHotetecReserve)
         .then(async (res: any) => {
@@ -608,108 +567,112 @@ async function cancelOnHotetec() {
             const orderData = {
               OrdenId: order.value.OrdenId,
               EstadoHotetec: "Cancel",
-              NumeroConfirmacionHotetec: order.value.NumeroConfirmacionHotetec
-            }
+              NumeroConfirmacionHotetec: order.value.NumeroConfirmacionHotetec,
+            };
             const orderStatus = {
               OrdenId: order.value.OrdenId,
-              Estado: orderStatusList.rejected
-            }
+              Estado: orderStatusList.rejected,
+            };
             try {
-              await hotetecUpdateDataOnGtt(orderData)
-              await authUpdateStatus(orderStatus)
+              await hotetecUpdateDataOnGtt(orderData);
+              await authUpdateStatus(orderStatus);
               toast("Orden cancelada con éxito.", {
-                type: "success"
-              })
-              router.push({ name: "myreservations" })
+                type: "success",
+              });
+              router.push({ name: "myreservations" });
             } catch (error) {
-              if (import.meta.env.DEV) { console.log(error) }
+              if (import.meta.env.DEV) {
+                console.log(error);
+              }
             }
           } else {
             toast(res.data.Txterr, {
-              type: "error"
-            })
+              type: "error",
+            });
           }
         })
         .catch((error: any) => {
-          if (import.meta.env.DEV) { console.log(error) }
+          if (import.meta.env.DEV) {
+            console.log(error);
+          }
         })
         .finally(() => {
-          cancelationModal.value = false
-        })
+          cancelationModal.value = false;
+        });
     }
   } catch (error: any) {
     console.error(
       "Error occurred while fetching or processing data:",
-      error.message
-    )
+      error.message,
+    );
   }
 }
 
 function showCancelationModal() {
-  cancelationModal.value = true
+  cancelationModal.value = true;
 }
 
 function showDeleteModal(id: any) {
-  deleteModal.value = true
-  tempIdToDelete.value = id
+  deleteModal.value = true;
+  tempIdToDelete.value = id;
 }
 
 function closeCancelationModal() {
-  cancelationModal.value = false
+  cancelationModal.value = false;
 }
 
 function closeDeleteModal() {
-  deleteModal.value = false
-  tempIdToDelete.value = -1
+  deleteModal.value = false;
+  tempIdToDelete.value = -1;
 }
 
 function updateEditing() {
-  editing.value = true
-  somethingChanged.value = true
+  editing.value = true;
+  somethingChanged.value = true;
 }
 
 function hasListaVehiculosOrden() {
-  return order.value.ListaVehiculosOrden.length > 0 ? true : false
+  return order.value.ListaVehiculosOrden.length > 0 ? true : false;
 }
 
 function updateName(value: string) {
-  clientName.value = value
+  clientName.value = value;
 }
 
 function updateHoraLanding(value: string) {
-  horaLanding.value = value
+  horaLanding.value = value;
 }
 
 function updateHoraTakeoff(value: string) {
-  horaTakeoff.value = value
+  horaTakeoff.value = value;
 }
 
 function updateAerolineaLanding(value: string) {
-  aerolineaLanding.value = value
+  aerolineaLanding.value = value;
 }
 
 function updateAerolineaTakeoff(value: string) {
-  aerolineaTakeoff.value = value
+  aerolineaTakeoff.value = value;
 }
 
 function updateNvueloLanding(value: string) {
-  nvueloLanding.value = value
+  nvueloLanding.value = value;
 }
 
 function updateNvueloTakeoff(value: string) {
-  nvueloTakeoff.value = value
+  nvueloTakeoff.value = value;
 }
 
 async function preproccesingLists(list: any, type = "rent") {
   if (type == "lodging") {
-    let t = _.groupBy(list, function(j: any) {
-      return j.AlojamientoId + "+" + j.FechaInicio + "+" + j.FechaFin
-    })
+    let t = _.groupBy(list, function (j: any) {
+      return j.AlojamientoId + "+" + j.FechaInicio + "+" + j.FechaFin;
+    });
     for (let [key, i] of Object.entries(t)) {
-      let images = await authGetImage(i[0].Alojamiento.ProductoId)
-      let total = _.sumBy(i, function(p: any) {
-        return p.PrecioOrden
-      })
+      let images = await authGetImage(i[0].Alojamiento.ProductoId);
+      let total = _.sumBy(i, function (p: any) {
+        return p.PrecioOrden;
+      });
 
       let temp: any = {
         tipo: "lodging",
@@ -721,17 +684,17 @@ async function preproccesingLists(list: any, type = "rent") {
         lodging: i[0].Alojamiento,
         images: [images.data.ImageContent],
         total: total,
-        reservedRooms: i
-      }
+        reservedRooms: i,
+      };
 
-      allTypesOrders.value.push(temp)
+      allTypesOrders.value.push(temp);
     }
   }
   if (type == "rent") {
     for (let item of list) {
-      let image = await authGetImage(item.Vehiculo.ProductoId)
-      let marca = await authSearchMarca(item.Vehiculo.MarcaId)
-      let provider = await authSearchProvider(item.Vehiculo.ProveedorId)
+      let image = await authGetImage(item.Vehiculo.ProductoId);
+      let marca = await authSearchMarca(item.Vehiculo.MarcaId);
+      let provider = await authSearchProvider(item.Vehiculo.ProveedorId);
 
       let temp: any = {
         nombre: item.Vehiculo.Nombre,
@@ -751,22 +714,22 @@ async function preproccesingLists(list: any, type = "rent") {
         imagen: image.data.ImageContent,
         provider: provider.data.Nombre,
         providerImage: provider.data.ImageContent,
-        orderVehiculo: item
-      }
+        orderVehiculo: item,
+      };
       if (temp.orderVehiculo.LugarRecogida) {
         temp.orderVehiculo.LugarRecogida = {
           nombre: temp.orderVehiculo.LugarRecogida.Nombre,
-          puntointeresid: temp.orderVehiculo.LugarRecogida.PuntoInteresId
-        }
+          puntointeresid: temp.orderVehiculo.LugarRecogida.PuntoInteresId,
+        };
       }
       if (temp.orderVehiculo.LugarEntrega) {
         temp.orderVehiculo.LugarEntrega = {
           nombre: temp.orderVehiculo.LugarEntrega.Nombre,
-          puntointeresid: temp.orderVehiculo.LugarEntrega.PuntoInteresId
-        }
+          puntointeresid: temp.orderVehiculo.LugarEntrega.PuntoInteresId,
+        };
       }
 
-      allTypesOrders.value.push(temp)
+      allTypesOrders.value.push(temp);
     }
   }
 }
@@ -774,253 +737,269 @@ async function preproccesingLists(list: any, type = "rent") {
 function getListaVehiculosOrden() {
   let lvo = allTypesOrders.value
     .filter((item: any) => {
-      return item.tipo == "rent"
+      return item.tipo == "rent";
     })
     .map((i: any) => {
-      return i.orderVehiculo
-    })
+      return i.orderVehiculo;
+    });
 
-  return lvo
+  return lvo;
 }
 
 function cleanVO(orderParam: any) {
-  orderParam.DistribuidorId = orderParam.Distribuidor.DistribuidorId
+  orderParam.DistribuidorId = orderParam.Distribuidor.DistribuidorId;
   orderParam.Distribuidor = {
-    DistribuidorId: orderParam.Distribuidor.DistribuidorId
-  }
+    DistribuidorId: orderParam.Distribuidor.DistribuidorId,
+  };
   orderParam.Vehiculo = {
-    ProductoId: orderParam.Vehiculo.ProductoId
-  }
+    ProductoId: orderParam.Vehiculo.ProductoId,
+  };
   orderParam.Sobreprecio = {
-    SobreprecioId: orderParam.Sobreprecio.SobreprecioId
-  }
+    SobreprecioId: orderParam.Sobreprecio.SobreprecioId,
+  };
   if (orderParam.LugarRecogida) {
     orderParam.LugarRecogida = {
       nombre: orderParam.LugarRecogida.nombre,
-      PuntoInteresId: orderParam.LugarRecogida.puntointeresid
-    }
+      PuntoInteresId: orderParam.LugarRecogida.puntointeresid,
+    };
   }
   if (orderParam.LugarEntrega) {
     orderParam.LugarEntrega = {
       nombre: orderParam.LugarEntrega.nombre,
-      PuntoInteresId: orderParam.LugarEntrega.puntointeresid
-    }
+      PuntoInteresId: orderParam.LugarEntrega.puntointeresid,
+    };
   }
-  let arrLPRA = new Array()
+  let arrLPRA = new Array();
   orderParam.ListaPreciosRentaAutos.forEach((item: any) => {
     item.PrecioRentaAutos = {
-      PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
-    }
+      PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId,
+    };
     arrLPRA.push({
       PrecioRentaAutos: {
-        PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
-      }
-    })
-  })
-  orderParam.ListaPreciosRentaAutos = arrLPRA
+        PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId,
+      },
+    });
+  });
+  orderParam.ListaPreciosRentaAutos = arrLPRA;
 }
 
 async function reserve() {
-  let iv = gttIsValid(gttValidate(), {} as any)
+  let iv = gttIsValid(gttValidate(), {} as any);
   if (getValid(iv)) {
-    let listaVehiculosOrden = getListaVehiculosOrden()
+    let listaVehiculosOrden = getListaVehiculosOrden();
     listaVehiculosOrden.forEach((vo: any) => {
       vo.NombreCliente = clientName.value
         .split(" ")
         .map((i: string) => {
-          return _.capitalize(i)
+          return _.capitalize(i);
         })
-        .join(" ")
-      vo.HoraInicio = horaLanding.value
-      vo.HoraFin = horaTakeoff.value
+        .join(" ");
+      vo.HoraInicio = horaLanding.value;
+      vo.HoraFin = horaTakeoff.value;
       vo.InformacionLlegada = constructSpacedVal(
         aerolineaLanding.value,
         nvueloLanding.value,
-        " - "
-      )
+        " - ",
+      );
       vo.InformacionSalida = constructSpacedVal(
         aerolineaTakeoff.value,
         nvueloTakeoff.value,
-        " - "
-      )
-      cleanVO(vo)
-    })
-    fillReserveInfo(order.value, listaVehiculosOrden)
+        " - ",
+      );
+      cleanVO(vo);
+    });
+    fillReserveInfo(order.value, listaVehiculosOrden);
     try {
       for (let i of idsToDelete.value) {
         if (i.tipo == "rent")
-          await authDeleteCarOrder(i.orderVehiculo.OrdenVehiculoId)
+          await authDeleteCarOrder(i.orderVehiculo.OrdenVehiculoId);
       }
-      idsToDelete.value = []
-      isReserving.value = true
-      let ordenSaveIt = await authPutReserve(route.params.id, order.value)
+      idsToDelete.value = [];
+      isReserving.value = true;
+      let ordenSaveIt = await authPutReserve(route.params.id, order.value);
       let onlyOrdenId = {
-        OrdenId: ordenSaveIt.data.OrdenId
-      }
+        OrdenId: ordenSaveIt.data.OrdenId,
+      };
       try {
-        await authUpdateQbEstimated(onlyOrdenId)
+        await authUpdateQbEstimated(onlyOrdenId);
       } catch (error) {
-        if (import.meta.env.DEV) { console.log(error) }
+        if (import.meta.env.DEV) {
+          console.log(error);
+        }
       }
-      isReserving.value = false
+      isReserving.value = false;
       toast("Orden editada con éxito.", {
-        type: "success"
-      })
-      router.push({ name: "myreservations" })
+        type: "success",
+      });
+      router.push({ name: "myreservations" });
     } catch (error) {
-      isReserving.value = false
-      if (import.meta.env.DEV) { console.log(error) }
+      isReserving.value = false;
+      if (import.meta.env.DEV) {
+        console.log(error);
+      }
       toast("Ha ocurrido un problema con la orden", {
-        type: "error"
-      })
+        type: "error",
+      });
     }
   } else {
-    renderValid(iv, {} as any)
+    renderValid(iv, {} as any);
   }
 }
 
 function deleteItem(i: any) {
   allTypesOrders.value = allTypesOrders.value.filter((item: any) => {
-    return item.id != i.id
-  })
-  calculatePrice(allTypesOrders.value)
-  idsToDelete.value.push(i)
-  somethingChanged.value = true
-  deleteModal.value = false
-  tempIdToDelete.value = -1
+    return item.id != i.id;
+  });
+  calculatePrice(allTypesOrders.value);
+  idsToDelete.value.push(i);
+  somethingChanged.value = true;
+  deleteModal.value = false;
+  tempIdToDelete.value = -1;
 }
 
 function findDateInterval() {
-  let startDates: any[] = []
-  let endDates: any[] = []
+  let startDates: any[] = [];
+  let endDates: any[] = [];
 
   allTypesOrders.value.forEach((item: any) => {
-    startDates.push(item.orderVehiculo.FechaRecogida)
-    endDates.push(item.orderVehiculo.FechaEntrega)
-  })
+    startDates.push(item.orderVehiculo.FechaRecogida);
+    endDates.push(item.orderVehiculo.FechaEntrega);
+  });
 
   return {
     min: _.min(startDates),
-    max: _.max(endDates)
-  }
+    max: _.max(endDates),
+  };
 }
 
-function fillReserveInfo(orden: any, lvo: any[] = [], lao: any[] = [], lalo: any[] = [], lto: any[] = []) {
-  let dateInterval = findDateInterval()
+function fillReserveInfo(
+  orden: any,
+  lvo: any[] = [],
+  lao: any[] = [],
+  lalo: any[] = [],
+  lto: any[] = [],
+) {
+  let dateInterval = findDateInterval();
 
   orden.NombreClienteFinal = clientName.value
     .split(" ")
     .map((i: string) => {
-      return _.capitalize(i)
+      return _.capitalize(i);
     })
-    .join(" ")
+    .join(" ");
   orden.NombreOrden = clientName.value
     .split(" ")
     .map((i: string) => {
-      return _.capitalize(i)
+      return _.capitalize(i);
     })
-    .join(" ")
-  orden.FechaInicio = dateInterval.min
-  orden.FechaFin = dateInterval.max
-  orden.CantidadAdulto = 1
-  orden.CantidadNino = 0
-  orden.CantidadInfante = 0
-  orden.isActive = true
-  orden.PrecioGeneralOrden = priceTotal.value
-  orden.ListaVehiculosOrden = lvo
-  orden.ListaActividadOrden = lao
-  orden.ListaAlojamientoOrden = lalo
-  orden.ListaTrasladoOrden = lto
+    .join(" ");
+  orden.FechaInicio = dateInterval.min;
+  orden.FechaFin = dateInterval.max;
+  orden.CantidadAdulto = 1;
+  orden.CantidadNino = 0;
+  orden.CantidadInfante = 0;
+  orden.isActive = true;
+  orden.PrecioGeneralOrden = priceTotal.value;
+  orden.ListaVehiculosOrden = lvo;
+  orden.ListaActividadOrden = lao;
+  orden.ListaAlojamientoOrden = lalo;
+  orden.ListaTrasladoOrden = lto;
 }
 
 function openModalToPay(orderParam: any, room: any, orderIdx: number) {
-  isOpenModalToPay.value = true
-  ordenAlojamiento.value = room
-  order.value = orderParam
-  orderIndex.value = orderIdx
+  isOpenModalToPay.value = true;
+  ordenAlojamiento.value = room;
+  order.value = orderParam;
+  orderIndex.value = orderIdx;
   if (!ordenAlojamiento.value.IsPagado) {
-    isOpenModalToPay.value = true
+    isOpenModalToPay.value = true;
   } else {
     toast("Este alojamiento ya ha sido pagado.", {
-      type: "info"
-    })
+      type: "info",
+    });
   }
 }
 
 function closeModal() {
-  isOpenModalToPay.value = false
+  isOpenModalToPay.value = false;
 }
 
 function confirmExternalPay(type: string, room: any) {
   let idx = allTypesOrders.value[orderIndex.value!].reservedRooms.findIndex(
     (r: any) => {
-      return r.OrdenAlojamientoId == room.OrdenAlojamientoId
-    }
-  )
-  let isPaid = false
+      return r.OrdenAlojamientoId == room.OrdenAlojamientoId;
+    },
+  );
+  let isPaid = false;
   switch (type) {
     case paymentData.accomodation:
       if (!room.IsPagado) {
-        isPaid = true
+        isPaid = true;
         let payData = {
           CantidadHabitaciones: room.CantidadHabitaciones,
           IsPagado: !room.IsPagado,
           FormaPago: paymentData.paymentMethod.EXT,
-          OrdenAlojamientoId: room.OrdenAlojamientoId
-        }
+          OrdenAlojamientoId: room.OrdenAlojamientoId,
+        };
         updateIsPagadoAlojamiento(payData)
           .then((v: any) => {
             allTypesOrders.value[orderIndex.value!].reservedRooms[
               idx
-            ].IsPagado = true
+            ].IsPagado = true;
             allTypesOrders.value[orderIndex.value!].reservedRooms[
               idx
-            ].FormaPago = paymentData.paymentMethod.EXT
+            ].FormaPago = paymentData.paymentMethod.EXT;
           })
           .catch((error: any) => {
             console.error(
               "Error confirming external payment for accommodation:",
-              error
-            )
-          })
+              error,
+            );
+          });
       }
       if (isPaid) {
         toast("Pago confirmado con éxito.", {
-          type: "success"
-        })
+          type: "success",
+        });
       } else {
         toast("Este alojamiento ya ha sido pagado.", {
-          type: "info"
-        })
+          type: "info",
+        });
       }
-      closeModal()
-      break
+      closeModal();
+      break;
     default:
   }
 }
 
 function sendPaymentLinkByEmail(type: string, orderParam: any) {
-  validateEmail()
+  validateEmail();
   if (!emailError.value) {
-    if (import.meta.env.DEV) { console.log(`Enviando correo a: ${email.value}`) }
-    tropipayPayment(type, orderParam, true)
+    if (import.meta.env.DEV) {
+      console.log(`Enviando correo a: ${email.value}`);
+    }
+    tropipayPayment(type, orderParam, true);
   } else {
     toast(emailError.value, {
-      type: "error"
-    })
+      type: "error",
+    });
   }
 }
 
-function tropipayPayment(type: string, orderParam: any, sendPaymentLInk: boolean) {
-  let id = 0
-  let description = ""
-  console.info("order ", orderParam)
-  let fi = orderParam.FechaInicio.split("T")[0]
-  let ff = orderParam.FechaFin.split("T")[0]
+function tropipayPayment(
+  type: string,
+  orderParam: any,
+  sendPaymentLInk: boolean,
+) {
+  let id = 0;
+  let description = "";
+  console.info("order ", orderParam);
+  let fi = orderParam.FechaInicio.split("T")[0];
+  let ff = orderParam.FechaFin.split("T")[0];
 
   switch (type) {
     case paymentData.accomodation:
-      id = orderParam.OrdenAlojamientoId
+      id = orderParam.OrdenAlojamientoId;
       description =
         orderParam.Alojamiento.Nombre +
         "-" +
@@ -1031,88 +1010,88 @@ function tropipayPayment(type: string, orderParam: any, sendPaymentLInk: boolean
         " from " +
         fi +
         " to " +
-        ff
-      break
+        ff;
+      break;
     default:
   }
-  let typeCode = ""
-  let typeLabel = ""
+  let typeCode = "";
+  let typeLabel = "";
   paymentData.productTypeFilter.forEach((item: any) => {
     if (item.value === type) {
-      typeCode = item.id
-      typeLabel = item.label
+      typeCode = item.id;
+      typeLabel = item.label;
     }
-  })
+  });
 
-  let request = new PaymentLinkRequest()
+  let request = new PaymentLinkRequest();
   let price =
     orderParam.CurrencyUsada === paymentData.currency[1].code
       ? parseInt(orderParam.PrecioOrdenTasa + "00")
-      : parseInt(orderParam.PrecioOrden + "00")
-  request.amount = price
-  request.concept = "Rent a " + typeLabel
-  request.currency = orderParam.CurrencyUsada
-  request.TipoOrden = typeCode
-  request.OrdenProductoId = id
-  request.EnviarLinkDePago = sendPaymentLInk
-  request.description = description
-  request.directPayment = false
-  request.expirationDays = 1
+      : parseInt(orderParam.PrecioOrden + "00");
+  request.amount = price;
+  request.concept = "Rent a " + typeLabel;
+  request.currency = orderParam.CurrencyUsada;
+  request.TipoOrden = typeCode;
+  request.OrdenProductoId = id;
+  request.EnviarLinkDePago = sendPaymentLInk;
+  request.description = description;
+  request.directPayment = false;
+  request.expirationDays = 1;
 
-  let ttpClient = new ClientRequest()
-  ttpClient.address = local_data?.Cliente?.Direccion || "000000"
+  let ttpClient = new ClientRequest();
+  ttpClient.address = local_data?.Cliente?.Direccion || "000000";
   let textoSinEspaciosExtras = (local_data?.NombreClienteFinal || "")
     .replace(/\s+/g, " ")
-    .trim()
-  const tmpName = textoSinEspaciosExtras.split(" ")
-  ttpClient.name = tmpName[0] || ""
+    .trim();
+  const tmpName = textoSinEspaciosExtras.split(" ");
+  ttpClient.name = tmpName[0] || "";
   ttpClient.lastName =
-    tmpName.length > 1 ? tmpName.slice(1).join(" ") : tmpName[0] || ""
+    tmpName.length > 1 ? tmpName.slice(1).join(" ") : tmpName[0] || "";
   ttpClient.email = sendPaymentLInk
     ? email.value
-    : local_data?.Cliente?.Correo || ""
-  ttpClient.phone = local_data?.Cliente?.Telefono || "000000"
-  ttpClient.termsAndConditions = "true"
-  request.client = ttpClient
-  request.favorite = true
-  request.lang = "es"
-  request.paymentMethods = []
+    : local_data?.Cliente?.Correo || "";
+  ttpClient.phone = local_data?.Cliente?.Telefono || "000000";
+  ttpClient.termsAndConditions = "true";
+  request.client = ttpClient;
+  request.favorite = true;
+  request.lang = "es";
+  request.paymentMethods = [];
 
-  request.reasonId = 0
-  request.reference = "carvel_viajes_colibri"
-  request.serviceDate = moment().format()
-  request.singleUse = true
+  request.reasonId = 0;
+  request.reference = "carvel_viajes_colibri";
+  request.serviceDate = moment().format();
+  request.singleUse = true;
   request.urlNotification =
     "http://gottours-001-site4.mtempurl.com/publicEliecer/api//ApiTropiPay/Callback/" +
     typeCode +
     "/" +
-    id
+    id;
   request.urlSuccess =
     "https://admin.gotravelandtours.com/#/payment-success?amount=" +
     orderParam.PrecioOrden +
     "&currency=" +
     orderParam.CurrencyUsada +
     "&description=" +
-    encodeURIComponent(description)
+    encodeURIComponent(description);
   request.urlFailed =
     "https://admin.gotravelandtours.com/#/payment-error?amount=" +
     orderParam.PrecioOrden +
     "&currency=" +
     orderParam.CurrencyUsada +
     "&description=" +
-    encodeURIComponent(description)
-  request.access_token = tropiPayToken.value
+    encodeURIComponent(description);
+  request.access_token = tropiPayToken.value;
 
   generatePaymentPage(request)
     .then((v: any) => {
-      let shortUrl = v.data.shortUrl || v.shortUrl
+      let shortUrl = v.data.shortUrl || v.shortUrl;
       if (!sendPaymentLInk) {
         if (shortUrl) {
-          window.open(shortUrl, "_blank")
+          window.open(shortUrl, "_blank");
         } else {
           toast("No se pudo obtener el enlace de pago de TropiPay.", {
-            type: "error"
-          })
+            type: "error",
+          });
         }
       } else {
         if (email.value === "") {
@@ -1120,55 +1099,54 @@ function tropipayPayment(type: string, orderParam: any, sendPaymentLInk: boolean
             "Correo electrónico no proporcionado. El enlace de pago se abrirá en una nueva pestaña.",
             {
               type: "info",
-              duration: 5000
-            }
-          )
-          window.open(shortUrl, "_blank")
+              duration: 5000,
+            },
+          );
+          window.open(shortUrl, "_blank");
         } else if (email.value !== "") {
-          toast(
-            `Enlace de pago enviado a ${email.value}: ${shortUrl}`,
-            {
-              type: "info",
-              duration: 5000
-            }
-          )
+          toast(`Enlace de pago enviado a ${email.value}: ${shortUrl}`, {
+            type: "info",
+            duration: 5000,
+          });
         }
       }
-      isOpenModalToPay.value = false
-      useCartStore().refresh()
+      isOpenModalToPay.value = false;
+      useCartStore().refresh();
     })
     .catch((error: any) => {
       if (window) {
-        window.close()
+        window.close();
       }
-      if (import.meta.env.DEV) { console.log("Error al generar el link de pago:", error) }
+      if (import.meta.env.DEV) {
+        console.log("Error al generar el link de pago:", error);
+      }
       toast("Error al generar el link de pago.", {
-        type: "error"
-      })
-    })
+        type: "error",
+      });
+    });
 }
 
-function getTropiPayToken() {
+function fetchTropiPayToken() {
   getTropiPayToken()
     .then((res: any) => {
-      tropiPayToken.value = res.data.access_token
+      tropiPayToken.value = res.data.access_token;
     })
     .catch((error: any) => {
-      console.error("Error fetching TropiPay token:", error)
+      console.error("Error fetching TropiPay token:", error);
       toast("Error al obtener el token de TropiPay.", {
-        type: "error"
-      })
-    })
+        type: "error",
+      });
+    });
 }
 
 function validateEmail() {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email.value) {
-    emailError.value = "El correo electrónico es obligatorio."
+    emailError.value = "El correo electrónico es obligatorio.";
   } else if (!emailRegex.test(email.value)) {
-    emailError.value = "El correo electrónico no es válido."
+    emailError.value = "El correo electrónico no es válido.";
   } else {
-    emailError.value = null
+    emailError.value = null;
   }
 }
 </script>
@@ -1176,7 +1154,7 @@ function validateEmail() {
 <style scoped>
 .cancelate-button {
   text-decoration-line: underline;
-    color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .cancelate-button:hover {

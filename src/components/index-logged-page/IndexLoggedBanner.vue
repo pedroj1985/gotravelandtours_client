@@ -7,33 +7,39 @@
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
-      <div slot="image">
-        <img src="/img/icopaq_alojamiento_color.svg" alt="" />
-      </div>
-      <div slot="searching-text" class="searching-text">
-        <span class="antonio-light">Buscando disponibilidad de</span>
-        <span class="antonio-bold text-highlight pl-1">alojamientos</span>
-        <span class="antonio-light">
-          en
-          <span v-if="selectedLodgingDestinyValue">{{
-            selectedLodgingDestinyValue.nombre
-          }}</span>
-          <span v-else>cualquier lugar</span>
-        </span>
-      </div>
-      <div slot="searching-fields" class="searching-fields">
-        <div v-if="selectedStartDate && selectedEndDate">
-          entre el {{ constructDate(selectedStartDate) }} y el
-          {{ constructDate(selectedEndDate) }} ({{
-            calculateNights(selectedStartDate, selectedEndDate)
-          }}
-          noches)
+      <template v-slot:image>
+        <div>
+          <img src="/img/icopaq_alojamiento_color.svg" alt="" />
         </div>
-        <div v-if="selectedRoomLayout">
-          para
-          <span class="pl-1">{{ constructDisplay(selectedRoomLayout) }}</span>
+      </template>
+      <template v-slot:searching-text>
+        <div class="searching-text">
+          <span class="antonio-light">Buscando disponibilidad de</span>
+          <span class="antonio-bold text-highlight pl-1">alojamientos</span>
+          <span class="antonio-light">
+            en
+            <span v-if="selectedLodgingDestinyValue">{{
+              selectedLodgingDestinyValue.nombre
+            }}</span>
+            <span v-else>cualquier lugar</span>
+          </span>
         </div>
-      </div>
+      </template>
+      <template v-slot:searching-fields>
+        <div class="searching-fields">
+          <div v-if="selectedStartDate && selectedEndDate">
+            entre el {{ constructDate(selectedStartDate) }} y el
+            {{ constructDate(selectedEndDate) }} ({{
+              calculateNights(selectedStartDate, selectedEndDate)
+            }}
+            noches)
+          </div>
+          <div v-if="selectedRoomLayout">
+            para
+            <span class="pl-1">{{ constructDisplay(selectedRoomLayout) }}</span>
+          </div>
+        </div>
+      </template>
     </GttModalSearch>
     <div class="lodging-text-form custom-margin">
       <div class="lodging-text antonio-light">
@@ -42,26 +48,32 @@
         <span class="bannerText">para usted y su familia</span>
       </div>
       <div class="lodging-form">
-        <div ref="gttDestinyLodging" style="width: 100%;">
+        <div ref="gttDestinyLodging" style="width: 100%">
           <gtt-select
-            :openedLodging.sync="lodgingOpened"
+            v-model:openedLodging="lodgingOpened"
             @click.native="loadDestinies"
             v-model="selectedLodgingDestinyValue"
             :options="destinies"
             :alignLeft="true"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-            <span slot="placeholder" class="required-field"
-              >Destino o Alojamiento</span
-            >
-            <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-map-marker"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span class="required-field">Destino o Alojamiento</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span>¿Dónde desea alojarse?</span>
+            </template>
             <template v-slot:option="option">
               {{ option.option.nombre }}
             </template>
             <template v-slot:selectedValue="selectedValue">
               {{ selectedValue.selectedValue.nombre }}
             </template>
-            <span slot="error" class="gtt-errors"></span>
+            <template v-slot:error>
+              <span class="gtt-errors"></span>
+            </template>
           </gtt-select>
         </div>
         <div class="selects-inline">
@@ -71,11 +83,15 @@
               :mode="'single'"
               :min-date="minStartDate"
             >
-              <span slot="placeholder" class="required-field">
-                Fecha de entrada
-              </span>
-              <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-              <span slot="error" class="gtt-errors"></span>
+              <template v-slot:placeholder>
+                <span class="required-field"> Fecha de entrada </span>
+              </template>
+              <template v-slot:iconSelectedValue>
+                <i class="mdi mdi-calendar-today"></i>
+              </template>
+              <template v-slot:error>
+                <span class="gtt-errors"></span>
+              </template>
             </gtt-select-date>
           </div>
           <div ref="gttEndDate" class="w-100 cleft">
@@ -84,51 +100,33 @@
               :min-date="minEndDate"
               :mode="'single'"
             >
-              <span slot="placeholder" class="required-field"
-                >Fecha de salida</span
-              >
-              <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-              <span slot="error" class="gtt-errors"></span>
+              <template v-slot:placeholder>
+                <span class="required-field">Fecha de salida</span>
+              </template>
+              <template v-slot:iconSelectedValue>
+                <i class="mdi mdi-calendar-today"></i>
+              </template>
+              <template v-slot:error>
+                <span class="gtt-errors"></span>
+              </template>
             </gtt-select-date>
           </div>
           <div class="w-100">
             <gtt-select
               v-model="selectedNights"
               :options="[
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24,
-                25,
-                26,
-                27,
-                28,
-                29,
-                30
+                3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
               ]"
               :search="false"
               :alignLeft="true"
             >
-              <span slot="placeholder">Noches</span>
-              <span slot="selectedPlaceholder">¿Cuántas noches?</span>
+              <template v-slot:placeholder>
+                <span>Noches</span>
+              </template>
+              <template v-slot:selectedPlaceholder>
+                <span>¿Cuántas noches?</span>
+              </template>
               <template v-slot:option="option">
                 {{ constructDisplayNights(option.option) }}
               </template>
@@ -144,10 +142,14 @@
             class="cleft"
             v-model="selectedRoomLayout"
           >
-            <span slot="iconSelectedValue">
-              <i class="mdi mdi-account"></i>
-            </span>
-            <span slot="placeholder" class="required-field">Visitantes</span>
+            <template v-slot:iconSelectedValue>
+              <span>
+                <i class="mdi mdi-account"></i>
+              </span>
+            </template>
+            <template v-slot:placeholder>
+              <span class="required-field">Visitantes</span>
+            </template>
           </gtt-select-form>
           <!--          <gtt-select
                       :options="countries"
@@ -197,34 +199,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from "vue"
-import { useRouter } from "vue-router"
-import { toast } from "vue3-toastify"
-import NavBar2 from "../shared/NavBar2.vue"
-import GttSelect from "../custom-elements/GttSelect.vue"
-import GttSelectForm from "../custom-elements/GttSelectForm.vue"
-import GttSelectDate from "../custom-elements/GttSelectDate.vue"
-import GttModalSearch from "../custom-elements/GttModalSearch.vue"
-import moment from "moment"
-import { useScrollStore } from "../../stores/scrollStore"
-import {
-  authGetRoomTypes,
-  authGetHotelList
-} from "../../utils/auth"
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { toast } from "vue3-toastify";
+import NavBar2 from "../shared/NavBar2.vue";
+import GttSelect from "../custom-elements/GttSelect.vue";
+import GttSelectForm from "../custom-elements/GttSelectForm.vue";
+import GttSelectDate from "../custom-elements/GttSelectDate.vue";
+import GttModalSearch from "../custom-elements/GttModalSearch.vue";
+import moment from "moment";
+import { useScrollStore } from "../../stores/scrollStore";
+import { authGetRoomTypes, authGetHotelList } from "../../utils/auth";
 import {
   constructDate,
   calculateNights,
-  constructDisplay
-} from "../../utils/utils"
-import { helpers } from "../../utils/helpers"
-import { useLodging } from "../../composables/useLodging"
-import { gttIsValid, renderValid, getValid } from "../../utils/validation"
+  constructDisplay,
+} from "../../utils/utils";
+import { helpers } from "../../utils/helpers";
+import { useLodging } from "../../composables/useLodging";
+import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
-const router = useRouter()
+const router = useRouter();
 
-const gttDestinyLodging = ref<HTMLElement | null>(null)
-const gttStartDate = ref<HTMLElement | null>(null)
-const gttEndDate = ref<HTMLElement | null>(null)
+const gttDestinyLodging = ref<HTMLElement | null>(null);
+const gttStartDate = ref<HTMLElement | null>(null);
+const gttEndDate = ref<HTMLElement | null>(null);
 
 const {
   roomCombination,
@@ -245,107 +244,103 @@ const {
   getResults,
   clearResults,
   deleteDB,
-  toAcomodation
-} = useLodging()
+  toAcomodation,
+} = useLodging();
 
 const menuLinks = [
   {
     name: "index",
     displayName: "Inicio",
-    id: "home-logged-banner"
+    id: "home-logged-banner",
   },
   {
     name: "lodging",
     displayName: "alojamientos",
-    id: "home-logged-banner"
-  }
-]
-const isModalActive = ref(false)
-const lodgingOpened = ref(false)
-const defaultFlagImgPath = "img/flags/"
-const todosTipo = ref<unknown[]>([])
-const selectedLodgingDestinyValue = ref("")
-const selectedRoomLayout = ref(null)
-const selectedStartDate = ref(new Date(moment().add(4, "days")))
-const selectedEndDate = ref(new Date(moment().add(7, "days")))
-const selectedNationality = ref(null)
-const destinies = ref<unknown[]>([])
-const selectedNights = ref(3)
-const roomComb = ref<unknown>(null)
+    id: "home-logged-banner",
+  },
+];
+const isModalActive = ref(false);
+const lodgingOpened = ref(false);
+const defaultFlagImgPath = "img/flags/";
+const todosTipo = ref<unknown[]>([]);
+const selectedLodgingDestinyValue = ref("");
+const selectedRoomLayout = ref(null);
+const selectedStartDate = ref(new Date(moment().add(4, "days")));
+const selectedEndDate = ref(new Date(moment().add(7, "days")));
+const selectedNationality = ref(null);
+const destinies = ref<unknown[]>([]);
+const selectedNights = ref(3);
+const roomComb = ref<unknown>(null);
 const roomLayout = [
   {
     code: "adults",
     label: "Adultos",
     display: "Adulto(s)",
-    default: 1
+    default: 1,
   },
   {
     code: "kids",
     label: "Niños",
     display: "Niño(s)",
-    default: 0
-  }
-]
+    default: 0,
+  },
+];
 const countries = [
   {
     nombre: "Afganistán",
-    flag: "flag_afganistan.jpg"
+    flag: "flag_afganistan.jpg",
   },
   {
     nombre: "Albania",
-    flag: "flag_albania.jpg"
+    flag: "flag_albania.jpg",
   },
   {
     nombre: "Alemania",
-    flag: "flag_alemania.jpg"
+    flag: "flag_alemania.jpg",
   },
   {
     nombre: "Estados Unidos",
-    flag: "flag_estadosunidos.jpg"
-  }
-]
+    flag: "flag_estadosunidos.jpg",
+  },
+];
 
 const minStartDate = computed(() => {
-  return moment()
-    .add(4, "days")
-    .format("YYYY-MM-DD")
-})
+  return moment().add(4, "days").format("YYYY-MM-DD");
+});
 
 const minEndDate = computed(() => {
-  let minEndDateVal = moment()
-    .add(7, "days")
-    .format("YYYY-MM-DD")
+  let minEndDateVal = moment().add(7, "days").format("YYYY-MM-DD");
   if (selectedStartDate.value) {
     minEndDateVal = moment(selectedStartDate.value)
       .add(selectedNights.value, "days")
-      .format("YYYY-MM-DD")
+      .format("YYYY-MM-DD");
   }
-  return minEndDateVal
-})
+  return minEndDateVal;
+});
 
 watch(selectedEndDate, () => {
-  let n = moment(selectedEndDate.value).diff(selectedStartDate.value, "days")
-  selectedNights.value = n
-})
+  let n = moment(selectedEndDate.value).diff(selectedStartDate.value, "days");
+  selectedNights.value = n;
+});
 
 watch(selectedStartDate, (item) => {
-  selectedNights.value = 3
+  selectedNights.value = 3;
   selectedEndDate.value = moment(item)
     .add(selectedNights.value, "days")
-    .toDate()
-  let n = moment(selectedEndDate.value).diff(selectedStartDate.value, "days")
-  selectedNights.value = n
-})
+    .toDate();
+  let n = moment(selectedEndDate.value).diff(selectedStartDate.value, "days");
+  selectedNights.value = n;
+});
 
 watch(selectedNights, (item) => {
   selectedEndDate.value = new Date(
-    moment(selectedStartDate.value).add(item, "days")
-  )
-})
+    moment(selectedStartDate.value).add(item, "days"),
+  );
+});
 
 async function performSearch(query: Record<string, unknown>) {
-  const res = await executeQuery(query)
-  return res
+  const res = await executeQuery(query);
+  return res;
 }
 
 function gttValidate() {
@@ -354,52 +349,54 @@ function gttValidate() {
       rules: ["required"],
       name: "gttDestinyLodging",
       value: selectedLodgingDestinyValue.value,
-      lang: "es"
+      lang: "es",
     },
     {
       rules: ["required", "dateAfter:selectedStartDate"],
       name: "gttEndDate",
       value: selectedEndDate.value,
-      lang: "es"
+      lang: "es",
     },
     {
       rules: ["required"],
       name: "gttStartDate",
       value: selectedStartDate.value,
-      lang: "es"
-    }
-  ]
-  return validator
+      lang: "es",
+    },
+  ];
+  return validator;
 }
 
 async function loadDestinies() {
   if (lodgingOpened.value == true) {
-    let totalResult: unknown[] = []
-    let l = await authGetHotelList()
-    l.data.forEach((i: { Nombre: unknown; IdObjeto: unknown; TipoObjeto: unknown }) => {
-      totalResult = totalResult.concat({
-        nombre: i.Nombre,
-        id: i.IdObjeto,
-        type: i.TipoObjeto
-      })
-    })
-    destinies.value = totalResult
+    let totalResult: unknown[] = [];
+    let l = await authGetHotelList();
+    l.data.forEach(
+      (i: { Nombre: unknown; IdObjeto: unknown; TipoObjeto: unknown }) => {
+        totalResult = totalResult.concat({
+          nombre: i.Nombre,
+          id: i.IdObjeto,
+          type: i.TipoObjeto,
+        });
+      },
+    );
+    destinies.value = totalResult;
   }
 }
 
 function handleLodgingClose() {
-  lodgingOpened.value = false
+  lodgingOpened.value = false;
 }
 
 function handleScroll() {
-  const el = document.getElementById("home-logged-banner")
-  if (!el) return
-  let height = window.innerHeight
+  const el = document.getElementById("home-logged-banner");
+  if (!el) return;
+  let height = window.innerHeight;
   if (
     height * 0.25 > el.getBoundingClientRect().top &&
     height * 0 < el.getBoundingClientRect().top
   ) {
-    useScrollStore().scrollTo("lodging")
+    useScrollStore().scrollTo("lodging");
   }
 }
 
@@ -408,42 +405,44 @@ function getRefsProxy() {
     $refs: {
       gttDestinyLodging: gttDestinyLodging.value,
       gttStartDate: gttStartDate.value,
-      gttEndDate: gttEndDate.value
+      gttEndDate: gttEndDate.value,
     },
-    $children: []
-  }
+    $children: [],
+  };
 }
 
 async function activateModal() {
-  let iv = gttIsValid(gttValidate(), getRefsProxy())
+  let iv = gttIsValid(gttValidate(), getRefsProxy());
   if (getValid(iv)) {
-    isModalActive.value = true
-    await clearResults()
+    isModalActive.value = true;
+    await clearResults();
     if (selectedLodgingDestinyValue.value.type == "RGN") {
-      if (import.meta.env.DEV) { console.log("RGN") }
-      let region = {
-        RegionId: selectedLodgingDestinyValue.value.id
+      if (import.meta.env.DEV) {
+        console.log("RGN");
       }
-      let cliente = { ClienteId: localStorage.getItem("cliente") }
+      let region = {
+        RegionId: selectedLodgingDestinyValue.value.id,
+      };
+      let cliente = { ClienteId: localStorage.getItem("cliente") };
       let searchItem = {
         Entrada: selectedStartDate.value,
         Salida: selectedEndDate.value,
         Region: region,
-        Cliente: cliente
-      }
+        Cliente: cliente,
+      };
       let searchFilters = {
         Destiny: selectedLodgingDestinyValue.value,
         Region: {
           RegionId: selectedLodgingDestinyValue.value.id,
-          RegionNombre: selectedLodgingDestinyValue.value.nombre
+          RegionNombre: selectedLodgingDestinyValue.value.nombre,
         },
         Cliente: { ClienteId: localStorage.getItem("cliente") },
         Entrada: selectedStartDate.value,
         Salida: selectedEndDate.value,
         Visitantes: selectedRoomLayout.value,
-        Nacionalidad: selectedNationality.value
-      }
-      let resultList: unknown[] = []
+        Nacionalidad: selectedNationality.value,
+      };
+      let resultList: unknown[] = [];
       try {
         if (
           searchFilters.Visitantes.adults.value >=
@@ -451,52 +450,56 @@ async function activateModal() {
         ) {
           roomComb.value = helpers.roomCombination(
             searchFilters.Visitantes.adults.value,
-            searchFilters.Visitantes.kids.value || 0
-          )
+            searchFilters.Visitantes.kids.value || 0,
+          );
         } else {
           roomComb.value = helpers.roomCombination2kids(
             searchFilters.Visitantes.adults.value,
-            searchFilters.Visitantes.kids.value || 0
-          )
+            searchFilters.Visitantes.kids.value || 0,
+          );
         }
         let roomComb2 = helpers.roomCombinationV2(
           searchFilters.Visitantes.adults.value,
-          searchFilters.Visitantes.kids.value || 0
-        )
+          searchFilters.Visitantes.kids.value || 0,
+        );
         if (roomComb.value != "ERROR") {
           resultList = await search(
             searchItem,
             roomComb.value,
             roomComb2,
             todosTipo.value,
-            helpers
-          )
+            helpers,
+          );
           localStorage.setItem(
             "searchLodgingFilters",
-            JSON.stringify(searchFilters)
-          )
-          desactivateModal()
+            JSON.stringify(searchFilters),
+          );
+          desactivateModal();
           router.push({
             name: "resultLodging",
             params: {
-              searchResult: resultList
-            }
-          })
+              searchResult: resultList,
+            },
+          });
         } else {
-          desactivateModal()
+          desactivateModal();
           toast("Demasiados niños", {
-            type: "error"
-          })
+            type: "error",
+          });
         }
       } catch (error) {
-        if (import.meta.env.DEV) { console.log(error) }
-        desactivateModal()
+        if (import.meta.env.DEV) {
+          console.log(error);
+        }
+        desactivateModal();
         toast("El servicio no está disponible en estos momentos", {
-          type: "error"
-        })
+          type: "error",
+        });
       }
     } else if (selectedLodgingDestinyValue.value.type == "HTL") {
-      if (import.meta.env.DEV) { console.log("HTL") }
+      if (import.meta.env.DEV) {
+        console.log("HTL");
+      }
       let searchFilters = {
         Destiny: selectedLodgingDestinyValue.value,
         NombreHotel: selectedLodgingDestinyValue.value.nombre,
@@ -504,8 +507,8 @@ async function activateModal() {
         Entrada: selectedStartDate.value,
         Salida: selectedEndDate.value,
         Visitantes: selectedRoomLayout.value,
-        Nacionalidad: selectedNationality.value
-      }
+        Nacionalidad: selectedNationality.value,
+      };
       try {
         if (
           searchFilters.Visitantes.adults.value >=
@@ -513,83 +516,85 @@ async function activateModal() {
         ) {
           roomComb.value = helpers.roomCombination(
             searchFilters.Visitantes.adults.value,
-            searchFilters.Visitantes.kids.value || 0
-          )
+            searchFilters.Visitantes.kids.value || 0,
+          );
         } else {
           roomComb.value = helpers.roomCombination2kids(
             searchFilters.Visitantes.adults.value,
-            searchFilters.Visitantes.kids.value || 0
-          )
+            searchFilters.Visitantes.kids.value || 0,
+          );
         }
         if (roomComb.value != "ERROR") {
           goToDetail(
             searchFilters,
-            buildRoomCombo(roomComb.value),
-            selectedLodgingDestinyValue.value.id
-          )
+            roomComb.value,
+            selectedLodgingDestinyValue.value.id,
+          );
         } else {
-          desactivateModal()
+          desactivateModal();
           toast("Demasiados niños", {
-            type: "error"
-          })
+            type: "error",
+          });
         }
       } catch (error) {
-        if (import.meta.env.DEV) { console.log(error) }
-        desactivateModal()
+        if (import.meta.env.DEV) {
+          console.log(error);
+        }
+        desactivateModal();
         toast("El servicio no está disponible en estos momentos", {
-          type: "error"
-        })
+          type: "error",
+        });
       }
     }
   } else {
-    renderValid(iv, getRefsProxy())
+    renderValid(iv, getRefsProxy());
   }
 }
 
 function goToDetail(f: unknown, a: unknown, id: unknown) {
-  localStorage.setItem("searchLodgingFilters", JSON.stringify(f))
-  localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a))
+  localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
+  localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
   router.push({
     name: "lodging-detail",
     params: {
-      id: id
-    }
-  })
+      id: id,
+    },
+  });
 }
 
 function desactivateModal() {
-  isModalActive.value = false
+  isModalActive.value = false;
 }
 
 function constructDisplayNights(n: number) {
   if (n == 1) {
-    return `1 noche`
+    return `1 noche`;
   }
-  return `${n} noches`
+  return `${n} noches`;
 }
 
 function searchCountriesPlaceholder() {
-  let usa = countries.find(el => {
-    return el.nombre == "Estados Unidos"
-  })
+  let usa = countries.find((el) => {
+    return el.nombre == "Estados Unidos";
+  });
   if (usa) {
-    selectedNationality.value = usa
+    selectedNationality.value = usa;
   } else {
-    selectedNationality.value = countries[0]
+    selectedNationality.value = countries[0];
   }
 }
 
 onMounted(async () => {
-  searchCountriesPlaceholder()
-  window.addEventListener("scroll", handleScroll)
-  let t = await authGetRoomTypes()
-  todosTipo.value = t.data
-  await clearResults()
-})
+  searchCountriesPlaceholder();
+  window.addEventListener("scroll", handleScroll);
+  let t = await authGetRoomTypes();
+  todosTipo.value = t.data;
+  await clearResults();
+});
 
 onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll)
-})
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
 <style scoped>
