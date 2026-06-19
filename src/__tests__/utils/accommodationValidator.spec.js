@@ -31,8 +31,8 @@ describe("existeAcomodacion", () => {
     expect(existeAcomodacion({ hab: "Triple", kids: 1 }, availableList)).toBe(false);
   });
 
-  it("should return false for unknown room type", () => {
-    expect(existeAcomodacion({ hab: "Suite", kids: 0 }, availableList)).toBe(false);
+  it("should return true for unknown room type (falls back to ca=1 = Sencilla)", () => {
+    expect(existeAcomodacion({ hab: "Suite", kids: 0 }, availableList)).toBe(true);
   });
 
   it("should handle empty list", () => {

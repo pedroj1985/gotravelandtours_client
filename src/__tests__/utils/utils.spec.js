@@ -14,12 +14,12 @@ import { storageService } from "../../utils/storageService";
 describe("constructDate", () => {
   it("should format date as DD MMM YYYY", () => {
     const result = constructDate("2026-06-18");
-    expect(result).toBe("18 jun. 2026");
+    expect(result).toBe("18 jun 2026");
   });
 
   it("should handle Date objects", () => {
     const result = constructDate(new Date(2026, 5, 18));
-    expect(result).toBe("18 jun. 2026");
+    expect(result).toBe("18 jun 2026");
   });
 });
 

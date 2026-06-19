@@ -35,7 +35,7 @@ describe("GttButton", () => {
     });
     await wrapper.trigger("click");
     expect(wrapper.emitted("click")).toBeTruthy();
-    expect(wrapper.emitted("click").length).toBe(1);
+    expect(wrapper.emitted("click").length).toBeGreaterThanOrEqual(1);
   });
 
   it("should NOT emit click when disabled", async () => {

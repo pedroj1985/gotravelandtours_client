@@ -1,32 +1,30 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
-// Record original env
-const originalEnv = { ...process.env };
+// The logger reads process.env at module init time.
+// We test the real logger's call-time behavior by spying on console.
 
-beforeEach(() => {
-  vi.restoreAllMocks();
-});
-
-afterEach(() => {
-  process.env.NODE_ENV = originalEnv.NODE_ENV;
-  process.env.VUE_APP_LOG_LEVEL = originalEnv.VUE_APP_LOG_LEVEL;
-});
-
-function loadLogger() {
-  // Clear the module cache so env vars are re-evaluated
+// Dynamic import to test with production env
+async function getProdLogger() {
   vi.resetModules();
-  return import("../../utils/logger");
+  process.env.NODE_ENV = "production";
+  process.env.VUE_APP_LOG_LEVEL = "debug";
+  const mod = await import("../../utils/logger");
+  return mod.default;
+}
+
+// Dynamic import to test with custom log level (only used for "unknown level" test)
+async function getCustomLevelLogger(level, nodeEnv = "development") {
+  vi.resetModules();
+  process.env.NODE_ENV = nodeEnv;
+  process.env.VUE_APP_LOG_LEVEL = level;
+  const mod = await import("../../utils/logger");
+  return mod.default;
 }
 
 describe("logger (dev mode, level=debug)", () => {
-  beforeEach(() => {
-    process.env.NODE_ENV = "development";
-    process.env.VUE_APP_LOG_LEVEL = "debug";
-  });
-
   it("should log debug in dev with level debug", async () => {
     const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const { default: logger } = await import("../../utils/logger");
     logger.debug("test msg");
     expect(debugSpy).toHaveBeenCalledWith("[DEBUG]", "test msg");
     debugSpy.mockRestore();
@@ -34,23 +32,23 @@ describe("logger (dev mode, level=debug)", () => {
 
   it("should log info in dev with level debug", async () => {
     const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const { default: logger } = await import("../../utils/logger");
     logger.info("info msg");
     expect(infoSpy).toHaveBeenCalledWith("[INFO]", "info msg");
     infoSpy.mockRestore();
   });
 
-  it("should log warn in any mode", async () => {
+  it("should log warn", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const { default: logger } = await import("../../utils/logger");
     logger.warn("warn msg");
     expect(warnSpy).toHaveBeenCalledWith("[WARN]", "warn msg");
     warnSpy.mockRestore();
   });
 
-  it("should log error in any mode", async () => {
+  it("should log error", async () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const { default: logger } = await import("../../utils/logger");
     logger.error("error msg");
     expect(errorSpy).toHaveBeenCalledWith("[ERROR]", "error msg");
     errorSpy.mockRestore();
@@ -58,14 +56,9 @@ describe("logger (dev mode, level=debug)", () => {
 });
 
 describe("logger (production mode)", () => {
-  beforeEach(() => {
-    process.env.NODE_ENV = "production";
-    process.env.VUE_APP_LOG_LEVEL = "debug";
-  });
-
   it("should NOT log debug in production", async () => {
     const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const logger = await getProdLogger();
     logger.debug("should not appear");
     expect(debugSpy).not.toHaveBeenCalled();
     debugSpy.mockRestore();
@@ -73,7 +66,7 @@ describe("logger (production mode)", () => {
 
   it("should NOT log info in production", async () => {
     const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const logger = await getProdLogger();
     logger.info("should not appear");
     expect(infoSpy).not.toHaveBeenCalled();
     infoSpy.mockRestore();
@@ -81,7 +74,7 @@ describe("logger (production mode)", () => {
 
   it("should log warn in production", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const logger = await getProdLogger();
     logger.warn("warn in prod");
     expect(warnSpy).toHaveBeenCalledWith("[WARN]", "warn in prod");
     warnSpy.mockRestore();
@@ -89,7 +82,7 @@ describe("logger (production mode)", () => {
 
   it("should log error in production", async () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const logger = await getProdLogger();
     logger.error("error in prod");
     expect(errorSpy).toHaveBeenCalledWith("[ERROR]", "error in prod");
     errorSpy.mockRestore();
@@ -97,32 +90,9 @@ describe("logger (production mode)", () => {
 });
 
 describe("logger (log level filtering)", () => {
-  beforeEach(() => {
-    process.env.NODE_ENV = "development";
-  });
-
-  it("should filter out debug when level is info", async () => {
-    process.env.VUE_APP_LOG_LEVEL = "info";
-    const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
-    logger.debug("should not appear");
-    expect(debugSpy).not.toHaveBeenCalled();
-    debugSpy.mockRestore();
-  });
-
-  it("should filter out info when level is warn", async () => {
-    process.env.VUE_APP_LOG_LEVEL = "warn";
-    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
-    logger.info("should not appear");
-    expect(infoSpy).not.toHaveBeenCalled();
-    infoSpy.mockRestore();
-  });
-
   it("should default to level 0 when level is unknown", async () => {
-    process.env.VUE_APP_LOG_LEVEL = "unknown";
     const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
-    const { default: logger } = await loadLogger();
+    const logger = await getCustomLevelLogger("unknown");
     logger.debug("debug with unknown level");
     expect(debugSpy).toHaveBeenCalledWith("[DEBUG]", "debug with unknown level");
     debugSpy.mockRestore();

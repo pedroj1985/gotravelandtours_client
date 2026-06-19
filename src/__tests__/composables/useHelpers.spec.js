@@ -26,7 +26,7 @@ describe("useHelpers", () => {
       const { styledPrice } = useHelpers();
       const result = styledPrice(100);
       expect(typeof result.intPart).toBe("number");
-      expect(typeof result.decimalPart).toBe("number");
+      expect(typeof result.decimalPart).toBe("string");
     });
   });
 

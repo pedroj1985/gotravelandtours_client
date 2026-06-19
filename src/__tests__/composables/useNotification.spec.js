@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { useNotification } from "../../composables/useNotification";
 
 describe("useNotification", () => {
@@ -7,7 +7,7 @@ describe("useNotification", () => {
   });
 
   afterEach(() => {
-    vi.restoreAllTimers();
+    vi.useRealTimers();
   });
 
   it("should start with null notification", () => {

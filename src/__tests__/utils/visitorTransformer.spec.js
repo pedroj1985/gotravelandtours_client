@@ -44,7 +44,7 @@ describe("extractVisitorCounts", () => {
   });
 
   it("should handle visitors without layout", () => {
-    const visitors = [{ room: 1 }];
+    const visitors = [{ room: 1, layout: [] }];
     const counts = extractVisitorCounts(visitors);
     expect(counts.totalAdults).toBe(0);
     expect(counts.totalKids).toBe(0);

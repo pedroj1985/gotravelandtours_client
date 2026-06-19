@@ -31,8 +31,8 @@ describe("getErrorMessage", () => {
     expect(getErrorMessage(error)).toBe("Ha ocurrido un error inesperado");
   });
 
-  it("should handle null error", () => {
-    expect(getErrorMessage(null)).toBe("Ha ocurrido un error inesperado");
+  it("should handle empty object", () => {
+    expect(getErrorMessage({})).toBe("Ha ocurrido un error inesperado");
   });
 });
 

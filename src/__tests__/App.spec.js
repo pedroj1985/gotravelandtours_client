@@ -10,6 +10,11 @@ describe("App", () => {
           NavBar1: true,
           Footer1: true,
           RouterView: true
+        },
+        mocks: {
+          $helpers: {
+            getCartItems: () => 0
+          }
         }
       }
     });

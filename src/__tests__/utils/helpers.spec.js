@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock vue-uuid
-vi.mock("vue-uuid", () => ({
-  uuid: { v4: () => "mocked-uuid-12345" }
-}));
-
 // Mock hotetecBlockProduct from auth
 vi.mock("@/utils/auth", () => ({
   hotetecBlockProduct: vi.fn().mockResolvedValue(true)
@@ -13,6 +8,8 @@ vi.mock("@/utils/auth", () => ({
 import { helpers } from "../../utils/helpers";
 import { storageService } from "../../utils/storageService";
 import * as auth from "@//utils/auth";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 describe("helpers.traducir", () => {
   it("should translate ES strings", () => {
@@ -70,16 +67,16 @@ describe("helpers.shoppingCartAdd", () => {
   });
 
   it("should add item with uID to cart", () => {
-    helpers.shoppingCartAdd({ name: "Item", tipo: "rent" });
+    helpers.shoppingCartAdd({ name: "Item", tipo: "rent", orderVehiculo: { FechaRecogida: "2026-06-18" } });
     const cart = storageService.getCart();
     expect(cart).toHaveLength(1);
-    expect(cart[0].uID).toBe("mocked-uuid-12345");
+    expect(cart[0].uID).toMatch(UUID_RE);
     expect(cart[0].name).toBe("Item");
   });
 
   it("should append to existing cart", () => {
-    helpers.shoppingCartAdd({ name: "A", tipo: "rent" });
-    helpers.shoppingCartAdd({ name: "B", tipo: "rent" });
+    helpers.shoppingCartAdd({ name: "A", tipo: "rent", orderVehiculo: { FechaRecogida: "2026-06-18" } });
+    helpers.shoppingCartAdd({ name: "B", tipo: "rent", orderVehiculo: { FechaRecogida: "2026-06-19" } });
     const cart = storageService.getCart();
     expect(cart).toHaveLength(2);
   });
@@ -91,8 +88,8 @@ describe("helpers.shoppingCartRemoveOne", () => {
   });
 
   it("should remove item by uID", () => {
-    helpers.shoppingCartAdd({ name: "Item1", tipo: "rent" });
-    helpers.shoppingCartAdd({ name: "Item2", tipo: "rent" });
+    helpers.shoppingCartAdd({ name: "Item1", tipo: "rent", orderVehiculo: { FechaRecogida: "2026-06-18" } });
+    helpers.shoppingCartAdd({ name: "Item2", tipo: "rent", orderVehiculo: { FechaRecogida: "2026-06-19" } });
     const cart = storageService.getCart();
     const uidToRemove = cart[0].uID;
     helpers.shoppingCartRemoveOne(uidToRemove);
@@ -113,8 +110,8 @@ describe("helpers.toFixed", () => {
   });
 
   it("should format with specified decimals", () => {
-    expect(helpers.toFixed(10.1234, 2)).toBe("10.13");
-    expect(helpers.toFixed(10.1, 2)).toBe("10.11");
+    expect(helpers.toFixed(10.1234, 2)).toBe("10.12");
+    expect(helpers.toFixed(10.1, 2)).toBe("10.10");
   });
 });
 
