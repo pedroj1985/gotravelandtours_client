@@ -31,6 +31,8 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.25.9",
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^26.0.0",
     "@vitejs/plugin-vue": "^5.0.0",
     "@vue/eslint-config-prettier": "6",
     "@vue/test-utils": "^2.4.0",
