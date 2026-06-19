@@ -18,6 +18,12 @@ export const useAuthStore = defineStore("auth", {
     },
     logout() {
       this.user = null;
+      storageService.removeItem("token");
+      storageService.removeItem("usuarioObjeto");
+      storageService.removeItem("nombre");
+      storageService.removeItem("userid");
+      storageService.removeItem("cliente");
+      storageService.removeItem("fecha_exp");
     },
   },
 });

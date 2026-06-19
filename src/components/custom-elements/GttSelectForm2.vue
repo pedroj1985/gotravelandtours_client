@@ -390,7 +390,7 @@ function remove(item: any, index: number) {
 }
 .gtt__form {
   max-height: 500px;
-  overflow: scroll;
+  overflow: auto;
   overflow-x: hidden;
 }
 

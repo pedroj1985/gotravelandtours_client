@@ -38,10 +38,17 @@
   .show-mobile-only { display: none !important; }
 }
 
-// Prevent horizontal overflow
+// Prevent overflow and manage scroll
 html, body {
-  overflow-x: hidden;
+  overflow: hidden;
+  height: 100%;
   max-width: 100%;
+}
+
+#app {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 img, video, iframe {
