@@ -309,7 +309,7 @@ import NavBar2 from "../shared/NavBar2";
 import { menuLinks } from "../../menu";
 import GttEditRentModal from "../custom-elements/GttEditRentModal";
 import { transmissionTypes } from "../../utils/utils";
-import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { cleanVO } from "../../composables/useCleanup";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 import _ from "lodash";
@@ -323,7 +323,6 @@ export default {
     this.menuLinks = menuLinks;
     this.updateCart();
   },
-  mixins: [cleanVoMixin],
   components: {
     LodgingReservationView,
     RentReservationView,
@@ -352,6 +351,9 @@ export default {
     }
   },
   methods: {
+    cleanVO(order, pickUpPlace, DeliveryPlace) {
+      cleanVO(order, pickUpPlace || this.selectedPickUpPlace, DeliveryPlace || this.selectedDeliveryPlace);
+    },
     gttValidate() {
       let validator = [
         {

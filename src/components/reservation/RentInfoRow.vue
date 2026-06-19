@@ -86,7 +86,7 @@ import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttModalSearch from "../custom-elements/GttModalSearch";
 
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
-import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { cleanVO } from "../../composables/useCleanup";
 
 import { authSearchPuntosInteres } from "../../utils/auth";
 import { overflowText } from "../../utils/utils";
@@ -121,8 +121,10 @@ export default {
     GttSelectDate,
     GttModalSearch
   },
-  mixins: [cleanVoMixin],
   methods: {
+    cleanVO(order, pickUpPlace, DeliveryPlace) {
+      cleanVO(order, pickUpPlace || this.selectedPickUpPlace, DeliveryPlace || this.selectedDeliveryPlace);
+    },
     async loadPuntosInteres() {
       try {
         let { data } = await authSearchPuntosInteres();

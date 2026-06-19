@@ -257,7 +257,7 @@ import {
 } from "../../utils/auth";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { overflowText } from "../../utils/utils";
-import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { cleanVO } from "../../composables/useCleanup";
 
 export default {
   components: {
@@ -265,7 +265,6 @@ export default {
     GttSelectDate,
     GttModalSearch
   },
-  mixins: [cleanVoMixin],
   created() {
     this.searchCountriesPlaceholder();
   },
@@ -292,6 +291,9 @@ export default {
     }
   },
   methods: {
+    cleanVO(order, pickUpPlace, DeliveryPlace) {
+      cleanVO(order, pickUpPlace || this.selectedPickUpPlace, DeliveryPlace || this.selectedDeliveryPlace);
+    },
     transmissionTypes() {
       return transmissionTypes;
     },

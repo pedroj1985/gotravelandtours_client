@@ -160,8 +160,8 @@ import GttSelect from "../custom-elements/GttSelect";
 import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttSelectForm2 from "../custom-elements/GttSelectForm2";
 import moment from "moment";
-import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { useHelpers } from "../../composables/useHelpers";
+import { useLodging } from "../../composables/useLodging";
 
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import {
@@ -181,7 +181,6 @@ export default {
     GttSelectDate,
     GttSelectForm2
   },
-  mixins: [reusableMethodsMixin, lodgingUtilsMixin],
   watch: {
     selectedDestiny(item) {
       if (item.type == "RGN") {
@@ -261,6 +260,13 @@ export default {
     }
   },
   methods: {
+    ...useHelpers(),
+    ...useLodging(),
+    async performSearch(query) {
+      const res = await useLodging().executeQuery(query);
+      this.searchResult = res;
+      return res;
+    },
     generateRooms() {
       let i = [];
       for (let key = 1; key <= 10; key++) {

@@ -138,12 +138,11 @@ import {
   calculateNights,
   constructDisplay
 } from "../../utils/utils";
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { useLodging } from "../../composables/useLodging";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import moment from "moment";
 
 export default {
-  mixins: [lodgingUtilsMixin],
   components: {
     GttSelect,
     GttSelectDate,
@@ -230,6 +229,12 @@ export default {
     });
   },
   methods: {
+    ...useLodging(),
+    async performSearch(query) {
+      const res = await useLodging().executeQuery(query);
+      this.searchResult = res;
+      return res;
+    },
     constructDate,
     calculateNights,
     constructDisplay,

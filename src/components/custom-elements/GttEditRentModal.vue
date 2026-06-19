@@ -158,8 +158,8 @@
 import GttSelect from "../custom-elements/GttSelect";
 import GttSelectDate from "../custom-elements/GttSelectDate";
 import moment from "moment";
-import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
-import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { useHelpers } from "../../composables/useHelpers";
+import { cleanVO } from "../../composables/useCleanup";
 import { transmissionTypes, overflowText } from "../../utils/utils";
 import {
   authSearchPuntosInteres,
@@ -181,7 +181,6 @@ export default {
     GttSelectDate,
     RentEditList
   },
-  mixins: [reusableMethodsMixin, cleanVoMixin],
   data() {
     return {
       result: [],
@@ -225,6 +224,10 @@ export default {
     }
   },
   methods: {
+    ...useHelpers(),
+    cleanVO(order, pickUpPlace, DeliveryPlace) {
+      cleanVO(order, pickUpPlace || this.selectedPickUpPlace, DeliveryPlace || this.selectedDeliveryPlace);
+    },
     transmissionTypes() {
       return transmissionTypes;
     },

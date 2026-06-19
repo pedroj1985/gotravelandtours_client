@@ -215,7 +215,7 @@ import {
   calculateNights,
   constructDisplay
 } from "../../utils/utils";
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { useLodging } from "../../composables/useLodging";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
 export default {
@@ -226,7 +226,6 @@ export default {
     GttSelectDate,
     GttModalSearch
   },
-  mixins: [lodgingUtilsMixin],
   async created() {
     this.searchCountriesPlaceholder();
     window.addEventListener("scroll", this.handleScroll);
@@ -276,6 +275,12 @@ export default {
     }
   },
   methods: {
+    ...useLodging(),
+    async performSearch(query) {
+      const res = await useLodging().executeQuery(query);
+      this.searchResult = res;
+      return res;
+    },
     constructDate,
     calculateNights,
     constructDisplay,

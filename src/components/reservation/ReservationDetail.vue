@@ -317,7 +317,7 @@ import {
   generatePaymentPage
 } from "../../utils/auth";
 
-import { reusableMethodsMixin } from "../../mixins/reusableMethodsMixin";
+import { useHelpers } from "../../composables/useHelpers";
 import RentReservationView from "./RentReservationView";
 import LodgingReservationView2 from "./LodgingReservationView2";
 import InfoRow from "./InfoRow";
@@ -371,7 +371,6 @@ export default {
       };
     }
   },
-  mixins: [reusableMethodsMixin],
   async created() {
     this.$emit("adminPanelInfo", "reservation-detail");
     let id = this.$route.params.id;
@@ -462,6 +461,7 @@ export default {
     };
   },
   methods: {
+    ...useHelpers(),
     getOrderId() {
       return this.order;
     },

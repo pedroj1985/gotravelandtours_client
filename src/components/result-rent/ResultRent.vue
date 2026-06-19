@@ -56,7 +56,7 @@ import RentForm from "./RentForm";
 import Breadcrumb from "../shared/Breadcrumb";
 import RentRightColumnList from "./RentRightColumnList";
 import { useFiltersStore } from "../../stores/filtersStore";
-import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { cleanVO } from "../../composables/useCleanup";
 import { constructDisplay } from "../../utils/utils";
 import {
   authSearchCars,
@@ -67,7 +67,6 @@ import {
 import _ from "lodash";
 
 export default {
-  mixins: [cleanVoMixin],
   components: {
     NavBar2,
     RentForm,
@@ -106,6 +105,9 @@ export default {
     }
   },
   methods: {
+    cleanVO(order, pickUpPlace, DeliveryPlace) {
+      cleanVO(order, pickUpPlace || this.selectedPickUpPlace, DeliveryPlace || this.selectedDeliveryPlace);
+    },
     async searchResult() {
       try {
         let marca = {

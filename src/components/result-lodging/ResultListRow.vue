@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { useLodging } from "../../composables/useLodging";
 import {
   authGetRoomPrice,
   authGetRoomTypes,
@@ -166,7 +166,6 @@ import { helpers } from "@/utils/helpers";
 import { hotelecSessionService } from "../../utils/hotelecSessionService";
 
 export default {
-  mixins: [lodgingUtilsMixin],
   data() {
     return {
       amoung: 1,
@@ -183,6 +182,12 @@ export default {
     disabled: Boolean
   },
   methods: {
+    ...useLodging(),
+    async performSearch(query) {
+      const res = await useLodging().executeQuery(query);
+      this.searchResult = res;
+      return res;
+    },
     async addToCart() {
       this.$emit("loading", true);
       let currentHotelec = await hotelecSessionService.getOrCreateSession();

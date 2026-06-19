@@ -168,12 +168,11 @@ import {
   transmissionTypes
 } from "../../utils/utils";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
-import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { cleanVO } from "../../composables/useCleanup";
 import { useModal } from "../../composables/useModal";
 import moment from "moment";
 
 export default {
-  mixins: [cleanVoMixin],
   components: {
     GttSelect,
     GttSelectDate,
@@ -226,6 +225,9 @@ export default {
   //     this.gttValidate()
   // },
   methods: {
+    cleanVO(order, pickUpPlace, DeliveryPlace) {
+      cleanVO(order, pickUpPlace || this.selectedPickUpPlace, DeliveryPlace || this.selectedDeliveryPlace);
+    },
     transmissionTypes() {
       return transmissionTypes;
     },

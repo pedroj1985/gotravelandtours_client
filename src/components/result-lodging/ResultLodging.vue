@@ -121,7 +121,7 @@ import GttSkeleton from "../shared/GttSkeleton";
 import GttEmptyState from "../shared/GttEmptyState";
 import GttErrorState from "../shared/GttErrorState";
 // import { authSearchLodging } from '../../utils/auth';
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { useLodging } from "../../composables/useLodging";
 import moment from "moment";
 import { authGetRoomTypes } from "../../utils/auth";
 import { constructDisplay } from "../../utils/utils";
@@ -137,7 +137,6 @@ export default {
     GttEmptyState,
     GttErrorState
   },
-  mixins: [lodgingUtilsMixin],
   async created() {
     this.isLoading = true;
     this.hasError = false;
@@ -170,6 +169,12 @@ export default {
     }
   },
   methods: {
+    ...useLodging(),
+    async performSearch(query) {
+      const res = await useLodging().executeQuery(query);
+      this.searchResult = res;
+      return res;
+    },
     constructDisplay,
     toMoment(date) {
       return moment(date);

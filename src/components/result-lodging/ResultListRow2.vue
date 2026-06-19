@@ -144,7 +144,7 @@
 </template>
 
 <script>
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { useLodging } from "../../composables/useLodging";
 import { authGetRoomTypes } from "../../utils/auth";
 import AdultsKidsIcons from "./AdultsKidsIcons";
 import _ from "lodash";
@@ -152,7 +152,6 @@ export default {
   components: {
     AdultsKidsIcons
   },
-  mixins: [lodgingUtilsMixin],
   data() {
     return {
       amoung: 1,
@@ -179,6 +178,12 @@ export default {
     }
   },
   methods: {
+    ...useLodging(),
+    async performSearch(query) {
+      const res = await useLodging().executeQuery(query);
+      this.searchResult = res;
+      return res;
+    },
     addToCart() {
       // const Habitacion = this.child.rO;
       this.child.l[0].habitacion.CantidadHabitaciones = this.amoung;

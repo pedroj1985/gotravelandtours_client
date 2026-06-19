@@ -365,11 +365,10 @@ import AdultsKidsIcons from "./AdultsKidsIcons";
 import LodgingForm from "./LodgingForm";
 import NavBar2 from "../shared/NavBar2";
 
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+import { useLodging } from "../../composables/useLodging";
 import { useCartStore } from "../../stores/cartStore";
 
 export default {
-  mixins: [lodgingUtilsMixin],
   components: {
     Swiper,
     SwiperSlide,
@@ -493,6 +492,12 @@ export default {
     },
   },
   methods: {
+    ...useLodging(),
+    async performSearch(query) {
+      const res = await useLodging().executeQuery(query);
+      this.searchResult = res;
+      return res;
+    },
     async initializeData() {
       // this.roomsOpt = this.generateRooms()
       this.totalRooms = {
