@@ -4,6 +4,12 @@ import path from "path";
 
 export default defineConfig({
   plugins: [vuePlugin()],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    include: ["src/**/*.spec.js", "src/**/*.test.js"],
+    css: false
+  },
   base: "./",
   resolve: {
     extensions: [".vue", ".mjs", ".js", ".jsx", ".ts", ".tsx", ".json"],
