@@ -21,6 +21,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+        api: "modern",
         additionalData(content, filename) {
           const normalized = filename.replace(/\\/g, "/");
           if (
