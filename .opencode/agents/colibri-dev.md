@@ -97,7 +97,7 @@ src/
 
 | Variable | Purpose | Example |
 |---|---|---|
-| `VITE_API_URL` | API base URL | `http://localhost:5000/api/` |
+| `API_URL` | API base URL | `http://localhost:5000/api/` |
 
 Files: `.env.development` (local), `.env.production` (production).
 

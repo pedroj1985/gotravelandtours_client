@@ -43,7 +43,7 @@ pnpm install --ignore-scripts
 
 | Variable | Descripción | Ejemplo |
 |---|---|---|
-| `VITE_API_URL` | URL base de la API | `http://localhost:5000/api/` |
+| `API_URL` | URL base de la API | `http://localhost:5000/api/` |
 
 Archivos: `.env.development` (local), `.env.production` (producción).
 
