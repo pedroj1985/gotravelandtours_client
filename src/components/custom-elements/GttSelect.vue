@@ -163,7 +163,8 @@ function updateValue() {
   selectedValue.value = props.modelValue ?? props.value
 }
 
-async function toggleClicked() {
+function toggleClicked(event?: Event) {
+  event?.stopPropagation()
   if (props.clickable) {
     isVisible.value = !isVisible.value
     if (isVisible.value == true) {

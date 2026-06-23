@@ -128,7 +128,8 @@ watch(() => props.value, (v) => {
 })
 
 
-function toggleClicked() {
+function toggleClicked(event?: Event) {
+  event?.stopPropagation()
   isVisible.value = !isVisible.value
 }
 

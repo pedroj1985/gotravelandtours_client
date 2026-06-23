@@ -92,7 +92,8 @@ const isVisible = ref(props.opened)
 const arrow = ref(true)
 const dates = ref(props.modelValue ?? props.value ?? moment())
 
-function toggleClicked() {
+function toggleClicked(event?: Event) {
+  event?.stopPropagation()
   if (props.clickable) isVisible.value = !isVisible.value
 }
 
