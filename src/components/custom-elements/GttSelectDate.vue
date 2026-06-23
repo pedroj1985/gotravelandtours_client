@@ -148,10 +148,6 @@ watch(() => props.value, () => {
   updateValue()
 })
 
-watch(() => props.modelValue, () => {
-  updateValue()
-})
-
 onMounted(() => {
   if (import.meta.env.DEV) { console.log(props.value) }
   if (import.meta.env.DEV) { console.log(props.opened) }

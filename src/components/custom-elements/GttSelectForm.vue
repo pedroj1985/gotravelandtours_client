@@ -94,8 +94,8 @@ const arrow = ref(true)
 const emitValue = ref<Record<string, any>>({})
 const finalValue = ref<any[]>([])
 
-const initialValue = computed(() => props.modelValue ?? props.value)
-if (!initialValue.value) {
+const initialValue = props.modelValue ?? props.value
+if (!initialValue) {
   for (let index = 0; index < (props.options || []).length; index++) {
     const opt = props.options![index]
     finalValue.value.push({
@@ -127,17 +127,6 @@ watch(() => props.value, (v) => {
   })
 })
 
-watch(() => props.modelValue, (v) => {
-  if (v) {
-    finalValue.value = []
-    for (const item of Object.entries(v)) {
-      finalValue.value.push(item[1])
-    }
-  }
-  finalValue.value.forEach(element => {
-    updateValue(element)
-  })
-})
 
 function toggleClicked() {
   isVisible.value = !isVisible.value
