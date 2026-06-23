@@ -1,9 +1,8 @@
-<template>
+﻿<template>
   <div id="home-logged-banner">
     <div class="home-logged-img">
       <img src="/img/homelogin_img_form_alojamiento.jpg" alt="Alojamientos" />
     </div>
-    <div class="hero-overlay"></div>
     <div class="navs-wrapper">
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
     </div>
@@ -42,86 +41,77 @@
         </div>
       </template>
     </GttModalSearch>
-      <div class="lodging-text-form">
+    <div class="lodging-text-form custom-margin">
+      <div class="lodging-text antonio-light">
+        <span class="bannerText">Tenemos los mejores</span>
+        <span class="yellow-words antonio-bold">alojamientos</span>
+        <span class="bannerText">para usted y su familia</span>
+      </div>
       <div class="lodging-form">
-        <!-- Zone 1: Headline -->
-        <div class="lodging-headline">
-          Tenemos los mejores <strong>alojamientos</strong> para usted y su familia
+        <div ref="gttDestinyLodging" style="width: 100%">
+          <gtt-select
+            v-model:openedLodging="lodgingOpened"
+            @click="loadDestinies"
+            v-model="selectedLodgingDestinyValue"
+            :options="destinies"
+            :alignLeft="true"
+          >
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-map-marker"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span class="required-field">Destino o Alojamiento</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span>┬┐D├│nde desea alojarse?</span>
+            </template>
+            <template v-slot:option="option">
+              {{ option.option.nombre }}
+            </template>
+            <template v-slot:selectedValue="selectedValue">
+              {{ selectedValue.selectedValue.nombre }}
+            </template>
+            <template v-slot:error>
+              <span class="gtt-errors"></span>
+            </template>
+          </gtt-select>
         </div>
-
-        <!-- Zone 2: Form fields -->
-        <div class="form-fields">
-          <div class="field-group" ref="gttDestinyLodging">
-            <label class="form-field-label">Destino o Alojamiento <span class="required">*</span></label>
-            <gtt-select
-              v-model:openedLodging="lodgingOpened"
-              @click="loadDestinies"
-              v-model="selectedLodgingDestinyValue"
-              :options="destinies"
-              :alignLeft="true"
+        <div class="selects-inline">
+          <div ref="gttStartDate" class="w-100 cleft">
+            <gtt-select-date
+              v-model="selectedStartDate"
+              :mode="'single'"
+              :min-date="minStartDate"
             >
-              <template v-slot:iconSelectedValue>
-                <i class="mdi mdi-map-marker"></i>
-              </template>
               <template v-slot:placeholder>
-                <span>Destino o Alojamiento</span>
+                <span class="required-field"> Fecha de entrada </span>
               </template>
-              <template v-slot:selectedPlaceholder>
-                <span>¿Dónde desea alojarse?</span>
-              </template>
-              <template v-slot:option="option">
-                {{ option.option.nombre }}
-              </template>
-              <template v-slot:selectedValue="selectedValue">
-                {{ selectedValue.selectedValue.nombre }}
+              <template v-slot:iconSelectedValue>
+                <i class="mdi mdi-calendar-today"></i>
               </template>
               <template v-slot:error>
                 <span class="gtt-errors"></span>
               </template>
-            </gtt-select>
+            </gtt-select-date>
           </div>
-
-          <div class="selects-inline dates-row">
-            <div class="field-group" ref="gttStartDate">
-              <label class="form-field-label">Fecha de entrada <span class="required">*</span></label>
-              <gtt-select-date
-                v-model="selectedStartDate"
-                :mode="'single'"
-                :min-date="minStartDate"
-              >
-                <template v-slot:placeholder>
-                  <span>Fecha de entrada</span>
-                </template>
-                <template v-slot:iconSelectedValue>
-                  <i class="mdi mdi-calendar-today"></i>
-                </template>
-                <template v-slot:error>
-                  <span class="gtt-errors"></span>
-                </template>
-              </gtt-select-date>
-            </div>
-            <div class="field-group" ref="gttEndDate">
-              <label class="form-field-label">Fecha de salida <span class="required">*</span></label>
-              <gtt-select-date
-                v-model="selectedEndDate"
-                :min-date="minEndDate"
-                :mode="'single'"
-              >
-                <template v-slot:placeholder>
-                  <span>Fecha de salida</span>
-                </template>
-                <template v-slot:iconSelectedValue>
-                  <i class="mdi mdi-calendar-today"></i>
-                </template>
-                <template v-slot:error>
-                  <span class="gtt-errors"></span>
-                </template>
-              </gtt-select-date>
-            </div>
+          <div ref="gttEndDate" class="w-100 cleft">
+            <gtt-select-date
+              v-model="selectedEndDate"
+              :min-date="minEndDate"
+              :mode="'single'"
+            >
+              <template v-slot:placeholder>
+                <span class="required-field">Fecha de salida</span>
+              </template>
+              <template v-slot:iconSelectedValue>
+                <i class="mdi mdi-calendar-today"></i>
+              </template>
+              <template v-slot:error>
+                <span class="gtt-errors"></span>
+              </template>
+            </gtt-select-date>
           </div>
-
-          <div class="field-group nights-row">
-            <label class="form-field-label">Noches</label>
+          <div class="w-100">
             <gtt-select
               v-model="selectedNights"
               :options="[
@@ -135,7 +125,7 @@
                 <span>Noches</span>
               </template>
               <template v-slot:selectedPlaceholder>
-                <span>¿Cuántas noches?</span>
+                <span>┬┐Cu├íntas noches?</span>
               </template>
               <template v-slot:option="option">
                 {{ constructDisplayNights(option.option) }}
@@ -145,37 +135,63 @@
               </template>
             </gtt-select>
           </div>
-
-          <div class="field-group">
-            <label class="form-field-label">Visitantes <span class="required">*</span></label>
-            <gtt-select-form
-              :options="roomLayout"
-              v-model="selectedRoomLayout"
-            >
-              <template v-slot:iconSelectedValue>
-                <i class="mdi mdi-account"></i>
-              </template>
-              <template v-slot:placeholder>
-                <span>Visitantes</span>
-              </template>
-            </gtt-select-form>
-          </div>
         </div>
-
-        <!-- Zone 3: CTA Button -->
-        <button
-          type="submit"
-          @click="activateModal"
-          class="lodging-searchButton"
-        >
-          BUSCAR
-        </button>
-
-        <!-- Zone 4: Newsletter -->
-        <hr class="form-divider" />
-        <div class="newsletter-section">
-          <span class="newsletter-text">¿Desea recibir ofertas exclusivas?</span>
-          <button class="subscribe-button">SUSCRIBIRSE</button>
+        <div class="selects-inline">
+          <gtt-select-form
+            :options="roomLayout"
+            class="cleft"
+            v-model="selectedRoomLayout"
+          >
+            <template v-slot:iconSelectedValue>
+              <span>
+                <i class="mdi mdi-account"></i>
+              </span>
+            </template>
+            <template v-slot:placeholder>
+              <span class="required-field">Visitantes</span>
+            </template>
+          </gtt-select-form>
+          <!--          <gtt-select
+                      :options="countries"
+                      v-model="selectedNationality"
+                      class="select-countries"
+                    >
+                      <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
+                      <span slot="placeholder">Nacionalidad</span>
+                      <template v-slot:selectedValue="selectedValue">
+                        <img
+                          :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
+                          :alt="selectedValue.selectedValue.nombre + 'flag'"
+                          class="select-flag"
+                        />
+                        {{ selectedValue.selectedValue.nombre }}
+                      </template>
+                      <template v-slot:option="option">
+                        <img
+                          :src="defaultFlagImgPath + option.option.flag"
+                          :alt="option.option.nombre + 'flag'"
+                          class="select-flag"
+                        />
+                        {{ option.option.nombre }}
+                      </template>
+                      <template slot="selectedPlaceholder">
+                        <img
+                          :src="defaultFlagImgPath + selectedNationality.flag"
+                          :alt="selectedNationality.nombre + 'flag'"
+                          class="select-flag"
+                        />
+                        {{ selectedNationality.nombre }}
+                      </template>
+                    </gtt-select>-->
+        </div>
+        <div class="form-actions text-right">
+          <button
+            type="submit"
+            @click="activateModal"
+            class="lodging-searchButton antonio-regular"
+          >
+            Buscar
+          </button>
         </div>
       </div>
     </div>
@@ -264,14 +280,14 @@ const roomLayout = [
   },
   {
     code: "kids",
-    label: "Niños",
-    display: "Niño(s)",
+    label: "Ni├▒os",
+    display: "Ni├▒o(s)",
     default: 0,
   },
 ];
 const countries = [
   {
-    nombre: "Afganistán",
+    nombre: "Afganist├ín",
     flag: "flag_afganistan.jpg",
   },
   {
@@ -467,7 +483,7 @@ async function activateModal() {
           });
         } else {
           desactivateModal();
-          toast("Demasiados niños", {
+          toast("Demasiados ni├▒os", {
             type: "error",
           });
         }
@@ -476,7 +492,7 @@ async function activateModal() {
           console.log(error);
         }
         desactivateModal();
-        toast("El servicio no está disponible en estos momentos", {
+        toast("El servicio no est├í disponible en estos momentos", {
           type: "error",
         });
       }
@@ -516,7 +532,7 @@ async function activateModal() {
           );
         } else {
           desactivateModal();
-          toast("Demasiados niños", {
+          toast("Demasiados ni├▒os", {
             type: "error",
           });
         }
@@ -525,7 +541,7 @@ async function activateModal() {
           console.log(error);
         }
         desactivateModal();
-        toast("El servicio no está disponible en estos momentos", {
+        toast("El servicio no est├í disponible en estos momentos", {
           type: "error",
         });
       }
@@ -582,234 +598,103 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* ===== Hero Section ===== */
 #home-logged-banner {
   margin-top: 60px;
   width: 100%;
-  min-height: 750px;
+  height: 750px;
   position: relative;
-  overflow: hidden;
 }
 
-#home-logged-banner .home-logged-img {
-  position: absolute;
-  inset: 0;
+#home-logged-banner img {
   width: 100%;
   height: 100%;
-  z-index: 0;
 }
 
-#home-logged-banner .home-logged-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-/* ===== Card positioning ===== */
 .lodging-text-form {
   position: absolute;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  width: 100%;
-  padding: 20px;
+  top: 26%;
+  padding-left: 8vw;
 }
 
-/* ===== Card container ===== */
 .lodging-form {
-  width: 720px;
-  max-width: 100%;
+  width: 39.06vw;
+  height: 350px;
   background-color: #ffffff;
-  box-shadow: var(--ds-shadow-card);
-  border-radius: var(--ds-radius-lg);
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  box-shadow: 0.5px 2px 15px rgba(0, 0, 0, 15%);
+  border-radius: 10px;
+  padding: 1.5625vw;
 }
 
-/* ===== Zone 1: Headline ===== */
-.lodging-headline {
-  font-family: "Antonio", sans-serif;
-  font-size: 24px;
-  font-weight: 300;
-  color: var(--ds-text-primary);
-  text-align: center;
-  margin-bottom: 24px;
-  line-height: 1.3;
-}
-
-.lodging-headline strong {
-  font-weight: 700;
-  color: var(--ds-accent);
-}
-
-/* ===== Zone 2: Form fields ===== */
-.form-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.field-group {
-  width: 100%;
-}
-
-.form-field-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ds-text-primary);
-  margin-bottom: 6px;
-}
-
-.form-field-label .required {
-  color: var(--ds-accent);
-}
-
-.selects-inline.dates-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-/* hide old headline outside card */
 .lodging-text {
-  display: none;
-}
-
-/* ===== Zone 3: CTA Button ===== */
-.lodging-searchButton {
-  width: 100%;
-  height: 54px;
-  background-color: #2563eb;
+  font-size: 48px;
   color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  display: block;
-  margin-top: 0;
+  margin-top: 70px;
+  height: auto;
+  margin-right: 1.5625vw;
+  line-height: 1.2;
+  text-align: right;
+  width: 24.74vw;
 }
 
-.lodging-searchButton:hover {
-  background-color: #1d4ed8;
+.lodging-form .lodging-form-select {
+  border-radius: 5px;
+  margin-bottom: 30px;
+  height: 50px;
+  font-size: 18px !important;
 }
 
-.lodging-searchButton:active {
-  transform: scale(0.98);
-}
-
-.lodging-searchButton:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
-}
-
-/* ===== Zone 4: Newsletter ===== */
-.form-divider {
-  border: none;
-  border-top: 1px solid #e2e8f0;
-  margin: 20px 0 16px;
+.lodging-form-big {
   width: 100%;
 }
 
-.newsletter-section {
+.lodging-form-small {
+  width: 49.5%;
+}
+
+.left {
+  margin-right: 1%;
+}
+
+.selects-inline {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 
-.newsletter-text {
-  font-size: 14px;
-  color: var(--ds-text-secondary, #64748b);
-  font-weight: 400;
+.selects-inline .gtt__list_area {
+  text-align: left;
 }
 
-.subscribe-button {
-  background-color: transparent;
-  border: 2px solid #2563eb;
-  color: #2563eb;
-  border-radius: 8px;
-  padding: 8px 20px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.2s ease, color 0.2s ease;
+#home-logged-banner .select-flag {
+  width: 30px;
+  height: 20px;
+  margin-right: 5px;
 }
 
-.subscribe-button:hover {
-  background-color: #2563eb;
-  color: #ffffff;
-}
-
-.subscribe-button:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
-}
-
-/* ===== Responsive ===== */
 @media (max-width: 1440px) {
   #home-logged-banner {
-    min-height: auto;
+    width: 100%;
+    height: 100%;
   }
 
   .lodging-text-form {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    padding: 20px;
-    justify-content: center;
+    position: absolute;
+    display: flex;
+    top: 26%;
+    padding-left: 8vw;
   }
 
   .lodging-form {
-    width: 100%;
-    max-width: 720px;
-    padding: 24px;
+    height: 230px;
+    width: 45.06vw;
   }
 
-  .selects-inline.dates-row {
-    gap: 12px;
-  }
-}
-
-@media (max-width: 768px) {
-  .lodging-form {
-    padding: 20px;
+  .lodging-text {
+    font-size: 36px;
   }
 
-  .lodging-headline {
-    font-size: 20px;
-  }
-
-  .selects-inline.dates-row {
-    grid-template-columns: 1fr;
-  }
-
-  .newsletter-section {
-    flex-direction: column;
-    text-align: center;
+  #home-logged-banner .select-flag {
+    width: 25px;
+    height: 15px;
   }
 }
 </style>
