@@ -71,6 +71,7 @@ import moment from "moment"
 
 const props = withDefaults(defineProps<{
   value?: any
+  modelValue?: any
   clickable?: boolean
   opened?: boolean
   dsb?: boolean
@@ -85,11 +86,11 @@ const props = withDefaults(defineProps<{
   mode: "range"
 })
 
-const emit = defineEmits<{ (e: "input", val: any): void }>()
+const emit = defineEmits<{ (e: "input", val: any): void; (e: "update:modelValue", val: any): void }>()
 
 const isVisible = ref(props.opened)
 const arrow = ref(true)
-const dates = ref(props.value !== undefined ? props.value : moment())
+const dates = ref(props.modelValue ?? props.value ?? moment())
 
 function toggleClicked() {
   if (props.clickable) isVisible.value = !isVisible.value
@@ -122,7 +123,7 @@ function constructSingleDate(date: any) {
 }
 
 function updateValue() {
-  dates.value = props.value !== undefined ? props.value : moment()
+  dates.value = props.modelValue ?? props.value ?? moment()
 }
 
 function setScreensByMode() {
@@ -134,12 +135,20 @@ watch(dates, (val, oldVal) => {
     isVisible.value = false
   }
   if (!val) {
-    emit("input", props.minDate || moment().format("DD/MM/YYYY"))
+    const fallback = props.minDate || moment().format("DD/MM/YYYY")
+    emit("input", fallback)
+    emit("update:modelValue", fallback)
+    return
   }
   emit("input", val)
+  emit("update:modelValue", val)
 })
 
 watch(() => props.value, () => {
+  updateValue()
+})
+
+watch(() => props.modelValue, () => {
   updateValue()
 })
 

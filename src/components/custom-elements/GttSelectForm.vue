@@ -33,7 +33,7 @@
     >
       <span class="arrow" v-if="arrow"></span>
       <div class="gtt__form">
-        <div class="gtt__item row" v-for="item in finalValue" :key="item.id">
+        <div class="gtt__item row" v-for="item in finalValue" :key="item.code">
           <div class="gtt__item_label col-md-6">{{ item.label }}</div>
           <div class="col-md-2">
             <button
@@ -58,7 +58,7 @@
           <div
             class="col-md-6 gtt__kidsSelect"
             v-for="(kid, i) in kids"
-            :key="kid.id"
+            :key="'kid-' + i"
           >
             <gtt-select :options="kidsAgeList" v-model="kid.age">
               <span slot="placeholder">Edad del menor {{ i + 1 }}</span>
@@ -79,11 +79,12 @@ import { clickOutside as vClickOutside } from "@/directives/clickOutside"
 import GttSelect from "../custom-elements/GttSelect.vue"
 import { constructDisplay } from "../../utils/utils"
 
-const props = withDefaults(defineProps<{ options?: any[]; value?: Record<string, any> | null }>(), {
-  value: null
+const props = withDefaults(defineProps<{ options?: any[]; value?: Record<string, any> | null; modelValue?: Record<string, any> | null }>(), {
+  value: null,
+  modelValue: null
 })
 
-const emit = defineEmits<{ (e: "input", val: any): void }>()
+const emit = defineEmits<{ (e: "input", val: any): void; (e: "update:modelValue", val: any): void }>()
 
 const kids = ref<any[]>([])
 const kidsAgeList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -93,7 +94,8 @@ const arrow = ref(true)
 const emitValue = ref<Record<string, any>>({})
 const finalValue = ref<any[]>([])
 
-if (!props.value) {
+const initialValue = computed(() => props.modelValue ?? props.value)
+if (!initialValue.value) {
   for (let index = 0; index < (props.options || []).length; index++) {
     const opt = props.options![index]
     finalValue.value.push({
@@ -104,7 +106,7 @@ if (!props.value) {
     })
   }
 } else {
-  for (const item of Object.entries(props.value)) {
+  for (const item of Object.entries(initialValue.value)) {
     finalValue.value.push(item[1])
   }
 }
@@ -114,6 +116,18 @@ finalValue.value.forEach(element => {
 })
 
 watch(() => props.value, (v) => {
+  if (v) {
+    finalValue.value = []
+    for (const item of Object.entries(v)) {
+      finalValue.value.push(item[1])
+    }
+  }
+  finalValue.value.forEach(element => {
+    updateValue(element)
+  })
+})
+
+watch(() => props.modelValue, (v) => {
   if (v) {
     finalValue.value = []
     for (const item of Object.entries(v)) {
@@ -145,6 +159,7 @@ function updateValue(item: any) {
     value: item.value
   }
   emit("input", emitValue.value)
+  emit("update:modelValue", emitValue.value)
 }
 
 function add(item: any, step = 1) {

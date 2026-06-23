@@ -98,6 +98,7 @@ const props = withDefaults(defineProps<{
   opened?: boolean
   searchFinished?: boolean
   value?: any
+  modelValue?: any
   isDisabled?: boolean
   nullable?: boolean
   alignLeft?: boolean
@@ -114,13 +115,14 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: "update:openedLodging", val: boolean): void
   (e: "input", val: any): void
+  (e: "update:modelValue", val: any): void
   (e: "update:searchQuery", val: string): void
 }>()
 
 const isVisible = ref(props.opened)
 const searchQuery = ref("")
 const arrow = ref(true)
-const selectedValue = ref(props.value != null ? props.value : "")
+const selectedValue = ref(props.modelValue ?? props.value ?? "")
 const buttonToggle = ref<HTMLElement | null>(null)
 
 const toggleAriaLabel = computed(() => {
@@ -146,7 +148,11 @@ const activeDescendant = computed(() => {
 })
 
 watch(() => props.value, (val) => {
-  selectedValue.value = val
+  if (val !== undefined) selectedValue.value = val
+})
+
+watch(() => props.modelValue, (val) => {
+  if (val !== undefined) selectedValue.value = val
 })
 
 onMounted(() => {
@@ -154,7 +160,7 @@ onMounted(() => {
 })
 
 function updateValue() {
-  selectedValue.value = props.value
+  selectedValue.value = props.modelValue ?? props.value
 }
 
 async function toggleClicked() {
@@ -206,6 +212,7 @@ function emitOpen() {
 
 function emitValue(value: any) {
   emit("input", value)
+  emit("update:modelValue", value)
 }
 </script>
 
