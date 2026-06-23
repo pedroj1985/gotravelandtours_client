@@ -160,97 +160,194 @@ onMounted(() => {
 .gtt__select_date {
   width: 100%;
   position: relative;
-  margin-bottom: var(--spacing-md);
 }
 
 .gtt__toggle {
-  @include gtt-button;
   width: 100%;
-  padding-right: 7px;
-  border-radius: var(--border-radius-sm);
-  justify-content: flex-start;
+  height: 44px;
+  padding: 0 12px;
+  border: none;
+  border-bottom: 1px solid var(--ds-border);
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(33, 47, 61, 0.2);
+    border-bottom-color: var(--ds-border-focus);
+  }
+
+  &:hover {
+    border-bottom-color: var(--ds-text-secondary);
   }
 }
 
 .gtt__toggle_content {
-  @include flex-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
 }
 
 .gtt__toggle_text {
   display: flex;
-}
-
-.gtt__toggle_text_first_column,
-.gtt__toggle_text_second_column {
-  padding-top: 11px;
-}
-
-.gtt__toggle_text_second_column {
+  align-items: center;
+  gap: 8px;
   text-align: left;
-  padding-left: var(--spacing-xs);
+
+  .small {
+    font-size: 12px;
+    color: var(--ds-text-secondary);
+    line-height: 1.2;
+  }
+
+  .bigDown {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ds-text-value);
+    line-height: 1.3;
+  }
+}
+
+.gtt__toggle_text_first_column {
+  display: flex;
+  align-items: center;
+  color: var(--ds-text-secondary);
+  font-size: 16px;
+}
+
+.gtt__toggle_text_second_column {
+  flex: 1;
+  min-width: 0;
 
   &.twoRows {
-    padding-top: var(--spacing-xs);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
 }
 
 .gtt__toggle_arrow {
-  margin-left: auto;
-  font-size: 30px;
+  display: flex;
+  align-items: center;
+  color: var(--ds-text-secondary);
+  font-size: 20px;
+  flex-shrink: 0;
 }
 
 .gtt__list_area_wrapper {
-  @include dropdown-wrapper;
   position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + var(--spacing-xs));
-  margin-top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(100% + 8px);
   z-index: var(--z-dropdown);
+  background: var(--color-background-white);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-datepicker);
+  padding: 16px;
 }
 
 .arrow {
-  @include dropdown-arrow;
+  display: none;
 }
 
 .displayDate {
   text-align: center;
-  font-family: "Helvetica Neue LT Std-Roman";
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ds-text-primary);
+  margin-top: 8px;
 }
 
-@media (max-width: 1440px) {
-  .gtt__toggle {
-    height: 35px;
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
+.gtt-errors {
+  margin-top: 4px;
+}
 
-  .arrow {
-    top: -12px;
-  }
+/* v-calendar overrides inside the popover */
+.gtt__date_picker :deep(.vc-container) {
+  border: none;
+  font-family: inherit;
+}
 
-  .gtt__toggle_text {
-    padding-top: 0;
-  }
+.gtt__date_picker :deep(.vc-header) {
+  padding: 8px 0 12px;
+}
 
-  .gtt__toggle_text_first_column,
-  .gtt__toggle_text_second_column {
-    padding-top: var(--spacing-xs);
-  }
+.gtt__date_picker :deep(.vc-title) {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ds-text-primary);
+  text-transform: uppercase;
+}
 
-  .gtt__toggle_arrow {
-    font-size: 20px;
-  }
+.gtt__date_picker :deep(.vc-arrow) {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-text-primary);
+  &:hover { background: var(--ds-bg-hover); }
+}
 
-  .displayDate {
-    font-size: 10px;
+.gtt__date_picker :deep(.vc-weekday) {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-text-secondary);
+  padding: 4px 0;
+  text-transform: lowercase;
+}
+
+.gtt__date_picker :deep(.vc-day) {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+}
+
+.gtt__date_picker :deep(.vc-day-content) {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ds-text-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--ds-bg-hover);
   }
+}
+
+.gtt__date_picker :deep(.vc-day.is-selected .vc-day-content) {
+  background: var(--ds-accent);
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.gtt__date_picker :deep(.vc-day.is-in-range .vc-day-content) {
+  background: var(--ds-bg-date-range);
+  border-radius: 0;
+}
+
+.gtt__date_picker :deep(.vc-day.is-start .vc-day-content) {
+  border-radius: 50%;
+  background: var(--ds-accent);
+  color: #ffffff;
+}
+
+.gtt__date_picker :deep(.vc-day.is-end .vc-day-content) {
+  border-radius: 50%;
+  background: var(--ds-accent);
+  color: #ffffff;
+}
+
+.gtt__date_picker :deep(.vc-highlight) {
+  background: var(--ds-bg-date-range);
 }
 </style>

@@ -601,100 +601,113 @@ onUnmounted(() => {
 #home-logged-banner {
   margin-top: 60px;
   width: 100%;
-  height: 750px;
+  min-height: 750px;
   position: relative;
 }
 
 #home-logged-banner img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .lodging-text-form {
   position: absolute;
   display: flex;
-  top: 26%;
-  padding-left: 8vw;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .lodging-form {
-  width: 39.06vw;
-  height: 350px;
+  width: 480px;
+  max-width: 90vw;
   background-color: #ffffff;
-  box-shadow: 0.5px 2px 15px rgba(0, 0, 0, 15%);
-  border-radius: 10px;
-  padding: 1.5625vw;
+  box-shadow: var(--ds-shadow-card);
+  border-radius: var(--ds-radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lodging-form :deep(.form-field-label) {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ds-text-primary);
+  margin-bottom: 6px;
+}
+
+.lodging-form :deep(.form-field-label .required) {
+  color: var(--ds-accent);
 }
 
 .lodging-text {
-  font-size: 48px;
-  color: #ffffff;
-  margin-top: 70px;
-  height: auto;
-  margin-right: 1.5625vw;
-  line-height: 1.2;
-  text-align: right;
-  width: 24.74vw;
-}
-
-.lodging-form .lodging-form-select {
-  border-radius: 5px;
-  margin-bottom: 30px;
-  height: 50px;
-  font-size: 18px !important;
-}
-
-.lodging-form-big {
-  width: 100%;
-}
-
-.lodging-form-small {
-  width: 49.5%;
-}
-
-.left {
-  margin-right: 1%;
+  display: none;
 }
 
 .selects-inline {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
-.selects-inline .gtt__list_area {
-  text-align: left;
+.nights-row {
+  width: 100%;
 }
 
-#home-logged-banner .select-flag {
-  width: 30px;
-  height: 20px;
-  margin-right: 5px;
+.form-actions {
+  margin-top: 4px;
+}
+
+.form-actions button {
+  width: 100%;
+  height: 44px;
+  background-color: var(--ds-accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--ds-radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-actions button:hover {
+  background-color: var(--ds-accent-hover);
+}
+
+.form-actions button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
 }
 
 @media (max-width: 1440px) {
   #home-logged-banner {
-    width: 100%;
-    height: 100%;
+    min-height: auto;
   }
 
   .lodging-text-form {
-    position: absolute;
-    display: flex;
-    top: 26%;
-    padding-left: 8vw;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    padding: 20px;
+    justify-content: center;
   }
 
   .lodging-form {
-    height: 230px;
-    width: 45.06vw;
+    width: 100%;
+    max-width: 480px;
+    padding: 20px;
+    gap: 16px;
   }
 
-  .lodging-text {
-    font-size: 36px;
-  }
-
-  #home-logged-banner .select-flag {
-    width: 25px;
-    height: 15px;
+  .selects-inline {
+    gap: 12px;
   }
 }
 </style>

@@ -92,59 +92,48 @@ function submitSearch(e: Event) {
 
 <style lang="scss" scoped>
 .gtt__list_area_div {
-  @include dropdown-wrapper;
+  background: var(--color-background-white);
 }
 
 ul.gtt__list_area {
-  min-height: 100px;
-  max-height: 300px;
-  min-width: 150px;
+  max-height: 240px;
   list-style: none;
   text-align: left;
-  border-radius: var(--border-radius-lg);
   overflow: auto;
-  padding: var(--spacing-md) 0;
-  background-color: var(--color-background-white);
-  margin-bottom: 0;
-  color: var(--color-text-primary);
+  padding: 4px 0;
+  margin: 0;
   padding-left: 0;
-  font-family: "Helvetica Neue LT Std-Roman";
-  font-size: var(--font-size-sm);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ds-text-primary);
 }
 
 .gtt__list_area_input {
-  @include gtt-input;
-  border: none;
-  background: var(--color-background-white);
-  padding: var(--spacing-md) var(--spacing-xl);
-  border-top-left-radius: var(--border-radius-lg);
-  border-top-right-radius: var(--border-radius-lg);
-  border-bottom: 1px solid var(--color-border-light);
-
-  &:focus {
-    outline: none;
-  }
+  display: none;
 }
 
 li.gtt__item {
-  padding: var(--spacing-md) var(--spacing-xl);
-  cursor: default;
+  height: 40px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ds-text-primary);
+  transition: background-color var(--transition-fast);
 
   &:hover {
-    background: var(--color-text-primary);
-    color: var(--color-text-light);
+    background-color: var(--ds-bg-hover);
+  }
+
+  &[aria-selected="true"] {
+    background-color: var(--ds-accent-bg);
+    color: var(--ds-accent);
+    font-weight: 600;
   }
 }
 
-@media (max-width: 1440px) {
-  ul.gtt__list_area {
-    font-size: 10px;
-    padding: var(--spacing-xs) 0;
-  }
-
-  li.gtt__item {
-    padding: var(--spacing-xs) var(--spacing-xl);
-    cursor: default;
-  }
+li.gtt__item + li.gtt__item {
+  border-top: 1px solid var(--ds-border);
 }
 </style>
