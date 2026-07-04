@@ -1,6 +1,7 @@
 <template>
-  <div class="gtt__select">
+  <div class="gtt__select" v-click-outside="handleFocusOut">
     <button
+      type="button"
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
@@ -27,9 +28,7 @@
               class="small"
               v-if="twoRows || (twoRows == false && !selectedValue)"
             >
-              <slot name="placeholder">
-                Seleccione
-              </slot>
+              <slot name="placeholder"> Seleccione </slot>
             </div>
             <div v-if="selectedValue" class="bigDown">
               <template v-if="selectedValue != 'ALL_ITEMS'">
@@ -58,162 +57,170 @@
       :class="{ isVisible: isVisible }"
       role="listbox"
       id="gtt-select-listbox"
-      v-click-outside="handleFocusOut"
     >
       <span class="arrow" v-if="arrow"></span>
       <GttSelectDropdown
         v-if="!search"
         :options="options"
         :nullable="nullable"
-        :searchQuery.sync="searchQuery"
+        v-model:searchQuery="searchQuery"
         :opened="opened"
         :selectedValue="selectedValue"
         @select="setSelectedValue"
         @search="searchQuery = $event"
-      />
+      >
+        <template #option="slotProps">
+          <slot name="option" v-bind="slotProps" />
+        </template>
+      </GttSelectDropdown>
       <GttSelectSearch
         v-else
         :options="options"
-        :searchQuery.sync="searchQuery"
+        v-model:searchQuery="searchQuery"
         :selectedValue="selectedValue"
         @select="setSelectedValue"
         @search="searchQuery = $event"
-      />
+      >
+        <template #option="slotProps">
+          <slot name="option" v-bind="slotProps" />
+        </template>
+      </GttSelectSearch>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue"
-import { clickOutside as vClickOutside } from "@/directives/clickOutside"
-import GttSelectDropdown from "./GttSelectDropdown.vue"
-import GttSelectSearch from "./GttSelectSearch.vue"
+import { ref, computed, watch, onMounted } from "vue";
+import GttSelectDropdown from "./GttSelectDropdown.vue";
+import GttSelectSearch from "./GttSelectSearch.vue";
 
-const props = withDefaults(defineProps<{
-  openedLodging?: any
-  twoRows?: any
-  options?: any[]
-  search?: boolean
-  clickable?: boolean
-  opened?: boolean
-  searchFinished?: boolean
-  value?: any
-  modelValue?: any
-  isDisabled?: boolean
-  nullable?: boolean
-  alignLeft?: boolean
-}>(), {
-  search: false,
-  clickable: true,
-  opened: false,
-  searchFinished: false,
-  isDisabled: false,
-  nullable: false,
-  alignLeft: false
-})
+const props = withDefaults(
+  defineProps<{
+    openedLodging?: any;
+    twoRows?: any;
+    options?: any[];
+    search?: boolean;
+    clickable?: boolean;
+    opened?: boolean;
+    searchFinished?: boolean;
+    value?: any;
+    isDisabled?: boolean;
+    nullable?: boolean;
+    alignLeft?: boolean;
+  }>(),
+  {
+    search: false,
+    clickable: true,
+    opened: false,
+    searchFinished: false,
+    isDisabled: false,
+    nullable: false,
+    alignLeft: false,
+  },
+);
 
 const emit = defineEmits<{
-  (e: "update:openedLodging", val: boolean): void
-  (e: "input", val: any): void
-  (e: "update:modelValue", val: any): void
-  (e: "update:searchQuery", val: string): void
-}>()
+  (e: "update:openedLodging", val: boolean): void;
+  (e: "input", val: any): void;
+  (e: "update:searchQuery", val: string): void;
+}>();
 
-const isVisible = ref(props.opened)
-const searchQuery = ref("")
-const arrow = ref(true)
-const selectedValue = ref(props.modelValue ?? props.value ?? "")
-const buttonToggle = ref<HTMLElement | null>(null)
+const isVisible = ref(props.opened);
+const searchQuery = ref("");
+const arrow = ref(true);
+const selectedValue = ref(props.value != null ? props.value : "");
+const buttonToggle = ref<HTMLElement | null>(null);
 
 const toggleAriaLabel = computed(() => {
-  if (selectedValue.value && selectedValue.value !== 'ALL_ITEMS') {
-    return typeof selectedValue.value === 'object'
-      ? selectedValue.value.nombre || 'Seleccionar'
-      : String(selectedValue.value)
+  if (selectedValue.value && selectedValue.value !== "ALL_ITEMS") {
+    return typeof selectedValue.value === "object"
+      ? selectedValue.value.nombre || "Seleccionar"
+      : String(selectedValue.value);
   }
-  return 'Seleccionar'
-})
+  return "Seleccionar";
+});
 
 const activeDescendant = computed(() => {
-  if (!isVisible.value || !selectedValue.value || selectedValue.value === 'ALL_ITEMS') {
-    return undefined
+  if (
+    !isVisible.value ||
+    !selectedValue.value ||
+    selectedValue.value === "ALL_ITEMS"
+  ) {
+    return undefined;
   }
   const idx = (props.options || []).findIndex((opt: any) => {
-    if (typeof opt === 'object' && typeof selectedValue.value === 'object') {
-      return opt.id === selectedValue.value.id
+    if (typeof opt === "object" && typeof selectedValue.value === "object") {
+      return opt.id === selectedValue.value.id;
     }
-    return opt === selectedValue.value
-  })
-  return idx >= 0 ? `gtt-option-${idx}` : undefined
-})
+    return opt === selectedValue.value;
+  });
+  return idx >= 0 ? `gtt-option-${idx}` : undefined;
+});
 
-watch(() => props.value, (val) => {
-  if (val !== undefined) selectedValue.value = val
-})
-
-watch(() => props.modelValue, (val) => {
-  if (val !== undefined) selectedValue.value = val
-})
+watch(
+  () => props.value,
+  (val) => {
+    selectedValue.value = val;
+  },
+);
 
 onMounted(() => {
-  updateValue()
-})
+  updateValue();
+});
 
 function updateValue() {
-  selectedValue.value = props.modelValue ?? props.value
+  selectedValue.value = props.value;
 }
 
-function toggleClicked(event?: Event) {
-  event?.stopPropagation()
+async function toggleClicked() {
   if (props.clickable) {
-    isVisible.value = !isVisible.value
+    isVisible.value = !isVisible.value;
     if (isVisible.value == true) {
-      emitOpen()
+      emitOpen();
     } else {
-      searchQuery.value = ""
-      emitClose()
+      searchQuery.value = "";
+      emitClose();
     }
   }
 }
 
 function onToggleKeydown(e: KeyboardEvent) {
   if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
-    e.preventDefault()
-    toggleClicked()
+    e.preventDefault();
+    toggleClicked();
   }
   if (e.key === "Escape") {
-    isVisible.value = false
-    emitClose()
+    isVisible.value = false;
+    emitClose();
   }
 }
 
 function setSelectedValue(item: any) {
-  buttonToggle.value?.focus()
-  selectedValue.value = item
-  emitValue(selectedValue.value)
-  searchQuery.value = ""
-  isVisible.value = false
-  emitClose()
+  buttonToggle.value?.focus();
+  selectedValue.value = item;
+  emitValue(selectedValue.value);
+  searchQuery.value = "";
+  isVisible.value = false;
+  emitClose();
 }
 
 function handleFocusOut() {
   if (!props.opened) {
-    isVisible.value = false
-    emitClose()
+    isVisible.value = false;
+    emitClose();
   }
 }
 
 function emitClose() {
-  emit("update:openedLodging", false)
+  emit("update:openedLodging", false);
 }
 
 function emitOpen() {
-  emit("update:openedLodging", true)
+  emit("update:openedLodging", true);
 }
 
 function emitValue(value: any) {
-  emit("input", value)
-  emit("update:modelValue", value)
+  emit("input", value);
 }
 </script>
 
@@ -221,95 +228,65 @@ function emitValue(value: any) {
 .gtt__select {
   width: 100%;
   position: relative;
+  margin-bottom: var(--spacing-md);
 }
 
 .gtt__toggle {
+  @include gtt-button;
   width: 100%;
-  height: 44px;
-  padding: 0 12px;
-  border: none;
-  border-bottom: 1px solid var(--ds-border);
-  background-color: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: inherit;
+  background-color: var(--color-background-white);
+  justify-content: flex-start;
+  font-size: var(--font-size-md);
+  border-radius: var(--border-radius-sm);
 
   &:focus {
     outline: none;
-    border-bottom-color: var(--ds-border-focus);
-  }
-
-  &:hover {
-    border-bottom-color: var(--ds-text-secondary);
+    box-shadow: 0 0 0 2px rgba(33, 47, 61, 0.2);
   }
 }
 
 .gtt__toggle_content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  @include flex-between;
   width: 100%;
 }
 
 .gtt__toggle_text {
-  display: flex;
-  align-items: center;
+  @include flex-center;
   flex: 1;
-  gap: 8px;
-  text-align: left;
 
   &.align-left {
     justify-content: flex-start;
   }
 }
 
-.gtt__toggle_text_first_column {
-  display: flex;
-  align-items: center;
-  color: var(--ds-text-secondary);
-  font-size: 16px;
+.gtt__toggle_text_first_column,
+.gtt__toggle_text_second_column {
+  padding-top: 11px;
 }
 
 .gtt__toggle_text_second_column {
-  flex: 1;
-  min-width: 0;
+  text-align: left;
+  padding-left: var(--spacing-xs);
 
-  .small {
-    font-size: 12px;
-    color: var(--ds-text-secondary);
-    line-height: 1.2;
-  }
-
-  .bigDown {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--ds-text-value);
-    line-height: 1.3;
-    @include text-truncate;
+  &.twoRows {
+    padding-top: var(--spacing-xs);
   }
 }
 
 .gtt__toggle_arrow {
-  display: flex;
-  align-items: center;
-  color: var(--ds-text-secondary);
-  font-size: 20px;
-  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 30px;
 }
 
 .gtt__list_area_wrapper {
   display: none;
+  @include dropdown-wrapper;
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% + 4px);
+  top: calc(100% + var(--spacing-xs));
+  margin-top: 0;
   z-index: var(--z-dropdown);
-  background: var(--color-background-white);
-  border-radius: var(--ds-radius-md);
-  box-shadow: var(--ds-shadow-dropdown);
-  overflow: hidden;
 
   &.isVisible {
     display: block;
@@ -317,6 +294,40 @@ function emitValue(value: any) {
 }
 
 .arrow {
-  display: none;
+  @include dropdown-arrow;
+}
+
+@media (max-width: 1440px) {
+  .gtt__toggle {
+    height: 35px;
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    cursor: pointer;
+  }
+
+  .arrow {
+    top: -12px;
+  }
+
+  .gtt__toggle_text {
+    padding-top: 0;
+  }
+
+  .gtt__toggle_text_first_column,
+  .gtt__toggle_text_second_column {
+    padding-top: var(--spacing-xs);
+  }
+
+  .gtt__toggle_text_second_column .bigDown {
+    line-height: var(--line-height-tight);
+  }
+
+  .twoRows {
+    padding-top: 0;
+  }
+
+  .gtt__toggle_arrow {
+    font-size: 20px;
+  }
 }
 </style>

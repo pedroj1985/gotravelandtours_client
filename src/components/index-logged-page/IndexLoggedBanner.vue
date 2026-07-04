@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div id="home-logged-banner">
     <div class="home-logged-img">
       <img src="/img/homelogin_img_form_alojamiento.jpg" alt="Alojamientos" />
@@ -51,7 +51,7 @@
         <div ref="gttDestinyLodging" style="width: 100%">
           <gtt-select
             v-model:openedLodging="lodgingOpened"
-            @click="loadDestinies"
+            @click.native="loadDestinies"
             v-model="selectedLodgingDestinyValue"
             :options="destinies"
             :alignLeft="true"
@@ -63,7 +63,7 @@
               <span class="required-field">Destino o Alojamiento</span>
             </template>
             <template v-slot:selectedPlaceholder>
-              <span>┬┐D├│nde desea alojarse?</span>
+              <span>¿Dónde desea alojarse?</span>
             </template>
             <template v-slot:option="option">
               {{ option.option.nombre }}
@@ -125,7 +125,7 @@
                 <span>Noches</span>
               </template>
               <template v-slot:selectedPlaceholder>
-                <span>┬┐Cu├íntas noches?</span>
+                <span>¿Cuántas noches?</span>
               </template>
               <template v-slot:option="option">
                 {{ constructDisplayNights(option.option) }}
@@ -280,14 +280,14 @@ const roomLayout = [
   },
   {
     code: "kids",
-    label: "Ni├▒os",
-    display: "Ni├▒o(s)",
+    label: "Niños",
+    display: "Niño(s)",
     default: 0,
   },
 ];
 const countries = [
   {
-    nombre: "Afganist├ín",
+    nombre: "Afganistán",
     flag: "flag_afganistan.jpg",
   },
   {
@@ -483,7 +483,7 @@ async function activateModal() {
           });
         } else {
           desactivateModal();
-          toast("Demasiados ni├▒os", {
+          toast("Demasiados niños", {
             type: "error",
           });
         }
@@ -492,7 +492,7 @@ async function activateModal() {
           console.log(error);
         }
         desactivateModal();
-        toast("El servicio no est├í disponible en estos momentos", {
+        toast("El servicio no está disponible en estos momentos", {
           type: "error",
         });
       }
@@ -532,7 +532,7 @@ async function activateModal() {
           );
         } else {
           desactivateModal();
-          toast("Demasiados ni├▒os", {
+          toast("Demasiados niños", {
             type: "error",
           });
         }
@@ -541,7 +541,7 @@ async function activateModal() {
           console.log(error);
         }
         desactivateModal();
-        toast("El servicio no est├í disponible en estos momentos", {
+        toast("El servicio no está disponible en estos momentos", {
           type: "error",
         });
       }

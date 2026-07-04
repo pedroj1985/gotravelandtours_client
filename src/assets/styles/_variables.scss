@@ -1,15 +1,9 @@
 :root {
-  // Primary colors (legacy - kept for existing components)
+  // Primary colors
   --color-primary: #7fa300;
   --color-primary-hover: #6b8a00;
   --color-primary-dark: #5c7500;
   --color-secondary: #f5f5f5;
-
-  // === New Design System tokens (search form, etc.) ===
-  --ds-accent: #2563eb;
-  --ds-accent-hover: #1d4ed8;
-  --ds-accent-light: #dbeafe;
-  --ds-accent-bg: #eff6ff;
 
   // Text colors
   --color-text-primary: #212f3d;
@@ -18,29 +12,16 @@
   --color-text-muted: #9b9b9b;
   --color-text-disabled: #bdbdbd;
 
-  // === New Design System text colors ===
-  --ds-text-primary: #1e293b;
-  --ds-text-secondary: #94a3b8;
-  --ds-text-value: #0f172a;
-
   // Border colors
   --color-border: #c4c4c4;
   --color-border-light: #e0e0e0;
   --color-border-dark: #999999;
-
-  // === New Design System borders ===
-  --ds-border: #e2e8f0;
-  --ds-border-focus: #2563eb;
 
   // Background colors
   --color-background: #f5f5f5;
   --color-background-white: #ffffff;
   --color-background-light: #fafafa;
   --color-bg-disabled: #ebebeb;
-
-  // === New Design System backgrounds ===
-  --ds-bg-hover: #f1f5f9;
-  --ds-bg-date-range: #dbeafe;
 
   // Status colors
   --color-success: #28a745;
@@ -57,7 +38,8 @@
   --spacing-xxl: 40px;
 
   // Typography (alineado con mixins / inputs)
-  --font-family: "Helvetica Neue LT Std-Roman", "Helvetica Neue", Helvetica, Arial,
+  --font-family:
+    "Helvetica Neue LT Std-Roman", "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 
   // Font sizes
@@ -73,7 +55,6 @@
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
-  --font-weight-semibold: 600;
 
   // Line heights
   --line-height-tight: 1.2;
@@ -86,21 +67,11 @@
   --border-radius-lg: 10px;
   --border-radius-xl: 15px;
 
-  // === New Design System border radius ===
-  --ds-radius-sm: 6px;
-  --ds-radius-md: 8px;
-  --ds-radius-lg: 12px;
-
   // Shadows
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-
-  // === New Design System shadows ===
-  --ds-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --ds-shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --ds-shadow-datepicker: 0 8px 24px rgba(0, 0, 0, 0.15);
 
   // Z-index layers
   --z-dropdown: 100;
