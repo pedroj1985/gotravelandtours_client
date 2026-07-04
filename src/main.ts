@@ -16,6 +16,7 @@ import {
 } from "./utils/errorHandler";
 import { useAuthStore } from "./stores/authStore";
 import { useCartStore } from "./stores/cartStore";
+import { getUser } from "./utils/auth";
 import { setupVeeValidate } from "./utils/vee-validate-setup";import { clickOutside } from "./directives/clickOutside";import type { RouteLocationNormalized } from "vue-router";
 
 const app = createApp(App);
@@ -46,6 +47,16 @@ const router = createRouter({
     return { top: 0, left: 0 };
   }
 });
+
+const authStore = useAuthStore();
+const cartStore = useCartStore();
+
+const persistedUser = getUser();
+if (persistedUser) {
+  authStore.login(persistedUser);
+}
+
+cartStore.refresh();
 
 router.beforeEach((to: RouteLocationNormalized) => {
   if (to.matched.some(record => (record.meta.requiresAuth as boolean))) {
