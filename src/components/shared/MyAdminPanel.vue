@@ -155,7 +155,8 @@ export default {
           displayName: "Reservaciones",
           code: "reservation",
           route: "myreservations"
-        },
+        }
+        /* TODO: Fase 12 — Implementar estos módulos del admin panel
         {
           displayName: "Reportes",
           code: "report",
@@ -176,6 +177,7 @@ export default {
           code: "document",
           route: "mydocs"
         }
+        */
       ]
     };
   }
