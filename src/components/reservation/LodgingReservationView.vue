@@ -45,28 +45,28 @@
       <div class="list-item-price">
         <div class="price-wrapper">
           <GttTwoRowsInfo :value="getDateEntrada(item)" class="info-item">
-            <template slot="tr-icon-slot">
+            <template #tr-icon-slot>
               <i class="mdi mdi-calendar"></i>
             </template>
-            <template slot="tr-info-name">Fecha de entrada</template>
+            <template #tr-info-name>Fecha de entrada</template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getDateSalida(item)" class="info-item">
-            <template slot="tr-icon-slot">
+            <template #tr-icon-slot>
               <i class="mdi mdi-calendar"></i>
             </template>
-            <template slot="tr-info-name">Fecha de salida</template>
+            <template #tr-info-name>Fecha de salida</template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getVisitantes(item)" class="info-item">
-            <template slot="tr-icon-slot">
+            <template #tr-icon-slot>
               <i class="mdi mdi-account"></i>
             </template>
-            <template slot="tr-info-name">Visitantes</template>
+            <template #tr-info-name>Visitantes</template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getHabitaciones(item)" class="info-item">
-            <template slot="tr-icon-slot">
+            <template #tr-icon-slot>
               <i class="mdi mdi-bed"></i>
             </template>
-            <template slot="tr-info-name">Habitaciones</template>
+            <template #tr-info-name>Habitaciones</template>
           </GttTwoRowsInfo>
           <!-- <GttTwoRowsInfo
             class="info-item"

@@ -17,8 +17,10 @@
               class="room-form-item"
               :opened="cI == 'fecha-entrada'"
             >
-              <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-              <span slot="placeholder">Fecha de entrada</span>
+              <template #iconSelectedValue>
+                <i class="mdi mdi-calendar-today"></i>
+              </template>
+              <template #placeholder>Fecha de entrada</template>
             </GttSelectDate>
             <GttSelectDate
               :mode="'single'"
@@ -26,8 +28,10 @@
               class="room-form-item"
               :opened="cI == 'fecha-salida'"
             >
-              <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-              <span slot="placeholder">Fecha de salida</span>
+              <template #iconSelectedValue>
+                <i class="mdi mdi-calendar-today"></i>
+              </template>
+              <template #placeholder>Fecha de salida</template>
             </GttSelectDate>
             <GttSelectForm2
               :options="roomLayout"
@@ -38,10 +42,10 @@
               @roomAdded="addRoom"
               @roomRemoved="removeRoom"
             >
-              <span slot="iconSelectedValue">
+              <template #iconSelectedValue>
                 <i class="mdi mdi-account"></i>
-              </span>
-              <span slot="placeholder">Visitantes</span>
+              </template>
+              <template #placeholder>Visitantes</template>
             </GttSelectForm2>
             <GttSelect
               :options="roomsOpt"
@@ -49,8 +53,10 @@
               :opened="cI == 'habitaciones'"
               class="room-form-item last"
             >
-              <i slot="iconSelectedValue" class="mdi mdi-bed"></i>
-              <span slot="placeholder">Habitaciones</span>
+              <template #iconSelectedValue>
+                <i class="mdi mdi-bed"></i>
+              </template>
+              <template #placeholder>Habitaciones</template>
               <template v-slot:option="option">{{
                 option.option.display
               }}</template>
