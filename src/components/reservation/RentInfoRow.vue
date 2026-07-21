@@ -12,8 +12,8 @@
         <div class="ir-info-name font14 required-field">Datos de recogida</div>
 
         <gtt-select
-          v-on:input="$emit('inputPickUpPlace', $event)"
-          :openedLodging.sync="pickUpOpened"
+          @update:modelValue="$emit('inputPickUpPlace', $event)"
+          v-model:openedLodging="pickUpOpened"
           :options="pickUpDeliveryOptions"
           class="cleft"
           v-model="selectedPickUpPlace"
@@ -46,8 +46,8 @@
       <div ref="gttDelivery" class="input-right ir-text-input">
         <div class="ir-info-name font14 required-field">Datos de entrega</div>
         <gtt-select
-          v-on:input="$emit('inputDeliveryPlace', $event)"
-          :openedLodging.sync="deliveryOpened"
+          @update:modelValue="$emit('inputDeliveryPlace', $event)"
+          v-model:openedLodging="deliveryOpened"
           :options="pickUpDeliveryOptions"
           v-model="selectedDeliveryPlace"
         >

@@ -42,22 +42,22 @@
       <div class="list-item-price">
         <div class="price-wrapper">
           <GttTwoRowsInfo :value="getDateRecogida(item)" class="info-item">
-            <template slot="tr-icon-slot">
+            <template #tr-icon-slot>
               <i class="mdi mdi-calendar"></i>
             </template>
-            <template slot="tr-info-name"> Fecha de recogida </template>
+            <template #tr-info-name> Fecha de recogida </template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo :value="getDateEntrega(item)" class="info-item">
-            <template slot="tr-icon-slot">
+            <template #tr-icon-slot>
               <i class="mdi mdi-calendar"></i>
             </template>
-            <template slot="tr-info-name"> Fecha de entrega </template>
+            <template #tr-info-name> Fecha de entrega </template>
           </GttTwoRowsInfo>
           <GttTwoRowsInfo class="info-item" :value="getDiff()">
-            <template slot="tr-icon-slot">
+            <template #tr-icon-slot>
               <i class="mdi mdi-calendar-week"></i>
             </template>
-            <template slot="tr-info-name"> Día(s) reservados </template>
+            <template #tr-info-name> Día(s) reservados </template>
           </GttTwoRowsInfo>
           <!-- <GttTwoRowsInfo
             class="info-item"
@@ -77,10 +77,10 @@
             </template>
           </GttTwoRowsInfo> -->
           <GttTwoRowsInfo :value="item.seguro" class="info-item">
-            <template slot="tr-icon-slot">
+            <template #tr-icon-slot>
               <i class="mdi mdi-shield-car"></i>
             </template>
-            <template slot="tr-info-name"> Seguro </template>
+            <template #tr-info-name> Seguro </template>
           </GttTwoRowsInfo>
         </div>
       </div>
