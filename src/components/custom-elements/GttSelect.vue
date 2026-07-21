@@ -65,7 +65,7 @@
         v-if="!search"
         :options="options"
         :nullable="nullable"
-        :searchQuery.sync="searchQuery"
+        v-model:searchQuery="searchQuery"
         :opened="opened"
         :selectedValue="selectedValue"
         @select="setSelectedValue"
@@ -74,7 +74,7 @@
       <GttSelectSearch
         v-else
         :options="options"
-        :searchQuery.sync="searchQuery"
+        v-model:searchQuery="searchQuery"
         :selectedValue="selectedValue"
         @select="setSelectedValue"
         @search="searchQuery = $event"
