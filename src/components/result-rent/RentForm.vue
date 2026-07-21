@@ -28,8 +28,7 @@
     </GttModalSearch>
     <div class="cleft">
       <gtt-select
-        :openedLodging.sync="pickUpOpened"
-        @click.native="loadPickUpPlaces"
+        v-model:openedLodging="pickUpOpened"
         :options="pickUpDeliveryOptions"
         class="cleft"
         v-model="selectedPickUpPlace"
@@ -49,8 +48,7 @@
 
     <div class="cleft">
       <gtt-select
-        :openedLodging.sync="deliveryOpened"
-        @click.native="loadDeliveryPlaces"
+        v-model:openedLodging="deliveryOpened"
         :options="pickUpDeliveryOptions"
         v-model="selectedDeliveryPlace"
       >
@@ -98,8 +96,7 @@
       </gtt-select>
     </div>
     <gtt-select
-      :openedLodging.sync="categoriesOpened"
-      @click.native="loadMarcas"
+      v-model:openedLodging="categoriesOpened"
       :options="carsCategories"
       class="cleft"
       v-model="selectedCarCategory"
@@ -215,6 +212,15 @@ export default {
     }
   },
   watch: {
+    pickUpOpened(val) {
+      if (val) this.loadPickUpPlaces();
+    },
+    deliveryOpened(val) {
+      if (val) this.loadDeliveryPlaces();
+    },
+    categoriesOpened(val) {
+      if (val) this.loadMarcas();
+    },
     propNationality: function(sn) {
       this.selectedNationality = sn;
     },

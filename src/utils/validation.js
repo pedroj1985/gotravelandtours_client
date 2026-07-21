@@ -3,11 +3,6 @@ import moment from "moment";
 export function gttIsValid(Validator, vueInstance = null) {
   console.log(Validator);
   console.log(vueInstance);
-  if (Validator.length == 8 && vueInstance.$children.length == 4) {
-    Validator.pop();
-    Validator.pop();
-    Validator.pop();
-  }
 
   return Validator.map(element => {
     let passesArray = element.rules.map(item => {
@@ -129,16 +124,19 @@ export function renderValid(Validator, vueInstance) {
     let ref = vueInstance.$refs[element.name];
 
     if (ref == null) {
-      vueInstance.$children.forEach(child => {
-        if (child.$refs[element.name]) ref = child.$refs[element.name];
-      });
+      let el = vueInstance.$el && vueInstance.$el.querySelector('[data-ref="' + element.name + '"]');
+      if (el) ref = el;
     }
 
-    ref.querySelector(".gtt-errors").innerHTML = "";
+    if (!ref) return;
+
+    let errorsEl = ref.querySelector ? ref.querySelector(".gtt-errors") : null;
+    if (!errorsEl) return;
+
+    errorsEl.innerHTML = "";
     if (!element.isValid) {
       element.messages.forEach(item => {
-        let div = ref.querySelector(".gtt-errors");
-        div.innerHTML += item + "<br>";
+        errorsEl.innerHTML += item + "<br>";
       });
     }
   });

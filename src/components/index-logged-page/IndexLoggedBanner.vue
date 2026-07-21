@@ -44,8 +44,7 @@
       <div class="lodging-form">
         <div ref="gttDestinyLodging" style="width: 100%;">
           <gtt-select
-            :openedLodging.sync="lodgingOpened"
-            @click.native="loadDestinies"
+            v-model:openedLodging="lodgingOpened"
             v-model="selectedLodgingDestinyValue"
             :options="destinies"
             :alignLeft="true"
@@ -256,6 +255,9 @@ export default {
     }
   },
   watch: {
+    lodgingOpened(val) {
+      if (val) this.loadDestinies();
+    },
     selectedEndDate(item) {
       let n = moment(this.selectedEndDate).diff(this.selectedStartDate, "days");
 

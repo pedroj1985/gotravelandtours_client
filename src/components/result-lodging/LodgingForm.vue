@@ -30,8 +30,7 @@
     </GttModalSearch>
     <div ref="gttDestinyLodging">
       <gtt-select
-        :openedLodging.sync="lodgingOpened"
-        @click.native="loadDestinies"
+        v-model:openedLodging="lodgingOpened"
         v-model="selectedLodgingDestinyValue"
         :options="destinies"
         :alignLeft="true"
@@ -169,6 +168,9 @@ export default {
     }
   },
   watch: {
+    lodgingOpened(val) {
+      if (val) this.loadDestinies();
+    },
     propNationality: function(sn) {
       this.selectedNationality = sn;
     },
