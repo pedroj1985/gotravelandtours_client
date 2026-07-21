@@ -104,7 +104,7 @@ export default {
     this.updateValue();
   },
   watch: {
-    value: function(val) {
+    modelValue: function(val) {
       this.selectedValue = val;
     }
   },
@@ -134,7 +134,7 @@ export default {
       type: Boolean,
       default: false
     },
-    value: {
+    modelValue: {
       default: null
     },
     isDisabled: {
@@ -217,7 +217,7 @@ export default {
       }
     },
     updateValue() {
-      this.selectedValue = this.value;
+      this.selectedValue = this.modelValue;
     },
     emitClose() {
       this.$emit("update:openedLodging", false);
@@ -226,7 +226,7 @@ export default {
       this.$emit("update:openedLodging", true);
     },
     emitValue(value) {
-      this.$emit("input", value);
+      this.$emit("update:modelValue", value);
     }
   }
 };

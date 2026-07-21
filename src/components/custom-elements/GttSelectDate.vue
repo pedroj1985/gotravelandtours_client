@@ -79,7 +79,7 @@ export default {
     this.isVisible = this.opened;
   },
   props: {
-    value: {
+    modelValue: {
       default: moment()
     },
     clickable: {
@@ -112,7 +112,7 @@ export default {
     return {
       isVisible: false,
       arrow: true,
-      dates: this.value
+      dates: this.modelValue
     };
   },
   watch: {
@@ -121,11 +121,11 @@ export default {
         this.isVisible = false;
       }
       if (!val) {
-        this.$emit("input", this.minDate);
+        this.$emit("update:modelValue", this.minDate);
       }
-      this.$emit("input", val);
+      this.$emit("update:modelValue", val);
     },
-    value: function() {
+    modelValue: function() {
       this.updateValue();
     }
   },
@@ -161,7 +161,7 @@ export default {
         .format("DD MMM YYYY");
     },
     updateValue() {
-      this.dates = this.value;
+      this.dates = this.modelValue;
     },
     setScreensByMode() {
       return this.mode == "range" ? 2 : 1;

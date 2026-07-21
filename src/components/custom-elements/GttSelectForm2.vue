@@ -158,7 +158,7 @@ export default {
       default: false
     },
     options: Array,
-    value: {
+    modelValue: {
       type: Array,
       default: function() {
         return [];
@@ -172,7 +172,7 @@ export default {
   created() {
     this.isVisible = this.opened;
     let r = [];
-    if (this.value.length == 0) {
+    if (this.modelValue.length == 0) {
       for (let index = 1; index <= this.rooms; index++) {
         let Hs = [];
         for (let pos = 0; pos < this.options.length; pos++) {
@@ -193,7 +193,7 @@ export default {
       this.roomsLayout = r;
       this.updateValue();
     } else {
-      this.roomsLayout = this.value;
+      this.roomsLayout = this.modelValue;
       this.updateValue();
     }
     console.log(this.roomsLayout);
@@ -219,10 +219,10 @@ export default {
       if (!this.opened) this.isVisible = false;
     },
     uValue() {
-      this.emitValue = this.value;
+      this.emitValue = this.modelValue;
     },
     updateValue() {
-      this.$emit("input", this.roomsLayout);
+      this.$emit("update:modelValue", this.roomsLayout);
     },
     constructDisplay() {
       let totalAdults = _.sumBy(this.roomsLayout, i => {

@@ -90,13 +90,13 @@ export default {
   },
   props: {
     options: Array,
-    value: {
+    modelValue: {
       type: Object,
       default: null
     }
   },
   watch: {
-    value(v) {
+    modelValue(v) {
       if (v) {
         this.finalValue = [];
         for (const item of Object.entries(v)) {
@@ -110,7 +110,7 @@ export default {
     }
   },
   created() {
-    if (!this.value) {
+    if (!this.modelValue) {
       for (let index = 0; index < this.options.length; index++) {
         let code = this.options[index].code;
         let d = this.options[index].default;
@@ -122,7 +122,7 @@ export default {
         });
       }
     } else {
-      for (const item of Object.entries(this.value)) {
+      for (const item of Object.entries(this.modelValue)) {
         this.finalValue.push(item[1]);
       }
     }
@@ -160,7 +160,7 @@ export default {
         label: item.label,
         value: item.value
       };
-      this.$emit("input", this.emitValue);
+      this.$emit("update:modelValue", this.emitValue);
     },
     add(item, step = 1) {
       if (item.code == "kids") {
