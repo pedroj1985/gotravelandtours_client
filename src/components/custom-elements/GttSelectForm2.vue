@@ -92,13 +92,9 @@
 
 <script>
 import { clickOutside } from "@/directives/clickOutside";
-// import GttSelect from '../custom-elements/GttSelect';
 import _ from "lodash";
 
 export default {
-  components: {
-    // GttSelect
-  },
   directives: {
     clickOutside
   },
@@ -197,12 +193,9 @@ export default {
       this.updateValue();
     }
     console.log(this.roomsLayout);
-    console.log("asjdasdhka");
   },
   data() {
     return {
-      kids: [],
-      kidsAgeList: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
       isChanged: false,
       isVisible: false,
       arrow: true,
@@ -217,9 +210,6 @@ export default {
     },
     handleFocusOut() {
       if (!this.opened) this.isVisible = false;
-    },
-    uValue() {
-      this.emitValue = this.modelValue;
     },
     updateValue() {
       this.$emit("update:modelValue", this.roomsLayout);
@@ -241,9 +231,6 @@ export default {
     },
     add(item, index) {
       if (item.code == "kids") {
-        this.kids.push({
-          age: null
-        });
         item.value += 1;
         this.isChanged = true;
         this.updateValue(item);
@@ -272,7 +259,6 @@ export default {
     },
     remove(item, index) {
       if (item.code == "kids") {
-        this.kids.pop();
         item.value -= 1;
         this.isChanged = true;
         this.updateValue(item);

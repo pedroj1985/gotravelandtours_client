@@ -59,12 +59,8 @@ export default {
     classToButton: {
       type: String
     },
-    value: null,
     arrow: {
       default: true
-    },
-    user: {
-      type: Object
     }
   },
   data() {

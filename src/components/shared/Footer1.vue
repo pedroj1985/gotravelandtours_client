@@ -17,7 +17,7 @@
           </div>
           <div>{{ errors[0] }}</div>
         </Field>
-        <button type="submit" class="btn antonio-regular">
+        <button type="submit" class="btn antonio-regular" :disabled="loading">
           <template v-if="!loading">suscribirse</template>
           <span
             class="gtt-spinner gtt-spinner-sm loading-spinner"
