@@ -5,8 +5,8 @@
         <img src="/img/logo_colibri_white.png" alt="Colibri Viajes" />
         <div class="all-rights">
           © 2020 Colibri Viajes. Todos los derechos reservados.
-          <router-link to="booking-conditions">Términos de uso </router-link>|
-          <router-link to="privacy-policy"
+          <router-link to="/booking-conditions">Términos de uso </router-link>|
+          <router-link to="/privacy-policy"
             >Declaración de privacidad y Cookies </router-link
           >| <a href="#">Mapa del Sitio</a>
         </div>
