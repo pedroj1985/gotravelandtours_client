@@ -11,21 +11,17 @@
 
 <script>
 import IndexLoggedRentSearch from "../index-logged-page/IndexLoggedRentSearch";
-import IndexLoggedRentCarousel from "./IndexLoggedRentCarousel";
 import { scrollStore } from "../../stores/scrollStore";
 
 export default {
   components: {
-    IndexLoggedRentSearch,
-    IndexLoggedRentCarousel
+    IndexLoggedRentSearch
   },
   methods: {
     handleScroll() {
       let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
+      let top = this.$el.getBoundingClientRect().top;
+      if (height * 0.25 > top && top > 0) {
         scrollStore.scrollTo("car-rent");
       }
     }
@@ -33,7 +29,7 @@ export default {
   created() {
     window.addEventListener("scroll", this.handleScroll);
   },
-  destroyed() {
+  beforeUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
   }
 };
