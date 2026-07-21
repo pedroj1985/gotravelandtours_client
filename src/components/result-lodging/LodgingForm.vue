@@ -1,21 +1,24 @@
 <template>
   <div id="lodging-form">
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
-      <div slot="image">
+      <template #image>
         <img src="/img/icopaq_alojamiento_color.svg" alt="" />
-      </div>
-      <div slot="searching-text" class="searching-text">
-        <span class="antonio-light">Buscando disponibilidad de</span>
-        <span class="antonio-bold text-highlight pl-1">alojamientos</span>
-        <span class="antonio-light">
-          en
-          <span v-if="selectedLodgingDestinyValue">
-            {{ selectedLodgingDestinyValue.nombre }}
+      </template>
+      <template #searching-text>
+        <div class="searching-text">
+          <span class="antonio-light">Buscando disponibilidad de</span>
+          <span class="antonio-bold text-highlight pl-1">alojamientos</span>
+          <span class="antonio-light">
+            en
+            <span v-if="selectedLodgingDestinyValue">
+              {{ selectedLodgingDestinyValue.nombre }}
+            </span>
+            <span v-else>cualquier lugar</span>
           </span>
-          <span v-else>cualquier lugar</span>
-        </span>
-      </div>
-      <div slot="searching-fields" class="searching-fields">
+        </div>
+      </template>
+      <template #searching-fields>
+        <div class="searching-fields">
         <div>
           entre el {{ constructDate(selectedArriveDate) }} y el
           {{ constructDate(selectedDepartureDate) }} ({{
@@ -26,7 +29,8 @@
         <div v-if="selectedRoomLayout">
           para {{ constructDisplay(selectedRoomLayout) }}
         </div>
-      </div>
+        </div>
+      </template>
     </GttModalSearch>
     <div ref="gttDestinyLodging">
       <gtt-select
@@ -35,14 +39,18 @@
         :options="destinies"
         :alignLeft="true"
       >
-        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-        <span slot="placeholder" class="required-field">Destino</span>
-        <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
-        <template v-slot:option="option">{{ option.option.nombre }}</template>
-        <template v-slot:selectedValue="selectedValue">{{
+        <template #iconSelectedValue>
+          <i class="mdi mdi-map-marker"></i>
+        </template>
+        <template #placeholder>
+          <span class="required-field">Destino</span>
+        </template>
+        <template #selectedPlaceholder>¿Dónde desea alojarse?</template>
+        <template #option="option">{{ option.option.nombre }}</template>
+        <template #selectedValue="selectedValue">{{
           selectedValue.selectedValue.nombre
         }}</template>
-        <span slot="error" class="gtt-errors"></span>
+        <template #error><span class="gtt-errors"></span></template>
       </gtt-select>
     </div>
     <div ref="gttStartDate">
@@ -51,9 +59,13 @@
         :min-date="minArriveDate"
         :mode="'single'"
       >
-        <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-        <span slot="placeholder" class="required-field">Fecha de entrada</span>
-        <span slot="error" class="gtt-errors"></span>
+        <template #iconSelectedValue>
+          <i class="mdi mdi-calendar-today"></i>
+        </template>
+        <template #placeholder>
+          <span class="required-field">Fecha de entrada</span>
+        </template>
+        <template #error><span class="gtt-errors"></span></template>
       </gtt-select-date>
     </div>
     <div ref="gttEndDate">
@@ -62,16 +74,22 @@
         :min-date="minDepartureDate"
         :mode="'single'"
       >
-        <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-        <span slot="placeholder" class="required-field">Fecha de salida</span>
-        <span slot="error" class="gtt-errors"></span>
+        <template #iconSelectedValue>
+          <i class="mdi mdi-calendar-today"></i>
+        </template>
+        <template #placeholder>
+          <span class="required-field">Fecha de salida</span>
+        </template>
+        <template #error><span class="gtt-errors"></span></template>
       </gtt-select-date>
     </div>
     <gtt-select-form :options="roomLayout" v-model="selectedRoomLayout">
-      <span slot="iconSelectedValue">
-        <i class="mdi mdi-account"></i>
-      </span>
-      <span slot="placeholder" class="required-field">Visitantes</span>
+      <template #iconSelectedValue>
+        <span><i class="mdi mdi-account"></i></span>
+      </template>
+      <template #placeholder>
+        <span class="required-field">Visitantes</span>
+      </template>
     </gtt-select-form>
     <!-- <gtt-select-form :options="rooms" v-model="selectedRooms">
             <span slot="iconSelectedValue"><i class="mdi mdi-bunk-bed"></i></span>
