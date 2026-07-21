@@ -29,23 +29,20 @@
                       :options="destinies"
                       :alignLeft="true"
                     >
-                      <i
-                        slot="iconSelectedValue"
-                        class="mdi mdi-map-marker"
-                      ></i>
-                      <span slot="placeholder" class="required-field"
-                        >Destino o Alojamiento</span
-                      >
-                      <span slot="selectedPlaceholder"
-                        >¿Dónde desea alojarse?</span
-                      >
-                      <template v-slot:option="option">
+                      <template #iconSelectedValue>
+                        <i class="mdi mdi-map-marker"></i>
+                      </template>
+                      <template #placeholder>
+                        <span class="required-field">Destino o Alojamiento</span>
+                      </template>
+                      <template #selectedPlaceholder>¿Dónde desea alojarse?</template>
+                      <template #option="option">
                         {{ option.option.nombre }}
                       </template>
-                      <template v-slot:selectedValue="selectedValue">
+                      <template #selectedValue="selectedValue">
                         {{ selectedValue.selectedValue.nombre }}
                       </template>
-                      <span slot="error" class="gtt-errors"></span>
+                      <template #error><span class="gtt-errors"></span></template>
                     </gtt-select>
                   </div>
                 </div>
@@ -56,13 +53,12 @@
                       v-model="dateIn"
                       class="room-form-item"
                     >
-                      <i
-                        slot="iconSelectedValue"
-                        class="mdi mdi-calendar-today"
-                      ></i>
-                      <span slot="placeholder" class="required-field"
-                        >Fecha de entrada</span
-                      >
+                      <template #iconSelectedValue>
+                        <i class="mdi mdi-calendar-today"></i>
+                      </template>
+                      <template #placeholder>
+                        <span class="required-field">Fecha de entrada</span>
+                      </template>
                     </GttSelectDate>
                   </div>
                 </div>
@@ -73,13 +69,12 @@
                       v-model="dateOut"
                       class="room-form-item"
                     >
-                      <i
-                        slot="iconSelectedValue"
-                        class="mdi mdi-calendar-today"
-                      ></i>
-                      <span slot="placeholder" class="required-field"
-                        >Fecha de salida</span
-                      >
+                      <template #iconSelectedValue>
+                        <i class="mdi mdi-calendar-today"></i>
+                      </template>
+                      <template #placeholder>
+                        <span class="required-field">Fecha de salida</span>
+                      </template>
                     </GttSelectDate>
                   </div>
                 </div>
@@ -92,12 +87,12 @@
                     @roomAdded="addRoom"
                     @roomRemoved="removeRoom"
                   >
-                    <span slot="iconSelectedValue">
-                      <i class="mdi mdi-account"></i>
-                    </span>
-                    <span slot="placeholder" class="required-field"
-                      >Visitantes</span
-                    >
+                    <template #iconSelectedValue>
+                      <span><i class="mdi mdi-account"></i></span>
+                    </template>
+                    <template #placeholder>
+                      <span class="required-field">Visitantes</span>
+                    </template>
                   </GttSelectForm2>
                 </div>
                 <div class="col-6">
@@ -107,12 +102,14 @@
                     class="room-form-item last"
                     :isDisabled="disableByRegion"
                   >
-                    <i slot="iconSelectedValue" class="mdi mdi-bed"></i>
-                    <span slot="placeholder">Habitaciones</span>
-                    <template v-slot:option="option">
+                    <template #iconSelectedValue>
+                      <i class="mdi mdi-bed"></i>
+                    </template>
+                    <template #placeholder>Habitaciones</template>
+                    <template #option="option">
                       {{ option.option.display }}
                     </template>
-                    <template v-slot:selectedValue="selectedValue">
+                    <template #selectedValue="selectedValue">
                       {{ selectedValue.selectedValue.display }}
                     </template>
                   </GttSelect>
