@@ -3,31 +3,6 @@
     <div class="home-logged-excursion-img">
       <img src="/img/homelogin_img_form_actividades.jpg" alt="Excursiones y actividades" />
     </div>
-    <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
-      <template #image>
-        <div>
-          <img src="/img/icopaq_excursiones_color.svg" alt="" />
-        </div>
-      </template>
-      <template #searching-text>
-        <div class="searching-text">
-          <span class="antonio-light">Buscando disponibilidad de </span
-          ><span class="antonio-bold text-highlight">excursiones</span>
-          <span class="antonio-light"
-            >en <span v-if="selectedDestiny">{{ selectedDestiny }}</span
-            ><span v-else>cualquier lugar</span></span
-          >
-        </div>
-      </template>
-      <template #searching-fields>
-        <div class="searching-fields">
-          <div v-if="selectedDate">para el {{ constructDate(selectedDate) }}</div>
-          <div v-if="selectedPassengers">
-            para {{ constructDisplay(selectedPassengers) }}
-          </div>
-        </div>
-      </template>
-    </GttModalSearch>
     <div class="custom-text-form custom-margin">
       <div class="custom-form">
         <div class="selects-inline">
@@ -113,43 +88,28 @@
 import GttSelect from "../custom-elements/GttSelect";
 import GttSelectForm from "../custom-elements/GttSelectForm";
 import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttModalSearch from "../custom-elements/GttModalSearch";
-import moment from "moment";
-import {
-  constructDate,
-  constructDisplay,
-  calculateNights
-} from "../../utils/utils";
 
 export default {
   components: {
     GttSelect,
     GttSelectForm,
-    GttSelectDate,
-    GttModalSearch
+    GttSelectDate
   },
   methods: {
     activateModal() {
-      this.isModalActive = true;
-    },
-    desactivateModal() {
-      this.isModalActive = false;
-    },
-    constructDate(date) {
-      return constructDate(date);
-    },
-    constructDisplay(d) {
-      return constructDisplay(d);
+      this.$toasted.show(
+        "La búsqueda de excursiones estará disponible próximamente.",
+        { type: "info" }
+      );
     }
   },
   data() {
     return {
-      isModalActive: false,
       selectedPickUpPlace: "",
       selectedDeliveryPlace: "",
       selectedDestiny: "",
       selectedActivityType: "",
-      selectedDate: moment(),
+      selectedDate: null,
       selectedPassengers: null,
       activityTypes: ["Compartida", "Privada"],
       pickUpDeliveryOptions: [

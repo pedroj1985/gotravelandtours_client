@@ -3,34 +3,6 @@
     <div class="home-logged-transfer-img">
       <img src="/img/homelogin_img_form_traslados.jpg" alt="Traslados" />
     </div>
-    <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
-      <template #image>
-        <div>
-          <img src="/img/icopaq_traslado_color.svg" alt="" />
-        </div>
-      </template>
-      <template #searching-text>
-        <div class="searching-text">
-          <span class="antonio-light">Buscando disponibilidad de </span
-          ><span class="antonio-bold text-highlight">traslados </span>
-          <span class="antonio-light"
-            >en <span v-if="selectedDestinyPlace">{{ selectedDestinyPlace }}</span
-            ><span v-else>cualquier lugar</span></span
-          >
-        </div>
-      </template>
-      <template #searching-fields>
-        <div class="searching-fields">
-          <div v-if="selectedDepartureDate && selectedArrivalDate">
-            entre el {{ constructDate(selectedDepartureDate) }} y el
-            {{ constructDate(selectedArrivalDate) }}
-          </div>
-          <div v-if="selectedPassengers">
-            para {{ constructDisplay(selectedPassengers) }}
-          </div>
-        </div>
-      </template>
-    </GttModalSearch>
     <div class="custom-text-form custom-margin">
       <div class="custom-text antonio-light">
         <span class="bannerText">Las mejores ofertas en </span
@@ -147,79 +119,46 @@
 import GttSelect from "../custom-elements/GttSelect";
 import GttSelectDate from "../custom-elements/GttSelectDate";
 import GttSelectForm from "../custom-elements/GttSelectForm";
-import GttModalSearch from "../custom-elements/GttModalSearch";
-import moment from "moment";
-import { constructDate, constructDisplay } from "../../utils/utils";
 import { scrollStore } from "../../stores/scrollStore";
-import { getValid, renderValid, gttIsValid } from "../../utils/validation";
 
 export default {
   components: {
     GttSelect,
     GttSelectDate,
-    GttSelectForm,
-    GttModalSearch
+    GttSelectForm
   },
   created() {
     window.addEventListener("scroll", this.handleScroll);
   },
-  destroyed() {
+  beforeUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
-    constructDisplay,
     handleScroll() {
       let height = window.innerHeight;
       if (
         height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
+        this.$el.getBoundingClientRect().top > 0
       ) {
         scrollStore.scrollTo("transfer");
       }
     },
-    /* TODO: llamada a la api */
-    async activateModal() {
-      //let iv = gttIsValid(this.gttValidate());  getValid(iv
-      if (true) {
-        try {
-          this.isModalActive = true;
-          console.log(iv);
-          /* let { data } = await authSearchCars(searchItem); */
-          this.desactivateModal();
-          this.$router.push({
-            name: "resultRent",
-            params: {
-              searchResult: resultList
-            }
-          });
-        } catch (error) {
-          console.log(error);
-          this.desactivateModal();
-          this.$toasted.show(
-            "El servicio no está disponible en estos momentos",
-            {
-              type: "error"
-            }
-          );
-        }
-      } else {
-        renderValid(iv, this);
-      }
-    },
-    desactivateModal() {
-      this.isModalActive = false;
+    activateModal() {
+      this.$toasted.show(
+        "La búsqueda de traslados estará disponible próximamente.",
+        { type: "info" }
+      );
     }
   },
   data() {
     return {
       arrivalTime: "",
       departureTime: "",
-      isModalActive: false,
       selectedPickUpPlace: "",
       selectedDestinyPlace: "",
-      selectedDepartureDate: moment(),
+      selectedDepartureDate: null,
       selectedDepartureHour: null,
-      selectedArrivalDate: moment().add(1, "days"),
+      selectedArrivalDate: null,
       selectedArrivalHour: null,
       selectedPassengers: null,
       selectedLuggages: null,
