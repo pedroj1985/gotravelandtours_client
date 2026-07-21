@@ -26,11 +26,9 @@
                 class="cleft"
                 v-model="selectedPickUpPlace"
               >
-                <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-                <span slot="placeholder"> Punto de recogida</span>
-                <span slot="selectedPlaceholder"
-                  >¿Dónde desea rentar el auto?</span
-                >
+                <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
+                <template #placeholder>Punto de recogida</template>
+                <template #selectedPlaceholder>¿Dónde desea rentar el auto?</template>
                 <template v-slot:option="option">
                   {{ option.option.nombre }}
                 </template>
@@ -45,11 +43,9 @@
                 :options="pickUpDeliveryOptions"
                 v-model="selectedDeliveryPlace"
               >
-                <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-                <span slot="placeholder"> Punto de entrega</span>
-                <span slot="selectedPlaceholder"
-                  >¿Dónde entregaría el auto?</span
-                >
+                <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
+                <template #placeholder>Punto de entrega</template>
+                <template #selectedPlaceholder>¿Dónde entregaría el auto?</template>
                 <template v-slot:option="option">
                   {{ option.option.nombre }}
                 </template>
@@ -60,18 +56,14 @@
             </div>
             <div ref="gttPickUpDate">
               <gtt-select-date v-model="selectedPickUpDate" :mode="'single'">
-                <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                <span slot="placeholder" class="required-field">
-                  Fecha de recogida
-                </span>
+                <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
+                <template #placeholder><span class="required-field">Fecha de recogida</span></template>
               </gtt-select-date>
             </div>
             <div ref="gttDeliveryDate">
               <gtt-select-date v-model="selectedDeliveryDate" :mode="'single'">
-                <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-                <span slot="placeholder" class="required-field">
-                  Fecha de entrega
-                </span>
+                <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
+                <template #placeholder><span class="required-field">Fecha de entrega</span></template>
               </gtt-select-date>
             </div>
             <div class="selects-inline">
@@ -81,20 +73,16 @@
                   v-model="selectedTransmissionType"
                   :isDisabled="useSameCar"
                 >
-                  <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-                  <span slot="placeholder" class="required-field">
-                    Tipo de transmisión</span
-                  >
-                  <span slot="selectedPlaceholder"
-                    >¿Qué tipo de transmisión desea?</span
-                  >
+                  <template #iconSelectedValue><i class="mdi mdi-earth"></i></template>
+                  <template #placeholder><span class="required-field">Tipo de transmisión</span></template>
+                  <template #selectedPlaceholder>¿Qué tipo de transmisión desea?</template>
                   <template v-slot:selectedValue="selectedValue">
                     {{ selectedValue.selectedValue.display }}
                   </template>
                   <template v-slot:option="option">
                     {{ option.option.display }}
                   </template>
-                  <span slot="error" class="gtt-errors"> </span>
+                  <template #error><span class="gtt-errors"> </span></template>
                 </gtt-select>
               </div>
               <gtt-select
@@ -104,11 +92,9 @@
                 :isDisabled="useSameCar"
                 :nullable="true"
               >
-                <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
-                <span slot="placeholder"> Categoría</span>
-                <span slot="selectedPlaceholder"
-                  >¿Cómo desea que sea el auto?</span
-                >
+                <template #iconSelectedValue><i class="mdi mdi-car-estate"></i></template>
+                <template #placeholder>Categoría</template>
+                <template #selectedPlaceholder>¿Cómo desea que sea el auto?</template>
                 <template v-slot:option="option">
                   {{ option.option.nombre }}
                 </template>

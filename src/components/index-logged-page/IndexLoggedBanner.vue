@@ -7,33 +7,39 @@
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
-      <div slot="image">
-        <img src="/img/icopaq_alojamiento_color.svg" alt="" />
-      </div>
-      <div slot="searching-text" class="searching-text">
-        <span class="antonio-light">Buscando disponibilidad de</span>
-        <span class="antonio-bold text-highlight pl-1">alojamientos</span>
-        <span class="antonio-light">
-          en
-          <span v-if="selectedLodgingDestinyValue">{{
-            selectedLodgingDestinyValue.nombre
-          }}</span>
-          <span v-else>cualquier lugar</span>
-        </span>
-      </div>
-      <div slot="searching-fields" class="searching-fields">
-        <div v-if="selectedStartDate && selectedEndDate">
-          entre el {{ constructDate(selectedStartDate) }} y el
-          {{ constructDate(selectedEndDate) }} ({{
-            calculateNights(selectedStartDate, selectedEndDate)
-          }}
-          noches)
+      <template #image>
+        <div>
+          <img src="/img/icopaq_alojamiento_color.svg" alt="" />
         </div>
-        <div v-if="selectedRoomLayout">
-          para
-          <span class="pl-1">{{ constructDisplay(selectedRoomLayout) }}</span>
+      </template>
+      <template #searching-text>
+        <div class="searching-text">
+          <span class="antonio-light">Buscando disponibilidad de</span>
+          <span class="antonio-bold text-highlight pl-1">alojamientos</span>
+          <span class="antonio-light">
+            en
+            <span v-if="selectedLodgingDestinyValue">{{
+              selectedLodgingDestinyValue.nombre
+            }}</span>
+            <span v-else>cualquier lugar</span>
+          </span>
         </div>
-      </div>
+      </template>
+      <template #searching-fields>
+        <div class="searching-fields">
+          <div v-if="selectedStartDate && selectedEndDate">
+            entre el {{ constructDate(selectedStartDate) }} y el
+            {{ constructDate(selectedEndDate) }} ({{
+              calculateNights(selectedStartDate, selectedEndDate)
+            }}
+            noches)
+          </div>
+          <div v-if="selectedRoomLayout">
+            para
+            <span class="pl-1">{{ constructDisplay(selectedRoomLayout) }}</span>
+          </div>
+        </div>
+      </template>
     </GttModalSearch>
     <div class="lodging-text-form custom-margin">
       <div class="lodging-text antonio-light">
@@ -49,18 +55,18 @@
             :options="destinies"
             :alignLeft="true"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-            <span slot="placeholder" class="required-field"
+            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
+            <template #placeholder><span class="required-field"
               >Destino o Alojamiento</span
-            >
-            <span slot="selectedPlaceholder">¿Dónde desea alojarse?</span>
+            ></template>
+            <template #selectedPlaceholder>¿Dónde desea alojarse?</template>
             <template v-slot:option="option">
               {{ option.option.nombre }}
             </template>
             <template v-slot:selectedValue="selectedValue">
               {{ selectedValue.selectedValue.nombre }}
             </template>
-            <span slot="error" class="gtt-errors"></span>
+            <template #error><span class="gtt-errors"></span></template>
           </gtt-select>
         </div>
         <div class="selects-inline">
@@ -70,11 +76,13 @@
               :mode="'single'"
               :min-date="minStartDate"
             >
-              <span slot="placeholder" class="required-field">
-                Fecha de entrada
-              </span>
-              <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-              <span slot="error" class="gtt-errors"></span>
+              <template #placeholder>
+                <span class="required-field">
+                  Fecha de entrada
+                </span>
+              </template>
+              <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
+              <template #error><span class="gtt-errors"></span></template>
             </gtt-select-date>
           </div>
           <div ref="gttEndDate" class="w-100 cleft">
@@ -83,11 +91,11 @@
               :min-date="minEndDate"
               :mode="'single'"
             >
-              <span slot="placeholder" class="required-field"
+              <template #placeholder><span class="required-field"
                 >Fecha de salida</span
-              >
-              <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-              <span slot="error" class="gtt-errors"></span>
+              ></template>
+              <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
+              <template #error><span class="gtt-errors"></span></template>
             </gtt-select-date>
           </div>
           <div class="w-100">
@@ -126,8 +134,8 @@
               :search="false"
               :alignLeft="true"
             >
-              <span slot="placeholder">Noches</span>
-              <span slot="selectedPlaceholder">¿Cuántas noches?</span>
+              <template #placeholder>Noches</template>
+              <template #selectedPlaceholder>¿Cuántas noches?</template>
               <template v-slot:option="option">
                 {{ constructDisplayNights(option.option) }}
               </template>
@@ -143,10 +151,12 @@
             class="cleft"
             v-model="selectedRoomLayout"
           >
-            <span slot="iconSelectedValue">
-              <i class="mdi mdi-account"></i>
-            </span>
-            <span slot="placeholder" class="required-field">Visitantes</span>
+            <template #iconSelectedValue>
+              <span>
+                <i class="mdi mdi-account"></i>
+              </span>
+            </template>
+            <template #placeholder><span class="required-field">Visitantes</span></template>
           </gtt-select-form>
           <!--          <gtt-select
                       :options="countries"

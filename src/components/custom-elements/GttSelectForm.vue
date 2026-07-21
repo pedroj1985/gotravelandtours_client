@@ -61,7 +61,7 @@
             :key="kid.id"
           >
             <gtt-select :options="kidsAgeList" v-model="kid.age">
-              <span slot="placeholder">Edad del menor {{ i + 1 }}</span>
+              <template #placeholder>Edad del menor {{ i + 1 }}</template>
               <template v-slot:selectedValue="selectedValue"
                 >{{ selectedValue.selectedValue }} años</template
               >

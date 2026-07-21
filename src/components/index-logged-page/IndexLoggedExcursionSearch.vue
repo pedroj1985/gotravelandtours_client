@@ -4,23 +4,29 @@
       <img src="/img/homelogin_img_form_actividades.jpg" alt="Excursiones y actividades" />
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
-      <div slot="image">
-        <img src="/img/icopaq_excursiones_color.svg" alt="" />
-      </div>
-      <div slot="searching-text" class="searching-text">
-        <span class="antonio-light">Buscando disponibilidad de </span
-        ><span class="antonio-bold text-highlight">excursiones</span>
-        <span class="antonio-light"
-          >en <span v-if="selectedDestiny">{{ selectedDestiny }}</span
-          ><span v-else>cualquier lugar</span></span
-        >
-      </div>
-      <div slot="searching-fields" class="searching-fields">
-        <div v-if="selectedDate">para el {{ constructDate(selectedDate) }}</div>
-        <div v-if="selectedPassengers">
-          para {{ constructDisplay(selectedPassengers) }}
+      <template #image>
+        <div>
+          <img src="/img/icopaq_excursiones_color.svg" alt="" />
         </div>
-      </div>
+      </template>
+      <template #searching-text>
+        <div class="searching-text">
+          <span class="antonio-light">Buscando disponibilidad de </span
+          ><span class="antonio-bold text-highlight">excursiones</span>
+          <span class="antonio-light"
+            >en <span v-if="selectedDestiny">{{ selectedDestiny }}</span
+            ><span v-else>cualquier lugar</span></span
+          >
+        </div>
+      </template>
+      <template #searching-fields>
+        <div class="searching-fields">
+          <div v-if="selectedDate">para el {{ constructDate(selectedDate) }}</div>
+          <div v-if="selectedPassengers">
+            para {{ constructDisplay(selectedPassengers) }}
+          </div>
+        </div>
+      </template>
     </GttModalSearch>
     <div class="custom-text-form custom-margin">
       <div class="custom-form">
@@ -31,18 +37,18 @@
             v-model="selectedDestiny"
             :alignLeft="true"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-            <span slot="placeholder"> Destino</span>
-            <span slot="selectedPlaceholder"> ¿A dónde deseas ir?</span>
+            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
+            <template #placeholder> Destino</template>
+            <template #selectedPlaceholder> ¿A dónde deseas ir?</template>
           </gtt-select>
           <gtt-select
             :options="activityTypes"
             class="custom-width-small"
             v-model="selectedActivityType"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-brightness-4"></i>
-            <span slot="placeholder"> Tipo de actividad</span>
-            <span slot="selectedPlaceholder"> ¿Compartida?</span>
+            <template #iconSelectedValue><i class="mdi mdi-brightness-4"></i></template>
+            <template #placeholder> Tipo de actividad</template>
+            <template #selectedPlaceholder> ¿Compartida?</template>
           </gtt-select>
         </div>
         <div class="selects-inline">
@@ -51,17 +57,17 @@
             :mode="'single'"
             class="cleft"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-            <span slot="placeholder">
+            <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
+            <template #placeholder>
               Fecha
-            </span>
+            </template>
           </gtt-select-date>
           <gtt-select-form
             :options="passengersLayout"
             v-model="selectedPassengers"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-account"></i>
-            <span slot="placeholder"> Pasajeros</span>
+            <template #iconSelectedValue><i class="mdi mdi-account"></i></template>
+            <template #placeholder> Pasajeros</template>
           </gtt-select-form>
         </div>
         <div class="selects-inline">
@@ -70,17 +76,17 @@
             class="cleft"
             v-model="selectedPickUpPlace"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-            <span slot="placeholder"> Punto de recogida</span>
-            <span slot="selectedPlaceholder"> Salimos desde el:</span>
+            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
+            <template #placeholder> Punto de recogida</template>
+            <template #selectedPlaceholder> Salimos desde el:</template>
           </gtt-select>
           <gtt-select
             :options="pickUpDeliveryOptions"
             v-model="selectedDeliveryPlace"
           >
-            <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-            <span slot="placeholder"> Punto de entrega</span>
-            <span slot="selectedPlaceholder"> Te recogemos en el:</span>
+            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
+            <template #placeholder> Punto de entrega</template>
+            <template #selectedPlaceholder> Te recogemos en el:</template>
           </gtt-select>
         </div>
         <div class="form-actions text-right">
