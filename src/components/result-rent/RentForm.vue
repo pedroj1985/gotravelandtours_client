@@ -1,30 +1,34 @@
 <template>
   <div id="lodging-form">
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
-      <div slot="image">
+      <template #image>
         <img src="/img/icopaq_renta_color.svg" alt="" />
-      </div>
-      <div slot="searching-text" class="searching-text">
-        <span class="antonio-light">Buscando disponibilidad de</span>
-        <span class="antonio-bold text-highlight pl-1">autos en renta</span>
-        <span class="antonio-light">
-          en
-          <span v-if="selectedPickUpPlace">
-            {{ selectedPickUpPlace.nombre }}
+      </template>
+      <template #searching-text>
+        <div class="searching-text">
+          <span class="antonio-light">Buscando disponibilidad de</span>
+          <span class="antonio-bold text-highlight pl-1">autos en renta</span>
+          <span class="antonio-light">
+            en
+            <span v-if="selectedPickUpPlace">
+              {{ selectedPickUpPlace.nombre }}
+            </span>
+            <span v-else>cualquier lugar</span>
           </span>
-          <span v-else>cualquier lugar</span>
-        </span>
-      </div>
-      <div slot="searching-fields" class="searching-fields">
-        <div v-if="selectedPickUpDate && selectedDeliveryDate">
-          entre el {{ constructDate(selectedPickUpDate) }} y el
-          {{ constructDate(selectedDeliveryDate) }} ({{
-            calculateNights(selectedDeliveryDate, selectedPickUpDate)
-          }}
-          días)
         </div>
-        <div v-if="selectedCarCategory">{{ selectedCarCategory.nombre }}</div>
-      </div>
+      </template>
+      <template #searching-fields>
+        <div class="searching-fields">
+          <div v-if="selectedPickUpDate && selectedDeliveryDate">
+            entre el {{ constructDate(selectedPickUpDate) }} y el
+            {{ constructDate(selectedDeliveryDate) }} ({{
+              calculateNights(selectedDeliveryDate, selectedPickUpDate)
+            }}
+            días)
+          </div>
+          <div v-if="selectedCarCategory">{{ selectedCarCategory.nombre }}</div>
+        </div>
+      </template>
     </GttModalSearch>
     <div class="cleft">
       <gtt-select
@@ -33,16 +37,18 @@
         class="cleft"
         v-model="selectedPickUpPlace"
       >
-        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-        <span slot="placeholder">Punto de recogida</span>
-        <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
-        <template v-slot:option="option">{{ option.option.nombre }}</template>
-        <template v-slot:selectedValue="selectedValue">
+        <template #iconSelectedValue>
+          <i class="mdi mdi-map-marker"></i>
+        </template>
+        <template #placeholder>Punto de recogida</template>
+        <template #selectedPlaceholder>¿Dónde desea rentar el auto?</template>
+        <template #option="option">{{ option.option.nombre }}</template>
+        <template #selectedValue="selectedValue">
           <span class="gtt-tooltip" :data-tooltip="selectedValue.selectedValue.nombre">
             {{ overflowText(selectedValue.selectedValue.nombre, 21) }}
           </span>
         </template>
-        <span slot="error" class="gtt-errors"></span>
+        <template #error><span class="gtt-errors"></span></template>
       </gtt-select>
     </div>
 
@@ -52,30 +58,40 @@
         :options="pickUpDeliveryOptions"
         v-model="selectedDeliveryPlace"
       >
-        <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
-        <span slot="placeholder">Punto de entrega</span>
-        <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
-        <template v-slot:option="option">{{ option.option.nombre }}</template>
-        <template v-slot:selectedValue="selectedValue">
+        <template #iconSelectedValue>
+          <i class="mdi mdi-map-marker"></i>
+        </template>
+        <template #placeholder>Punto de entrega</template>
+        <template #selectedPlaceholder>¿Dónde entregaría el auto?</template>
+        <template #option="option">{{ option.option.nombre }}</template>
+        <template #selectedValue="selectedValue">
           <span class="gtt-tooltip" :data-tooltip="selectedValue.selectedValue.nombre">
             {{ overflowText(selectedValue.selectedValue.nombre, 21) }}
           </span>
         </template>
-        <span slot="error" class="gtt-errors"></span>
+        <template #error><span class="gtt-errors"></span></template>
       </gtt-select>
     </div>
 
     <div ref="gttPickUpDate">
       <gtt-select-date v-model="selectedPickUpDate" :mode="'single'">
-        <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-        <span slot="placeholder" class="required-field">Fecha de recogida</span>
+        <template #iconSelectedValue>
+          <i class="mdi mdi-calendar-today"></i>
+        </template>
+        <template #placeholder>
+          <span class="required-field">Fecha de recogida</span>
+        </template>
       </gtt-select-date>
     </div>
     <div ref="gttDeliveryDate">
       <gtt-select-date v-model="selectedDeliveryDate" :mode="'single'">
-        <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
-        <span slot="placeholder" class="required-field">Fecha de entrega</span>
-        <span slot="error"></span>
+        <template #iconSelectedValue>
+          <i class="mdi mdi-calendar-today"></i>
+        </template>
+        <template #placeholder>
+          <span class="required-field">Fecha de entrega</span>
+        </template>
+        <template #error></template>
       </gtt-select-date>
     </div>
     <div ref="gttTransmision">
@@ -83,16 +99,18 @@
         :options="transmissionTypes()"
         v-model="selectedTransmissionType"
       >
-        <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-        <span slot="placeholder" class="required-field"
-          >Tipo de transmisión</span
-        >
-        <span slot="selectedPlaceholder">¿Qué transmisión desea?</span>
-        <template v-slot:selectedValue="selectedValue">{{
+        <template #iconSelectedValue>
+          <i class="mdi mdi-earth"></i>
+        </template>
+        <template #placeholder>
+          <span class="required-field">Tipo de transmisión</span>
+        </template>
+        <template #selectedPlaceholder>¿Qué transmisión desea?</template>
+        <template #selectedValue="selectedValue">{{
           selectedValue.selectedValue.display
         }}</template>
-        <template v-slot:option="option">{{ option.option.display }}</template>
-        <span slot="error" class="gtt-errors"></span>
+        <template #option="option">{{ option.option.display }}</template>
+        <template #error><span class="gtt-errors"></span></template>
       </gtt-select>
     </div>
     <gtt-select
@@ -102,18 +120,22 @@
       v-model="selectedCarCategory"
       :nullable="true"
     >
-      <i slot="iconSelectedValue" class="mdi mdi-car-estate"></i>
-      <span slot="placeholder">Categoría</span>
-      <span slot="selectedPlaceholder">¿Cómo desea el auto?</span>
-      <template v-slot:option="option">{{ option.option.nombre }}</template>
-      <template v-slot:selectedValue="selectedValue">{{
+      <template #iconSelectedValue>
+        <i class="mdi mdi-car-estate"></i>
+      </template>
+      <template #placeholder>Categoría</template>
+      <template #selectedPlaceholder>¿Cómo desea el auto?</template>
+      <template #option="option">{{ option.option.nombre }}</template>
+      <template #selectedValue="selectedValue">{{
         selectedValue.selectedValue.nombre
       }}</template>
     </gtt-select>
     <gtt-select :options="countries" v-model="selectedNationality">
-      <i slot="iconSelectedValue" class="mdi mdi-earth"></i>
-      <span slot="placeholder">Nacionalidad</span>
-      <template v-slot:selectedValue="selectedValue">
+      <template #iconSelectedValue>
+        <i class="mdi mdi-earth"></i>
+      </template>
+      <template #placeholder>Nacionalidad</template>
+      <template #selectedValue="selectedValue">
         <img
           :src="defaultFlagImgPath + selectedValue.selectedValue.flag"
           :alt="selectedValue.selectedValue.nombre + 'flag'"
@@ -121,7 +143,7 @@
         />
         {{ selectedValue.selectedValue.nombre }}
       </template>
-      <template v-slot:option="option">
+      <template #option="option">
         <img
           :src="defaultFlagImgPath + option.option.flag"
           :alt="option.option.nombre + 'flag'"
@@ -129,7 +151,7 @@
         />
         {{ option.option.nombre }}
       </template>
-      <template slot="selectedPlaceholder">
+      <template #selectedPlaceholder>
         <img
           :src="defaultFlagImgPath + selectedNationality.flag"
           :alt="selectedNationality.nombre + 'flag'"
