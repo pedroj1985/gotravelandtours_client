@@ -16,7 +16,6 @@
               v-model="dateIn"
               class="room-form-item"
               :opened="cI == 'fecha-entrada'"
-              @click.native="cI = ''"
             >
               <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
               <span slot="placeholder">Fecha de entrada</span>
@@ -26,7 +25,6 @@
               v-model="dateOut"
               class="room-form-item"
               :opened="cI == 'fecha-salida'"
-              @click.native="cI = ''"
             >
               <i slot="iconSelectedValue" class="mdi mdi-calendar-today"></i>
               <span slot="placeholder">Fecha de salida</span>
@@ -37,7 +35,6 @@
               v-model="selectedRoomLayout"
               :rooms="totalRooms.value"
               :opened="cI == 'visitantes'"
-              @click.native="cI = ''"
               @roomAdded="addRoom"
               @roomRemoved="removeRoom"
             >
@@ -51,7 +48,6 @@
               v-model="totalRooms"
               :opened="cI == 'habitaciones'"
               class="room-form-item last"
-              @click.native="cI = ''"
             >
               <i slot="iconSelectedValue" class="mdi mdi-bed"></i>
               <span slot="placeholder">Habitaciones</span>

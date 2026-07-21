@@ -24,8 +24,7 @@
                 <div class="col-12">
                   <div ref="gttLodging">
                     <gtt-select
-                      :openedLodging.sync="lodgingOpened"
-                      @click.native="loadDestinies"
+                      v-model:openedLodging="lodgingOpened"
                       v-model="selectedDestiny"
                       :options="destinies"
                       :alignLeft="true"
@@ -183,6 +182,9 @@ export default {
   },
   mixins: [reusableMethodsMixin, lodgingUtilsMixin],
   watch: {
+    lodgingOpened(val) {
+      if (val) this.loadDestinies();
+    },
     selectedDestiny(item) {
       if (item.type == "RGN") {
         this.disableByRegion = true;

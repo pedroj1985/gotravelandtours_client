@@ -21,8 +21,7 @@
             </div>
             <div class="selects-inline">
               <gtt-select
-                :openedLodging.sync="pickUpOpened"
-                @click.native="loadPickUpPlaces"
+                v-model:openedLodging="pickUpOpened"
                 :options="pickUpDeliveryOptions"
                 class="cleft"
                 v-model="selectedPickUpPlace"
@@ -42,8 +41,7 @@
                 </template>
               </gtt-select>
               <gtt-select
-                :openedLodging.sync="deliveryOpened"
-                @click.native="loadDeliveryPlaces"
+                v-model:openedLodging="deliveryOpened"
                 :options="pickUpDeliveryOptions"
                 v-model="selectedDeliveryPlace"
               >
@@ -100,8 +98,7 @@
                 </gtt-select>
               </div>
               <gtt-select
-                :openedLodging.sync="categoriesOpened"
-                @click.native="loadMarcas"
+                v-model:openedLodging="categoriesOpened"
                 :options="carsCategories"
                 v-model="selectedCarCategory"
                 :isDisabled="useSameCar"
@@ -220,6 +217,15 @@ export default {
     age: Number
   },
   watch: {
+    pickUpOpened(val) {
+      if (val) this.loadPickUpPlaces();
+    },
+    deliveryOpened(val) {
+      if (val) this.loadDeliveryPlaces();
+    },
+    categoriesOpened(val) {
+      if (val) this.loadMarcas();
+    },
     selectedPickUpPlace: function(val) {
       this.selectedDeliveryPlace = val;
     }
