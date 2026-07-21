@@ -10,7 +10,7 @@
       @closeModal="closeCancelationModal"
       @next="cancelateOrder()"
     >
-      <span slot="question">{{ $helpers.traducir("cancelateQuestion") }}</span>
+      <template #question>{{ $helpers.traducir("cancelateQuestion") }}</template>
     </GttVerificationModal>
     <component
       :is="currentModalComponent"
@@ -232,7 +232,7 @@
                   :onlyOne="true"
                   :editable="editing"
                 >
-                  <span slot="error" class="gtt-errors"> </span>
+                  <span class="gtt-errors"> </span>
                 </InfoRow>
               </div>
               <FlightInfoRow

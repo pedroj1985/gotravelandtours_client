@@ -32,12 +32,14 @@
               :twoRows="false"
               v-model="selectedOrganizeType"
             >
-              <i slot="iconSelectedValue" class="mdi mdi-swap-vertical"></i>
-              <span slot="placeholder">Organizar por</span>
-              <template v-slot:option="option">
+              <template #iconSelectedValue>
+                <i class="mdi mdi-swap-vertical"></i>
+              </template>
+              <template #placeholder>Organizar por</template>
+              <template #option="option">
                 {{ option.option.displayName }}
               </template>
-              <template v-slot:selectedValue="selectedValue">
+              <template #selectedValue="selectedValue">
                 <span id="selectedPickUp">{{
                   selectedValue.selectedValue.displayName
                 }}</span>

@@ -19,18 +19,20 @@
           </div>
           <div class="flex-wrapper">
             <gtt-select :clickable="editable" :options="airlines" v-model="hl">
-              <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+              <template #iconSelectedValue>
+                <i class="mdi mdi-map-marker"></i>
+              </template>
 
-              <span slot="selectedPlaceholder">¿Aerolinea?</span>
-              <template v-slot:option="option">{{
+              <template #selectedPlaceholder>¿Aerolinea?</template>
+              <template #option="option">{{
                 option.option.Nombre
               }}</template>
-              <template v-slot:selectedValue="selectedValue">
+              <template #selectedValue="selectedValue">
                 <span class="wrap" id="selectedPickUp">
                   {{ selectedValue.selectedValue.Nombre }}
                 </span>
               </template>
-              <span slot="error" class="gtt-errors"></span>
+              <template #error><span class="gtt-errors"></span></template>
             </gtt-select>
             <span style="padding: 2px;"> - </span>
             <input
@@ -42,7 +44,7 @@
               placeholder="No. VUELO"
             />
           </div>
-          <span slot="error" class="gtt-errors"></span>
+          <span class="gtt-errors"></span>
         </div>
       </div>
       <div ref="gttSalida" class="input-right flex-wrapper ir-text-input">
@@ -55,18 +57,20 @@
           </div>
           <div class="flex-wrapper">
             <gtt-select :clickable="editable" :options="airlines" v-model="ht">
-              <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+              <template #iconSelectedValue>
+                <i class="mdi mdi-map-marker"></i>
+              </template>
 
-              <span slot="selectedPlaceholder">¿Aerolinea?</span>
-              <template v-slot:option="option">{{
+              <template #selectedPlaceholder>¿Aerolinea?</template>
+              <template #option="option">{{
                 option.option.Nombre
               }}</template>
-              <template v-slot:selectedValue="selectedValue">
+              <template #selectedValue="selectedValue">
                 <span class="wrap" id="selectedPickUp">
                   {{ selectedValue.selectedValue.Nombre }}
                 </span>
               </template>
-              <span slot="error" class="gtt-errors"></span>
+              <template #error><span class="gtt-errors"></span></template>
             </gtt-select>
             <span style="padding: 2px;"> - </span>
             <input
@@ -78,7 +82,7 @@
               placeholder="No. VUELO"
             />
           </div>
-          <span slot="error" class="gtt-errors"></span>
+          <span class="gtt-errors"></span>
         </div>
       </div>
     </div>

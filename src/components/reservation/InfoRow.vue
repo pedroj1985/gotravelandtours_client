@@ -22,7 +22,7 @@
             class="ir-input  font18"
             placeholder="Su(s) nombre(s)"
           />
-          <span slot="error" class="gtt-errors"></span>
+          <span class="gtt-errors"></span>
         </div>
       </div>
 
@@ -44,7 +44,7 @@
             class="ir-input font18"
             placeholder="Sus apellidos"
           />
-          <span slot="error" class="gtt-errors"></span>
+          <span class="gtt-errors"></span>
         </div>
       </div>
     </div>
@@ -64,7 +64,7 @@
             class="ir-input font18"
             placeholder="# Pasaporte"
           />
-          <span slot="error" class="gtt-errors"></span>
+          <span class="gtt-errors"></span>
         </div>
       </div>
       <div
@@ -85,7 +85,7 @@
             class="ir-input font18"
             placeholder="# Teléfono"
           />
-          <span slot="error" class="gtt-errors"></span>
+          <span class="gtt-errors"></span>
         </div>
       </div>
 
@@ -108,7 +108,7 @@
             @input="$emit('inputNacimiento', $event.target.value)"
             class="ir-input font18"
           />
-          <span slot="error" class="gtt-errors"></span>
+          <span class="gtt-errors"></span>
         </div>
       </div>
     </div>
