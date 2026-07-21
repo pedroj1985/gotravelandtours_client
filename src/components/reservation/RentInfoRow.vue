@@ -18,16 +18,18 @@
           class="cleft"
           v-model="selectedPickUpPlace"
         >
-          <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+          <template #iconSelectedValue>
+            <i class="mdi mdi-map-marker"></i>
+          </template>
 
-          <span slot="selectedPlaceholder">¿Dónde desea rentar el auto?</span>
-          <template v-slot:option="option">{{ option.option.nombre }}</template>
-          <template v-slot:selectedValue="selectedValue">
+          <template #selectedPlaceholder>¿Dónde desea rentar el auto?</template>
+          <template #option="option">{{ option.option.nombre }}</template>
+          <template #selectedValue="selectedValue">
             <span class="wrap gtt-tooltip" :data-tooltip="selectedValue.selectedValue.nombre">
               {{ overflowText(selectedValue.selectedValue.nombre) }}
             </span>
           </template>
-          <span slot="error" class="gtt-errors"></span>
+          <template #error><span class="gtt-errors"></span></template>
         </gtt-select>
         <span style="padding: 2px;"> - </span>
         <div class="container-left">
@@ -51,16 +53,18 @@
           :options="pickUpDeliveryOptions"
           v-model="selectedDeliveryPlace"
         >
-          <i slot="iconSelectedValue" class="mdi mdi-map-marker"></i>
+          <template #iconSelectedValue>
+            <i class="mdi mdi-map-marker"></i>
+          </template>
 
-          <span slot="selectedPlaceholder">¿Dónde entregaría el auto?</span>
-          <template v-slot:option="option">{{ option.option.nombre }}</template>
-          <template v-slot:selectedValue="selectedValue">
+          <template #selectedPlaceholder>¿Dónde entregaría el auto?</template>
+          <template #option="option">{{ option.option.nombre }}</template>
+          <template #selectedValue="selectedValue">
             <span class="wrap" id="selectedPickUp">
               {{ overflowText(selectedValue.selectedValue.nombre) }}
             </span>
           </template>
-          <span slot="error" class="gtt-errors"></span>
+          <template #error><span class="gtt-errors"></span></template>
         </gtt-select>
         <span style="padding: 2px;"> - </span>
 
