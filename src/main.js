@@ -15,6 +15,25 @@ import {
   setupGlobalErrorHandler,
   setToastInstance
 } from "./utils/errorHandler";
+import { defineRule, configure } from "vee-validate";
+import {
+  required,
+  confirmed
+} from "@vee-validate/rules";
+import VCalendar from "v-calendar";
+
+defineRule("required", required);
+defineRule("confirmed", confirmed);
+
+configure({
+  generateMessage: (ctx) => {
+    const messages = {
+      required: `El campo ${ctx.field} es requerido`,
+      confirmed: `Los campos ${ctx.field} no coinciden`
+    };
+    return messages[ctx.rule?.name] || `El campo ${ctx.field} es inválido`;
+  }
+});
 
 const app = createApp(App);
 
@@ -23,6 +42,8 @@ setupGlobalErrorHandler(app);
 app.use(Vue3Toastify, {
   autoClose: 5000
 });
+
+app.use(VCalendar);
 
 setToastInstance(toast);
 

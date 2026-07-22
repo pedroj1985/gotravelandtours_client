@@ -50,7 +50,7 @@
           is-inline
           locale="es"
           :min-date="minDate"
-          :columns="$screens({ default: 1, lg: mode == 'range' ? 2 : 1 })"
+          :columns="setScreensByMode()"
         />
       </div>
       <hr />
@@ -73,14 +73,14 @@ export default {
     clickOutside
   },
   mounted() {
-    console.log(this.value);
     this.popupItem = this.$el;
-    console.log(this.opened);
     this.isVisible = this.opened;
   },
   props: {
     modelValue: {
-      default: moment()
+      default() {
+        return moment();
+      }
     },
     clickable: {
       type: Boolean,
