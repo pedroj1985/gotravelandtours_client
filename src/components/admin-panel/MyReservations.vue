@@ -60,14 +60,10 @@
               Fecha de inicio
             </div>
             <div class="filter-input">
-              <v-date-picker
+              <input
+                type="date"
                 v-model="filtroFechaInicio"
-                mode="single"
-                locale="es"
-                :input-props="{
-                  placeholder: 'Fecha de Inicio',
-                  readonly: true
-                }"
+                placeholder="Fecha de Inicio"
               />
             </div>
           </div>
@@ -78,14 +74,10 @@
               Fecha de cierre
             </div>
             <div class="filter-input">
-              <v-date-picker
+              <input
+                type="date"
                 v-model="filtroFechaFin"
-                mode="single"
-                locale="es"
-                :input-props="{
-                  placeholder: 'Fecha de cierre',
-                  readonly: true
-                }"
+                placeholder="Fecha de cierre"
               />
             </div>
           </div>

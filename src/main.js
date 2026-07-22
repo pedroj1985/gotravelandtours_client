@@ -20,7 +20,6 @@ import {
   required,
   confirmed
 } from "@vee-validate/rules";
-import VCalendar from "v-calendar";
 
 defineRule("required", required);
 defineRule("confirmed", confirmed);
@@ -42,8 +41,6 @@ setupGlobalErrorHandler(app);
 app.use(Vue3Toastify, {
   autoClose: 5000
 });
-
-app.use(VCalendar);
 
 setToastInstance(toast);
 

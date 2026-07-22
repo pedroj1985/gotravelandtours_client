@@ -44,14 +44,33 @@
     >
       <span class="arrow" v-if="arrow"></span>
       <div class="gtt__date_picker">
-        <v-date-picker
-          v-model="dates"
-          :mode="mode"
-          is-inline
-          locale="es"
-          :min-date="minDate"
-          :columns="setScreensByMode()"
-        />
+        <div v-if="mode == 'range'" class="date-range-inputs">
+          <label class="date-label">Desde:</label>
+          <input
+            type="date"
+            :value="formatDateISO(dates.start)"
+            :min="formatDateISO(minDate)"
+            @input="onStartDateChange"
+            class="date-input"
+          />
+          <label class="date-label">Hasta:</label>
+          <input
+            type="date"
+            :value="formatDateISO(dates.end)"
+            :min="formatDateISO(dates.start || minDate)"
+            @input="onEndDateChange"
+            class="date-input"
+          />
+        </div>
+        <div v-else class="date-single-input">
+          <input
+            type="date"
+            :value="formatDateISO(dates)"
+            :min="formatDateISO(minDate)"
+            @input="onSingleDateChange"
+            class="date-input"
+          />
+        </div>
       </div>
       <hr />
       <div v-if="dates" class="displayDate">
@@ -144,6 +163,10 @@ export default {
         .locale("es")
         .format("dddd, DD MMM YYYY");
     },
+    formatDateISO(date) {
+      if (!date) return "";
+      return this.toMoment(date).format("YYYY-MM-DD");
+    },
     constructDates(startDate, endDate) {
       let start = this.formatDate(startDate);
       let end = this.formatDate(endDate);
@@ -156,6 +179,7 @@ export default {
       return start + " - " + end + " (" + diff + dayNightString;
     },
     constructSingleDate(date) {
+      if (!date) return "";
       return this.toMoment(date)
         .locale("es")
         .format("DD MMM YYYY");
@@ -163,8 +187,17 @@ export default {
     updateValue() {
       this.dates = this.modelValue;
     },
-    setScreensByMode() {
-      return this.mode == "range" ? 2 : 1;
+    onStartDateChange(e) {
+      const val = e.target.value;
+      this.dates = { ...this.dates, start: val ? moment(val).toDate() : null };
+    },
+    onEndDateChange(e) {
+      const val = e.target.value;
+      this.dates = { ...this.dates, end: val ? moment(val).toDate() : null };
+    },
+    onSingleDateChange(e) {
+      const val = e.target.value;
+      this.dates = val ? moment(val).toDate() : null;
     }
   }
 };
@@ -237,6 +270,36 @@ export default {
   font-family: "Helvetica Neue LT Std-Roman";
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+}
+
+.date-range-inputs,
+.date-single-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.date-label {
+  font-family: "Helvetica Neue LT Std-Roman";
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.date-input {
+  padding: 6px 10px;
+  border: 1px solid #c4c4c4;
+  border-radius: var(--border-radius-sm);
+  font-family: "Helvetica Neue LT Std-Roman";
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.date-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(33, 47, 61, 0.2);
 }
 
 @media (max-width: 1440px) {
