@@ -208,8 +208,10 @@ export default {
     toggleClicked() {
       if (this.clickable) this.isVisible = !this.isVisible;
     },
-    handleFocusOut() {
-      if (!this.opened) this.isVisible = false;
+    handleFocusOut(event) {
+      if (!this.opened && !(event && this.$el.contains(event.target))) {
+        this.isVisible = false;
+      }
     },
     updateValue() {
       this.$emit("update:modelValue", this.roomsLayout);

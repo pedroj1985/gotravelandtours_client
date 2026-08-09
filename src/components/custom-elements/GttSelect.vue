@@ -210,8 +210,8 @@ export default {
       this.isVisible = false;
       this.emitClose();
     },
-    handleFocusOut() {
-      if (!this.opened) {
+    handleFocusOut(event) {
+      if (!this.opened && !(event && this.$el.contains(event.target))) {
         this.isVisible = false;
         this.emitClose();
       }

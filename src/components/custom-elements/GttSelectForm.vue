@@ -147,8 +147,10 @@ export default {
     toggleClicked() {
       this.isVisible = !this.isVisible;
     },
-    handleFocusOut() {
-      this.isVisible = false;
+    handleFocusOut(event) {
+      if (!event || !this.$el.contains(event.target)) {
+        this.isVisible = false;
+      }
     },
     uValue() {
       this.emitValue = this.value;
