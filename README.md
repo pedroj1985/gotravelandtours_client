@@ -43,9 +43,9 @@ pnpm install --ignore-scripts
 
 | Variable | Descripción | Ejemplo |
 |---|---|---|
-| `VITE_API_URL` | URL base de la API | `http://localhost:5000/api/` |
+| `VITE_API_URL` | URL base de la API | `https://admin.gotravelandtours.com/publicEliecer/api/` |
 
-Archivos: `.env.development` (local), `.env.production` (producción).
+Archivos: `.env.development` (desarrollo), `.env.production` (producción). Para usar un API local durante desarrollo, crear `.env.development.local` (ignorado por git) con `VITE_API_URL=http://localhost:5000/api/`.
 
 ## Estructura
 
