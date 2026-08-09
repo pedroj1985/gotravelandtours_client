@@ -333,7 +333,7 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         this.isModalActive = true;
-        await this.clearSerchResults();
+        await this.clearResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
           console.info("RGN", this);
           let region = { RegionId: this.selectedLodgingDestinyValue.id };

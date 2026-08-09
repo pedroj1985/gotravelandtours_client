@@ -241,7 +241,7 @@ export default {
     window.addEventListener("scroll", this.handleScroll);
     let t = await authGetRoomTypes();
     this.todosTipo = t.data;
-    await this.clearSerchResults();
+    await this.clearResults();
   },
   destroyed() {
     window.removeEventListener("scroll", this.handleScroll);
@@ -361,7 +361,7 @@ export default {
       let iv = gttIsValid(this.gttValidate(), this);
       if (getValid(iv)) {
         this.isModalActive = true;
-        await this.clearSerchResults();
+        await this.clearResults();
         if (this.selectedLodgingDestinyValue.type == "RGN") {
           console.log("RGN", this);
           let region = {
