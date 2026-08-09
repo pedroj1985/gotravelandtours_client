@@ -4,7 +4,6 @@
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
-      :value="uValue"
     >
       <div class="gtt__toggle_content">
         <div class="gtt__toggle_text">
@@ -33,23 +32,28 @@
     >
       <span class="arrow" v-if="arrow"></span>
       <div class="gtt__form">
-        <div class="gtt__item row" v-for="item in finalValue" :key="item.id">
+        <div class="gtt__item row" v-for="item in finalValue" :key="item.code">
           <div class="gtt__item_label col-md-6">{{ item.label }}</div>
           <div class="col-md-2">
             <button
               class="gtt__picker_button"
-              :class="{ disabled: item.value <= 0 }"
-              :disabled="item.value <= 0"
-              @click="remove(item, item.step)"
+              :class="{ disabled: tempValue(item.code) <= 0 }"
+              :disabled="tempValue(item.code) <= 0"
+              @click="change(item.code, -1)"
             >
               <i class="mdi mdi-minus"></i>
             </button>
           </div>
           <div class="col-md-1">
-            <p class="gtt__picker_value">{{ item.value }}</p>
+            <p class="gtt__picker_value">{{ tempValue(item.code) }}</p>
           </div>
           <div class="col-md-2">
-            <button class="gtt__picker_button" @click="add(item, item.step)">
+            <button
+              class="gtt__picker_button"
+              :class="{ disabled: tempValue(item.code) >= 10 }"
+              :disabled="tempValue(item.code) >= 10"
+              @click="change(item.code, 1)"
+            >
               <i class="mdi mdi-plus"></i>
             </button>
           </div>
@@ -58,7 +62,7 @@
           <div
             class="col-md-6 gtt__kidsSelect"
             v-for="(kid, i) in kids"
-            :key="kid.id"
+            :key="'kid-' + i"
           >
             <gtt-select :options="kidsAgeList" v-model="kid.age">
               <template #placeholder>Edad del menor {{ i + 1 }}</template>
@@ -67,6 +71,11 @@
               >
             </gtt-select>
           </div>
+        </div>
+        <div class="gtt__form_actions">
+          <button class="gtt__picker_button gtt__form_accept" @click="accept">
+            Aceptar
+          </button>
         </div>
       </div>
     </div>
@@ -98,96 +107,126 @@ export default {
   watch: {
     modelValue(v) {
       if (v) {
-        this.finalValue = [];
-        for (const item of Object.entries(v)) {
-          this.finalValue.push(item[1]);
-        }
-      } else {
+        this.emitValue = v;
       }
-      this.finalValue.forEach(element => {
-        this.updateValue(element);
-      });
     }
   },
   created() {
-    if (!this.modelValue) {
-      for (let index = 0; index < this.options.length; index++) {
-        let code = this.options[index].code;
-        let d = this.options[index].default;
-        this.finalValue.push({
-          code: code,
-          label: this.options[index].label,
-          display: this.options[index].display,
-          value: d
-        });
-      }
-    } else {
-      for (const item of Object.entries(this.modelValue)) {
-        this.finalValue.push(item[1]);
-      }
+    for (let index = 0; index < this.options.length; index++) {
+      let option = this.options[index];
+      this.finalValue.push({
+        code: option.code,
+        label: option.label,
+        display: option.display,
+        value: option.default
+      });
     }
 
-    this.finalValue.forEach(element => {
-      this.updateValue(element);
-    });
+    if (this.modelValue) {
+      for (const item of Object.entries(this.modelValue)) {
+        this.emitValue[item[0]] = item[1];
+      }
+    } else {
+      this.finalValue.forEach(element => {
+        this.emitValue[element.code] = {
+          display: element.display,
+          code: element.code,
+          label: element.label,
+          value: element.value
+        };
+      });
+    }
+    this.$emit("update:modelValue", this.emitValue);
+    this.snapshotTemp();
   },
   data() {
     return {
       kids: [],
       kidsAgeList: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      isChanged: false,
       isVisible: false,
       arrow: true,
       emitValue: {},
-      finalValue: []
+      finalValue: [],
+      tempAdults: 1,
+      tempChildren: 0
     };
   },
   methods: {
     constructDisplay,
     toggleClicked() {
       this.isVisible = !this.isVisible;
+      if (this.isVisible) {
+        this.snapshotTemp();
+      }
     },
     handleFocusOut(event) {
       if (!event || !this.$el.contains(event.target)) {
         this.isVisible = false;
       }
     },
-    uValue() {
-      this.emitValue = this.value;
+    getModelValue(code) {
+      return this.modelValue && this.modelValue[code]
+        ? this.modelValue[code].value
+        : undefined;
     },
-    updateValue(item) {
-      this.emitValue[item.code] = {
-        display: item.display,
-        code: item.code,
-        label: item.label,
-        value: item.value
-      };
+    defaultValue(code, fallback) {
+      const item = this.finalValue.find(i => i.code === code);
+      const value = item ? item.value : undefined;
+      return typeof value === "number" ? value : fallback;
+    },
+    snapshotTemp() {
+      const adults = this.getModelValue("adults");
+      const children = this.getModelValue("kids");
+      this.tempAdults =
+        typeof adults === "number" ? adults : this.defaultValue("adults", 1);
+      this.tempChildren =
+        typeof children === "number" ? children : this.defaultValue("kids", 0);
+      this.syncKidsAges();
+    },
+    syncKidsAges() {
+      const count = Math.max(0, this.tempChildren);
+      while (this.kids.length < count) {
+        this.kids.push({ age: null });
+      }
+      if (this.kids.length > count) {
+        this.kids.splice(count);
+      }
+    },
+    tempValue(code) {
+      return code === "adults" ? this.tempAdults : this.tempChildren;
+    },
+    change(code, delta) {
+      if (code === "adults") {
+        this.tempAdults = Math.min(10, Math.max(0, this.tempAdults + delta));
+      } else if (code === "kids") {
+        this.tempChildren = Math.min(
+          10,
+          Math.max(0, this.tempChildren + delta)
+        );
+        this.syncKidsAges();
+      }
+    },
+    accept() {
+      if (this.tempAdults === 0 && this.tempChildren === 0) {
+        this.tempAdults = 1;
+      }
+      this.emitValue = {};
+      this.finalValue.forEach(element => {
+        const value =
+          element.code === "adults"
+            ? this.tempAdults
+            : element.code === "kids"
+            ? this.tempChildren
+            : element.value;
+        this.emitValue[element.code] = {
+          display: element.display,
+          code: element.code,
+          label: element.label,
+          value
+        };
+      });
       this.$emit("update:modelValue", this.emitValue);
-    },
-    add(item, step = 1) {
-      if (item.code == "kids") {
-        this.kids.push({
-          age: null
-        });
-      }
-      item.value += step;
-      this.isChanged = true;
-      this.updateValue(item);
-    },
-    remove(item, step = 1) {
-      if (item.code == "kids") {
-        this.kids.pop();
-      }
-      let r = item.value - step;
-      if (r >= 1 && item.code != "kids") {
-        item.value -= step;
-        this.isChanged = true;
-        this.updateValue(item);
-      } else if (r >= 0 && item.code == "kids") {
-        item.value -= step;
-        this.isChanged = true;
-        this.updateValue(item);
-      }
+      this.isVisible = false;
     }
   }
 };

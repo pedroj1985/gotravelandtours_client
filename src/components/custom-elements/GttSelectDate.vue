@@ -135,15 +135,8 @@ export default {
     };
   },
   watch: {
-    dates: function(val, oldVal) {
-      if (val && val !== oldVal) {
-        this.isVisible = false;
-      }
-      if (!val) {
-        this.$emit("update:modelValue", this.minDate);
-      }
-      this.$emit("update:modelValue", val);
-    },
+    // Solo sincroniza el valor interno desde el padre SIN re-emitir,
+    // evitando ciclos de realimentación con los watchers del formulario.
     modelValue: function() {
       this.updateValue();
     }
@@ -190,14 +183,20 @@ export default {
     onStartDateChange(e) {
       const val = e.target.value;
       this.dates = { ...this.dates, start: val ? moment(val).toDate() : null };
+      this.$emit("update:modelValue", this.dates);
+      this.isVisible = false;
     },
     onEndDateChange(e) {
       const val = e.target.value;
       this.dates = { ...this.dates, end: val ? moment(val).toDate() : null };
+      this.$emit("update:modelValue", this.dates);
+      this.isVisible = false;
     },
     onSingleDateChange(e) {
       const val = e.target.value;
       this.dates = val ? moment(val).toDate() : null;
+      this.$emit("update:modelValue", this.dates);
+      this.isVisible = false;
     }
   }
 };
