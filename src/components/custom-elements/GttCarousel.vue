@@ -83,7 +83,7 @@ export default {
       this.setupDrag();
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.stopAutoplay();
     if (this.draggable) {
       this.teardownDrag();
