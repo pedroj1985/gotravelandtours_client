@@ -2,7 +2,8 @@ const STORAGE_KEYS = {
   CART: "gttCart",
   TOKEN: "token",
   EXPIRY_DATE: "fecha_exp",
-  VERSION: "version"
+  VERSION: "version",
+  USER: "usuarioObjeto"
 } as const;
 
 class StorageService {
@@ -95,6 +96,18 @@ class StorageService {
 
   setVersion(version: unknown): boolean {
     return this.setJson(STORAGE_KEYS.VERSION, version);
+  }
+
+  getUser(): unknown {
+    return this.getJson(STORAGE_KEYS.USER, null);
+  }
+
+  setUser(user: unknown): boolean {
+    return this.setJson(STORAGE_KEYS.USER, user);
+  }
+
+  removeUser(): boolean {
+    return this.removeItem(STORAGE_KEYS.USER);
   }
 }
 
