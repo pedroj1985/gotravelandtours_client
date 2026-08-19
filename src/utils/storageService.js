@@ -7,7 +7,8 @@ const STORAGE_KEYS = {
   CART: "gttCart",
   TOKEN: "token",
   EXPIRY_DATE: "fecha_exp",
-  VERSION: "version"
+  VERSION: "version",
+  USER: "usuarioObjeto"
 };
 
 class StorageService {
@@ -170,6 +171,31 @@ class StorageService {
    */
   setVersion(version) {
     return this.setJson(STORAGE_KEYS.VERSION, version);
+  }
+
+  /**
+   * Get the persisted user object
+   * @returns {object|null} The user object or null
+   */
+  getUser() {
+    return this.getJson(STORAGE_KEYS.USER, null);
+  }
+
+  /**
+   * Set the persisted user object
+   * @param {object} user - The user object to store
+   * @returns {boolean} True if successful
+   */
+  setUser(user) {
+    return this.setJson(STORAGE_KEYS.USER, user);
+  }
+
+  /**
+   * Remove the persisted user object
+   * @returns {boolean} True if successful
+   */
+  removeUser() {
+    return this.removeItem(STORAGE_KEYS.USER);
   }
 }
 

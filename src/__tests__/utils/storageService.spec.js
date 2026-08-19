@@ -138,3 +138,29 @@ describe("storageService (version)", () => {
     expect(storageService.getVersion()).toBeNull();
   });
 });
+
+describe("storageService (user operations)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("should set and get user", () => {
+    const user = {
+      name: "PEDRO",
+      clienteId: "999",
+      clienteNombre: "AGENCIA TEST"
+    };
+    storageService.setUser(user);
+    expect(storageService.getUser()).toEqual(user);
+  });
+
+  it("should return null when no user", () => {
+    expect(storageService.getUser()).toBeNull();
+  });
+
+  it("should remove user", () => {
+    storageService.setUser({ name: "PEDRO" });
+    storageService.removeUser();
+    expect(storageService.getUser()).toBeNull();
+  });
+});

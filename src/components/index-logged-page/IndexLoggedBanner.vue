@@ -243,7 +243,7 @@ export default {
     this.todosTipo = t.data;
     await this.clearResults();
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener("scroll", this.handleScroll);
   },
   computed: {
