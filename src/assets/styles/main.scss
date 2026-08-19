@@ -25,28 +25,47 @@
 
 // Hide on mobile
 @media (max-width: 480px) {
-  .hide-mobile { display: none !important; }
+  .hide-mobile {
+    display: none !important;
+  }
 }
 
 // Hide on tablet
 @media (max-width: 768px) {
-  .hide-tablet { display: none !important; }
+  .hide-tablet {
+    display: none !important;
+  }
 }
 
 // Show only on mobile
 @media (min-width: 481px) {
-  .show-mobile-only { display: none !important; }
+  .show-mobile-only {
+    display: none !important;
+  }
 }
 
 // Prevent horizontal overflow
-html, body {
+html,
+body {
   overflow-x: hidden;
   max-width: 100%;
 }
 
-img, video, iframe {
+img,
+video,
+iframe {
   max-width: 100%;
   height: auto;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+#app {
+  overflow-x: hidden;
 }
 
 // Responsive container
@@ -82,7 +101,9 @@ img, video, iframe {
 }
 
 @keyframes gtt-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // Tooltip (CSS-only)

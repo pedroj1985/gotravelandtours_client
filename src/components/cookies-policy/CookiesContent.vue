@@ -1,11 +1,7 @@
 <template>
-  <div class="hn-roman custom-margin">
-    <h2 data-cy="heading-panel-element" class="">
-      Política de Cookies
-    </h2>
-    <h3 data-cy="heading-panel-element" class="">
-      ¿Qué son las Cookies?
-    </h3>
+  <div ref="el" class="hn-roman custom-margin">
+    <h2 data-cy="heading-panel-element" class="">Política de Cookies</h2>
+    <h3 data-cy="heading-panel-element" class="">¿Qué son las Cookies?</h3>
     <div data-cy="json-rich-text" class="u-margin-bottom--2">
       <p>
         Los sitios web, servicios en línea, mensajes de correo electrónico y
@@ -97,9 +93,7 @@
         </li>
       </ul>
     </div>
-    <h3 data-cy="heading-panel-element" class="">
-      Cookies de terceros
-    </h3>
+    <h3 data-cy="heading-panel-element" class="">Cookies de terceros</h3>
     <div data-cy="json-rich-text" class="u-margin-bottom--2">
       <p>
         Los proveedores de terceros utilizan cookies para ayudarnos a evaluar la
@@ -315,9 +309,7 @@
         podemos mostrar anuncios adaptados a usted.
       </p>
     </div>
-    <h3 data-cy="heading-panel-element" class="">
-      Etiquetas de píxel
-    </h3>
+    <h3 data-cy="heading-panel-element" class="">Etiquetas de píxel</h3>
     <div data-cy="json-rich-text" class="u-margin-bottom--2">
       <p>
         Una etiqueta de píxel es un tipo de tecnología colocada en un sitio web
@@ -334,27 +326,30 @@
   </div>
 </template>
 
-<script>
-import { scrollStore } from "../../stores/scrollStore";
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
+import { useScrollStore } from "../../stores/scrollStore";
 
-export default {
-  name: "cookies-content",
-  methods: {
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        scrollStore.scrollTo(this.$el.id);
-      }
-    }
-  },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  unmounted() {
-    window.removeEventListener("scroll", this.handleScroll);
+defineOptions({ name: "CookiesContent" });
+
+const el = ref<HTMLElement | null>(null);
+const scrollStore = useScrollStore();
+
+function handleScroll() {
+  let height = window.innerHeight;
+  if (
+    height * 0.25 > (el.value?.getBoundingClientRect().top ?? 0) &&
+    height * 0 < (el.value?.getBoundingClientRect().top ?? 0)
+  ) {
+    scrollStore.scrollTo(el.value?.id ?? "");
   }
-};
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>

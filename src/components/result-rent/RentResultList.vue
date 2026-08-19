@@ -11,19 +11,12 @@
     </div>
   </div>
 </template>
-<script>
-import RentResultListItem from "./RentResultListItem";
-export default {
-  components: {
-    RentResultListItem
-  },
-  props: {
-    resultList: Array,
-    totalDays: {
-      type: Number,
-      default: 0
-    },
-    onlyToSelect: Boolean
-  }
-};
+<script setup lang="ts">
+import RentResultListItem from "./RentResultListItem.vue";
+
+defineProps<{
+  resultList: any[];
+  totalDays?: number;
+  onlyToSelect?: boolean;
+}>();
 </script>

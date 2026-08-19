@@ -9,13 +9,40 @@
       <nav aria-label="Paginación">
         <ul class="gtt-pagination">
           <li class="gtt-page-item" :class="{ disabled: currentPage <= 1 }">
-            <a class="gtt-page-link" href="#" @click.prevent="currentPage > 1 && getOthers($event, currentPage - 1)">&laquo;</a>
+            <a
+              class="gtt-page-link"
+              href="#"
+              @click.prevent="
+                currentPage > 1 && getOthers($event, currentPage - 1)
+              "
+              >&laquo;</a
+            >
           </li>
-          <li class="gtt-page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
-            <a class="gtt-page-link" href="#" @click.prevent="getOthers($event, page)">{{ page }}</a>
+          <li
+            class="gtt-page-item"
+            v-for="page in totalPages"
+            :key="page"
+            :class="{ active: page === currentPage }"
+          >
+            <a
+              class="gtt-page-link"
+              href="#"
+              @click.prevent="getOthers($event, page)"
+              >{{ page }}</a
+            >
           </li>
-          <li class="gtt-page-item" :class="{ disabled: currentPage >= totalPages }">
-            <a class="gtt-page-link" href="#" @click.prevent="currentPage < totalPages && getOthers($event, currentPage + 1)">&raquo;</a>
+          <li
+            class="gtt-page-item"
+            :class="{ disabled: currentPage >= totalPages }"
+          >
+            <a
+              class="gtt-page-link"
+              href="#"
+              @click.prevent="
+                currentPage < totalPages && getOthers($event, currentPage + 1)
+              "
+              >&raquo;</a
+            >
           </li>
         </ul>
       </nav>
@@ -23,82 +50,79 @@
   </div>
 </template>
 
-<script>
-import ResultList from "./ResultList";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from "vue";
+import ResultList from "./ResultList.vue";
 import _ from "lodash";
-export default {
-  components: {
-    ResultList
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.total / this.perPage);
-    }
-  },
-  data() {
-    return {
-      total: 1,
-      currentList: [],
-      currentPage: 1
-    };
-  },
-  mounted() {
-    this.getList(this.currentPage);
-    this.total = this.resultList.length;
-    this.$emit("resultSize", this.total);
-  },
-  props: {
-    filters: Object,
-    resultList: Array,
-    perPage: {
-      default: 1
-    },
-    todosTipo: Array,
-    order: {
-      type: Object,
-      default() {
-        return { displayName: "Precio (asc)", code: "price_asc" };
-      }
-    }
-  },
-  watch: {
-    order: function(val) {
-      if (val.code == "price_desc") {
-        this.currentList = _.orderBy(
-          this.currentList,
-          o => {
-            let r = this.getMinPrice(o.habitaciones).combinacion.total;
-            return r;
-          },
-          "desc"
-        );
-      } else {
-        this.currentList = _.orderBy(
-          this.currentList,
-          o => {
-            return this.getMinPrice(o.habitaciones).combinacion.total;
-          },
-          "asc"
-        );
-      }
-    }
-  },
-  methods: {
-    getOthers(event, page) {
-      this.getList(page);
-    },
-    getList(page) {
-      let min = this.perPage * page - this.perPage;
-      let max = this.perPage * page;
 
-      this.currentList = this.resultList.slice(min, max);
-      this.$scrollTo("#right-column-list-wrapper");
-    },
-    getMinPrice(array) {
-      return _.minBy(array, function(e) {
-        return e.combinacion.total;
-      });
+const props = defineProps<{
+  filters: any;
+  resultList: any[];
+  perPage?: number;
+  todosTipo: any[];
+  order?: { displayName: string; code: string };
+}>();
+
+const emit = defineEmits<{
+  (e: "resultSize", size: number): void;
+}>();
+
+const total = ref(1);
+const currentList = ref<any[]>([]);
+const currentPage = ref(1);
+
+const totalPages = computed(() =>
+  Math.ceil(total.value / (props.perPage || 1)),
+);
+
+onMounted(() => {
+  getList(currentPage.value);
+  total.value = props.resultList.length;
+  emit("resultSize", total.value);
+});
+
+watch(
+  () => props.order,
+  (val) => {
+    if (!val) return;
+    if (val.code == "price_desc") {
+      currentList.value = _.orderBy(
+        currentList.value,
+        (o: any) => {
+          let r = getMinPrice(o.habitaciones).combinacion.total;
+          return r;
+        },
+        "desc",
+      );
+    } else {
+      currentList.value = _.orderBy(
+        currentList.value,
+        (o: any) => {
+          return getMinPrice(o.habitaciones).combinacion.total;
+        },
+        "asc",
+      );
     }
-  }
-};
+  },
+  { deep: true },
+);
+
+function getOthers(event: Event, page: number) {
+  getList(page);
+}
+
+function getList(page: number) {
+  let min = (props.perPage || 1) * page - (props.perPage || 1);
+  let max = (props.perPage || 1) * page;
+  currentList.value = props.resultList.slice(min, max);
+  document
+    .querySelector("#right-column-list-wrapper")
+    ?.scrollIntoView({ behavior: "smooth" });
+}
+
+function getMinPrice(array: any[]) {
+  return _.minBy(array, function (e: any) {
+    return e.combinacion.total;
+  });
+}
 </script>

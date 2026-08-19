@@ -34,11 +34,15 @@
         <div
           id="ap-side-menu"
           class="col-lg-2 col-md-5"
-          style="height: 100%;"
+          style="height: 100%"
           v-if="currentChild != 'reservation-detail'"
         >
           <div class="no-nav-user-photo text-center">
-            <img :src="user.photo" v-if="user.photo" :alt="'Foto de ' + user.name" />
+            <img
+              :src="user.photo"
+              v-if="user.photo"
+              :alt="'Foto de ' + user.name"
+            />
             <i v-else class="mdi mdi-account font48"></i>
           </div>
           <div
@@ -75,7 +79,7 @@
           id="r-right-side"
           :class="{
             'col-lg-12': currentChild == 'reservation-detail',
-            'col-lg-10 col-md-7': currentChild != 'reservation-detail'
+            'col-lg-10 col-md-7': currentChild != 'reservation-detail',
           }"
         >
           <router-view
@@ -88,100 +92,82 @@
   </div>
 </template>
 
-<script>
-import NavBar2 from "../shared/NavBar2";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import NavBar2 from "../shared/NavBar2.vue";
 import { getUser } from "../../utils/auth";
 
-export default {
-  components: {
-    NavBar2
-  },
-  created() {
-    this.user = getUser();
-    console.log(this.user.name);
-  },
-  methods: {
-    constructDisplaySection(item) {
-      let text = "";
-      switch (item) {
-        case "reservation":
-          text = "Mis reservaciones";
-          break;
+defineOptions({ name: "MyAdminPanel" });
 
-        default:
-          text = "Mi perfil";
-          break;
-      }
+const currentChild = ref("");
+const user = ref<any>(null);
 
-      return text;
-    },
-    updateCurrentChild(value) {
-      this.currentChild = value;
-    }
+const menuLinks = ref([
+  {
+    name: "index",
+    displayName: "Inicio",
+    id: "home-logged-banner",
   },
-  data() {
-    return {
-      currentChild: "",
-      user: null,
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Inicio",
-          id: "home-logged-banner"
-        },
-        {
-          name: "lodging",
-          displayName: "alojamientos",
-          id: "home-logged-banner"
-        }
-        /*         {
-          name: "car-rent",
-          displayName: "renta de autos",
-          id: "index-logged-rent-wrapper",
-        }, */
-        /*        {
-          name: "transfer",
-          displayName: "traslados",
-          id: "index-logged-transfer",
-        },
-        {
-          name: "excursions",
-          displayName: "Excursiones y actividades",
-          id: "index-logged-excursion",
-        },*/
-      ],
-      adminElements: [
-        {
-          displayName: "Reservaciones",
-          code: "reservation",
-          route: "myreservations"
-        }
-        /* TODO: Fase 12 — Implementar estos módulos del admin panel
-        {
-          displayName: "Reportes",
-          code: "report",
-          route: "myreports"
-        },
-        {
-          displayName: "Agenda",
-          code: "agend",
-          route: "myagend"
-        },
-        {
-          displayName: "Facturas",
-          code: "bill",
-          route: "mybills"
-        },
-        {
-          displayName: "Documentos",
-          code: "document",
-          route: "mydocs"
-        }
-        */
-      ]
-    };
+  {
+    name: "lodging",
+    displayName: "alojamientos",
+    id: "home-logged-banner",
+  },
+]);
+
+const adminElements = ref([
+  {
+    displayName: "Reservaciones",
+    code: "reservation",
+    route: "myreservations",
+  },
+  {
+    displayName: "Reportes",
+    code: "report",
+    route: "myreports",
+  },
+  {
+    displayName: "Agenda",
+    code: "agend",
+    route: "myagend",
+  },
+  {
+    displayName: "Facturas",
+    code: "bill",
+    route: "mybills",
+  },
+  {
+    displayName: "Documentos",
+    code: "document",
+    route: "mydocs",
+  },
+]);
+
+onMounted(() => {
+  user.value = getUser();
+  if (import.meta.env.DEV) {
+    console.log(user.value.name);
   }
-};
+});
+
+function constructDisplaySection(item: string) {
+  let text = "";
+  switch (item) {
+    case "reservation":
+      text = "Mis reservaciones";
+      break;
+
+    default:
+      text = "Mi perfil";
+      break;
+  }
+
+  return text;
+}
+
+function updateCurrentChild(value: string) {
+  currentChild.value = value;
+}
 </script>
 
 <style scoped>

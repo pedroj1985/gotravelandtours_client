@@ -17,7 +17,11 @@
         </div>
         <div class="modal-row c-modal-bottom">
           <div class="first-column">
-            <img class="modal-logo" src="/img/logo_colibri_colored.png" alt="Colibri Viajes" />
+            <img
+              class="modal-logo"
+              src="/img/logo_colibri_colored.png"
+              alt="Colibri Viajes"
+            />
           </div>
           <div class="second-column">
             <slot name="searching-fields"></slot>
@@ -43,17 +47,17 @@
   animation: gtt-progress-indeterminate 1.5s ease-in-out infinite;
 }
 @keyframes gtt-progress-indeterminate {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 </style>
 
-<script>
-export default {
-  data() {
-    return {
-      loading: true
-    };
-  }
-};
+<script setup lang="ts">
+import { ref } from "vue";
+
+const loading = ref(true);
 </script>

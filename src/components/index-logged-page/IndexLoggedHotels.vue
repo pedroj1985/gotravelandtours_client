@@ -12,7 +12,10 @@
         :key="hotel.id"
       >
         <div class="index-logged-hotel">
-          <img :src="'img/' + hotel.img" :alt="'Imagen de ' + hotel.weather.location" />
+          <img
+            :src="'img/' + hotel.img"
+            :alt="'Imagen de ' + hotel.weather.location"
+          />
           <div class="name-weather">
             <div class="name antonio-regular">{{ hotel.weather.location }}</div>
             <div class="weather hn-ltcn">
@@ -50,118 +53,128 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/swiper-bundle.css"
+import "swiper/swiper-bundle.css";
 
-export default {
-  components: {
-    Swiper,
-    SwiperSlide
-  },
-  methods: {
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+const swiperModules = [Navigation, Pagination, Autoplay];
 
-      if (decimalPart == 0) decimalPart = "00";
+interface HotelWeather {
+  location: string;
+  temp: string;
+  weather: string;
+}
 
-      return { intPart: intPart, decimalPart: decimalPart };
+interface HotelMinPrice {
+  currency: string;
+  value: string;
+}
+
+interface Hotel {
+  name: string;
+  stars: string;
+  min_price: HotelMinPrice;
+  img: string;
+  weather: HotelWeather;
+}
+
+const hotels: Hotel[] = [
+  {
+    name: "Hotel Jagua by Melia Hotels International",
+    stars: "4",
+    min_price: {
+      currency: "USD",
+      value: "62",
     },
-    setWeatherClass(weather) {
-      if (weather == "sun") {
-        return "mdi-weather-sunny";
-      }
-      if (weather == "rain") {
-        return "mdi-weather-rainy";
-      }
-      if (weather == "cloud") {
-        return "mdi-weather-partly-cloudy";
-      }
-      if (weather == "ccloud") {
-        return "mdi-weather-cloudy";
-      }
-    }
+    img: "homelogin_destino_cienfuegos.jpg",
+    weather: {
+      location: "Cienfuegos",
+      temp: "29",
+      weather: "rain",
+    },
   },
-  data() {
-    return {
-      swiperModules: [Navigation, Pagination, Autoplay],
-      hotels: [
-        {
-          name: "Hotel Jagua by Melia Hotels International",
-          stars: "4",
-          min_price: {
-            currency: "USD",
-            value: "62"
-          },
-          img: "homelogin_destino_cienfuegos.jpg",
-          weather: {
-            location: "Cienfuegos",
-            temp: "29",
-            weather: "rain"
-          }
-        },
-        {
-          name: "Iberostar Gran Hotel Packard",
-          stars: "5",
-          min_price: {
-            currency: "USD",
-            value: "231"
-          },
-          img: "homelogin_destino_habana.jpg",
-          weather: {
-            location: "La Habana",
-            temp: "28",
-            weather: "ccloud"
-          }
-        },
-        {
-          name: "Melia Internacional Varadero All Inclusive",
-          stars: "5",
-          min_price: {
-            currency: "USD",
-            value: "250"
-          },
-          img: "homelogin_destino_varadero.jpg",
-          weather: {
-            location: "Varadero",
-            temp: "32",
-            weather: "sun"
-          }
-        },
-        {
-          name: "Melia Santiago de Cuba",
-          stars: "5",
-          min_price: {
-            currency: "USD",
-            value: "90"
-          },
-          img: "homelogin_destino_santiago.jpg",
-          weather: {
-            location: "Santiago de Cuba",
-            temp: "28",
-            weather: "cloud"
-          }
-        },
-        {
-          name: "Melia Santiago de Cuba",
-          stars: "5",
-          min_price: {
-            currency: "USD",
-            value: "90"
-          },
-          img: "homelogin_destino_santiago.jpg",
-          weather: {
-            location: "Santiago de Cuba",
-            temp: "28",
-            weather: "cloud"
-          }
-        }
-      ]
-    };
+  {
+    name: "Iberostar Gran Hotel Packard",
+    stars: "5",
+    min_price: {
+      currency: "USD",
+      value: "231",
+    },
+    img: "homelogin_destino_habana.jpg",
+    weather: {
+      location: "La Habana",
+      temp: "28",
+      weather: "ccloud",
+    },
+  },
+  {
+    name: "Melia Internacional Varadero All Inclusive",
+    stars: "5",
+    min_price: {
+      currency: "USD",
+      value: "250",
+    },
+    img: "homelogin_destino_varadero.jpg",
+    weather: {
+      location: "Varadero",
+      temp: "32",
+      weather: "sun",
+    },
+  },
+  {
+    name: "Melia Santiago de Cuba",
+    stars: "5",
+    min_price: {
+      currency: "USD",
+      value: "90",
+    },
+    img: "homelogin_destino_santiago.jpg",
+    weather: {
+      location: "Santiago de Cuba",
+      temp: "28",
+      weather: "cloud",
+    },
+  },
+  {
+    name: "Melia Santiago de Cuba",
+    stars: "5",
+    min_price: {
+      currency: "USD",
+      value: "90",
+    },
+    img: "homelogin_destino_santiago.jpg",
+    weather: {
+      location: "Santiago de Cuba",
+      temp: "28",
+      weather: "cloud",
+    },
+  },
+];
+
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number);
+  let decimalPart = (number - intPart).toFixed(2) * 100;
+
+  if (decimalPart == 0) decimalPart = "00";
+
+  return { intPart: intPart, decimalPart: decimalPart };
+}
+
+function setWeatherClass(weather: string) {
+  if (weather == "sun") {
+    return "mdi-weather-sunny";
   }
-};
+  if (weather == "rain") {
+    return "mdi-weather-rainy";
+  }
+  if (weather == "cloud") {
+    return "mdi-weather-partly-cloudy";
+  }
+  if (weather == "ccloud") {
+    return "mdi-weather-cloudy";
+  }
+}
 </script>
 
 <style scoped>

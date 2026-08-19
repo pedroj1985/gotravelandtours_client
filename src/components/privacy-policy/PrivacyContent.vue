@@ -1,5 +1,5 @@
 <template>
-  <div class="hn-roman custom-margin">
+  <div ref="el" class="hn-roman custom-margin">
     <h1>Política de Privacidad</h1>
 
     <p>
@@ -63,9 +63,7 @@
       representante legal del autorizado. En tal caso, se deberá aportar la
       documentación que acredite esta representación del interesado.
     </p>
-    <p>
-      El usuario podrá solicitar el ejercicio de los siguientes derechos:
-    </p>
+    <p>El usuario podrá solicitar el ejercicio de los siguientes derechos:</p>
     <ul>
       <li>Derecho a solicitar el acceso a los datos personales.</li>
       <li>
@@ -311,27 +309,30 @@
   </div>
 </template>
 
-<script>
-import { scrollStore } from "../../stores/scrollStore";
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
+import { useScrollStore } from "../../stores/scrollStore";
 
-export default {
-  name: "privacy-content",
-  methods: {
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        scrollStore.scrollTo(this.$el.id);
-      }
-    }
-  },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  unmounted() {
-    window.removeEventListener("scroll", this.handleScroll);
+defineOptions({ name: "PrivacyContent" });
+
+const el = ref<HTMLElement | null>(null);
+const scrollStore = useScrollStore();
+
+function handleScroll() {
+  let height = window.innerHeight;
+  if (
+    height * 0.25 > (el.value?.getBoundingClientRect().top ?? 0) &&
+    height * 0 < (el.value?.getBoundingClientRect().top ?? 0)
+  ) {
+    scrollStore.scrollTo(el.value?.id ?? "");
   }
-};
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>

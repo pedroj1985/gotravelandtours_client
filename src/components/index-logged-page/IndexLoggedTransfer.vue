@@ -3,6 +3,35 @@
     <div class="home-logged-transfer-img">
       <img src="/img/homelogin_img_form_traslados.jpg" alt="Traslados" />
     </div>
+    <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
+      <template v-slot:image>
+        <div>
+          <img src="/img/icopaq_traslado_color.svg" alt="" />
+        </div>
+      </template>
+      <template v-slot:searching-text>
+        <div class="searching-text">
+          <span class="antonio-light">Buscando disponibilidad de </span
+          ><span class="antonio-bold text-highlight">traslados </span>
+          <span class="antonio-light"
+            >en
+            <span v-if="selectedDestinyPlace">{{ selectedDestinyPlace }}</span
+            ><span v-else>cualquier lugar</span></span
+          >
+        </div>
+      </template>
+      <template v-slot:searching-fields>
+        <div class="searching-fields">
+          <div v-if="selectedDepartureDate && selectedArrivalDate">
+            entre el {{ constructDate(selectedDepartureDate) }} y el
+            {{ constructDate(selectedArrivalDate) }}
+          </div>
+          <div v-if="selectedPassengers">
+            para {{ constructDisplay(selectedPassengers) }}
+          </div>
+        </div>
+      </template>
+    </GttModalSearch>
     <div class="custom-text-form custom-margin">
       <div class="custom-text antonio-light">
         <span class="bannerText">Las mejores ofertas en </span
@@ -15,17 +44,29 @@
             class="cleft"
             v-model="selectedPickUpPlace"
           >
-            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
-            <template #placeholder>Punto de origen</template>
-            <template #selectedPlaceholder>Salimos desde el:</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-map-marker"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Punto de origen</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span> Salimos desde el:</span>
+            </template>
           </gtt-select>
           <gtt-select
             :options="pickUpDeliveryOptions"
             v-model="selectedDestinyPlace"
           >
-            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
-            <template #placeholder>Punto de destino</template>
-            <template #selectedPlaceholder>Nos dirigimos hasta:</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-map-marker"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Punto de destino</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span> Nos dirigimos hasta:</span>
+            </template>
           </gtt-select>
         </div>
         <div class="selects-inline">
@@ -34,37 +75,33 @@
             :mode="'single'"
             class="minor-left single-date-transfer"
           >
-            <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
-            <template #placeholder>Fecha de salida</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-calendar-today"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Fecha de salida</span>
+            </template>
           </gtt-select-date>
           <div class="date-select">
-            <label for="hora-regreso" class="input-label small">
-              Hora
-            </label>
-            <input
-              type="time"
-              v-model="departureTime"
-              class="form-control"
-            />
+            <label for="hora-regreso" class="input-label small"> Hora </label>
+            <input type="time" v-model="departureTime" class="form-control" />
           </div>
           <gtt-select-date
             v-model="selectedArrivalDate"
             :mode="'single'"
             class="minor-left single-date-transfer"
           >
-            <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
-            <template #placeholder>Fecha de regreso</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-calendar-today"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span>Fecha de regreso</span>
+            </template>
           </gtt-select-date>
 
           <div class="date-select">
-            <label for="hora-regreso" class="input-label small">
-              Hora
-            </label>
-            <input
-              type="time"
-              v-model="arrivalTime"
-              class="form-control"
-            />
+            <label for="hora-regreso" class="input-label small"> Hora </label>
+            <input type="time" v-model="arrivalTime" class="form-control" />
           </div>
         </div>
         <div class="selects-inline">
@@ -73,12 +110,20 @@
             class="cleft"
             v-model="selectedPassengers"
           >
-            <template #iconSelectedValue><i class="mdi mdi-account"></i></template>
-            <template #placeholder>Pasajeros</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-account"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Pasajeros</span>
+            </template>
           </gtt-select-form>
           <gtt-select-form :options="luggagesLayout" v-model="selectedLuggages">
-            <template #iconSelectedValue><i class="mdi mdi-bag-personal"></i></template>
-            <template #placeholder>Equipaje</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-bag-personal"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span>Equipaje</span>
+            </template>
           </gtt-select-form>
         </div>
         <div class="selects-inline">
@@ -87,18 +132,30 @@
             v-model="selectedJourneyType"
             class="cleft custom-width-select"
           >
-            <template #iconSelectedValue><i class="mdi mdi-transit-transfer"></i></template>
-            <template #placeholder>Tipo de trayecto</template>
-            <template #selectedPlaceholder>¿ida y vuelta?</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-transit-transfer"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Tipo de trayecto</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span> ¿ida y vuelta?</span>
+            </template>
           </gtt-select>
           <gtt-select
             :options="transferTypes"
             v-model="selectedTransferType"
             class="cleft custom-width-select"
           >
-            <template #iconSelectedValue><i class="mdi mdi-bus-side"></i></template>
-            <template #placeholder>Tipo de traslado</template>
-            <template #selectedPlaceholder>¿Compartido?</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-bus-side"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Tipo de traslado</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span> ¿Compartido?</span>
+            </template>
           </gtt-select>
           <div class="form-actions text-right">
             <button
@@ -115,95 +172,113 @@
   </div>
 </template>
 
-<script>
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttSelectForm from "../custom-elements/GttSelectForm";
-import { scrollStore } from "../../stores/scrollStore";
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { toast } from "vue3-toastify";
+import GttSelect from "../custom-elements/GttSelect.vue";
+import GttSelectDate from "../custom-elements/GttSelectDate.vue";
+import GttSelectForm from "../custom-elements/GttSelectForm.vue";
+import GttModalSearch from "../custom-elements/GttModalSearch.vue";
+import moment from "moment";
+import { constructDate, constructDisplay } from "../../utils/utils";
+import { useScrollStore } from "../../stores/scrollStore";
+import { getValid, renderValid, gttIsValid } from "../../utils/validation";
 
-export default {
-  components: {
-    GttSelect,
-    GttSelectDate,
-    GttSelectForm
+const router = useRouter();
+
+const arrivalTime = ref("");
+const departureTime = ref("");
+const isModalActive = ref(false);
+const selectedPickUpPlace = ref("");
+const selectedDestinyPlace = ref("");
+const selectedDepartureDate = ref(moment());
+const selectedDepartureHour = ref(null);
+const selectedArrivalDate = ref(moment().add(1, "days"));
+const selectedArrivalHour = ref(null);
+const selectedPassengers = ref(null);
+const selectedLuggages = ref(null);
+const selectedJourneyType = ref(null);
+const selectedTransferType = ref(null);
+const journeyTypes = ["Ida y regreso", "Solo ida"];
+const transferTypes = ["Compartido", "Privado"];
+const pickUpDeliveryOptions = [
+  "Aeropuerto Internacional",
+  "Blau Varadero Hotel Cuba",
+  "Iberostar Selection Varadero",
+  "Royalton Hicacos Varadero Resort & Spa",
+  "Sanctuary at Grand Memories Varadero",
+];
+const passengersLayout = [
+  {
+    code: "adults",
+    label: "Adultos",
+    display: "Adulto(s)",
+    default: 1,
   },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
+  {
+    code: "kids",
+    label: "Niños",
+    display: "Niño(s)",
+    default: 0,
   },
-  beforeUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
+];
+const luggagesLayout = [
+  {
+    code: "big_bag",
+    label: "Equipaje grande",
+    display: "Equipaje(s) grande",
+    default: 0,
   },
-  methods: {
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        this.$el.getBoundingClientRect().top > 0
-      ) {
-        scrollStore.scrollTo("transfer");
-      }
-    },
-    activateModal() {
-      this.$toasted.show(
-        "La búsqueda de traslados estará disponible próximamente.",
-        { type: "info" }
-      );
-    }
+  {
+    code: "small_bag",
+    label: "Equipaje pequeño",
+    display: "Pequeño",
+    default: 0,
   },
-  data() {
-    return {
-      arrivalTime: "",
-      departureTime: "",
-      selectedPickUpPlace: "",
-      selectedDestinyPlace: "",
-      selectedDepartureDate: null,
-      selectedDepartureHour: null,
-      selectedArrivalDate: null,
-      selectedArrivalHour: null,
-      selectedPassengers: null,
-      selectedLuggages: null,
-      selectedJourneyType: null,
-      selectedTransferType: null,
-      journeyTypes: ["Ida y regreso", "Solo ida"],
-      transferTypes: ["Compartido", "Privado"],
-      pickUpDeliveryOptions: [
-        "Aeropuerto Internacional",
-        "Blau Varadero Hotel Cuba",
-        "Iberostar Selection Varadero",
-        "Royalton Hicacos Varadero Resort & Spa",
-        "Sanctuary at Grand Memories Varadero"
-      ],
-      passengersLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
-        }
-      ],
-      luggagesLayout: [
-        {
-          code: "big_bag",
-          label: "Equipaje grande",
-          display: "Equipaje(s) grande",
-          default: 0
-        },
-        {
-          code: "small_bag",
-          label: "Equipaje pequeño",
-          display: "Pequeño",
-          default: 0
-        }
-      ]
-    };
+];
+
+function handleScroll() {
+  const el = document.getElementById("index-logged-transfer");
+  if (!el) return;
+  let height = window.innerHeight;
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo("transfer");
   }
-};
+}
+
+async function activateModal() {
+  try {
+    isModalActive.value = true;
+    desactivateModal();
+    router.push({
+      name: "resultRent",
+      params: {},
+    });
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.log(error);
+    }
+    desactivateModal();
+    toast("El servicio no está disponible en estos momentos", {
+      type: "error",
+    });
+  }
+}
+
+function desactivateModal() {
+  isModalActive.value = false;
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
 <style scoped>

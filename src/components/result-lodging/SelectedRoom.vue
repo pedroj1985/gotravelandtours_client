@@ -12,7 +12,7 @@
     <div class="flex-right-side room-price">
       {{
         styledPrice(item.habitacion.PrecioOrden).intPart *
-          item.habitacion.CantidadHabitaciones
+        item.habitacion.CantidadHabitaciones
       }}
       USD
       <button type="button" class="antonio-regular remove-icon" @click="remove">
@@ -22,46 +22,28 @@
   </div>
 </template>
 
-<script>
-import AdultsKidsIcons from "./AdultsKidsIcons";
+<script setup lang="ts">
+import AdultsKidsIcons from "./AdultsKidsIcons.vue";
 import { v4 as uuidv4 } from "uuid";
 
-export default {
-  components: {
-    AdultsKidsIcons
-  },
-  // mounted(){
-  //     console.log(this.item)
-  //     console.log('room aqui')
-  // },
-  created() {
-    this.id = uuidv4();
-  },
-  data() {
-    return {
-      id: null
-    };
-  },
-  props: {
-    item: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    }
-  },
-  methods: {
-    remove() {
-      this.$emit("removeFromList", this.item);
-    },
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = Math.round((number - intPart) * 100);
+const props = defineProps<{
+  item: any;
+}>();
 
-      if (decimalPart == 0) decimalPart = "00";
+const emit = defineEmits<{
+  (e: "removeFromList", item: any): void;
+}>();
 
-      return { intPart: intPart, decimalPart: decimalPart };
-    }
-  }
-};
+const id = uuidv4();
+
+function remove() {
+  emit("removeFromList", props.item);
+}
+
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number);
+  let decimalPart = Math.round((number - intPart) * 100);
+  if (decimalPart == 0) decimalPart = "00";
+  return { intPart, decimalPart };
+}
 </script>

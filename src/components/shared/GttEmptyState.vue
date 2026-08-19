@@ -5,15 +5,17 @@
         <i class="mdi mdi-inbox-outline"></i>
       </slot>
     </div>
-    <h3 class="gtt-empty-state-title"><slot name="title">Sin resultados</slot></h3>
-    <p class="gtt-empty-state-description"><slot>No se encontraron datos para mostrar.</slot></p>
+    <h3 class="gtt-empty-state-title">
+      <slot name="title">Sin resultados</slot>
+    </h3>
+    <p class="gtt-empty-state-description">
+      <slot>No se encontraron datos para mostrar.</slot>
+    </p>
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttEmptyState"
-};
+<script setup lang="ts">
+defineOptions({ name: "GttEmptyState" });
 </script>
 
 <style scoped>

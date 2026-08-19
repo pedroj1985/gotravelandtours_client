@@ -9,16 +9,12 @@
     </div>
   </div>
 </template>
-<script>
-import ResultListItem from "./ResultListItem";
-export default {
-  components: {
-    ResultListItem
-  },
-  props: {
-    resultList: Array,
-    filters: Object,
-    todosTipo: Array
-  }
-};
+<script setup lang="ts">
+import ResultListItem from "./ResultListItem.vue";
+
+defineProps<{
+  resultList: any[];
+  filters: any;
+  todosTipo: any[];
+}>();
 </script>

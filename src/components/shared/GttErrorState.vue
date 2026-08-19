@@ -3,25 +3,37 @@
     <div class="gtt-error-state-icon">
       <i class="mdi mdi-alert-circle-outline"></i>
     </div>
-    <h3 class="gtt-error-state-title"><slot name="title">Error de conexión</slot></h3>
-    <p class="gtt-error-state-description"><slot>No se pudieron cargar los datos. Intente nuevamente.</slot></p>
-    <button v-if="retryable" @click="$emit('retry')" class="gtt-error-state-retry">
+    <h3 class="gtt-error-state-title">
+      <slot name="title">Error de conexión</slot>
+    </h3>
+    <p class="gtt-error-state-description">
+      <slot>No se pudieron cargar los datos. Intente nuevamente.</slot>
+    </p>
+    <button
+      v-if="retryable"
+      @click="$emit('retry')"
+      class="gtt-error-state-retry"
+    >
       <i class="mdi mdi-refresh"></i> Reintentar
     </button>
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttErrorState",
-  props: {
-    retryable: {
-      type: Boolean,
-      default: false
-    }
+<script setup lang="ts">
+defineOptions({ name: "GttErrorState" });
+
+withDefaults(
+  defineProps<{
+    retryable?: boolean;
+  }>(),
+  {
+    retryable: false,
   },
-  emits: ["retry"]
-};
+);
+
+const emit = defineEmits<{
+  (e: "retry"): void;
+}>();
 </script>
 
 <style scoped>

@@ -24,10 +24,10 @@
                     {{ packageItem.Paquete.id }} noches
                   </div>
                 </div>
-                <div class="packages-pos ab-right" style="margin-top: 30px;">
+                <div class="packages-pos ab-right" style="margin-top: 30px">
                   <div
                     class="packages-status open me-2 br30 text-lowercase"
-                    style="text-transform: uppercase !important;"
+                    style="text-transform: uppercase !important"
                   >
                     DESTACADO
                   </div>
@@ -57,7 +57,7 @@
               </div>
               <div class="packages-grid-fl-wrap">
                 <div class="packages-caption px-3 py-2">
-                  <h4 class="mb-0 ft-medium medium mb-0" style="height: 60px;">
+                  <h4 class="mb-0 ft-medium medium mb-0" style="height: 60px">
                     <a class="text-dark fs-md">
                       <span class="verified-badge">
                         <i class="mdi mdi-check-circle"></i>
@@ -79,7 +79,7 @@
                           >
                             <i
                               class="fas fa-plane"
-                              style="color: rgb(0, 173, 238);"
+                              style="color: rgb(0, 173, 238)"
                               aria-hidden="true"
                             ></i>
                           </li>
@@ -92,7 +92,7 @@
                           >
                             <i
                               class="fas fa-shuttle-van"
-                              style="color: rgb(0, 173, 238);"
+                              style="color: rgb(0, 173, 238)"
                               aria-hidden="true"
                             ></i>
                           </li>
@@ -105,7 +105,7 @@
                           >
                             <i
                               class="fas fa-bed"
-                              style="color: rgb(0, 173, 238);"
+                              style="color: rgb(0, 173, 238)"
                               aria-hidden="true"
                             ></i>
                           </li>
@@ -115,7 +115,7 @@
                     <div class="packages-booking-button">
                       <a class="packages-btn-book"
                         >Desde USD
-                        <span style="font-size: 20px; padding-left:5px;">
+                        <span style="font-size: 20px; padding-left: 5px">
                           {{ packageItem.Paquete.PrecioPaqueteGeneral }}</span
                         >
                       </a>
@@ -145,51 +145,45 @@
   </section>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { getPackages } from "@/utils/auth";
 import moment from "moment/moment";
 
-export default {
-  components: {
-  },
-  methods: {
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+const loading = ref(true);
+const packages = ref([]);
 
-      if (decimalPart == 0) decimalPart = "00";
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number);
+  let decimalPart = (number - intPart).toFixed(2) * 100;
 
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    downloadPdf(url) {
-      const a = document.createElement("a");
-      a.href = url;
-      a.target = "_blank";
-      a.click();
-    }
-  },
-  data() {
-    return {
-      loading: true,
-      packages: []
-    };
-  },
-  mounted() {
-    const currentDate = new Date();
-    const query = {
-      Nombre: null,
-      IsActivo: true,
-      FechaI: moment(currentDate).format("YYYY-MM-D")
-    };
-    getPackages(query)
-      .then(response => {
-        this.packages = response.data;
-      })
-      .finally(() => {
-        this.loading = false;
-      });
-  }
-};
+  if (decimalPart == 0) decimalPart = "00";
+
+  return { intPart: intPart, decimalPart: decimalPart };
+}
+
+function downloadPdf(url: string) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.click();
+}
+
+onMounted(() => {
+  const currentDate = new Date();
+  const query = {
+    Nombre: null,
+    IsActivo: true,
+    FechaI: moment(currentDate).format("YYYY-MM-D"),
+  };
+  getPackages(query)
+    .then((response) => {
+      packages.value = response.data;
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+});
 </script>
 
 <style scoped>

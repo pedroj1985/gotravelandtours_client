@@ -8,9 +8,7 @@
       </div>
       <div class="tr-info-wrapper">
         <div class="tr-info-name font12">
-          <slot name="tr-info-name">
-            Seleccione
-          </slot>
+          <slot name="tr-info-name"> Seleccione </slot>
         </div>
         <div class="tr-info-value">
           {{ value }}
@@ -19,15 +17,8 @@
     </div>
   </div>
 </template>
-<script>
-export default {
-  props: {
-    value: {
-      type: String,
-      default: "Aquí va su valor"
-    }
-  }
-};
+<script setup lang="ts">
+withDefaults(defineProps<{ value?: string }>(), { value: "Aquí va su valor" });
 </script>
 <style lang="scss" scoped>
 .twoRowsDiv {

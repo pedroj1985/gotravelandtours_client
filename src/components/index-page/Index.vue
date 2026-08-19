@@ -5,29 +5,22 @@
   </div>
 </template>
 
-<script>
-import IndexBanner from "./IndexBanner";
-import Destinies from "./Destinies";
-import IndexServices from "./IndexServices";
-import IndexPackages from "./IndexPackages";
-import IndexOtherServices from "./IndexOtherServices";
-import IndexWhoAreWe from "./IndexWhoAreWe";
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+import IndexBanner from "./IndexBanner.vue";
+import Destinies from "./Destinies.vue";
+import IndexServices from "./IndexServices.vue";
+import IndexPackages from "./IndexPackages.vue";
+import IndexOtherServices from "./IndexOtherServices.vue";
+import IndexWhoAreWe from "./IndexWhoAreWe.vue";
 
-export default {
-  name: "Index",
-  components: {
-    IndexBanner,
-    Destinies,
-    IndexServices,
-    IndexPackages,
-    IndexOtherServices,
-    IndexWhoAreWe
-  },
-  methods: {
-    emitUserLogin(value) {
-      this.$emit("userLogin", value);
-      this.$router.go();
-    }
-  }
-};
+defineOptions({ name: "Index" });
+
+const emit = defineEmits<{ (e: "userLogin", value: unknown): void }>();
+const router = useRouter();
+
+function emitUserLogin(value: unknown) {
+  emit("userLogin", value);
+  router.go();
+}
 </script>

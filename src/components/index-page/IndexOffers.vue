@@ -16,8 +16,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "IndexOffers"
-};
+<script setup lang="ts">
+defineOptions({ name: "IndexOffers" });
 </script>

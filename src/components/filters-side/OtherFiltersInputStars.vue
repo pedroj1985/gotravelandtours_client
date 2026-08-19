@@ -53,49 +53,43 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    label: {
-      default: "Nombre"
-    },
-    placeholder: {
-      default: "Nombre"
-    },
-    value: {
-      type: Number,
-      default: 0
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+
+const props = withDefaults(
+  defineProps<{ label?: string; placeholder?: string; value?: number }>(),
+  { value: 0 },
+);
+
+const emit = defineEmits<{ (e: "input", val: string): void }>();
+
+const isOpen = ref(true);
+const currentValue = ref(props.value);
+
+onMounted(() => {
+  currentValue.value = props.value;
+});
+
+function openClose() {
+  isOpen.value = !isOpen.value;
+}
+
+function updateValue(event: Event) {
+  const target = event.currentTarget as HTMLElement;
+  currentValue.value = Number(target.getAttribute("data-value"));
+  setActiveStars();
+  emit("input", target.getAttribute("data-value") as string);
+}
+
+function setActiveStars() {
+  const current = currentValue.value;
+  document.querySelectorAll<HTMLElement>(".star-button").forEach(function (el) {
+    const v = Number(el.getAttribute("data-value"));
+    if (v <= current) {
+      el.classList.add("active");
+    } else {
+      el.classList.remove("active");
     }
-  },
-  mounted() {
-    this.currentValue = this.value;
-  },
-  data() {
-    return {
-      isOpen: true,
-      currentValue: 0
-    };
-  },
-  methods: {
-    openClose() {
-      this.isOpen = !this.isOpen;
-    },
-    updateValue(event) {
-      this.currentValue = event.currentTarget.getAttribute("data-value");
-      this.setActiveStars();
-      this.$emit("input", event.currentTarget.getAttribute("data-value"));
-    },
-    setActiveStars() {
-      let current = this.currentValue;
-      document.getElementsByClassName("star-button").forEach(function(el) {
-        let v = el.getAttribute("data-value");
-        if (v <= current) {
-          el.classList.add("active");
-        } else {
-          el.classList.remove("active");
-        }
-      });
-    }
-  }
-};
+  });
+}
 </script>

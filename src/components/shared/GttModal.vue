@@ -1,11 +1,23 @@
 <template>
-  <div v-if="show" class="gtt_modal_overlay" role="dialog" aria-modal="true" :aria-hidden="!show" aria-labelledby="modal-title" v-on:click.self="$emit('close')">
+  <div
+    v-if="show"
+    class="gtt_modal_overlay"
+    role="dialog"
+    aria-modal="true"
+    :aria-hidden="!show"
+    aria-labelledby="modal-title"
+    v-on:click.self="$emit('close')"
+  >
     <div class="gtt_modal">
       <div class="gtt_modal_header">
         <slot name="header">
           <span id="modal-title">{{ title }}</span>
         </slot>
-        <button class="gtt_modal_close" aria-label="Cerrar modal" v-on:click="$emit('close')">
+        <button
+          class="gtt_modal_close"
+          aria-label="Cerrar modal"
+          v-on:click="$emit('close')"
+        >
           &times;
         </button>
       </div>
@@ -19,40 +31,42 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttModal",
-  props: {
-    show: {
-      type: Boolean,
-      required: true
-    },
-    title: {
-      type: String,
-      default: ""
-    }
-  },
-  methods: {
-    onKeydown(e) {
-      if (e.key === "Escape" && this.show) {
-        this.$emit("close");
-      }
-    }
-  },
-  mounted() {
-    document.addEventListener("keydown", this.onKeydown);
-  },
-  beforeUnmount() {
-    document.removeEventListener("keydown", this.onKeydown);
+<script setup lang="ts">
+import { onMounted, onBeforeUnmount } from "vue";
+
+defineOptions({ name: "GttModal" });
+
+const props = defineProps<{
+  show: boolean;
+  title?: string;
+}>();
+
+const emit = defineEmits<{
+  (e: "close"): void;
+}>();
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape" && props.show) {
+    emit("close");
   }
-};
+}
+
+onMounted(() => {
+  document.addEventListener("keydown", onKeydown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("keydown", onKeydown);
+});
 </script>
 
 <style lang="scss" scoped>
 .gtt_modal_overlay {
   position: fixed;
-  inset: 0;
-  min-height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;

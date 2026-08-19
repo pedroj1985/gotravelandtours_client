@@ -1,8 +1,38 @@
 <template>
   <div id="index-logged-excursion-search">
     <div class="home-logged-excursion-img">
-      <img src="/img/homelogin_img_form_actividades.jpg" alt="Excursiones y actividades" />
+      <img
+        src="/img/homelogin_img_form_actividades.jpg"
+        alt="Excursiones y actividades"
+      />
     </div>
+    <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
+      <template v-slot:image>
+        <div>
+          <img src="/img/icopaq_excursiones_color.svg" alt="" />
+        </div>
+      </template>
+      <template v-slot:searching-text>
+        <div class="searching-text">
+          <span class="antonio-light">Buscando disponibilidad de </span
+          ><span class="antonio-bold text-highlight">excursiones</span>
+          <span class="antonio-light"
+            >en <span v-if="selectedDestiny">{{ selectedDestiny }}</span
+            ><span v-else>cualquier lugar</span></span
+          >
+        </div>
+      </template>
+      <template v-slot:searching-fields>
+        <div class="searching-fields">
+          <div v-if="selectedDate">
+            para el {{ constructDate(selectedDate) }}
+          </div>
+          <div v-if="selectedPassengers">
+            para {{ constructDisplay(selectedPassengers) }}
+          </div>
+        </div>
+      </template>
+    </GttModalSearch>
     <div class="custom-text-form custom-margin">
       <div class="custom-form">
         <div class="selects-inline">
@@ -12,18 +42,30 @@
             v-model="selectedDestiny"
             :alignLeft="true"
           >
-            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
-            <template #placeholder> Destino</template>
-            <template #selectedPlaceholder> ¿A dónde deseas ir?</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-map-marker"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Destino</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span> ¿A dónde deseas ir?</span>
+            </template>
           </gtt-select>
           <gtt-select
             :options="activityTypes"
             class="custom-width-small"
             v-model="selectedActivityType"
           >
-            <template #iconSelectedValue><i class="mdi mdi-brightness-4"></i></template>
-            <template #placeholder> Tipo de actividad</template>
-            <template #selectedPlaceholder> ¿Compartida?</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-brightness-4"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Tipo de actividad</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span> ¿Compartida?</span>
+            </template>
           </gtt-select>
         </div>
         <div class="selects-inline">
@@ -32,17 +74,23 @@
             :mode="'single'"
             class="cleft"
           >
-            <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
-            <template #placeholder>
-              Fecha
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-calendar-today"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Fecha </span>
             </template>
           </gtt-select-date>
           <gtt-select-form
             :options="passengersLayout"
             v-model="selectedPassengers"
           >
-            <template #iconSelectedValue><i class="mdi mdi-account"></i></template>
-            <template #placeholder> Pasajeros</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-account"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Pasajeros</span>
+            </template>
           </gtt-select-form>
         </div>
         <div class="selects-inline">
@@ -51,17 +99,29 @@
             class="cleft"
             v-model="selectedPickUpPlace"
           >
-            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
-            <template #placeholder> Punto de recogida</template>
-            <template #selectedPlaceholder> Salimos desde el:</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-map-marker"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Punto de recogida</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span> Salimos desde el:</span>
+            </template>
           </gtt-select>
           <gtt-select
             :options="pickUpDeliveryOptions"
             v-model="selectedDeliveryPlace"
           >
-            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
-            <template #placeholder> Punto de entrega</template>
-            <template #selectedPlaceholder> Te recogemos en el:</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-map-marker"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span> Punto de entrega</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span> Te recogemos en el:</span>
+            </template>
           </gtt-select>
         </div>
         <div class="form-actions text-right">
@@ -84,58 +144,56 @@
   </div>
 </template>
 
-<script>
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectForm from "../custom-elements/GttSelectForm";
-import GttSelectDate from "../custom-elements/GttSelectDate";
+<script setup lang="ts">
+import { ref } from "vue";
+import GttSelect from "../custom-elements/GttSelect.vue";
+import GttSelectForm from "../custom-elements/GttSelectForm.vue";
+import GttSelectDate from "../custom-elements/GttSelectDate.vue";
+import GttModalSearch from "../custom-elements/GttModalSearch.vue";
+import moment from "moment";
+import {
+  constructDate,
+  constructDisplay,
+  calculateNights,
+} from "../../utils/utils";
 
-export default {
-  components: {
-    GttSelect,
-    GttSelectForm,
-    GttSelectDate
+const isModalActive = ref(false);
+const selectedPickUpPlace = ref("");
+const selectedDeliveryPlace = ref("");
+const selectedDestiny = ref("");
+const selectedActivityType = ref("");
+const selectedDate = ref(moment());
+const selectedPassengers = ref(null);
+const activityTypes = ["Compartida", "Privada"];
+const pickUpDeliveryOptions = [
+  "Aeropuerto Internacional",
+  "Blau Varadero Hotel Cuba",
+  "Iberostar Selection Varadero",
+  "Royalton Hicacos Varadero Resort & Spa",
+  "Sanctuary at Grand Memories Varadero",
+];
+const passengersLayout = [
+  {
+    code: "adults",
+    label: "Adultos",
+    display: "Adulto(s)",
+    default: 1,
   },
-  methods: {
-    activateModal() {
-      this.$toasted.show(
-        "La búsqueda de excursiones estará disponible próximamente.",
-        { type: "info" }
-      );
-    }
+  {
+    code: "kids",
+    label: "Niños",
+    display: "Niño(s)",
+    default: 0,
   },
-  data() {
-    return {
-      selectedPickUpPlace: "",
-      selectedDeliveryPlace: "",
-      selectedDestiny: "",
-      selectedActivityType: "",
-      selectedDate: null,
-      selectedPassengers: null,
-      activityTypes: ["Compartida", "Privada"],
-      pickUpDeliveryOptions: [
-        "Aeropuerto Internacional",
-        "Blau Varadero Hotel Cuba",
-        "Iberostar Selection Varadero",
-        "Royalton Hicacos Varadero Resort & Spa",
-        "Sanctuary at Grand Memories Varadero"
-      ],
-      passengersLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
-        }
-      ]
-    };
-  }
-};
+];
+
+function activateModal() {
+  isModalActive.value = true;
+}
+
+function desactivateModal() {
+  isModalActive.value = false;
+}
 </script>
 
 <style scoped>

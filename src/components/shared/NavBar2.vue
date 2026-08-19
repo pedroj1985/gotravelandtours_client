@@ -15,10 +15,13 @@
             :to="{
               name: 'indexLogged',
               params: {
-                idPage: menuLink.id
-              }
+                idPage: menuLink.id,
+              },
             }"
-            @click="changeSelected(menuLink.name); scrollTo(menuLink.id)"
+            @click="
+              changeSelected(menuLink.name);
+              scrollTo(menuLink.id);
+            "
           >
             {{ menuLink.displayName }}
           </router-link>
@@ -29,51 +32,52 @@
   </div>
 </template>
 
-<script>
-import { scrollStore } from "../../stores/scrollStore";
+<script setup lang="ts">
+import { ref, watch, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useScrollStore } from "../../stores/scrollStore";
 
-export default {
-  name: "NavBar2",
-  props: {
-    menuLinks: Array
-  },
-  data() {
-    return {
-      linkSelected: "index"
-    };
-  },
-  methods: {
-    scrollTo(id) {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    },
-    changeSelected(item) {
-      this.linkSelected = item;
-    },
-    setLinkSelected(item) {
-      if (this.linkSelected == item) {
-        return false;
-      }
-      return true;
-    }
-  },
-  computed: {
-    activeSection() {
-      return scrollStore.activeSection;
-    }
-  },
-  watch: {
-    activeSection(section) {
-      this.changeSelected(section);
-    }
-  },
-  mounted() {
-    let id = this.$route.params.idPage;
-    if (id) {
-      let elment = document.getElementById(id);
+defineOptions({ name: "NavBar2" });
+
+const props = defineProps<{
+  menuLinks?: any[];
+}>();
+
+const route = useRoute();
+const scrollStore = useScrollStore();
+
+const linkSelected = ref("index");
+
+const activeSection = computed(() => scrollStore.activeSection);
+
+watch(activeSection, (section: any) => {
+  changeSelected(section);
+});
+
+onMounted(() => {
+  let id = route.params.idPage as string;
+  if (id) {
+    let elment = document.getElementById(id);
+    if (import.meta.env.DEV) {
       console.log(elment);
-      if (elment) elment.scrollIntoView({ behavior: "smooth" });
     }
+    if (elment) elment.scrollIntoView({ behavior: "smooth" });
   }
-};
+});
+
+function scrollTo(id: string) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+}
+
+function changeSelected(item: string) {
+  linkSelected.value = item;
+}
+
+function setLinkSelected(item: string) {
+  if (linkSelected.value == item) {
+    return false;
+  }
+  return true;
+}
 </script>

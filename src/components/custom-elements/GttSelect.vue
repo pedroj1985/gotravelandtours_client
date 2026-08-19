@@ -1,6 +1,7 @@
 <template>
-  <div class="gtt__select">
+  <div class="gtt__select" v-click-outside="handleFocusOut" ref="root">
     <button
+      type="button"
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
@@ -27,9 +28,7 @@
               class="small"
               v-if="twoRows || (twoRows == false && !selectedValue)"
             >
-              <slot name="placeholder">
-                Seleccione
-              </slot>
+              <slot name="placeholder"> Seleccione </slot>
             </div>
             <div v-if="selectedValue" class="bigDown">
               <template v-if="selectedValue != 'ALL_ITEMS'">
@@ -58,7 +57,6 @@
       :class="{ isVisible: isVisible }"
       role="listbox"
       id="gtt-select-listbox"
-      v-click-outside="handleFocusOut"
     >
       <span class="arrow" v-if="arrow"></span>
       <GttSelectDropdown
@@ -70,7 +68,11 @@
         :selectedValue="selectedValue"
         @select="setSelectedValue"
         @search="searchQuery = $event"
-      />
+      >
+        <template #option="slotProps">
+          <slot name="option" v-bind="slotProps" />
+        </template>
+      </GttSelectDropdown>
       <GttSelectSearch
         v-else
         :options="options"
@@ -78,158 +80,149 @@
         :selectedValue="selectedValue"
         @select="setSelectedValue"
         @search="searchQuery = $event"
-      />
+      >
+        <template #option="slotProps">
+          <slot name="option" v-bind="slotProps" />
+        </template>
+      </GttSelectSearch>
     </div>
   </div>
 </template>
 
-<script>
-import { clickOutside } from "@/directives/clickOutside";
-import GttSelectDropdown from "./GttSelectDropdown";
-import GttSelectSearch from "./GttSelectSearch";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from "vue";
+import GttSelectDropdown from "./GttSelectDropdown.vue";
+import GttSelectSearch from "./GttSelectSearch.vue";
 
-export default {
-  components: {
-    GttSelectDropdown,
-    GttSelectSearch
+const props = withDefaults(
+  defineProps<{
+    openedLodging?: any;
+    twoRows?: any;
+    options?: any[];
+    search?: boolean;
+    clickable?: boolean;
+    opened?: boolean;
+    searchFinished?: boolean;
+    value?: any;
+    isDisabled?: boolean;
+    nullable?: boolean;
+    alignLeft?: boolean;
+  }>(),
+  {
+    search: false,
+    clickable: true,
+    opened: false,
+    searchFinished: false,
+    isDisabled: false,
+    nullable: false,
+    alignLeft: false,
   },
-  directives: {
-    clickOutside
-  },
-  created() {
-    this.isVisible = this.opened;
-  },
-  mounted() {
-    this.popupItem = this.$el;
-    this.updateValue();
-  },
-  watch: {
-    modelValue: function(val) {
-      this.selectedValue = val;
+);
+
+const emit = defineEmits<{
+  (e: "update:openedLodging", val: boolean): void;
+  (e: "input", val: any): void;
+  (e: "update:searchQuery", val: string): void;
+}>();
+
+const isVisible = ref(props.opened);
+const searchQuery = ref("");
+const arrow = ref(true);
+const selectedValue = ref(props.value != null ? props.value : "");
+const buttonToggle = ref<HTMLElement | null>(null);
+const root = ref<HTMLElement | null>(null);
+
+const toggleAriaLabel = computed(() => {
+  if (selectedValue.value && selectedValue.value !== "ALL_ITEMS") {
+    return typeof selectedValue.value === "object"
+      ? selectedValue.value.nombre || "Seleccionar"
+      : String(selectedValue.value);
+  }
+  return "Seleccionar";
+});
+
+const activeDescendant = computed(() => {
+  if (
+    !isVisible.value ||
+    !selectedValue.value ||
+    selectedValue.value === "ALL_ITEMS"
+  ) {
+    return undefined;
+  }
+  const idx = (props.options || []).findIndex((opt: any) => {
+    if (typeof opt === "object" && typeof selectedValue.value === "object") {
+      return opt.id === selectedValue.value.id;
     }
+    return opt === selectedValue.value;
+  });
+  return idx >= 0 ? `gtt-option-${idx}` : undefined;
+});
+
+watch(
+  () => props.value,
+  (val) => {
+    selectedValue.value = val;
   },
-  props: {
-    openedLodging: {
-      default: false
-    },
-    twoRows: {
-      default: true
-    },
-    options: {
-      type: Array
-    },
-    search: {
-      type: Boolean,
-      default: false
-    },
-    clickable: {
-      type: Boolean,
-      default: true
-    },
-    opened: {
-      type: Boolean,
-      default: false
-    },
-    searchFinished: {
-      type: Boolean,
-      default: false
-    },
-    modelValue: {
-      default: null
-    },
-    isDisabled: {
-      type: Boolean,
-      default: false
-    },
-    nullable: {
-      type: Boolean,
-      default: false
-    },
-    alignLeft: {
-      type: Boolean,
-      default: false
-    }
-  },
-  computed: {
-    toggleAriaLabel() {
-      if (this.selectedValue && this.selectedValue !== 'ALL_ITEMS') {
-        return typeof this.selectedValue === 'object'
-          ? this.selectedValue.nombre || 'Seleccionar'
-          : String(this.selectedValue);
-      }
-      return 'Seleccionar';
-    },
-    activeDescendant() {
-      if (!this.isVisible || !this.selectedValue || this.selectedValue === 'ALL_ITEMS') {
-        return undefined;
-      }
-      const idx = this.options.findIndex(opt => {
-        if (typeof opt === 'object' && typeof this.selectedValue === 'object') {
-          return opt.id === this.selectedValue.id;
-        }
-        return opt === this.selectedValue;
-      });
-      return idx >= 0 ? `gtt-option-${idx}` : undefined;
-    }
-  },
-  data() {
-    return {
-      isVisible: false,
-      searchQuery: "",
-      arrow: true,
-      selectedValue: ""
-    };
-  },
-  methods: {
-    async toggleClicked() {
-      if (this.clickable) {
-        this.isVisible = !this.isVisible;
-        if (this.isVisible == true) {
-          this.emitOpen();
-        } else {
-          this.searchQuery = "";
-          this.emitClose();
-        }
-      }
-    },
-    onToggleKeydown(e) {
-      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
-        e.preventDefault();
-        this.toggleClicked();
-      }
-      if (e.key === "Escape") {
-        this.isVisible = false;
-        this.emitClose();
-      }
-    },
-    setSelectedValue(item) {
-      this.$refs["buttonToggle"].focus();
-      this.selectedValue = item;
-      this.emitValue(this.selectedValue);
-      this.searchQuery = "";
-      this.isVisible = false;
-      this.emitClose();
-    },
-    handleFocusOut(event) {
-      if (!this.opened && !(event && this.$el.contains(event.target))) {
-        this.isVisible = false;
-        this.emitClose();
-      }
-    },
-    updateValue() {
-      this.selectedValue = this.modelValue;
-    },
-    emitClose() {
-      this.$emit("update:openedLodging", false);
-    },
-    emitOpen() {
-      this.$emit("update:openedLodging", true);
-    },
-    emitValue(value) {
-      this.$emit("update:modelValue", value);
+);
+
+onMounted(() => {
+  updateValue();
+});
+
+function updateValue() {
+  selectedValue.value = props.value;
+}
+
+async function toggleClicked() {
+  if (props.clickable) {
+    isVisible.value = !isVisible.value;
+    if (isVisible.value == true) {
+      emitOpen();
+    } else {
+      searchQuery.value = "";
+      emitClose();
     }
   }
-};
+}
+
+function onToggleKeydown(e: KeyboardEvent) {
+  if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+    e.preventDefault();
+    toggleClicked();
+  }
+  if (e.key === "Escape") {
+    isVisible.value = false;
+    emitClose();
+  }
+}
+
+function setSelectedValue(item: any) {
+  buttonToggle.value?.focus();
+  selectedValue.value = item;
+  emitValue(selectedValue.value);
+  searchQuery.value = "";
+  isVisible.value = false;
+  emitClose();
+}
+
+function handleFocusOut(event?: Event) {
+  if (!props.opened && !(event && root.value?.contains(event.target as Node))) {
+    isVisible.value = false;
+    emitClose();
+  }
+}
+
+function emitClose() {
+  emit("update:openedLodging", false);
+}
+
+function emitOpen() {
+  emit("update:openedLodging", true);
+}
+
+function emitValue(value: any) {
+  emit("input", value);
+}
 </script>
 
 <style lang="scss" scoped>

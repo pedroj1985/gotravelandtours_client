@@ -2,7 +2,7 @@
   <div class="rent-edit-list-item">
     <div class="flex-wrapper">
       <div
-        style="margin-bottom: 30px;"
+        style="margin-bottom: 30px"
         class="current-car font16 hn-roman gtt-first-color"
       >
         <b>Auto actual:</b> <span>{{ displayName(currentCar) }}</span>
@@ -17,7 +17,7 @@
           :totalDays="
             calculateNights(
               item.orderVehiculo.FechaEntrega,
-              item.orderVehiculo.FechaRecogida
+              item.orderVehiculo.FechaRecogida,
             )
           "
           :noDetail="true"
@@ -30,41 +30,37 @@
   </div>
 </template>
 
-<script>
-import RentResultListItem from "../result-rent/RentResultListItem";
+<script setup lang="ts">
+import { ref } from "vue";
+import RentResultListItem from "../result-rent/RentResultListItem.vue";
 import moment from "moment";
 import { calculateNights } from "../../utils/utils";
 
-export default {
-  components: {
-    RentResultListItem
-  },
-  props: {
-    resultList: Array,
-    currentCar: {
-      type: String,
-      default: ""
-    }
-  },
-  data() {
-    return {
-      isLoadingEverything: false
-    };
-  },
-  methods: {
-    displayName(data) {
-      let data_splitted = data.split("-");
-      let sp = data_splitted.slice(1, data_splitted.lenght);
+const props = defineProps<{
+  resultList: any[];
+  currentCar?: string;
+}>();
 
-      return sp.join("-");
-    },
-    search(filters) {
-      console.log(filters);
-      return [];
-    },
-    emitElement(value) {
-      this.$emit("selectedElementEdit", value);
-    }
+const emit = defineEmits<{
+  (e: "selectedElementEdit", value: any): void;
+}>();
+
+const isLoadingEverything = ref(false);
+
+function displayName(data: string) {
+  let data_splitted = data.split("-");
+  let sp = data_splitted.slice(1, data_splitted.length);
+  return sp.join("-");
+}
+
+function search(filters: any) {
+  if (import.meta.env.DEV) {
+    console.log(filters);
   }
-};
+  return [];
+}
+
+function emitElement(value: any) {
+  emit("selectedElementEdit", value);
+}
 </script>

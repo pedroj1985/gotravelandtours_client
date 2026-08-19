@@ -6,35 +6,32 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import Breadcrumb from "@/components/shared/Breadcrumb.vue";
 import NavBar2 from "@/components/shared/NavBar2.vue";
 import BookingContent from "./BookingContent.vue";
 
-export default {
-  name: "Index",
-  components: {
-    NavBar2,
-    Breadcrumb,
-    BookingContent
+defineOptions({ name: "BookingConditions" });
+
+const router = useRouter();
+
+const emit = defineEmits<{
+  (e: "userLogin", value: any): void;
+}>();
+
+const breadcrumbList = ref(["Inicio", "Condiciones Generales"]);
+const menuLinks = ref([
+  {
+    name: "index",
+    displayName: "Condiciones Generales",
+    id: "content",
   },
-  data() {
-    return {
-      breadcrumbList: ["Inicio", "Condiciones Generales"],
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Condiciones Generales",
-          id: "content"
-        }
-      ]
-    };
-  },
-  methods: {
-    emitUserLogin(value) {
-      this.$emit("userLogin", value);
-      this.$router.go();
-    }
-  }
-};
+]);
+
+function emitUserLogin(value: any) {
+  emit("userLogin", value);
+  router.go(0);
+}
 </script>

@@ -12,14 +12,14 @@
         <div class="input-icon font18">
           <i class="mdi mdi-account"></i>
         </div>
-        <div class="input-two-rows ">
-          <div class=" ir-info-name  font14 required-field">Nombre(s)</div>
+        <div class="input-two-rows">
+          <div class="ir-info-name font14 required-field">Nombre(s)</div>
           <input
             :disabled="!editable"
             type="text"
             :value="name"
             @input="$emit('inputName', $event.target.value)"
-            class="ir-input  font18"
+            class="ir-input font18"
             placeholder="Su(s) nombre(s)"
           />
           <span class="gtt-errors"></span>
@@ -115,7 +115,7 @@
     <p
       v-if="(age >= 21 && age <= 24) || (age >= 76 && age <= 80)"
       v-bind:class="[
-        (age >= 21 && age <= 24) || (age >= 76 && age <= 80) ? 'show' : 'hide'
+        (age >= 21 && age <= 24) || (age >= 76 && age <= 80) ? 'show' : 'hide',
       ]"
       class="ir-info-name"
     >
@@ -135,51 +135,30 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from "vue";
 import IconAlert from "../icons/IconAlert.vue";
 
-export default {
-  props: {
-    name: {
-      type: String
-    },
-    lastname: {
-      type: String,
-      default: ""
-    },
-    pasaporte: {
-      type: String
-    },
-    phone: {
-      type: String
-    },
-    hasCar: {
-      type: Boolean
-    },
-    nacimiento: {
-      type: String
-    },
-    onlyOne: {
-      type: Boolean,
-      default: false
-    },
-    editable: {
-      type: Boolean,
-      default: true
-    }
-  },
-  computed: {
-    age: function() {
-      var temp = this.nacimiento.split("-");
-      var date = new Date(temp[0], temp[1], temp[2]);
-      var cur = new Date();
-      var diff = cur - date;
-      var currentAge = Math.floor(diff / 31557600000);
-      return currentAge;
-    }
-  },
-  components: { IconAlert }
-};
+const props = defineProps<{
+  name?: string;
+  lastname?: string;
+  pasaporte?: string;
+  phone?: string;
+  hasCar?: boolean;
+  nacimiento?: string;
+  onlyOne?: boolean;
+  editable?: boolean;
+}>();
+
+const age = computed(() => {
+  if (!props.nacimiento) return 0;
+  var temp = props.nacimiento.split("-");
+  var date = new Date(Number(temp[0]), Number(temp[1]), Number(temp[2]));
+  var cur = new Date();
+  var diff = cur.getTime() - date.getTime();
+  var currentAge = Math.floor(diff / 31557600000);
+  return currentAge;
+});
 </script>
 
 <style scoped>

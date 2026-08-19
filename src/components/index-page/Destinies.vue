@@ -5,30 +5,26 @@
   </div>
 </template>
 
-<script>
-import { scrollStore } from "../../stores/scrollStore";
-import DestiniesCarousel from "../shared/DestiniesCarousel";
-export default {
-  name: "Destinies",
-  components: {
-    DestiniesCarousel
-  },
-  methods: {
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        scrollStore.scrollTo(this.$el.id);
-      }
-    }
-  },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  unmounted() {
-    window.removeEventListener("scroll", this.handleScroll);
+<script setup lang="ts">
+import { onMounted, onUnmounted } from "vue";
+import { useScrollStore } from "../../stores/scrollStore";
+import DestiniesCarousel from "../shared/DestiniesCarousel.vue";
+
+function handleScroll() {
+  const el = document.getElementById("destinies");
+  if (!el) return;
+  let height = window.innerHeight;
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo(el.id);
   }
-};
+}
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>

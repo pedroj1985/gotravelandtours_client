@@ -4,24 +4,21 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "GttSkeleton",
-  props: {
-    type: {
-      type: String,
-      default: "text"
-    },
-    width: {
-      type: Number,
-      default: 100
-    },
-    height: {
-      type: String,
-      default: "1em"
-    }
-  }
-};
+<script setup lang="ts">
+defineOptions({ name: "GttSkeleton" });
+
+withDefaults(
+  defineProps<{
+    type?: string;
+    width?: number;
+    height?: string;
+  }>(),
+  {
+    type: "text",
+    width: 100,
+    height: "1em",
+  },
+);
 </script>
 
 <style scoped>
@@ -41,18 +38,42 @@ export default {
   border-radius: 6px;
 }
 
-.gtt-skeleton.w-10 { width: 10%; }
-.gtt-skeleton.w-20 { width: 20%; }
-.gtt-skeleton.w-25 { width: 25%; }
-.gtt-skeleton.w-30 { width: 30%; }
-.gtt-skeleton.w-40 { width: 40%; }
-.gtt-skeleton.w-50 { width: 50%; }
-.gtt-skeleton.w-60 { width: 60%; }
-.gtt-skeleton.w-70 { width: 70%; }
-.gtt-skeleton.w-75 { width: 75%; }
-.gtt-skeleton.w-80 { width: 80%; }
-.gtt-skeleton.w-90 { width: 90%; }
-.gtt-skeleton.w-100 { width: 100%; }
+.gtt-skeleton.w-10 {
+  width: 10%;
+}
+.gtt-skeleton.w-20 {
+  width: 20%;
+}
+.gtt-skeleton.w-25 {
+  width: 25%;
+}
+.gtt-skeleton.w-30 {
+  width: 30%;
+}
+.gtt-skeleton.w-40 {
+  width: 40%;
+}
+.gtt-skeleton.w-50 {
+  width: 50%;
+}
+.gtt-skeleton.w-60 {
+  width: 60%;
+}
+.gtt-skeleton.w-70 {
+  width: 70%;
+}
+.gtt-skeleton.w-75 {
+  width: 75%;
+}
+.gtt-skeleton.w-80 {
+  width: 80%;
+}
+.gtt-skeleton.w-90 {
+  width: 90%;
+}
+.gtt-skeleton.w-100 {
+  width: 100%;
+}
 
 .gtt-skeleton-pulse {
   position: absolute;

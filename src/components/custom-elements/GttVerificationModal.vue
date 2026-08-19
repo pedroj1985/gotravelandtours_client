@@ -3,7 +3,7 @@
     <div class="c-modal custom-margin">
       <div class="c-modal-body">
         <div>
-          <i class="mdi mdi-alert" style="color: #ff0000;"></i>
+          <i class="mdi mdi-alert" style="color: #ff0000"></i>
           <slot name="question">{{ $helpers.traducir("deleteQuestion") }}</slot>
         </div>
         <div class="form-actions text-right">
@@ -17,8 +17,11 @@
   </div>
 </template>
 
-<script>
-export default {};
+<script setup lang="ts">
+defineEmits<{
+  (e: "next"): void;
+  (e: "closeModal"): void;
+}>();
 </script>
 
 <style lang="scss" scoped>

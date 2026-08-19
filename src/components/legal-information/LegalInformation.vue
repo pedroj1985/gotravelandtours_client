@@ -6,35 +6,32 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import Breadcrumb from "@/components/shared/Breadcrumb.vue";
 import NavBar2 from "@/components/shared/NavBar2.vue";
 import LegalContent from "./LegalContent.vue";
 
-export default {
-  name: "Index",
-  components: {
-    NavBar2,
-    Breadcrumb,
-    LegalContent
+defineOptions({ name: "LegalInformation" });
+
+const router = useRouter();
+
+const emit = defineEmits<{
+  (e: "userLogin", value: any): void;
+}>();
+
+const breadcrumbList = ref(["Inicio", "Información Legal"]);
+const menuLinks = ref([
+  {
+    name: "index",
+    displayName: "Información Legal",
+    id: "content",
   },
-  data() {
-    return {
-      breadcrumbList: ["Inicio", "Información Legal"],
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Información Legal",
-          id: "content"
-        }
-      ]
-    };
-  },
-  methods: {
-    emitUserLogin(value) {
-      this.$emit("userLogin", value);
-      this.$router.go();
-    }
-  }
-};
+]);
+
+function emitUserLogin(value: any) {
+  emit("userLogin", value);
+  router.go(0);
+}
 </script>

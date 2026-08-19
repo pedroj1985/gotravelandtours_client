@@ -17,7 +17,7 @@
             {{ $helpers.traducir(child.marca) }}
             {{
               $helpers.traducir(
-                $helpers.findTransmissionLocale(child.transmision)
+                $helpers.findTransmissionLocale(child.transmision),
               )
             }}
           </slot>
@@ -110,98 +110,87 @@
   </div>
 </template>
 
-<script>
-// import {authReserve} from '../../utils/auth'
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useRouter } from "vue-router";
+import { toast } from "vue3-toastify";
+import { helpers } from "../../utils/helpers";
 import { diffDaysEmitter } from "../../utils/emitter";
-import { cartStore } from "../../stores/cartStore";
+import { useCartStore } from "../../stores/cartStore";
 import { verifyDifferentsDates } from "../../utils/utils";
 
-export default {
-  created() {
-    this.filters = JSON.parse(localStorage.getItem("searchRentFilters"));
-    diffDaysEmitter.on("diffDays", i => {
-      this.diffDays = i;
-    });
-  },
-  mounted() {
-    verifyDifferentsDates({
-      FechaRecogida: this.child.orderVehiculo.FechaRecogida,
-      FechaEntrega: this.child.orderVehiculo.FechaEntrega
-    });
-  },
-  data() {
-    return {
-      selectedInfo: "",
-      filters: null,
-      diffDays: false
-    };
-  },
-  props: {
-    child: Object,
-    onlyToSelect: {
-      type: Boolean,
-      default: false
-    }
-  },
-  methods: {
-    addToCartAndGoTo() {
-      this.addToCart();
-      this.$router.push({
-        name: "reservation"
-      });
-    },
-    addToCartAndNotifyIt() {
-      this.addToCart();
-      verifyDifferentsDates({
-        FechaRecogida: this.child.orderVehiculo.FechaRecogida,
-        FechaEntrega: this.child.orderVehiculo.FechaEntrega
-      });
-      this.$toasted.show(
-        "Elemento agregado con éxito a su carrito de compra.",
-        {
-          type: "success"
-        }
-      );
-    },
-    emitElement() {
-      this.$emit("selectedElementEditRow", this.child);
-    },
-    addToCart() {
-      // let vo = this.child.orderVehiculo;
+const $helpers = helpers;
 
-      // let arrLPRA = new Array();
-      // vo.ListaPreciosRentaAutos.forEach(item => {
-      //   item.PrecioRentaAutos = {
-      //     PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
-      //   };
-      //   arrLPRA.push({
-      //     PrecioRentaAutos: {
-      //       PrecioRentaAutosId: item.PrecioRentaAutos.PrecioRentaAutosId
-      //     }
-      //   });
-      // });
-      // vo.ListaPreciosRentaAutos = arrLPRA;
+const props = defineProps<{
+  child: any;
+  onlyToSelect?: boolean;
+}>();
 
-      this.$helpers.shoppingCartAdd(this.child);
-      cartStore.refresh();
-    },
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = Math.round((number - intPart) * 100);
+const emit = defineEmits<{
+  (e: "selectedElementEditRow", value: any): void;
+}>();
 
-      if (decimalPart == 0) decimalPart = "00";
+const router = useRouter();
+const selectedInfo = ref("");
+const filters = ref<any>(null);
+const diffDays = ref(false);
 
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
-      }
-    }
+filters.value = JSON.parse(localStorage.getItem("searchRentFilters") || "null");
+
+diffDaysEmitter.on("diffDays", (i: boolean) => {
+  diffDays.value = i;
+});
+
+onMounted(() => {
+  verifyDifferentsDates({
+    FechaRecogida: props.child.orderVehiculo.FechaRecogida,
+    FechaEntrega: props.child.orderVehiculo.FechaEntrega,
+  });
+});
+
+onBeforeUnmount(() => {
+  diffDaysEmitter.off("diffDays");
+});
+
+function addToCartAndGoTo() {
+  addToCart();
+  router.push({ name: "reservation" });
+}
+
+function addToCartAndNotifyIt() {
+  addToCart();
+  verifyDifferentsDates({
+    FechaRecogida: props.child.orderVehiculo.FechaRecogida,
+    FechaEntrega: props.child.orderVehiculo.FechaEntrega,
+  });
+  toast("Elemento agregado con éxito a su carrito de compra.", {
+    type: "success",
+  });
+}
+
+function emitElement() {
+  emit("selectedElementEditRow", props.child);
+}
+
+function addToCart() {
+  $helpers.shoppingCartAdd(props.child);
+  useCartStore().refresh();
+}
+
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number);
+  let decimalPart = Math.round((number - intPart) * 100);
+  if (decimalPart == 0) decimalPart = "00";
+  return { intPart, decimalPart };
+}
+
+function selectInfo(section: string) {
+  if (selectedInfo.value == section) {
+    selectedInfo.value = "";
+  } else {
+    selectedInfo.value = section;
   }
-};
+}
 </script>
 
 <style scoped>

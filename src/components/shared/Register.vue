@@ -14,7 +14,11 @@
                 {{ testError }}
               </div>
               <Form @submit="submit">
-                <Field name="username" rules="required" v-slot="{ field, errors }">
+                <Field
+                  name="username"
+                  rules="required"
+                  v-slot="{ field, errors }"
+                >
                   <input
                     v-bind="field"
                     type="text"
@@ -24,9 +28,15 @@
                     id="username-input"
                     placeholder="Usuario"
                   />
-                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                  <span class="validation-error" v-show="errors[0]">{{
+                    errors[0]
+                  }}</span>
                 </Field>
-                <Field name="telefono" rules="required" v-slot="{ field, errors }">
+                <Field
+                  name="telefono"
+                  rules="required"
+                  v-slot="{ field, errors }"
+                >
                   <input
                     v-bind="field"
                     type="text"
@@ -36,7 +46,9 @@
                     id="phone-input"
                     placeholder="Teléfono"
                   />
-                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                  <span class="validation-error" v-show="errors[0]">{{
+                    errors[0]
+                  }}</span>
                 </Field>
                 <Field name="email" rules="required" v-slot="{ field, errors }">
                   <input
@@ -48,9 +60,15 @@
                     id="email-input"
                     placeholder="Correo electrónico"
                   />
-                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                  <span class="validation-error" v-show="errors[0]">{{
+                    errors[0]
+                  }}</span>
                 </Field>
-                <Field name="password" rules="required|confirmed:@confirm" v-slot="{ field, errors }">
+                <Field
+                  name="password"
+                  rules="required|confirmed:@confirm"
+                  v-slot="{ field, errors }"
+                >
                   <input
                     v-bind="field"
                     type="password"
@@ -60,9 +78,15 @@
                     id="password-input"
                     placeholder="Contraseña"
                   />
-                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                  <span class="validation-error" v-show="errors[0]">{{
+                    errors[0]
+                  }}</span>
                 </Field>
-                <Field name="confirm" rules="required" v-slot="{ field, errors }">
+                <Field
+                  name="confirm"
+                  rules="required"
+                  v-slot="{ field, errors }"
+                >
                   <input
                     v-bind="field"
                     type="password"
@@ -72,16 +96,15 @@
                     id="confirm-password-input"
                     placeholder="Confirme la contraseña"
                   />
-                  <span class="validation-error" v-show="errors[0]">{{ errors[0] }}</span>
+                  <span class="validation-error" v-show="errors[0]">{{
+                    errors[0]
+                  }}</span>
                 </Field>
                 <div class="form-password-forgotten hn-roman">
                   ¿Ya tienes una cuenta? <a href="#">Inicia Sesión</a>
                 </div>
                 <div class="home-actions antonio-regular">
-                  <button
-                    class="btn home-sign-up"
-                    type="submit"
-                  >
+                  <button class="btn home-sign-up" type="submit">
                     <template v-if="!loading">registrarse</template>
                     <span
                       class="gtt-spinner gtt-spinner-sm loading-spinner"
@@ -105,53 +128,56 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from "vue";
 import { Form, Field } from "vee-validate";
 import { authRegister } from "../../utils/auth";
+import { toast } from "vue3-toastify";
 
-export default {
-  components: { Form, Field },
-  data() {
-    return {
-      loading: false,
-      testErrorVisible: false,
-      testError: ""
-    };
-  },
-  methods: {
-    close() {
-      this.$emit("closeModal");
-    },
-    async submit(values) {
-      let user = {
-        username: values.username,
-        password: values.password,
-        telefono: values.telefono,
-        correo: values.email,
-        clienteId: localStorage.getItem("cliente"),
-        rolId: 3
-      };
-      this.loading = true;
-      authRegister(user, {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      })
-        .then(({ data }) => {
-          console.log(data);
-          this.$toasted.show(
-            `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
-            {
-              type: "success"
-            }
-          );
-          this.loading = false;
-          this.close();
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    }
-  }
-};
+defineOptions({ name: "Register" });
+
+const emit = defineEmits<{
+  (e: "closeModal"): void;
+}>();
+
+const loading = ref(false);
+const testErrorVisible = ref(false);
+const testError = ref("");
+
+function close() {
+  emit("closeModal");
+}
+
+async function submit(values: any) {
+  let user = {
+    username: values.username,
+    password: values.password,
+    telefono: values.telefono,
+    correo: values.email,
+    clienteId: localStorage.getItem("cliente"),
+    rolId: 3,
+  };
+  loading.value = true;
+  authRegister(user, {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  })
+    .then(({ data }) => {
+      if (import.meta.env.DEV) {
+        console.log(data);
+      }
+      toast(
+        `El cliente "${data.Username}" se registró con éxito. A espera de su activación.`,
+        {
+          type: "success",
+        },
+      );
+      loading.value = false;
+      close();
+    })
+    .catch(() => {
+      loading.value = false;
+    });
+}
 </script>
 
 <style scoped>

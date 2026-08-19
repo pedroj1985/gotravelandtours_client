@@ -37,11 +37,7 @@
                 <i class="mdi mdi-phone-check"></i>
               </div>
               <div
-                class="
-                  item-children-section-item
-                  item-children-section-icon
-                  item-children-info-btn
-                "
+                class="item-children-section-item item-children-section-icon item-children-info-btn"
               >
                 <button
                   type="button"
@@ -62,7 +58,7 @@
                 {{
                   styledPrice(
                     child.combinacion.listado[0].precioObjOne.PrecioOrden *
-                      amoung
+                      amoung,
                   ).intPart
                 }}
                 USD
@@ -75,7 +71,7 @@
                   :disabled="amoung <= 1"
                   v-on:click="amoung--"
                   type="submit"
-                  class="gtt__picker_button "
+                  class="gtt__picker_button"
                 >
                   <i class="mdi mdi-minus"></i>
                 </button>
@@ -90,7 +86,7 @@
                 <button
                   v-on:click="amoung++"
                   type="submit"
-                  class="gtt__picker_button "
+                  class="gtt__picker_button"
                 >
                   <i class="mdi mdi-plus"></i>
                 </button>
@@ -154,186 +150,194 @@
   </div>
 </template>
 
-<script>
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useLodging } from "../../composables/useLodging";
 import {
   authGetRoomPrice,
   authGetRoomTypes,
   authLog,
-  hotetecBlockProduct
+  hotetecBlockProduct,
 } from "../../utils/auth";
 import { helpers } from "@/utils/helpers";
 import { hotelecSessionService } from "../../utils/hotelecSessionService";
 
-export default {
-  mixins: [lodgingUtilsMixin],
-  data() {
-    return {
-      amoung: 1,
-      selectedInfo: "",
-      todosTiposHabitaciones: []
-    };
-  },
-  async created() {
-    let tth = await authGetRoomTypes();
-    this.todosTiposHabitaciones = tth.data;
-  },
-  props: {
-    child: Object,
-    disabled: Boolean
-  },
-  methods: {
-    async addToCart() {
-      this.$emit("loading", true);
-      let currentHotelec = await hotelecSessionService.getOrCreateSession();
-      const hotelectData = await this.checkIsAvailable(this.child);
-      this.child.hotelectData = hotelectData;
-      let { Adl, Nin } = helpers.generatePassageList(this.child.combinacion);
-      let allIds = [];
-      Adl.forEach(adult => {
-        allIds.push(adult.Id);
-      });
-      Nin.forEach(minor => {
-        allIds.push(minor.Id);
-      });
+const { habitacionPorCantidadPersonas, checkIsAvailable } = useLodging();
+const $helpers = helpers;
 
-      let blockProduct = {
-        Accion: "A",
-        Codtou: "HTT",
-        Ideses: currentHotelec,
-        Pasage: { Adl, Nin },
-        Bloser: {
-          Id: 1,
-          Dissmo: [
-            {
-              Pasid: allIds,
-              Id: this.child.hotelectData.HotetecInfoHabId,
-              Numuni: this.amoung.toString()
-            }
-          ]
-        }
-      };
+const props = defineProps<{
+  child: any;
+  disabled?: boolean;
+}>();
 
-      let unblockProduct = {
-        Accion: "E",
-        Codtou: "HTT",
-        Ideses: currentHotelec,
-        Pasage: { Adl, Nin },
-        Bloser: {
-          Id: 1,
-          Dissmo: [
-            {
-              Pasid: allIds,
-              Id: this.child.hotelectData.HotetecInfoHabId,
-              Numuni: this.amoung.toString()
-            }
-          ]
-        }
-      };
+const emit = defineEmits<{
+  (e: "loading", val: boolean): void;
+  (e: "listReserve", child: any, amoung: number): void;
+  (e: "reserve", child: any, amoung: number): void;
+}>();
 
-      console.log("blockProduct", this.child);
+const amoung = ref(1);
+const selectedInfo = ref("");
+const todosTiposHabitaciones = ref<any[]>([]);
 
-      hotetecBlockProduct(blockProduct)
-        .then(res => {
-          if (res.data.Tiperr === null) {
-            this.child["unblockRequest"] = unblockProduct;
-            this.$emit("listReserve", this.child, this.amoung);
-          }
-        })
-        .finally(() => {
-          this.$emit("loading", false);
-        });
+onMounted(async () => {
+  let tth = await authGetRoomTypes();
+  todosTiposHabitaciones.value = tth.data;
+});
+
+async function addToCart() {
+  emit("loading", true);
+  let currentHotelec = await hotelecSessionService.getOrCreateSession();
+  const hotelectData = await checkIsAvailable(props.child);
+  props.child.hotelectData = hotelectData;
+  let { Adl, Nin } = helpers.generatePassageList(props.child.combinacion);
+  let allIds: number[] = [];
+  Adl.forEach((adult: any) => {
+    allIds.push(adult.Id);
+  });
+  Nin.forEach((minor: any) => {
+    allIds.push(minor.Id);
+  });
+
+  let blockProduct = {
+    Accion: "A",
+    Codtou: "HTT",
+    Ideses: currentHotelec,
+    Pasage: { Adl, Nin },
+    Bloser: {
+      Id: 1,
+      Dissmo: [
+        {
+          Pasid: allIds,
+          Id: props.child.hotelectData.HotetecInfoHabId,
+          Numuni: amoung.value.toString(),
+        },
+      ],
     },
-    async reserve() {
-      this.$emit("loading", true);
-      let currentHotelec = await hotelecSessionService.getOrCreateSession();
-      const hotelectData = await this.checkIsAvailable(this.child);
-      this.child.hotelectData = hotelectData;
-      let { Adl, Nin } = helpers.generatePassageList(this.child.combinacion);
-      let allIds = [];
-      Adl.forEach(adult => {
-        allIds.push(adult.Id);
-      });
-      Nin.forEach(minor => {
-        allIds.push(minor.Id);
-      });
+  };
 
-      let blockProduct = {
-        Accion: "A",
-        Codtou: "HTT",
-        Ideses: currentHotelec,
-        Pasage: { Adl, Nin },
-        Bloser: {
-          Id: 1,
-          Dissmo: [
-            {
-              Pasid: allIds,
-              Id: this.child.hotelectData.HotetecInfoHabId,
-              Numuni: this.amoung.toString()
-            }
-          ]
-        }
-      };
-
-      let unblockProduct = {
-        Accion: "E",
-        Codtou: "HTT",
-        Ideses: currentHotelec,
-        Pasage: { Adl, Nin },
-        Bloser: {
-          Id: 1,
-          Dissmo: [
-            {
-              Pasid: allIds,
-              Id: this.child.hotelectData.HotetecInfoHabId,
-              Numuni: this.amoung.toString()
-            }
-          ]
-        }
-      };
-
-      hotetecBlockProduct(blockProduct)
-        .then(res => {
-          if (res.data.Tiperr === null) {
-            this.child["unblockRequest"] = unblockProduct;
-            this.$emit("reserve", this.child, this.amoung);
-          }
-        })
-        .finally(() => {
-          this.$emit("loading", false);
-        });
+  let unblockProduct = {
+    Accion: "E",
+    Codtou: "HTT",
+    Ideses: currentHotelec,
+    Pasage: { Adl, Nin },
+    Bloser: {
+      Id: 1,
+      Dissmo: [
+        {
+          Pasid: allIds,
+          Id: props.child.hotelectData.HotetecInfoHabId,
+          Numuni: amoung.value.toString(),
+        },
+      ],
     },
-    // TODO validar valor del numero mayot que 0
-    validate() {
-      if (this.amoung === 0) this.amoung = 1;
-    },
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = Math.round((number - intPart) * 100);
+  };
 
-      if (decimalPart == 0) decimalPart = "00";
-
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
-      }
-    },
-    findPrecio(item, listadoPrecios) {
-      let tipoHabitacion = this.habitacionPorCantidadPersonas(
-        item.CantAdult,
-        this.todosTiposHabitaciones
-      );
-      let r = listadoPrecios.find(i => {
-        return i.tipoHabitacion == tipoHabitacion.TipoHabitacionId;
-      });
-      return r.price;
-    }
+  if (import.meta.env.DEV) {
+    console.log("blockProduct", props.child);
   }
-};
+
+  hotetecBlockProduct(blockProduct)
+    .then((res: any) => {
+      if (res.data.Tiperr === null) {
+        props.child["unblockRequest"] = unblockProduct;
+        emit("listReserve", props.child, amoung.value);
+      }
+    })
+    .finally(() => {
+      emit("loading", false);
+    });
+}
+
+async function reserve() {
+  emit("loading", true);
+  let currentHotelec = await hotelecSessionService.getOrCreateSession();
+  const hotelectData = await checkIsAvailable(props.child);
+  props.child.hotelectData = hotelectData;
+  let { Adl, Nin } = helpers.generatePassageList(props.child.combinacion);
+  let allIds: number[] = [];
+  Adl.forEach((adult: any) => {
+    allIds.push(adult.Id);
+  });
+  Nin.forEach((minor: any) => {
+    allIds.push(minor.Id);
+  });
+
+  let blockProduct = {
+    Accion: "A",
+    Codtou: "HTT",
+    Ideses: currentHotelec,
+    Pasage: { Adl, Nin },
+    Bloser: {
+      Id: 1,
+      Dissmo: [
+        {
+          Pasid: allIds,
+          Id: props.child.hotelectData.HotetecInfoHabId,
+          Numuni: amoung.value.toString(),
+        },
+      ],
+    },
+  };
+
+  let unblockProduct = {
+    Accion: "E",
+    Codtou: "HTT",
+    Ideses: currentHotelec,
+    Pasage: { Adl, Nin },
+    Bloser: {
+      Id: 1,
+      Dissmo: [
+        {
+          Pasid: allIds,
+          Id: props.child.hotelectData.HotetecInfoHabId,
+          Numuni: amoung.value.toString(),
+        },
+      ],
+    },
+  };
+
+  hotetecBlockProduct(blockProduct)
+    .then((res: any) => {
+      if (res.data.Tiperr === null) {
+        props.child["unblockRequest"] = unblockProduct;
+        emit("reserve", props.child, amoung.value);
+      }
+    })
+    .finally(() => {
+      emit("loading", false);
+    });
+}
+
+function validate() {
+  if (amoung.value === 0) amoung.value = 1;
+}
+
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number);
+  let decimalPart = Math.round((number - intPart) * 100);
+  if (decimalPart == 0) decimalPart = "00";
+  return { intPart, decimalPart };
+}
+
+function selectInfo(section: string) {
+  if (selectedInfo.value == section) {
+    selectedInfo.value = "";
+  } else {
+    selectedInfo.value = section;
+  }
+}
+
+function findPrecio(item: any, listadoPrecios: any[]) {
+  let tipoHabitacion = habitacionPorCantidadPersonas(
+    item.CantAdult,
+    todosTiposHabitaciones.value,
+  );
+  let r = listadoPrecios.find((i: any) => {
+    return i.tipoHabitacion == tipoHabitacion.TipoHabitacionId;
+  });
+  return r?.price;
+}
 </script>
 
 <style scoped>

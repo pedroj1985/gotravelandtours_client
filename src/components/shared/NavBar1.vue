@@ -8,7 +8,13 @@
           alt="Colibri Viajes"
         />
       </router-link>
-      <button class="hamburger-toggle hide-desktop" @click="menuOpen = !menuOpen" aria-label="Menú de navegación"><i :class="menuOpen ? 'mdi mdi-close' : 'mdi mdi-menu'"></i></button>
+      <button
+        class="hamburger-toggle hide-desktop"
+        @click="menuOpen = !menuOpen"
+        aria-label="Menú de navegación"
+      >
+        <i :class="menuOpen ? 'mdi mdi-close' : 'mdi mdi-menu'"></i>
+      </button>
       <div class="right-side-navbar" :class="{ 'mobile-open': menuOpen }">
         <div class="auth-user-menu" v-if="isUserLogged">
           <div class="user-name-hello">
@@ -33,7 +39,10 @@
             ></a>
           </div> -->
           <div class="shopping-cart">
-            <router-link :to="{ name: 'reservation' }" :aria-label="`Carrito de compras (${itemsInCart} artículos)`">
+            <router-link
+              :to="{ name: 'reservation' }"
+              :aria-label="`Carrito de compras (${itemsInCart} artículos)`"
+            >
               <div class="shopping-cart-wrapper">
                 <i class="mdi mdi-cart"></i>
                 <GttBubbleNotification
@@ -54,39 +63,34 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from "vue";
 import GttButtonModal from "../custom-elements/GttButtonModal.vue";
 import GttBubbleNotification from "../custom-elements/GttBubbleNotification.vue";
 
-export default {
-  components: {
-    GttButtonModal,
-    GttBubbleNotification
-  },
-  name: "NavBar1",
-  props: {
-    itemsInCart: {
-      type: Number,
-      default: 0
-    },
-    user: Object,
-    isUserLogged: {
-      type: Boolean,
-      default: false
-    }
-  },
+defineOptions({ name: "NavBar1" });
 
-  data() {
-    return {
-      menuOpen: false
-    };
+const props = withDefaults(
+  defineProps<{
+    itemsInCart?: number;
+    user?: any;
+    isUserLogged?: boolean;
+  }>(),
+  {
+    itemsInCart: 0,
+    isUserLogged: false,
   },
-  methods: {
-    emitUserLogin(value) {
-      this.$emit("userLogin", value);
-    }
-  }
-};
+);
+
+const emit = defineEmits<{
+  (e: "userLogin", value: any): void;
+}>();
+
+const menuOpen = ref(false);
+
+function emitUserLogin(value: any) {
+  emit("userLogin", value);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -242,11 +246,13 @@ export default {
     margin-bottom: var(--spacing-md);
   }
 
-  .reservations, .shopping-cart, .vl {
+  .reservations,
+  .shopping-cart,
+  .vl {
     padding: var(--spacing-sm) 0;
     margin: 0;
     border-left: none;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   #language_selector {

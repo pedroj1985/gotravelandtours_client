@@ -6,14 +6,8 @@
   </div>
 </template>
 
-<script>
-import Destinies from "../shared/DestiniesCarousel";
-
-export default {
-  components: {
-    Destinies
-  }
-};
+<script setup lang="ts">
+import Destinies from "../shared/DestiniesCarousel.vue";
 </script>
 
 <style scoped>

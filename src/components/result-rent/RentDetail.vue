@@ -2,7 +2,7 @@
   <div
     id="content"
     class="custom-padding-top-2-navbar"
-    style="margin-top: 30px;"
+    style="margin-top: 30px"
   >
     <NavBar2 :menuLinks="menuLinks"></NavBar2>
     <!-- <Breadcrumb :elementList="breadcrumbList"></Breadcrumb> -->
@@ -44,8 +44,10 @@
                       {{
                         displayTransmission(
                           $helpers.traducir(
-                            $helpers.findTransmissionLocale(car.TipoTransmision)
-                          )
+                            $helpers.findTransmissionLocale(
+                              car.TipoTransmision,
+                            ),
+                          ),
                         )
                       }}
                     </div>
@@ -75,7 +77,11 @@
           <div id="car-info-block" class="row">
             <div class="col-lg-9">
               <div class="img-wrapper">
-                <img :src="image" alt="Imagen del vehículo" v-if="!isLoadingImage" />
+                <img
+                  :src="image"
+                  alt="Imagen del vehículo"
+                  v-if="!isLoadingImage"
+                />
                 <span
                   class="gtt-spinner loading-spinner img-loading"
                   v-else
@@ -112,9 +118,9 @@
                           displayTransmission(
                             $helpers.traducir(
                               $helpers.findTransmissionLocale(
-                                car.TipoTransmision
-                              )
-                            )
+                                car.TipoTransmision,
+                              ),
+                            ),
                           )
                         }}
                       </div>
@@ -141,90 +147,63 @@
     </div>
   </div>
 </template>
-<script>
-import NavBar2 from "../shared/NavBar2";
-import RentForm from "./RentForm";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { toast } from "vue3-toastify";
+import NavBar2 from "../shared/NavBar2.vue";
+import RentForm from "./RentForm.vue";
 import { authGetCar, authGetImage, authSearchProvider } from "../../utils/auth";
 
-export default {
-  components: {
-    NavBar2,
-    RentForm
-  },
-  async created() {
-    let carId = this.$route.params.id;
-    try {
-      let { data } = await authGetCar(carId);
-      this.car = data;
+const route = useRoute();
+
+const car = ref<any>({});
+const isLoadingImage = ref(true);
+const image = ref<any>(null);
+const imageProvider = ref<any>(null);
+const isLoaded = ref(false);
+const filter = ref<any>({});
+const menuLinks = ref([
+  { name: "index", displayName: "Inicio", id: "home-logged-banner" },
+  { name: "lodging", displayName: "alojamientos", id: "home-logged-banner" },
+]);
+
+onMounted(async () => {
+  let carId = route.params.id as string;
+  try {
+    let { data } = await authGetCar(carId);
+    car.value = data;
+    if (import.meta.env.DEV) {
       console.log({ data });
-      this.isLoaded = true;
-      this.image = await this.getImage();
-      this.imageProvider = await this.getProviderImage(this.car.ProveedorId);
-    } catch (error) {
-      if (error) {
-        this.$toasted.show("Su petición no se ha podido procesar", {
-          type: "error"
-        });
-      }
     }
-  },
-  methods: {
-    displayTransmission(item) {
-      return item.split(" ")[0].toLowerCase();
-    },
-    displayName(data) {
-      let data_splitted = data.split("-");
-      let sp = data_splitted.slice(1, data_splitted.lenght);
-
-      return sp.join("-");
-    },
-    async getImage() {
-      let { data } = await authGetImage(this.$route.params.id);
-
-      this.isLoadingImage = false;
-      return data.ImageContent;
-    },
-    async getProviderImage(id) {
-      let { data } = await authSearchProvider(id);
-      return data.ImageContent;
+    isLoaded.value = true;
+    image.value = await getImage();
+    imageProvider.value = await getProviderImage(car.value.ProveedorId);
+  } catch (error) {
+    if (error) {
+      toast("Su petición no se ha podido procesar", { type: "error" });
     }
-  },
-  data() {
-    return {
-      car: {},
-      isLoadingImage: true,
-      image: null,
-      imageProvider: null,
-      isLoaded: false,
-      filter: {},
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Inicio",
-          id: "home-logged-banner"
-        },
-        {
-          name: "lodging",
-          displayName: "alojamientos",
-          id: "home-logged-banner"
-        }
-        /*         {
-          name: "car-rent",
-          displayName: "renta de autos",
-          id: "index-logged-rent-wrapper",
-        }, */
-        /*        {
-          name: "transfer",
-          displayName: "traslados",
-          id: "index-logged-transfer",
-        },
-        {
-          name: "excursions",
-          displayName: "Excursiones y actividades",
-          id: "index-logged-excursion",
-        },*/
-      ]
-    };
   }
-};
+});
+
+function displayTransmission(item: string) {
+  return item.split(" ")[0].toLowerCase();
+}
+
+function displayName(data: string) {
+  let data_splitted = data.split("-");
+  let sp = data_splitted.slice(1, data_splitted.length);
+  return sp.join("-");
+}
+
+async function getImage() {
+  let { data } = await authGetImage(route.params.id as string);
+  isLoadingImage.value = false;
+  return data.ImageContent;
+}
+
+async function getProviderImage(id: number) {
+  let { data } = await authSearchProvider(id);
+  return data.ImageContent;
+}
 </script>

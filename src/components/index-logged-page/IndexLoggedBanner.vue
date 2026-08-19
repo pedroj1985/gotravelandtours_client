@@ -7,31 +7,36 @@
       <NavBar2 :menuLinks="menuLinks"></NavBar2>
     </div>
     <GttModalSearch v-if="isModalActive" @searchingFinished="desactivateModal">
-      <template #image>
+      <template v-slot:image>
         <div>
           <img src="/img/icopaq_alojamiento_color.svg" alt="" />
         </div>
       </template>
-      <template #searching-text>
+      <template v-slot:searching-text>
         <div class="searching-text">
           <span class="antonio-light">Buscando disponibilidad de</span>
           <span class="antonio-bold text-highlight pl-1">alojamientos</span>
           <span class="antonio-light">
             en
-            <span v-if="hotel">{{ hotel.nombre }}</span>
+            <span v-if="selectedLodgingDestinyValue">{{
+              selectedLodgingDestinyValue.nombre
+            }}</span>
             <span v-else>cualquier lugar</span>
           </span>
         </div>
       </template>
-      <template #searching-fields>
+      <template v-slot:searching-fields>
         <div class="searching-fields">
-          <div v-if="checkin && checkout">
-            entre el {{ constructDate(checkin) }} y el
-            {{ constructDate(checkout) }} ({{ nights }} noches)
+          <div v-if="selectedStartDate && selectedEndDate">
+            entre el {{ constructDate(selectedStartDate) }} y el
+            {{ constructDate(selectedEndDate) }} ({{
+              calculateNights(selectedStartDate, selectedEndDate)
+            }}
+            noches)
           </div>
-          <div v-if="adults || children">
+          <div v-if="selectedRoomLayout">
             para
-            <span class="pl-1">{{ visitorsDisplay }}</span>
+            <span class="pl-1">{{ constructDisplay(selectedRoomLayout) }}</span>
           </div>
         </div>
       </template>
@@ -43,98 +48,85 @@
         <span class="bannerText">para usted y su familia</span>
       </div>
       <div class="lodging-form">
-        <div ref="gttDestinyLodging" style="width: 100%;">
+        <div ref="gttDestinyLodging" style="width: 100%">
           <gtt-select
             v-model:openedLodging="lodgingOpened"
-            :model-value="hotel"
-            @update:model-value="setHotel"
+            @click.native="loadDestinies"
+            v-model="selectedLodgingDestinyValue"
             :options="destinies"
             :alignLeft="true"
           >
-            <template #iconSelectedValue><i class="mdi mdi-map-marker"></i></template>
-            <template #placeholder><span class="required-field"
-              >Destino o Alojamiento</span
-            ></template>
-            <template #selectedPlaceholder>¿Dónde desea alojarse?</template>
+            <template v-slot:iconSelectedValue>
+              <i class="mdi mdi-map-marker"></i>
+            </template>
+            <template v-slot:placeholder>
+              <span class="required-field">Destino o Alojamiento</span>
+            </template>
+            <template v-slot:selectedPlaceholder>
+              <span>¿Dónde desea alojarse?</span>
+            </template>
             <template v-slot:option="option">
               {{ option.option.nombre }}
             </template>
             <template v-slot:selectedValue="selectedValue">
               {{ selectedValue.selectedValue.nombre }}
             </template>
-            <template #error><span class="gtt-errors"></span></template>
+            <template v-slot:error>
+              <span class="gtt-errors"></span>
+            </template>
           </gtt-select>
         </div>
         <div class="selects-inline">
           <div ref="gttStartDate" class="w-100 cleft">
             <gtt-select-date
-              :model-value="checkin"
-              @update:model-value="setCheckin"
+              v-model="selectedStartDate"
               :mode="'single'"
               :min-date="minStartDate"
             >
-              <template #placeholder>
-                <span class="required-field">
-                  Fecha de entrada
-                </span>
+              <template v-slot:placeholder>
+                <span class="required-field"> Fecha de entrada </span>
               </template>
-              <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
-              <template #error><span class="gtt-errors"></span></template>
+              <template v-slot:iconSelectedValue>
+                <i class="mdi mdi-calendar-today"></i>
+              </template>
+              <template v-slot:error>
+                <span class="gtt-errors"></span>
+              </template>
             </gtt-select-date>
           </div>
           <div ref="gttEndDate" class="w-100 cleft">
             <gtt-select-date
-              :model-value="checkout"
-              @update:model-value="setCheckout"
+              v-model="selectedEndDate"
               :min-date="minEndDate"
               :mode="'single'"
             >
-              <template #placeholder><span class="required-field"
-                >Fecha de salida</span
-              ></template>
-              <template #iconSelectedValue><i class="mdi mdi-calendar-today"></i></template>
-              <template #error><span class="gtt-errors"></span></template>
+              <template v-slot:placeholder>
+                <span class="required-field">Fecha de salida</span>
+              </template>
+              <template v-slot:iconSelectedValue>
+                <i class="mdi mdi-calendar-today"></i>
+              </template>
+              <template v-slot:error>
+                <span class="gtt-errors"></span>
+              </template>
             </gtt-select-date>
           </div>
           <div class="w-100">
             <gtt-select
-              :model-value="nights"
-              @update:model-value="setNights"
+              v-model="selectedNights"
               :options="[
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24,
-                25,
-                26,
-                27,
-                28,
-                29,
-                30
+                3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
               ]"
               :search="false"
               :alignLeft="true"
             >
-              <template #placeholder>Noches</template>
-              <template #selectedPlaceholder>¿Cuántas noches?</template>
+              <template v-slot:placeholder>
+                <span>Noches</span>
+              </template>
+              <template v-slot:selectedPlaceholder>
+                <span>¿Cuántas noches?</span>
+              </template>
               <template v-slot:option="option">
                 {{ constructDisplayNights(option.option) }}
               </template>
@@ -148,15 +140,16 @@
           <gtt-select-form
             :options="roomLayout"
             class="cleft"
-            :model-value="visitorsLayout"
-            @update:model-value="applyVisitors"
+            v-model="selectedRoomLayout"
           >
-            <template #iconSelectedValue>
+            <template v-slot:iconSelectedValue>
               <span>
                 <i class="mdi mdi-account"></i>
               </span>
             </template>
-            <template #placeholder><span class="required-field">Visitantes</span></template>
+            <template v-slot:placeholder>
+              <span class="required-field">Visitantes</span>
+            </template>
           </gtt-select-form>
           <!--          <gtt-select
                       :options="countries"
@@ -205,394 +198,403 @@
   </div>
 </template>
 
-<script>
-import NavBar2 from "../shared/NavBar2";
-import GttSelect from "../custom-elements/GttSelect";
-import GttSelectForm from "../custom-elements/GttSelectForm";
-import GttSelectDate from "../custom-elements/GttSelectDate";
-import GttModalSearch from "../custom-elements/GttModalSearch";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { toast } from "vue3-toastify";
+import NavBar2 from "../shared/NavBar2.vue";
+import GttSelect from "../custom-elements/GttSelect.vue";
+import GttSelectForm from "../custom-elements/GttSelectForm.vue";
+import GttSelectDate from "../custom-elements/GttSelectDate.vue";
+import GttModalSearch from "../custom-elements/GttModalSearch.vue";
 import moment from "moment";
-import { scrollStore } from "../../stores/scrollStore";
-import { useBooking } from "../../composables/useBooking";
+import { useScrollStore } from "../../stores/scrollStore";
+import { authGetRoomTypes, authGetHotelList } from "../../utils/auth";
 import {
-  authSearchRegions,
-  authGetRoomTypes,
-  authGetLodgingsAll,
-  authGetHotelList
-} from "../../utils/auth";
-import { constructDate } from "../../utils/utils";
-import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
+  constructDate,
+  calculateNights,
+  constructDisplay,
+} from "../../utils/utils";
+import { helpers } from "../../utils/helpers";
+import { useLodging } from "../../composables/useLodging";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 
-export default {
-  components: {
-    NavBar2,
-    GttSelect,
-    GttSelectForm,
-    GttSelectDate,
-    GttModalSearch
-  },
-  mixins: [lodgingUtilsMixin],
-  setup() {
-    return useBooking();
-  },
-  async created() {
-    this.searchCountriesPlaceholder();
-    window.addEventListener("scroll", this.handleScroll);
-    let t = await authGetRoomTypes();
-    this.todosTipo = t.data;
-    await this.clearResults();
-  },
-  unmounted() {
-    window.removeEventListener("scroll", this.handleScroll);
-  },
-  computed: {
-    minStartDate() {
-      return moment()
-        .add(4, "days")
-        .format("YYYY-MM-DD");
-    },
-    minEndDate() {
-      let minEndDate = moment()
-        .add(7, "days")
-        .format("YYYY-MM-DD");
-      if (this.checkin) {
-        minEndDate = moment(this.checkin)
-          .add(this.nights, "days")
-          .format("YYYY-MM-DD");
-      }
-      return minEndDate;
-    },
-    visitorsLayout() {
-      return {
-        adults: {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          value: this.adults
-        },
-        kids: {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          value: this.children
-        }
-      };
-    },
-    visitorsDisplay() {
-      return `${this.adults} Adulto(s) · ${this.children} Niño(s)`;
-    }
-  },
-  watch: {
-    lodgingOpened(val) {
-      if (val) this.loadDestinies();
-    }
-  },
-  methods: {
-    constructDate,
-    gttValidate() {
-      let validator = [
-        {
-          rules: ["required"],
-          name: "gttDestinyLodging",
-          value: this.hotel,
-          lang: "es"
-        },
-        {
-          rules: ["required", "dateAfter:checkin"],
-          name: "gttEndDate",
-          value: this.checkout,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttStartDate",
-          value: this.checkin,
-          lang: "es"
-        }
-      ];
+const router = useRouter();
 
-      return validator;
-    },
-    async loadDestinies() {
-      if (this.lodgingOpened == true) {
-        //let { data } = await authSearchRegions();
-        let totalResult = [];
-        /*data.forEach(item => {
-          totalResult = totalResult.concat({
-            nombre: item.Nombre,
-            regionid: item.RegionId,
-            type: "RGN"
-          });
-        }); */
-        /* let l = await authGetLodgingsAll();
-        l.data.forEach(i => {
-          totalResult = totalResult.concat({
-            nombre: i.Nombre,
-            id: i.ProductoId,
-            type: "alojamiento"
-          });
-        }); */
-        let l = await authGetHotelList();
-        l.data.forEach(i => {
-          totalResult = totalResult.concat({
-            nombre: i.Nombre,
-            id: i.IdObjeto,
-            type: i.TipoObjeto
-          });
-        });
-        this.destinies = totalResult;
-      }
-    },
-    handleLodgingClose() {
-      this.lodgingOpened = false;
-    },
-    handleScroll() {
-      let height = window.innerHeight;
-      if (
-        height * 0.25 > this.$el.getBoundingClientRect().top &&
-        height * 0 < this.$el.getBoundingClientRect().top
-      ) {
-        scrollStore.scrollTo("lodging");
-      }
-    },
-    async activateModal() {
-      let iv = gttIsValid(this.gttValidate(), this);
-      if (getValid(iv)) {
-        this.isModalActive = true;
-        await this.clearResults();
-        if (this.hotel.type == "RGN") {
-          console.log("RGN", this);
-          let region = {
-            RegionId: this.hotel.id
-          };
-          let cliente = { ClienteId: localStorage.getItem("cliente") };
-          let searchItem = {
-            Entrada: this.checkin,
-            Salida: this.checkout,
-            Region: region,
-            Cliente: cliente
-          };
-          let searchFilters = {
-            Destiny: this.hotel,
-            Region: {
-              RegionId: this.hotel.id,
-              RegionNombre: this.hotel.nombre
-            },
-            Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.checkin,
-            Salida: this.checkout,
-            Visitantes: this.visitorsLayout,
-            Nacionalidad: this.selectedNationality
-          };
-          let resultList = [];
-          try {
-            if (
-              searchFilters.Visitantes.adults.value >=
-              searchFilters.Visitantes.kids.value
-            ) {
-              this.roomComb = this.$helpers.roomCombination(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            } else {
-              this.roomComb = this.$helpers.roomCombination2kids(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            }
-            let roomComb2 = this.$helpers.roomCombinationV2(
-              searchFilters.Visitantes.adults.value,
-              searchFilters.Visitantes.kids.value || 0
-            );
-            if (this.roomComb != "ERROR") {
-              resultList = await this.searchResult(
-                searchItem,
-                this.roomComb,
-                roomComb2
-              );
-              localStorage.setItem(
-                "searchLodgingFilters",
-                JSON.stringify(searchFilters)
-              );
-              this.desactivateModal();
-              this.$router.push({
-                name: "resultLodging",
-                params: {
-                  searchResult: resultList
-                }
-              });
-            } else {
-              this.desactivateModal();
-              this.$toasted.show("Demasiados niños", {
-                type: "error"
-              });
-            }
-          } catch (error) {
-            console.log(error);
-            this.desactivateModal();
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        } else if (this.hotel.type == "HTL") {
-          console.log("HTL", this);
-          let searchFilters = {
-            Destiny: this.hotel,
-            NombreHotel: this.hotel.nombre,
-            Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.checkin,
-            Salida: this.checkout,
-            Visitantes: this.visitorsLayout,
-            Nacionalidad: this.selectedNationality
-          };
-          try {
-            if (
-              searchFilters.Visitantes.adults.value >=
-              searchFilters.Visitantes.kids.value
-            ) {
-              this.roomComb = this.$helpers.roomCombination(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            } else {
-              this.roomComb = this.$helpers.roomCombination2kids(
-                searchFilters.Visitantes.adults.value,
-                searchFilters.Visitantes.kids.value || 0
-              );
-            }
-            if (this.roomComb != "ERROR") {
-              this.goToDetail(
-                searchFilters,
-                this.buildRoomCombo(this.roomComb),
-                this.hotel.id
-              );
-            } else {
-              this.desactivateModal();
-              this.$toasted.show("Demasiados niños", {
-                type: "error"
-              });
-            }
-          } catch (error) {
-            console.log(error);
-            this.desactivateModal();
-            this.$toasted.show(
-              "El servicio no está disponible en estos momentos",
-              {
-                type: "error"
-              }
-            );
-          }
-        }
-      } else {
-        renderValid(iv, this);
-      }
-    },
-    goToDetail(f, a, id) {
-      localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
+const gttDestinyLodging = ref<HTMLElement | null>(null);
+const gttStartDate = ref<HTMLElement | null>(null);
+const gttEndDate = ref<HTMLElement | null>(null);
 
-      localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
+const {
+  roomCombination,
+  getTotalRooms,
+  recursiveBuildRoom,
+  buildComboV2,
+  buildCombo,
+  buildIdCombo,
+  existenCombinaciones,
+  existeAcomodacionEnLista,
+  validateRoom,
+  validateLayout,
+  canFulfill,
+  search,
+  searchPrev,
+  saveResult,
+  executeQuery,
+  getResults,
+  clearResults,
+  deleteDB,
+  toAcomodation,
+} = useLodging();
 
-      this.$router.push({
-        name: "lodging-detail",
-        params: {
-          id: id
-        }
-      });
-    },
-    desactivateModal() {
-      this.isModalActive = false;
-    },
-    applyVisitors(layout) {
-      if (layout && layout.adults) {
-        this.setAdults(layout.adults.value);
-      }
-      if (layout && layout.kids) {
-        this.setChildren(layout.kids.value);
-      }
-    },
-    constructDisplayNights(n) {
-      if (n == 1) {
-        return `1 noche`;
-      }
-      return `${n} noches`;
-    },
-    searchCountriesPlaceholder() {
-      let usa = this.countries.find(el => {
-        return el.nombre == "Estados Unidos";
-      });
-
-      if (usa) {
-        this.selectedNationality = usa;
-      } else {
-        this.selectedNationality = this.countries[0];
-      }
-    }
+const menuLinks = [
+  {
+    name: "index",
+    displayName: "Inicio",
+    id: "home-logged-banner",
   },
-  data() {
-    return {
-      menuLinks: [
-        {
-          name: "index",
-          displayName: "Inicio",
-          id: "home-logged-banner"
-        },
-        {
-          name: "lodging",
-          displayName: "alojamientos",
-          id: "home-logged-banner"
-        }
-        /* {
-           name: "car-rent",
-           displayName: "renta de autos",
-           id: "index-logged-rent-wrapper"
-         },*/
-      ],
-      isModalActive: false,
-      lodgingOpened: false,
-      defaultFlagImgPath: "img/flags/",
-      todosTipo: [],
-      selectedNationality: null,
-      destinies: [],
-      roomComb: null,
-      roomLayout: [
-        {
-          code: "adults",
-          label: "Adultos",
-          display: "Adulto(s)",
-          default: 1
-        },
-        {
-          code: "kids",
-          label: "Niños",
-          display: "Niño(s)",
-          default: 0
-        }
-      ],
-      countries: [
-        {
-          nombre: "Afganistán",
-          flag: "flag_afganistan.jpg"
-        },
-        {
-          nombre: "Albania",
-          flag: "flag_albania.jpg"
-        },
-        {
-          nombre: "Alemania",
-          flag: "flag_alemania.jpg"
-        },
-        {
-          nombre: "Estados Unidos",
-          flag: "flag_estadosunidos.jpg"
-        }
-      ]
-    };
+  {
+    name: "lodging",
+    displayName: "alojamientos",
+    id: "home-logged-banner",
+  },
+];
+const isModalActive = ref(false);
+const lodgingOpened = ref(false);
+const defaultFlagImgPath = "img/flags/";
+const todosTipo = ref<unknown[]>([]);
+const selectedLodgingDestinyValue = ref("");
+const selectedRoomLayout = ref(null);
+const selectedStartDate = ref(new Date(moment().add(4, "days")));
+const selectedEndDate = ref(new Date(moment().add(7, "days")));
+const selectedNationality = ref(null);
+const destinies = ref<unknown[]>([]);
+const selectedNights = ref(3);
+const roomComb = ref<unknown>(null);
+const roomLayout = [
+  {
+    code: "adults",
+    label: "Adultos",
+    display: "Adulto(s)",
+    default: 1,
+  },
+  {
+    code: "kids",
+    label: "Niños",
+    display: "Niño(s)",
+    default: 0,
+  },
+];
+const countries = [
+  {
+    nombre: "Afganistán",
+    flag: "flag_afganistan.jpg",
+  },
+  {
+    nombre: "Albania",
+    flag: "flag_albania.jpg",
+  },
+  {
+    nombre: "Alemania",
+    flag: "flag_alemania.jpg",
+  },
+  {
+    nombre: "Estados Unidos",
+    flag: "flag_estadosunidos.jpg",
+  },
+];
+
+const minStartDate = computed(() => {
+  return moment().add(4, "days").format("YYYY-MM-DD");
+});
+
+const minEndDate = computed(() => {
+  let minEndDateVal = moment().add(7, "days").format("YYYY-MM-DD");
+  if (selectedStartDate.value) {
+    minEndDateVal = moment(selectedStartDate.value)
+      .add(selectedNights.value, "days")
+      .format("YYYY-MM-DD");
   }
-};
+  return minEndDateVal;
+});
+
+watch(selectedEndDate, () => {
+  let n = moment(selectedEndDate.value).diff(selectedStartDate.value, "days");
+  selectedNights.value = n;
+});
+
+watch(selectedStartDate, (item) => {
+  selectedNights.value = 3;
+  selectedEndDate.value = moment(item)
+    .add(selectedNights.value, "days")
+    .toDate();
+  let n = moment(selectedEndDate.value).diff(selectedStartDate.value, "days");
+  selectedNights.value = n;
+});
+
+watch(selectedNights, (item) => {
+  selectedEndDate.value = new Date(
+    moment(selectedStartDate.value).add(item, "days"),
+  );
+});
+
+async function performSearch(query: Record<string, unknown>) {
+  const res = await executeQuery(query);
+  return res;
+}
+
+function gttValidate() {
+  let validator = [
+    {
+      rules: ["required"],
+      name: "gttDestinyLodging",
+      value: selectedLodgingDestinyValue.value,
+      lang: "es",
+    },
+    {
+      rules: ["required", "dateAfter:selectedStartDate"],
+      name: "gttEndDate",
+      value: selectedEndDate.value,
+      lang: "es",
+    },
+    {
+      rules: ["required"],
+      name: "gttStartDate",
+      value: selectedStartDate.value,
+      lang: "es",
+    },
+  ];
+  return validator;
+}
+
+async function loadDestinies() {
+  if (lodgingOpened.value == true) {
+    let totalResult: unknown[] = [];
+    let l = await authGetHotelList();
+    l.data.forEach(
+      (i: { Nombre: unknown; IdObjeto: unknown; TipoObjeto: unknown }) => {
+        totalResult = totalResult.concat({
+          nombre: i.Nombre,
+          id: i.IdObjeto,
+          type: i.TipoObjeto,
+        });
+      },
+    );
+    destinies.value = totalResult;
+  }
+}
+
+function handleLodgingClose() {
+  lodgingOpened.value = false;
+}
+
+function handleScroll() {
+  const el = document.getElementById("home-logged-banner");
+  if (!el) return;
+  let height = window.innerHeight;
+  if (
+    height * 0.25 > el.getBoundingClientRect().top &&
+    height * 0 < el.getBoundingClientRect().top
+  ) {
+    useScrollStore().scrollTo("lodging");
+  }
+}
+
+function getRefsProxy() {
+  return {
+    $refs: {
+      gttDestinyLodging: gttDestinyLodging.value,
+      gttStartDate: gttStartDate.value,
+      gttEndDate: gttEndDate.value,
+    },
+    $children: [],
+  };
+}
+
+async function activateModal() {
+  let iv = gttIsValid(gttValidate(), getRefsProxy());
+  if (getValid(iv)) {
+    isModalActive.value = true;
+    await clearResults();
+    if (selectedLodgingDestinyValue.value.type == "RGN") {
+      if (import.meta.env.DEV) {
+        console.log("RGN");
+      }
+      let region = {
+        RegionId: selectedLodgingDestinyValue.value.id,
+      };
+      let cliente = { ClienteId: localStorage.getItem("cliente") };
+      let searchItem = {
+        Entrada: selectedStartDate.value,
+        Salida: selectedEndDate.value,
+        Region: region,
+        Cliente: cliente,
+      };
+      let searchFilters = {
+        Destiny: selectedLodgingDestinyValue.value,
+        Region: {
+          RegionId: selectedLodgingDestinyValue.value.id,
+          RegionNombre: selectedLodgingDestinyValue.value.nombre,
+        },
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: selectedStartDate.value,
+        Salida: selectedEndDate.value,
+        Visitantes: selectedRoomLayout.value,
+        Nacionalidad: selectedNationality.value,
+      };
+      let resultList: unknown[] = [];
+      try {
+        if (
+          searchFilters.Visitantes.adults.value >=
+          searchFilters.Visitantes.kids.value
+        ) {
+          roomComb.value = helpers.roomCombination(
+            searchFilters.Visitantes.adults.value,
+            searchFilters.Visitantes.kids.value || 0,
+          );
+        } else {
+          roomComb.value = helpers.roomCombination2kids(
+            searchFilters.Visitantes.adults.value,
+            searchFilters.Visitantes.kids.value || 0,
+          );
+        }
+        let roomComb2 = helpers.roomCombinationV2(
+          searchFilters.Visitantes.adults.value,
+          searchFilters.Visitantes.kids.value || 0,
+        );
+        if (roomComb.value != "ERROR") {
+          resultList = await search(
+            searchItem,
+            roomComb.value,
+            roomComb2,
+            todosTipo.value,
+            helpers,
+          );
+          localStorage.setItem(
+            "searchLodgingFilters",
+            JSON.stringify(searchFilters),
+          );
+          desactivateModal();
+          router.push({
+            name: "resultLodging",
+            params: {
+              searchResult: resultList,
+            },
+          });
+        } else {
+          desactivateModal();
+          toast("Demasiados niños", {
+            type: "error",
+          });
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.log(error);
+        }
+        desactivateModal();
+        toast("El servicio no está disponible en estos momentos", {
+          type: "error",
+        });
+      }
+    } else if (selectedLodgingDestinyValue.value.type == "HTL") {
+      if (import.meta.env.DEV) {
+        console.log("HTL");
+      }
+      let searchFilters = {
+        Destiny: selectedLodgingDestinyValue.value,
+        NombreHotel: selectedLodgingDestinyValue.value.nombre,
+        Cliente: { ClienteId: localStorage.getItem("cliente") },
+        Entrada: selectedStartDate.value,
+        Salida: selectedEndDate.value,
+        Visitantes: selectedRoomLayout.value,
+        Nacionalidad: selectedNationality.value,
+      };
+      try {
+        if (
+          searchFilters.Visitantes.adults.value >=
+          searchFilters.Visitantes.kids.value
+        ) {
+          roomComb.value = helpers.roomCombination(
+            searchFilters.Visitantes.adults.value,
+            searchFilters.Visitantes.kids.value || 0,
+          );
+        } else {
+          roomComb.value = helpers.roomCombination2kids(
+            searchFilters.Visitantes.adults.value,
+            searchFilters.Visitantes.kids.value || 0,
+          );
+        }
+        if (roomComb.value != "ERROR") {
+          goToDetail(
+            searchFilters,
+            roomComb.value,
+            selectedLodgingDestinyValue.value.id,
+          );
+        } else {
+          desactivateModal();
+          toast("Demasiados niños", {
+            type: "error",
+          });
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.log(error);
+        }
+        desactivateModal();
+        toast("El servicio no está disponible en estos momentos", {
+          type: "error",
+        });
+      }
+    }
+  } else {
+    renderValid(iv, getRefsProxy());
+  }
+}
+
+function goToDetail(f: unknown, a: unknown, id: unknown) {
+  localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
+  localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
+  router.push({
+    name: "lodging-detail",
+    params: {
+      id: id,
+    },
+  });
+}
+
+function desactivateModal() {
+  isModalActive.value = false;
+}
+
+function constructDisplayNights(n: number) {
+  if (n == 1) {
+    return `1 noche`;
+  }
+  return `${n} noches`;
+}
+
+function searchCountriesPlaceholder() {
+  let usa = countries.find((el) => {
+    return el.nombre == "Estados Unidos";
+  });
+  if (usa) {
+    selectedNationality.value = usa;
+  } else {
+    selectedNationality.value = countries[0];
+  }
+}
+
+onMounted(async () => {
+  searchCountriesPlaceholder();
+  window.addEventListener("scroll", handleScroll);
+  let t = await authGetRoomTypes();
+  todosTipo.value = t.data;
+  await clearResults();
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
 <style scoped>

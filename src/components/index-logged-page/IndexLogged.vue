@@ -1,16 +1,13 @@
 <template>
   <div id="content">
     <IndexLoggedBanner></IndexLoggedBanner>
+    <!--      <IndexLoggedRent></IndexLoggedRent>-->
   </div>
 </template>
 
-<script>
-import IndexLoggedBanner from "./IndexLoggedBanner";
+<script setup lang="ts">
+import IndexLoggedBanner from "./IndexLoggedBanner.vue";
+import IndexLoggedRent from "./IndexLoggedRent.vue";
 
-export default {
-  name: "IndexLogged",
-  components: {
-    IndexLoggedBanner
-  }
-};
+defineOptions({ name: "IndexLogged" });
 </script>

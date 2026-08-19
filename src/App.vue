@@ -19,34 +19,31 @@
 import Footer2 from "./components/shared/Footer2.vue";
 import Footer1 from "./components/shared/Footer1.vue";
 import NavBar1 from "./components/shared/NavBar1.vue";
-import { authStore } from "./stores/authStore";
-import { cartStore } from "./stores/cartStore";
+import { useAuthStore } from "./stores/authStore";
+import { useCartStore } from "./stores/cartStore";
 
 export default {
   name: "App",
   computed: {
     user() {
-      return authStore.user;
+      return useAuthStore().user;
     },
     itemsInCart() {
-      return cartStore.count;
+      return useCartStore().count;
     },
     isLogged() {
       return this.user ? true : false;
-    }
-  },
-  data() {
-    return {};
+    },
   },
   methods: {},
   mounted() {
-    this.itemsInCart = this.$helpers.getCartItems();
+    useCartStore().refresh();
   },
   components: {
     Footer2,
     Footer1,
-    NavBar1
-  }
+    NavBar1,
+  },
 };
 </script>
 

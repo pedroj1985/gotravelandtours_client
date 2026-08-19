@@ -3,9 +3,7 @@
     <div class="ir-text-wrapper font18">
       <i class="mdi mdi-account"></i>
       <span class="ir-text">
-        <slot name="ir-text">
-          Información del vuelo(s)
-        </slot>
+        <slot name="ir-text"> Información del vuelo(s) </slot>
       </span>
     </div>
     <div class="ir-inputs-wrapper general-text-opt">
@@ -24,9 +22,7 @@
               </template>
 
               <template #selectedPlaceholder>¿Aerolinea?</template>
-              <template #option="option">{{
-                option.option.Nombre
-              }}</template>
+              <template #option="option">{{ option.option.Nombre }}</template>
               <template #selectedValue="selectedValue">
                 <span class="wrap" id="selectedPickUp">
                   {{ selectedValue.selectedValue.Nombre }}
@@ -34,7 +30,7 @@
               </template>
               <template #error><span class="gtt-errors"></span></template>
             </gtt-select>
-            <span style="padding: 2px;"> - </span>
+            <span style="padding: 2px"> - </span>
             <input
               type="text"
               :value="nvuelo_landing"
@@ -52,9 +48,7 @@
           <i class="mdi mdi-airplane-takeoff"></i>
         </div>
         <div class="input-two-rows">
-          <div class="ir-info-name font14">
-            Datos del vuelo (salida)
-          </div>
+          <div class="ir-info-name font14">Datos del vuelo (salida)</div>
           <div class="flex-wrapper">
             <gtt-select :clickable="editable" :options="airlines" v-model="ht">
               <template #iconSelectedValue>
@@ -62,9 +56,7 @@
               </template>
 
               <template #selectedPlaceholder>¿Aerolinea?</template>
-              <template #option="option">{{
-                option.option.Nombre
-              }}</template>
+              <template #option="option">{{ option.option.Nombre }}</template>
               <template #selectedValue="selectedValue">
                 <span class="wrap" id="selectedPickUp">
                   {{ selectedValue.selectedValue.Nombre }}
@@ -72,7 +64,7 @@
               </template>
               <template #error><span class="gtt-errors"></span></template>
             </gtt-select>
-            <span style="padding: 2px;"> - </span>
+            <span style="padding: 2px"> - </span>
             <input
               type="text"
               :value="nvuelo_takeoff"
@@ -88,67 +80,65 @@
     </div>
   </div>
 </template>
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted } from "vue";
 import { authGetAirlines } from "../../utils/auth";
 import GttSelect from "../custom-elements/GttSelect.vue";
 
-export default {
-  mounted() {
-    authGetAirlines()
-      .then(json => {
-        this.airlines = json.data;
-      })
-      .catch(error => {
+const props = defineProps<{
+  hora_landing?: string;
+  aerolinea_landing?: string;
+  nvuelo_landing?: string;
+  hora_takeoff?: string;
+  aerolinea_takeoff?: string;
+  nvuelo_takeoff?: string;
+  editable?: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: "inputAerolineaLanding", val: string): void;
+  (e: "inputAerolineaTakeoff", val: string): void;
+  (e: "inputNvueloLanding", val: string): void;
+  (e: "inputNvueloTakeoff", val: string): void;
+}>();
+
+const airlines = ref<any[]>([]);
+const hl = ref<any>("");
+const ht = ref<any>("");
+
+onMounted(() => {
+  authGetAirlines()
+    .then((json) => {
+      airlines.value = json.data;
+    })
+    .catch((error) => {
+      if (import.meta.env.DEV) {
         console.log(error);
-      });
+      }
+    });
+});
+
+watch(hl, (value: any) => {
+  emit("inputAerolineaLanding", value?.Nombre);
+});
+
+watch(ht, (value: any) => {
+  emit("inputAerolineaTakeoff", value?.Nombre);
+});
+
+watch(
+  () => props.aerolinea_landing,
+  (value) => {
+    if (value) hl.value = { Nombre: value };
   },
-  watch: {
-    hl: function(value) {
-      this.$emit("inputAerolineaLanding", value.Nombre);
-    },
-    ht: function(value) {
-      this.$emit("inputAerolineaTakeoff", value.Nombre);
-    },
-    aerolinea_landing: function(value) {
-      this.hl = { Nombre: value };
-    },
-    aerolinea_takeoff: function(value) {
-      this.ht = { Nombre: value };
-    }
+);
+
+watch(
+  () => props.aerolinea_takeoff,
+  (value) => {
+    if (value) ht.value = { Nombre: value };
   },
-  data() {
-    return {
-      airlines: [],
-      hl: "",
-      ht: ""
-    };
-  },
-  props: {
-    hora_landing: {
-      type: String
-    },
-    aerolinea_landing: {
-      type: String
-    },
-    nvuelo_landing: {
-      type: String
-    },
-    hora_takeoff: {
-      type: String
-    },
-    aerolinea_takeoff: {
-      type: String
-    },
-    nvuelo_takeoff: {
-      type: String
-    },
-    editable: {
-      type: Boolean,
-      default: true
-    }
-  },
-  components: { GttSelect }
-};
+);
 </script>
 <style scoped>
 .info-row {

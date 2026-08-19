@@ -1,0 +1,93 @@
+import { createApp } from "vue";
+import App from "./App.vue";
+import { createRouter, createWebHistory } from "vue-router";
+import { createPinia } from "pinia";
+import { routes } from "./routes";
+import "bootstrap/dist/css/bootstrap.css";
+import "@/assets/styles/main.scss";
+import Vue3Toastify, { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
+import { storageService } from "./utils/storageService";
+import lodash from "lodash";
+import { helpers } from "./utils/helpers";
+import {
+  setupGlobalErrorHandler,
+  setToastInstance
+} from "./utils/errorHandler";
+import { useAuthStore } from "./stores/authStore";
+import { useCartStore } from "./stores/cartStore";
+import { getUser } from "./utils/auth";
+import { setupVeeValidate } from "./utils/vee-validate-setup";
+import { clickOutside } from "./directives/clickOutside";
+import type { RouteLocationNormalized } from "vue-router";
+
+const app = createApp(App);
+const pinia = createPinia();
+
+app.use(pinia);
+
+setupGlobalErrorHandler(app);
+setupVeeValidate();
+app.directive("click-outside", clickOutside);
+
+app.use(Vue3Toastify, {
+  autoClose: 5000
+});
+
+setToastInstance(toast);
+
+app.config.globalProperties.$helpers = helpers;
+app.config.globalProperties.$lodash = lodash;
+app.config.globalProperties.$toasted = {
+  show: (message: string, options: Record<string, unknown>) => toast(message, options)
+};
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+  scrollBehavior() {
+    return { top: 0, left: 0 };
+  }
+});
+
+const authStore = useAuthStore();
+const cartStore = useCartStore();
+
+const persistedUser = getUser();
+if (persistedUser) {
+  authStore.login(persistedUser);
+}
+
+cartStore.refresh();
+
+router.beforeEach((to: RouteLocationNormalized) => {
+  if (to.matched.some(record => (record.meta.requiresAuth as boolean))) {
+    if (storageService.getToken() == null) {
+      return { name: "index", params: { nextUrl: to.fullPath } };
+    } else {
+      const expiryDate = storageService.getExpiryDate();
+      if (expiryDate) {
+        if (new Date(expiryDate).getTime() > new Date().getTime()) {
+          return true;
+        } else {
+          const saveVersion = storageService.getVersion();
+          storageService.clear();
+          storageService.setVersion(saveVersion);
+
+          useCartStore().refresh();
+          useAuthStore().logout();
+          toast.error("Sesión expirada");
+          return { name: "index", params: { nextUrl: to.fullPath } };
+        }
+      } else {
+        return true;
+      }
+    }
+  } else if (storageService.getToken() == null) {
+    return true;
+  } else return { name: "indexLogged" };
+});
+
+app.use(router);
+
+app.mount("#app");

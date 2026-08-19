@@ -8,19 +8,20 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     include: ["src/**/*.spec.js", "src/**/*.test.js"],
-    css: false
+    css: false,
   },
   base: "./",
   resolve: {
     extensions: [".vue", ".mjs", ".js", ".jsx", ".ts", ".tsx", ".json"],
     alias: {
       "@": path.resolve(__dirname, "src"),
-      moment: path.resolve(__dirname, "src/utils/momentShim.js")
-    }
+      moment: path.resolve(__dirname, "src/utils/momentShim.js"),
+    },
   },
   css: {
     preprocessorOptions: {
       scss: {
+        api: "modern",
         additionalData(content, filename) {
           const normalized = filename.replace(/\\/g, "/");
           if (
@@ -31,16 +32,16 @@ export default defineConfig({
           }
           return `@use "@/assets/styles/mixins" as *;\n${content}`;
         },
-        quietDeps: true
-      }
-    }
+        quietDeps: true,
+      },
+    },
   },
   server: {
     headers: {
       "X-Frame-Options": "DENY",
       "X-Content-Type-Options": "nosniff",
-      "Referrer-Policy": "strict-origin-when-cross-origin"
-    }
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+    },
   },
   build: {
     sourcemap: true,
@@ -48,8 +49,8 @@ export default defineConfig({
       output: {
         entryFileNames: "js/[name].[hash].js",
         chunkFileNames: "js/[name].[hash].js",
-        assetFileNames: "assets/[name].[hash][extname]"
-      }
-    }
-  }
+        assetFileNames: "assets/[name].[hash][extname]",
+      },
+    },
+  },
 });

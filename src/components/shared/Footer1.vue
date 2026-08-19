@@ -29,42 +29,37 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from "vue";
 import { Form, Field } from "vee-validate";
 import { subscribe } from "../../utils/auth";
+import { toast } from "vue3-toastify";
 
-export default {
-  components: { Form, Field },
-  data() {
-    return {
-      loading: false
-    };
-  },
-  methods: {
-    async sendSubsPetition(values) {
-      try {
-        this.loading = true;
-        await subscribe(values.correo);
-        this.loading = false;
-        this.$toasted.show(
-          "Su petición se suscripción ha sido enviada con éxito. La administración pronto contactará con usted",
-          {
-            type: "success"
-          }
-        );
-      } catch (error) {
-        console.log(error);
-        this.loading = false;
-        this.$toasted.show(
-          "El servicio no está disponible en estos momentos",
-          {
-            type: "error"
-          }
-        );
-      }
+defineOptions({ name: "Footer1" });
+
+const loading = ref(false);
+
+async function sendSubsPetition(values: any) {
+  try {
+    loading.value = true;
+    await subscribe(values.correo);
+    loading.value = false;
+    toast(
+      "Su petición se suscripción ha sido enviada con éxito. La administración pronto contactará con usted",
+      {
+        type: "success",
+      },
+    );
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.log(error);
     }
+    loading.value = false;
+    toast("El servicio no está disponible en estos momentos", {
+      type: "error",
+    });
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

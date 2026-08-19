@@ -13,15 +13,12 @@
   </div>
 </template>
 
-<script>
-//TODO hacer el breadcrumb semi-automático, en estos momentos va a estar fijo
-export default {
-  props: {
-    elementList: {
-      type: Array
-    }
-  }
-};
+<script setup lang="ts">
+defineOptions({ name: "Breadcrumb" });
+
+defineProps<{
+  elementList?: any[];
+}>();
 </script>
 
 <style scoped>

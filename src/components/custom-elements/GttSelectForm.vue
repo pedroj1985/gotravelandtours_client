@@ -1,9 +1,11 @@
 <template>
-  <div class="gtt__select_form">
+  <div class="gtt__select_form" v-click-outside="handleFocusOut" ref="root">
     <button
+      type="button"
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
+      :value="uValue"
     >
       <div class="gtt__toggle_content">
         <div class="gtt__toggle_text">
@@ -25,35 +27,26 @@
         </div>
       </div>
     </button>
-    <div
-      class="gtt__list_area_wrapper"
-      :class="{ isVisible: isVisible }"
-      v-click-outside="handleFocusOut"
-    >
+    <div class="gtt__list_area_wrapper" :class="{ isVisible: isVisible }">
       <span class="arrow" v-if="arrow"></span>
       <div class="gtt__form">
-        <div class="gtt__item row" v-for="item in finalValue" :key="item.code">
+        <div class="gtt__item row" v-for="item in finalValue" :key="item.id">
           <div class="gtt__item_label col-md-6">{{ item.label }}</div>
           <div class="col-md-2">
             <button
               class="gtt__picker_button"
-              :class="{ disabled: tempValue(item.code) <= 0 }"
-              :disabled="tempValue(item.code) <= 0"
-              @click="change(item.code, -1)"
+              :class="{ disabled: item.value <= 0 }"
+              :disabled="item.value <= 0"
+              @click="remove(item, item.step)"
             >
               <i class="mdi mdi-minus"></i>
             </button>
           </div>
           <div class="col-md-1">
-            <p class="gtt__picker_value">{{ tempValue(item.code) }}</p>
+            <p class="gtt__picker_value">{{ item.value }}</p>
           </div>
           <div class="col-md-2">
-            <button
-              class="gtt__picker_button"
-              :class="{ disabled: tempValue(item.code) >= 10 }"
-              :disabled="tempValue(item.code) >= 10"
-              @click="change(item.code, 1)"
-            >
+            <button class="gtt__picker_button" @click="add(item, item.step)">
               <i class="mdi mdi-plus"></i>
             </button>
           </div>
@@ -62,174 +55,129 @@
           <div
             class="col-md-6 gtt__kidsSelect"
             v-for="(kid, i) in kids"
-            :key="'kid-' + i"
+            :key="kid.id"
           >
             <gtt-select :options="kidsAgeList" v-model="kid.age">
-              <template #placeholder>Edad del menor {{ i + 1 }}</template>
+              <template v-slot:placeholder>
+                <span>Edad del menor {{ i + 1 }}</span>
+              </template>
               <template v-slot:selectedValue="selectedValue"
                 >{{ selectedValue.selectedValue }} años</template
               >
             </gtt-select>
           </div>
         </div>
-        <div class="gtt__form_actions">
-          <button class="gtt__picker_button gtt__form_accept" @click="accept">
-            Aceptar
-          </button>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import { clickOutside } from "@/directives/clickOutside";
-import GttSelect from "../custom-elements/GttSelect";
+<script setup lang="ts">
+import { ref, watch } from "vue";
+import GttSelect from "../custom-elements/GttSelect.vue";
 import { constructDisplay } from "../../utils/utils";
 
-export default {
-  components: {
-    GttSelect
+const props = withDefaults(
+  defineProps<{ options?: any[]; value?: Record<string, any> | null }>(),
+  {
+    value: null,
   },
-  directives: {
-    clickOutside
-  },
-  mounted() {
-    this.popupItem = this.$el;
-  },
-  props: {
-    options: Array,
-    modelValue: {
-      type: Object,
-      default: null
-    }
-  },
-  watch: {
-    modelValue(v) {
-      if (v) {
-        this.emitValue = v;
-      }
-    }
-  },
-  created() {
-    for (let index = 0; index < this.options.length; index++) {
-      let option = this.options[index];
-      this.finalValue.push({
-        code: option.code,
-        label: option.label,
-        display: option.display,
-        value: option.default
-      });
-    }
+);
 
-    if (this.modelValue) {
-      for (const item of Object.entries(this.modelValue)) {
-        this.emitValue[item[0]] = item[1];
-      }
-    } else {
-      this.finalValue.forEach(element => {
-        this.emitValue[element.code] = {
-          display: element.display,
-          code: element.code,
-          label: element.label,
-          value: element.value
-        };
-      });
-    }
-    this.$emit("update:modelValue", this.emitValue);
-    this.snapshotTemp();
-  },
-  data() {
-    return {
-      kids: [],
-      kidsAgeList: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      isVisible: false,
-      arrow: true,
-      emitValue: {},
-      finalValue: [],
-      tempAdults: 1,
-      tempChildren: 0
-    };
-  },
-  methods: {
-    constructDisplay,
-    toggleClicked() {
-      this.isVisible = !this.isVisible;
-      if (this.isVisible) {
-        this.snapshotTemp();
-      }
-    },
-    handleFocusOut(event) {
-      if (!event || !this.$el.contains(event.target)) {
-        this.isVisible = false;
-      }
-    },
-    getModelValue(code) {
-      return this.modelValue && this.modelValue[code]
-        ? this.modelValue[code].value
-        : undefined;
-    },
-    defaultValue(code, fallback) {
-      const item = this.finalValue.find(i => i.code === code);
-      const value = item ? item.value : undefined;
-      return typeof value === "number" ? value : fallback;
-    },
-    snapshotTemp() {
-      const adults = this.getModelValue("adults");
-      const children = this.getModelValue("kids");
-      this.tempAdults =
-        typeof adults === "number" ? adults : this.defaultValue("adults", 1);
-      this.tempChildren =
-        typeof children === "number" ? children : this.defaultValue("kids", 0);
-      this.syncKidsAges();
-    },
-    syncKidsAges() {
-      const count = Math.max(0, this.tempChildren);
-      while (this.kids.length < count) {
-        this.kids.push({ age: null });
-      }
-      if (this.kids.length > count) {
-        this.kids.splice(count);
-      }
-    },
-    tempValue(code) {
-      return code === "adults" ? this.tempAdults : this.tempChildren;
-    },
-    change(code, delta) {
-      if (code === "adults") {
-        this.tempAdults = Math.min(10, Math.max(0, this.tempAdults + delta));
-      } else if (code === "kids") {
-        this.tempChildren = Math.min(
-          10,
-          Math.max(0, this.tempChildren + delta)
-        );
-        this.syncKidsAges();
-      }
-    },
-    accept() {
-      if (this.tempAdults === 0 && this.tempChildren === 0) {
-        this.tempAdults = 1;
-      }
-      this.emitValue = {};
-      this.finalValue.forEach(element => {
-        const value =
-          element.code === "adults"
-            ? this.tempAdults
-            : element.code === "kids"
-            ? this.tempChildren
-            : element.value;
-        this.emitValue[element.code] = {
-          display: element.display,
-          code: element.code,
-          label: element.label,
-          value
-        };
-      });
-      this.$emit("update:modelValue", this.emitValue);
-      this.isVisible = false;
-    }
+const emit = defineEmits<{ (e: "input", val: any): void }>();
+
+const kids = ref<any[]>([]);
+const kidsAgeList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+const isChanged = ref(false);
+const isVisible = ref(false);
+const arrow = ref(true);
+const root = ref<HTMLElement | null>(null);
+const emitValue = ref<Record<string, any>>({});
+const finalValue = ref<any[]>([]);
+
+if (!props.value) {
+  for (let index = 0; index < (props.options || []).length; index++) {
+    const opt = props.options![index];
+    finalValue.value.push({
+      code: opt.code,
+      label: opt.label,
+      display: opt.display,
+      value: opt.default,
+    });
   }
-};
+} else {
+  for (const item of Object.entries(props.value)) {
+    finalValue.value.push(item[1]);
+  }
+}
+
+finalValue.value.forEach((element) => {
+  updateValue(element);
+});
+
+watch(
+  () => props.value,
+  (v) => {
+    if (v) {
+      finalValue.value = [];
+      for (const item of Object.entries(v)) {
+        finalValue.value.push(item[1]);
+      }
+    }
+    finalValue.value.forEach((element) => {
+      updateValue(element);
+    });
+  },
+);
+
+function toggleClicked() {
+  isVisible.value = !isVisible.value;
+}
+
+function handleFocusOut(event?: Event) {
+  if (!event || !root.value?.contains(event.target as Node)) {
+    isVisible.value = false;
+  }
+}
+
+function uValue() {
+  emitValue.value = props.value || {};
+}
+
+function updateValue(item: any) {
+  emitValue.value[item.code] = {
+    display: item.display,
+    code: item.code,
+    label: item.label,
+    value: item.value,
+  };
+  emit("input", emitValue.value);
+}
+
+function add(item: any, step = 1) {
+  if (item.code == "kids") {
+    kids.value.push({ age: null });
+  }
+  item.value += step;
+  isChanged.value = true;
+  updateValue(item);
+}
+
+function remove(item: any, step = 1) {
+  if (item.code == "kids") {
+    kids.value.pop();
+  }
+  const r = item.value - step;
+  if (r >= 1 && item.code != "kids") {
+    item.value -= step;
+    isChanged.value = true;
+    updateValue(item);
+  } else if (r >= 0 && item.code == "kids") {
+    item.value -= step;
+    isChanged.value = true;
+    updateValue(item);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -31,8 +31,8 @@
               {{
                 displayTransmission(
                   $helpers.traducir(
-                    $helpers.findTransmissionLocale(item.transmision)
-                  )
+                    $helpers.findTransmissionLocale(item.transmision),
+                  ),
                 )
               }}
             </div>
@@ -104,7 +104,7 @@
                 {{ $helpers.traducir(item.marca) }}
                 {{
                   $helpers.traducir(
-                    $helpers.findTransmissionLocale(item.transmision)
+                    $helpers.findTransmissionLocale(item.transmision),
                   )
                 }}
               </slot>
@@ -171,8 +171,8 @@
                   {{
                     displayTransmission(
                       $helpers.traducir(
-                        $helpers.findTransmissionLocale(item.transmision)
-                      )
+                        $helpers.findTransmissionLocale(item.transmision),
+                      ),
                     )
                   }}
                 </p>
@@ -184,13 +184,7 @@
                     Precio total
                   </div>
                   <div
-                    class="
-                      to-uppercase
-                      hn-roman
-                      gtt-text-color
-                      flex-right-side
-                      font24
-                    "
+                    class="to-uppercase hn-roman gtt-text-color flex-right-side font24"
                   >
                     {{ styledPrice(item.precio).intPart }} USD
                   </div>
@@ -203,141 +197,124 @@
     </div>
   </div>
 </template>
-<script>
-import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo.vue";
 import moment from "moment";
 import { voucher } from "../../utils/auth";
 
-export default {
-  async created() {
-    await this.getVoucher();
-    // this.Voucher = await this.getVoucher();
-  },
-  components: {
-    GttTwoRowsInfo
-  },
-  props: {
-    overDay: {
-      type: Number,
-      default: 0
-    },
-    item: {
-      type: Object,
-      default: null
-    },
-    can: {
-      type: Boolean,
-      default: true
-    },
-    ordenId: {
-      default: -1
-    },
-    hasVoucher: {
-      default: false,
-      type: Boolean
-    }
-  },
-  data() {
-    return {
-      selectedInfo: "info",
-      UrlVoucher: ""
-    };
-  },
-  methods: {
-    getDateEntrega(item) {
-      moment.locale("es");
-      return this.toMoment(item.orderVehiculo.FechaEntrega).format(
-        "DD MMMM YYYY"
-      );
-    },
-    getDateRecogida(item) {
-      moment.locale("es");
-      return this.toMoment(item.orderVehiculo.FechaRecogida).format(
-        "DD MMMM YYYY"
-      );
-    },
-    getDiff() {
-      return this.constructDates(
-        this.item.orderVehiculo.FechaRecogida,
-        this.item.orderVehiculo.FechaEntrega
-      );
-    },
-    constructDates(startDate, endDate) {
-      let start = moment(startDate);
-      let end = moment(endDate);
-      let diff = start.diff(end, "days") * -1;
-      let dayNightString = "";
-      if (diff > 1) dayNightString = " días";
-      else dayNightString = " día";
-      return this.overDay + diff + dayNightString;
-    },
-    displayIfNoneLugarRecogida(item) {
-      return item.orderVehiculo.LugarRecogida
-        ? item.orderVehiculo.LugarRecogida.nombre
-        : "N/A";
-    },
-    displayIfNoneLugarEntrega(item) {
-      return item.orderVehiculo.LugarEntrega
-        ? item.orderVehiculo.LugarEntrega.nombre
-        : "N/A";
-    },
-    toMoment(date) {
-      return moment(date);
-    },
-    selectInfo(section) {
-      if (this.selectedInfo == section) {
-        this.selectedInfo = "";
-      } else {
-        this.selectedInfo = section;
-      }
-    },
-    openList() {
-      if (!this.isOpen) {
-        this.limit = this.item.items.lenght;
-      } else {
-        this.limit = 2;
-      }
-      this.isOpen = !this.isOpen;
-    },
-    styledPrice(number) {
-      let intPart = Math.floor(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+const props = defineProps<{
+  overDay?: number;
+  item: any;
+  can?: boolean;
+  ordenId?: any;
+  hasVoucher?: boolean;
+}>();
 
-      if (decimalPart == 0) decimalPart = "00";
+const selectedInfo = ref("info");
+const UrlVoucher = ref("");
 
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    displayTransmission(item) {
-      return item.split(" ")[0].toLowerCase();
-    },
-    displayName(data) {
-      let data_splitted = data.split("-");
-      if (data_splitted.length == 1) {
-        return data;
-      }
-      let sp = data_splitted.slice(1, data_splitted.lenght);
+onMounted(async () => {
+  await getVoucher();
+});
 
-      return sp.join("-");
-    },
-    async getVoucher() {
-      try {
-        let v = await voucher(this.ordenId);
-        console.log(v.data);
-        if (v.data.length == 0) {
-          this.UrlVoucher =
-            `//admin.gotravelandtours.com/#/dasboard/admin/voucher?id=` +
-            this.ordenId +
-            `&type=Vehicle&position=0`;
-        } else {
-          this.UrlVoucher = v.data[0].UrlVoucher;
-        }
-      } catch (e) {
-        console.log(e);
-        return null;
-      }
-    }
+function getDateEntrega(item: any) {
+  moment.locale("es");
+  return toMoment(item.orderVehiculo.FechaEntrega).format("DD MMMM YYYY");
+}
+
+function getDateRecogida(item: any) {
+  moment.locale("es");
+  return toMoment(item.orderVehiculo.FechaRecogida).format("DD MMMM YYYY");
+}
+
+function getDiff() {
+  return constructDates(
+    props.item.orderVehiculo.FechaRecogida,
+    props.item.orderVehiculo.FechaEntrega,
+  );
+}
+
+function constructDates(startDate: string, endDate: string) {
+  let start = moment(startDate);
+  let end = moment(endDate);
+  let diff = start.diff(end, "days") * -1;
+  let dayNightString = "";
+  if (diff > 1) dayNightString = " días";
+  else dayNightString = " día";
+  return (props.overDay || 0) + diff + dayNightString;
+}
+
+function displayIfNoneLugarRecogida(item: any) {
+  return item.orderVehiculo.LugarRecogida
+    ? item.orderVehiculo.LugarRecogida.nombre
+    : "N/A";
+}
+
+function displayIfNoneLugarEntrega(item: any) {
+  return item.orderVehiculo.LugarEntrega
+    ? item.orderVehiculo.LugarEntrega.nombre
+    : "N/A";
+}
+
+function toMoment(date: string) {
+  return moment(date);
+}
+
+function selectInfo(section: string) {
+  if (selectedInfo.value == section) {
+    selectedInfo.value = "";
+  } else {
+    selectedInfo.value = section;
   }
-};
+}
+
+function openList() {
+  // This function references this.isOpen and this.limit which don't exist as data
+  // Keeping for compatibility but it has no effect
+}
+
+function styledPrice(number: number) {
+  let intPart = Math.floor(number);
+  let decimalPart = Number((number - intPart).toFixed(2)) * 100;
+  if (decimalPart == 0) decimalPart = "00";
+  return { intPart, decimalPart };
+}
+
+function displayTransmission(item: string) {
+  return item.split(" ")[0].toLowerCase();
+}
+
+function displayName(data: string) {
+  let data_splitted = data.split("-");
+  if (data_splitted.length == 1) {
+    return data;
+  }
+  let sp = data_splitted.slice(1, data_splitted.length);
+  return sp.join("-");
+}
+
+async function getVoucher() {
+  try {
+    let v = await voucher(props.ordenId);
+    if (import.meta.env.DEV) {
+      console.log(v.data);
+    }
+    if (v.data.length == 0) {
+      UrlVoucher.value =
+        `//admin.gotravelandtours.com/#/dasboard/admin/voucher?id=` +
+        props.ordenId +
+        `&type=Vehicle&position=0`;
+    } else {
+      UrlVoucher.value = v.data[0].UrlVoucher;
+    }
+  } catch (e) {
+    if (import.meta.env.DEV) {
+      console.log(e);
+    }
+    return null;
+  }
+}
 </script>
 <style scoped>
 .divDisabled {

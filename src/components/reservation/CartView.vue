@@ -26,14 +26,7 @@
           <div id="reserve-total-preview" class="pr-30">
             <div class="background-yellow br-10 pad-15">
               <div
-                class="
-                  reserve-title
-                  text-center
-                  hn-roman
-                  gtt-first-color
-                  font24
-                  general-text-opt
-                "
+                class="reserve-title text-center hn-roman gtt-first-color font24 general-text-opt"
               >
                 Usted ha reservado:
               </div>
@@ -48,22 +41,12 @@
                   </div>
                   <div class="reserve-card-info pad-5 bg-white">
                     <div
-                      class="
-                        reserve-card-item-name
-                        hn-roman
-                        font14
-                        gtt-text-color
-                      "
+                      class="reserve-card-item-name hn-roman font14 gtt-text-color"
                     >
                       {{ item.nombre }}
                     </div>
                     <div
-                      class="
-                        reserve-card-item-price
-                        hn-roman
-                        font16
-                        gtt-text-color
-                      "
+                      class="reserve-card-item-price hn-roman font16 gtt-text-color"
                     >
                       {{ styledPrice(item.precio).intPart }} USD
                     </div>
@@ -75,22 +58,12 @@
                   </div>
                   <div class="reserve-card-info pad-5 bg-white">
                     <div
-                      class="
-                        reserve-card-item-name
-                        hn-roman
-                        font14
-                        gtt-text-color
-                      "
+                      class="reserve-card-item-name hn-roman font14 gtt-text-color"
                     >
                       {{ item.name }}
                     </div>
                     <div
-                      class="
-                        reserve-card-item-price
-                        hn-roman
-                        font16
-                        gtt-text-color
-                      "
+                      class="reserve-card-item-price hn-roman font16 gtt-text-color"
                     >
                       {{
                         styledPrice(item.reservedRooms.combinacion.total)
@@ -106,22 +79,12 @@
                   </div>
                   <div class="reserve-card-info pad-5 bg-white">
                     <div
-                      class="
-                        reserve-card-item-name
-                        hn-roman
-                        font14
-                        gtt-text-color
-                      "
+                      class="reserve-card-item-name hn-roman font14 gtt-text-color"
                     >
                       {{ item.name }}
                     </div>
                     <div
-                      class="
-                        reserve-card-item-price
-                        hn-roman
-                        font16
-                        gtt-text-color
-                      "
+                      class="reserve-card-item-price hn-roman font16 gtt-text-color"
                     >
                       {{
                         styledPrice(item.reservedRooms.combinacion.total)
@@ -134,14 +97,7 @@
               </div>
               <div class="reserve-total-to-pay">
                 <span
-                  class="
-                    total-to-pay-text
-                    hn-roman
-                    font18
-                    gtt-first-color
-                    to-uppercase
-                    general-text-opt
-                  "
+                  class="total-to-pay-text hn-roman font18 gtt-first-color to-uppercase general-text-opt"
                   >Total a pagar</span
                 >
                 <span class="antonio-light gtt-first-color font48">
@@ -154,14 +110,7 @@
         <div class="reserve-right-row col-md-9 col-sm-7">
           <div class="verify-step">
             <div
-              class="
-                verify-step-title
-                gtt-first-color
-                general-text-opt
-                hn-bdcn
-                font24
-                pad-15
-              "
+              class="verify-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15"
             >
               <span> <i class="mdi mdi-bed"></i> Paso 1: </span>
               <span>Verificar datos de su reservación</span>
@@ -192,14 +141,7 @@
           </div>
           <div class="create-order-step">
             <div
-              class="
-                create-order-step-title
-                gtt-first-color
-                general-text-opt
-                hn-bdcn
-                font24
-                pad-15
-              "
+              class="create-order-step-title gtt-first-color general-text-opt hn-bdcn font24 pad-15"
             >
               <span> <i class="mdi mdi-account"></i> Paso 2: </span>
               <span>Datos del o los pasajero(s) y crear orden</span>
@@ -285,891 +227,677 @@
     </div>
   </div>
 </template>
-<script>
-import RentReservationView from "./RentReservationView";
-import LodgingReservationView from "./LodgingReservationView";
-import InfoRow from "./InfoRow";
-import RentInfoRow from "./RentInfoRow";
-import FlightInfoRow from "./FlightInfoRow";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { toast } from "vue3-toastify";
+import RentReservationView from "./RentReservationView.vue";
+import LodgingReservationView from "./LodgingReservationView.vue";
+import InfoRow from "./InfoRow.vue";
+import RentInfoRow from "./RentInfoRow.vue";
+import FlightInfoRow from "./FlightInfoRow.vue";
 import {
   authReserve,
   authCreateQbEstimated,
   authUpdOnlyInDbQbEstimated,
   authUpdateCar,
   authLog,
-  /* hotetecBlockProduct, */
   hotetecCloseReserve,
   hotetecUpdateDataOnGtt,
-  authUpdateStatus
+  authUpdateStatus,
 } from "../../utils/auth";
-import GttEditLodgingModal from "../custom-elements/GttEditLodgingModal";
-import GttVerificationModal from "../custom-elements/GttVerificationModal";
-import GttEmptyState from "../shared/GttEmptyState";
-import NavBar2 from "../shared/NavBar2";
+import GttEditLodgingModal from "../custom-elements/GttEditLodgingModal.vue";
+import GttVerificationModal from "../custom-elements/GttVerificationModal.vue";
+import GttEmptyState from "../shared/GttEmptyState.vue";
+import NavBar2 from "../shared/NavBar2.vue";
 import { menuLinks } from "../../menu";
-import GttEditRentModal from "../custom-elements/GttEditRentModal";
+import GttEditRentModal from "../custom-elements/GttEditRentModal.vue";
 import { transmissionTypes } from "../../utils/utils";
-import { cleanVoMixin } from "../../mixins/cleanVoMixin";
+import { cleanVO } from "../../composables/useCleanup";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import { verifyDifferentsDatesNoCartReturnBoolean } from "../../utils/utils";
 import _ from "lodash";
 import moment from "moment";
 import { orderStatusList } from "../../utils/constant";
 import { hotelecSessionService } from "../../utils/hotelecSessionService";
-import { cartStore } from "../../stores/cartStore";
+import { useCartStore } from "../../stores/cartStore";
+import { helpers } from "../../utils/helpers";
 
-export default {
-  created() {
-    this.menuLinks = menuLinks;
-    this.updateCart();
-  },
-  mixins: [cleanVoMixin],
-  components: {
-    LodgingReservationView,
-    RentReservationView,
-    InfoRow,
-    RentInfoRow,
-    FlightInfoRow,
-    GttVerificationModal,
-    GttEmptyState,
-    NavBar2,
-    GttEditLodgingModal,
-    GttEditRentModal
-  },
-  computed: {
-    age: function() {
-      var temp = this.clienteNacimiento.split("-");
-      var date = new Date(temp[0], temp[1], temp[2]);
-      var cur = new Date();
-      var diff = cur - date;
-      var currentAge = Math.floor(diff / 31557600000);
-      return currentAge;
-    },
-    checkIfRentExist() {
-      return this.allTypesOrders.some(i => {
-        return i.tipo == "rent";
-      });
+const $helpers = helpers;
+const router = useRouter();
+
+const edadCliente = ref(0);
+const extraDay = ref(0);
+const deleteModal = ref(false);
+const editModal = ref(false);
+const currentModalComponent = ref("");
+const currentFilterData = ref<any>(null);
+const tempItemToDelete = ref<any>(null);
+const tempItemToEdit = ref<any>(null);
+const allTypesOrders = ref<any[]>([]);
+const priceTotal = ref(0);
+const clientName = ref("");
+const clienteLastName = ref("");
+const clientePasaporte = ref("");
+const clientePhone = ref("");
+const clienteNacimiento = ref("");
+const horaLanding = ref("");
+const aerolineaLanding = ref("");
+const nvueloLanding = ref("");
+const horaTakeoff = ref("");
+const aerolineaTakeoff = ref("");
+const nvueloTakeoff = ref("");
+const editTime = ref(true);
+const clientPickUpPlace = ref<any[]>([]);
+const clientDeliveryPlace = ref<any[]>([]);
+const isReserving = ref(false);
+const mMenuLinks = ref<any[]>([]);
+const selectedPickUpPlace = ref<any>(null);
+const selectedDeliveryPlace = ref<any>(null);
+
+const age = computed(() => {
+  if (!clienteNacimiento.value) return 0;
+  var temp = clienteNacimiento.value.split("-");
+  var date = new Date(Number(temp[0]), Number(temp[1]), Number(temp[2]));
+  var cur = new Date();
+  var diff = cur.getTime() - date.getTime();
+  var currentAge = Math.floor(diff / 31557600000);
+  return currentAge;
+});
+
+const checkIfRentExist = computed(() => {
+  return allTypesOrders.value.some((i: any) => i.tipo == "rent");
+});
+
+onMounted(() => {
+  mMenuLinks.value = menuLinks;
+  updateCart();
+});
+
+watch(horaLanding, async (newTime: string) => {
+  editTime.value = false;
+  if (horaTakeoff.value != "" && horaLanding.value != "") {
+    let order: any = {};
+    for (const item of allTypesOrders.value) {
+      if ("orderVehiculo" in item) {
+        order = item;
+      }
     }
-  },
-  methods: {
-    gttValidate() {
-      let validator = [
+    let { data } = await authUpdateCar({
+      FechaRecogida: order.orderVehiculo.FechaRecogida,
+      FechaEntrega: order.orderVehiculo.FechaEntrega,
+      EdadCliente: age.value,
+      Marca: { MarcaId: order.marcaid, Nombre: order.marca },
+      TipoTransmision: order.transmision,
+      Cliente: { ClienteId: localStorage.getItem("cliente") },
+      ProductoId: order.id,
+      DistribuidorId: order.distribuidorId,
+      HoraEntrega: horaTakeoff.value,
+      HoraRecogida: horaLanding.value,
+    });
+    data.FechaEntrega = order.orderVehiculo.FechaEntrega;
+    data.DistribuidorId = order.orderVehiculo.DistribuidorId;
+    let fixData = cleanDataFn(data);
+    order.orderVehiculo = fixData;
+    order.precio = order.orderVehiculo.PrecioOrden;
+    tempItemToEdit.value = { uID: order.uID };
+    let item = { nI: order, pItemId: order.id, tipo: "rent" };
+    editOrder(item);
+    var leave = new Date("1970-01-01T" + horaTakeoff.value);
+    var arrive = new Date("1970-01-01T" + horaLanding.value);
+    if (leave > arrive) {
+      extraDay.value = 1;
+      toast(
+        "Departure Time is greater than the Arrival Time. An extra day was charged to your vehicle order!",
         {
-          rules: ["required"],
-          name: "gttName",
-          value: this.clientName,
-          lang: "es"
+          type: "warning",
+          position: "top-center",
+          autoClose: false,
+          closeButton: true,
         },
-        {
-          rules: ["required"],
-          name: "gttApellido",
-          value: this.clienteLastName,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttPasaporte",
-          value: this.clientePasaporte,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttPhone",
-          value: this.clientePhone,
-          lang: "es"
-        }
-        /* {
-          rules: ["required"],
-          name: "gttLlegada",
-          value:
-            this.horaLanding +
-            " - " +
-            this.aerolineaLanding +
-            " - " +
-            this.nvueloLanding,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttSalida",
-          value:
-            this.horaTakeoff +
-            " - " +
-            this.aerolineaTakeoff +
-            " - " +
-            this.nvueloTakeoff,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttNacimiento",
-          value: this.clienteNacimiento,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttPickUp",
-          value: this.clientPickUpPlace,
-          lang: "es"
-        },
-        {
-          rules: ["required"],
-          name: "gttDelivery",
-          value: this.clientDeliveryPlace,
-          lang: "es"
-        }*/
-      ];
+      );
+    } else {
+      extraDay.value = 0;
+    }
+  }
+  editTime.value = true;
+});
 
-      return validator;
+function gttValidate() {
+  return [
+    {
+      rules: ["required"],
+      name: "gttName",
+      value: clientName.value,
+      lang: "es",
     },
-    constructSpacedVal(f, s, separator = " ") {
-      let splittedName = f.split(" ");
-      let name = splittedName
-        .map(i => {
-          return _.capitalize(i);
-        })
-        .join(" ");
-      let splittedLastName = s.split(" ");
-      let lastname = splittedLastName
-        .map(i => {
-          return _.capitalize(i);
-        })
-        .join(" ");
-      return `${name}${separator}${lastname}`;
+    {
+      rules: ["required"],
+      name: "gttApellido",
+      value: clienteLastName.value,
+      lang: "es",
     },
-    updateCart() {
-      let lsCart = localStorage.getItem("gttCart");
-      if (lsCart) {
-        this.allTypesOrders = JSON.parse(lsCart);
-        this.calculatePrice(this.allTypesOrders);
-      }
+    {
+      rules: ["required"],
+      name: "gttPasaporte",
+      value: clientePasaporte.value,
+      lang: "es",
     },
-    deleteItem(id) {
-      /* if (this.tempItemToDelete.tipo === "lodging") {
-        const unblockRequest = this.tempItemToDelete.reservedRooms
-          .unblockRequest;
-        hotetecBlockProduct(unblockRequest)
-          .then(res => {
-            if (res) {
-              this.$helpers.shoppingCartRemoveOne(id);
-              this.updateCart();
-              cartStore.refresh();
-            }
-          })
-          .finally(() => {
-            this.tempItemToDelete = null;
-            this.deleteModal = false;
-          });
-      } else { */
-      this.$helpers.shoppingCartRemoveOne(id);
-      this.updateCart();
-      cartStore.refresh();
-      this.tempItemToDelete = null;
-      this.deleteModal = false;
-      //}
+    {
+      rules: ["required"],
+      name: "gttPhone",
+      value: clientePhone.value,
+      lang: "es",
     },
-    async reserve() {
-      let iv = gttIsValid(this.gttValidate(), this);
-      if (getValid(iv)) {
-        let createInHotetec = {};
-        let listaVehiculosOrden = this.getListaVehiculosOrden();
-        let listaAlojamientosOrden = this.getListaAlojamientosOrden();
-        listaAlojamientosOrden.forEach(ao => {
-          ao.NombreCliente = this.constructSpacedVal(
-            this.clientName,
-            this.clienteLastName
-          );
-        });
-        listaVehiculosOrden.forEach(vo => {
-          vo.NombreCliente = this.constructSpacedVal(
-            this.clientName,
-            this.clienteLastName
-          );
+  ];
+}
 
-          vo.FechaRecogida = vo.FechaRecogida.split("T")[0];
-          vo.FechaInicio = vo.FechaRecogida;
-          vo.FechaEntrega = vo.FechaEntrega.split("T")[0];
-          vo.FechaFin = vo.FechaEntrega;
-          vo.FechaNacimiento = this.clienteNacimiento;
-          vo.HoraInicio = this.horaLanding;
-          vo.HoraFin = this.horaTakeoff;
-          vo.InformacionLlegada = this.aerolineaLanding;
-          vo.NumeroVueloEntrada = this.nvueloLanding;
-          vo.InformacionSalida = this.aerolineaTakeoff;
-          vo.NumeroVueloSalida = this.nvueloTakeoff;
-          vo.LugarRecogida = this.clientPickUpPlace;
-          vo.LugarEntrega = this.clientDeliveryPlace;
-        });
-        let orden = {
-          ListaVehiculosOrden: listaVehiculosOrden,
-          ListaAlojamientoOrden: listaAlojamientosOrden
-        };
-        this.fillReserveInfo(orden);
-        try {
-          this.isReserving = true;
+function constructSpacedVal(f: string, s: string, separator = " ") {
+  let splittedName = f.split(" ");
+  let name = splittedName.map((i: string) => _.capitalize(i)).join(" ");
+  let splittedLastName = s.split(" ");
+  let lastname = splittedLastName.map((i: string) => _.capitalize(i)).join(" ");
+  return `${name}${separator}${lastname}`;
+}
 
-          let ordenSaveIt = await authReserve(orden);
+function updateCart() {
+  let lsCart = localStorage.getItem("gttCart");
+  if (lsCart) {
+    allTypesOrders.value = JSON.parse(lsCart);
+    calculatePrice(allTypesOrders.value);
+  }
+}
 
-          authLog({
-            OrdenId: ordenSaveIt.data.OrdenId,
-            FuncionCreador: "CreateOrderComponent",
-            DetalleError: JSON.stringify(ordenSaveIt.data),
-            Fecha: moment().format(),
-            Usuario: ordenSaveIt.data.Creador.Username,
-            Tipo: "Info",
-            FuncionParam: JSON.stringify(orden)
-          });
-          let onlyOrdenId = {
-            OrdenId: ordenSaveIt.data.OrdenId
-          };
-          try {
-            let createQB = await authCreateQbEstimated(onlyOrdenId);
-            onlyOrdenId["EstimatedCreated"] = true;
-            authLog({
-              OrdenId: ordenSaveIt.data.OrdenId,
-              FuncionCreador: "createEstimateQB",
-              DetalleError: JSON.stringify(createQB.data),
-              Fecha: moment().format(),
-              Usuario: ordenSaveIt.data.Creador.Username,
-              Tipo: "Info",
-              FuncionParam: JSON.stringify(onlyOrdenId)
-            });
-            let updateQB = await authUpdOnlyInDbQbEstimated(onlyOrdenId);
-            authLog({
-              OrdenId: ordenSaveIt.data.OrdenId,
-              FuncionCreador: "updateEstimateQB",
-              DetalleError: JSON.stringify(updateQB.data),
-              Fecha: moment().format(),
-              Usuario: ordenSaveIt.data.Creador.Username,
-              Tipo: "Info",
-              FuncionParam: JSON.stringify(onlyOrdenId)
-            });
-            createInHotetec = await this.createOrderInHotelect(onlyOrdenId);
-            authLog({
-              OrdenId: ordenSaveIt.data.OrdenId,
-              FuncionCreador: "createInHotetec",
-              DetalleError: JSON.stringify(updateQB.data),
-              Fecha: moment().format(),
-              Usuario: ordenSaveIt.data.Creador.Username,
-              Tipo: "Info",
-              FuncionParam: JSON.stringify(onlyOrdenId)
-            });
-          } catch (error) {
-            authLog({
-              OrdenId: ordenSaveIt.data.OrdenId,
-              FuncionCreador: "EstimateQB",
-              DetalleError: JSON.stringify(error),
-              Fecha: moment().format(),
-              Usuario: ordenSaveIt.data.Creador.Username,
-              Tipo: "Error",
-              FuncionParam: JSON.stringify(onlyOrdenId)
-            });
-          }
-          this.$helpers.shoppingCartDeleteAll();
-          this.isReserving = false;
+function deleteItem(id: string) {
+  $helpers.shoppingCartRemoveOne(id);
+  updateCart();
+  useCartStore().refresh();
+  tempItemToDelete.value = null;
+  deleteModal.value = false;
+}
 
-          let msg =
-            "Orden creada y confirmada con éxito. Puede proceder al pago.";
-          let msgType = "success";
-          if (createInHotetec.Estado !== orderStatusList.confirmed) {
-            msg =
-              "Orden creada con éxito. Pendiente de aceptación por la administración.";
-            msgType = "info";
-          }
-          this.$toasted.show(msg, {
-            type: msgType,
-            duration: 5000
-          });
-
-          cartStore.refresh();
-          this.$router.push({ name: "myreservations" });
-        } catch (error) {
-          authLog({
-            FuncionCreador: "CreateOrderComponent",
-            DetalleError: JSON.stringify(error),
-            Fecha: moment().format(),
-            Usuario: orden.Creador.Usuario,
-            Tipo: "Error",
-            FuncionParam: JSON.stringify(orden)
-          });
-          this.isReserving = false;
-          this.$toasted.show("Ha ocurrido un problema con la orden", {
-            type: "error"
-          });
-        }
-      } else {
-        renderValid(iv, this);
-      }
-    },
-    async createOrderInHotelect(order) {
-      const userData = JSON.parse(localStorage.getItem("usuarioObjeto"));
-      let closeReserve = {};
-      closeReserve.Accion = "F";
-      closeReserve.Codtou = "HTI";
-      closeReserve.Refage = "17162";
-      closeReserve.Ideses = hotelecSessionService.getSessionId();
-      let person = {};
-      person.Id = "1";
-      person.Nombre = userData.name;
-      person.Tel = this.clientePhone;
-      person.Mai = userData.clienteCorreo;
-      person.Priape = userData.clienteNombre;
-      closeReserve.Percon = person;
+async function reserve() {
+  let iv = gttIsValid(gttValidate(), {} as any);
+  if (getValid(iv)) {
+    let createInHotetec: any = {};
+    let listaVehiculosOrden = getListaVehiculosOrden();
+    let listaAlojamientosOrden = getListaAlojamientosOrden();
+    listaAlojamientosOrden.forEach((ao: any) => {
+      ao.NombreCliente = constructSpacedVal(
+        clientName.value,
+        clienteLastName.value,
+      );
+    });
+    listaVehiculosOrden.forEach((vo: any) => {
+      vo.NombreCliente = constructSpacedVal(
+        clientName.value,
+        clienteLastName.value,
+      );
+      vo.FechaRecogida = vo.FechaRecogida.split("T")[0];
+      vo.FechaInicio = vo.FechaRecogida;
+      vo.FechaEntrega = vo.FechaEntrega.split("T")[0];
+      vo.FechaFin = vo.FechaEntrega;
+      vo.FechaNacimiento = clienteNacimiento.value;
+      vo.HoraInicio = horaLanding.value;
+      vo.HoraFin = horaTakeoff.value;
+      vo.InformacionLlegada = aerolineaLanding.value;
+      vo.NumeroVueloEntrada = nvueloLanding.value;
+      vo.InformacionSalida = aerolineaTakeoff.value;
+      vo.NumeroVueloSalida = nvueloTakeoff.value;
+      vo.LugarRecogida = clientPickUpPlace.value;
+      vo.LugarEntrega = clientDeliveryPlace.value;
+    });
+    let orden: any = {
+      ListaVehiculosOrden: listaVehiculosOrden,
+      ListaAlojamientoOrden: listaAlojamientosOrden,
+    };
+    fillReserveInfo(orden);
+    try {
+      isReserving.value = true;
+      let ordenSaveIt = await authReserve(orden);
+      authLog({
+        OrdenId: ordenSaveIt.data.OrdenId,
+        FuncionCreador: "CreateOrderComponent",
+        DetalleError: JSON.stringify(ordenSaveIt.data),
+        Fecha: moment().format(),
+        Usuario: ordenSaveIt.data.Creador.Username,
+        Tipo: "Info",
+        FuncionParam: JSON.stringify(orden),
+      });
+      let onlyOrdenId = { OrdenId: ordenSaveIt.data.OrdenId };
       try {
-        const res = await hotetecCloseReserve(closeReserve);
-        hotelecSessionService.clearSessionId();
-        const NumeroConfirmacionHotetec = res.data.Locata[0];
-        const Cupest = res.data.Cupest;
-        let orderStatus = {};
-
-        if (
-          NumeroConfirmacionHotetec !== null &&
-          Cupest !== null &&
-          Cupest === orderStatusList.cm
-        ) {
-          const orderData = {
-            OrdenId: order.OrdenId,
-            EstadoHotetec: orderStatusList.close,
-            NumeroConfirmacionHotetec: NumeroConfirmacionHotetec
-          };
-          await hotetecUpdateDataOnGtt(orderData);
-
-          orderStatus = {
-            OrdenId: order.OrdenId,
-            Estado: orderStatusList.confirmed
-          };
-          await authUpdateStatus(orderStatus);
-          return orderStatus;
-        } /* else {
-          orderStatus = {
-            OrdenId: order.OrdenId,
-            Estado: orderStatusList.pending
-          };
-        } */
+        let createQB = await authCreateQbEstimated(onlyOrdenId);
+        onlyOrdenId["EstimatedCreated"] = true;
+        authLog({
+          OrdenId: ordenSaveIt.data.OrdenId,
+          FuncionCreador: "createEstimateQB",
+          DetalleError: JSON.stringify(createQB.data),
+          Fecha: moment().format(),
+          Usuario: ordenSaveIt.data.Creador.Username,
+          Tipo: "Info",
+          FuncionParam: JSON.stringify(onlyOrdenId),
+        });
+        let updateQB = await authUpdOnlyInDbQbEstimated(onlyOrdenId);
+        authLog({
+          OrdenId: ordenSaveIt.data.OrdenId,
+          FuncionCreador: "updateEstimateQB",
+          DetalleError: JSON.stringify(updateQB.data),
+          Fecha: moment().format(),
+          Usuario: ordenSaveIt.data.Creador.Username,
+          Tipo: "Info",
+          FuncionParam: JSON.stringify(onlyOrdenId),
+        });
+        createInHotetec = await createOrderInHotelect(onlyOrdenId);
+        authLog({
+          OrdenId: ordenSaveIt.data.OrdenId,
+          FuncionCreador: "createInHotetec",
+          DetalleError: JSON.stringify(updateQB.data),
+          Fecha: moment().format(),
+          Usuario: ordenSaveIt.data.Creador.Username,
+          Tipo: "Info",
+          FuncionParam: JSON.stringify(onlyOrdenId),
+        });
       } catch (error) {
-        console.log(error);
-        hotelecSessionService.clearSessionId();
+        authLog({
+          OrdenId: ordenSaveIt.data.OrdenId,
+          FuncionCreador: "EstimateQB",
+          DetalleError: JSON.stringify(error),
+          Fecha: moment().format(),
+          Usuario: ordenSaveIt.data.Creador.Username,
+          Tipo: "Error",
+          FuncionParam: JSON.stringify(onlyOrdenId),
+        });
       }
-    },
-    fillReserveInfo(orden) {
-      /* console.info('thisOrdennnnn', this);
-      console.info('fillReserveInfo', orden); */
-      let dateInterval = this.findDateInterval();
-      let id = localStorage.getItem("userid");
-      let user = localStorage.getItem("nombre");
-      let clienteid = localStorage.getItem("cliente");
+      $helpers.shoppingCartDeleteAll();
+      isReserving.value = false;
+      let msg = "Orden creada y confirmada con éxito. Puede proceder al pago.";
+      let msgType = "success";
+      if (createInHotetec.Estado !== orderStatusList.confirmed) {
+        msg =
+          "Orden creada con éxito. Pendiente de aceptación por la administración.";
+        msgType = "info";
+      }
+      toast(msg, { type: msgType, duration: 5000 });
+      useCartStore().refresh();
+      router.push({ name: "myreservations" });
+    } catch (error) {
+      authLog({
+        FuncionCreador: "CreateOrderComponent",
+        DetalleError: JSON.stringify(error),
+        Fecha: moment().format(),
+        Usuario: orden.Creador.Usuario,
+        Tipo: "Error",
+        FuncionParam: JSON.stringify(orden),
+      });
+      isReserving.value = false;
+      toast("Ha ocurrido un problema con la orden", { type: "error" });
+    }
+  } else {
+    renderValid(iv, {} as any);
+  }
+}
 
-      orden.Estado = "Open";
-      orden.NombreClienteFinal = this.constructSpacedVal(
-        this.clientName,
-        this.clienteLastName
-      );
-      //TODO agregado numero de pasaporte a la orden
-      orden.NumeroPasaporte = this.clientePasaporte;
-      orden.NumeroTelefono = this.clientePhone;
-      orden.NombreOrden = this.constructSpacedVal(
-        this.clientName,
-        this.clienteLastName
-      );
-      orden.FechaInicio = dateInterval.min;
-      orden.FechaFin = dateInterval.max;
-      orden.Creador = {
-        UsuarioId: id,
-        Username: user
+async function createOrderInHotelect(order: any) {
+  const userData = JSON.parse(localStorage.getItem("usuarioObjeto") || "{}");
+  let closeReserve: any = {
+    Accion: "F",
+    Codtou: "HTI",
+    Refage: "17162",
+    Ideses: hotelecSessionService.getSessionId(),
+  };
+  let person: any = {
+    Id: "1",
+    Nombre: userData.name,
+    Tel: clientePhone.value,
+    Mai: userData.clienteCorreo,
+    Priape: userData.clienteNombre,
+  };
+  closeReserve.Percon = person;
+  try {
+    const res = await hotetecCloseReserve(closeReserve);
+    hotelecSessionService.clearSessionId();
+    const NumeroConfirmacionHotetec = res.data.Locata[0];
+    const Cupest = res.data.Cupest;
+    let orderStatus: any = {};
+    if (
+      NumeroConfirmacionHotetec !== null &&
+      Cupest !== null &&
+      Cupest === orderStatusList.cm
+    ) {
+      const orderData = {
+        OrdenId: order.OrdenId,
+        EstadoHotetec: orderStatusList.close,
+        NumeroConfirmacionHotetec: NumeroConfirmacionHotetec,
       };
-      orden.ClienteId = clienteid;
-      const ordenData = orden.ListaAlojamientoOrden.reduce(
-        (acc, alojamiento) => {
-          acc.CantidadAdulto += alojamiento.CantAdulto || 0;
-          acc.CantidadNino += alojamiento.CantNino || 0;
-          acc.CantidadInfante += alojamiento.CantInfante || 0;
-          return acc;
-        },
-        { CantidadAdulto: 0, CantidadNino: 0, CantidadInfante: 0 }
-      );
+      await hotetecUpdateDataOnGtt(orderData);
+      orderStatus = {
+        OrdenId: order.OrdenId,
+        Estado: orderStatusList.confirmed,
+      };
+      await authUpdateStatus(orderStatus);
+      return orderStatus;
+    }
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.log(error);
+    }
+    hotelecSessionService.clearSessionId();
+  }
+}
 
-      orden.CantidadAdulto = ordenData.CantidadAdulto;
-      orden.CantidadNino = ordenData.CantidadNino;
-      orden.CantidadInfante = ordenData.CantidadInfante;
-      orden.IsActive = true;
-      orden.PrecioGeneralOrden = this.priceTotal;
-      orden.Notas = "";
-      orden.PrecioGeneralOrdenTasa = orden.PrecioGeneralOrden;
-      orden.EstadoHotetec = "Blocked";
-      orden.IntercomConferceNumber = orden.NumeroTelefono;
-      //console.info('orden--End-->', orden);
+function fillReserveInfo(orden: any) {
+  let dateInterval = findDateInterval();
+  let id = localStorage.getItem("userid");
+  let user = localStorage.getItem("nombre");
+  let clienteid = localStorage.getItem("cliente");
+  orden.Estado = "Open";
+  orden.NombreClienteFinal = constructSpacedVal(
+    clientName.value,
+    clienteLastName.value,
+  );
+  orden.NumeroPasaporte = clientePasaporte.value;
+  orden.NumeroTelefono = clientePhone.value;
+  orden.NombreOrden = constructSpacedVal(
+    clientName.value,
+    clienteLastName.value,
+  );
+  orden.FechaInicio = dateInterval.min;
+  orden.FechaFin = dateInterval.max;
+  orden.Creador = { UsuarioId: id, Username: user };
+  orden.ClienteId = clienteid;
+  const ordenData = orden.ListaAlojamientoOrden.reduce(
+    (acc: any, alojamiento: any) => {
+      acc.CantidadAdulto += alojamiento.CantAdulto || 0;
+      acc.CantidadNino += alojamiento.CantNino || 0;
+      acc.CantidadInfante += alojamiento.CantInfante || 0;
+      return acc;
     },
-    getListaVehiculosOrden() {
-      let lvo = this.allTypesOrders
-        .filter(item => {
-          return item.tipo == "rent";
-        })
-        .map(i => {
-          return i.orderVehiculo;
-        });
+    { CantidadAdulto: 0, CantidadNino: 0, CantidadInfante: 0 },
+  );
+  orden.CantidadAdulto = ordenData.CantidadAdulto;
+  orden.CantidadNino = ordenData.CantidadNino;
+  orden.CantidadInfante = ordenData.CantidadInfante;
+  orden.IsActive = true;
+  orden.PrecioGeneralOrden = priceTotal.value;
+  orden.Notas = "";
+  orden.PrecioGeneralOrdenTasa = orden.PrecioGeneralOrden;
+  orden.EstadoHotetec = "Blocked";
+  orden.IntercomConferceNumber = orden.NumeroTelefono;
+}
 
-      return lvo;
-    },
-    getListaAlojamientosOrden() {
-      let lao = [];
-      this.allTypesOrders
-        .filter(item => {
-          return item.tipo == "lodging";
-        })
-        .map(i => {
-          //const habitacionId = i.reservedRooms.habitacion.HabitacionId;
-          i.reservedRooms.combinacion.listado.map(j => {
-            let po = j.precioObjOne;
-            console.log("precio object", po);
-            po.Alojamiento = {
-              ProductoId: po.Alojamiento.ProductoId,
-              Nombre: i.name,
-              SKU: j.Habitacion.SKU
-            };
-            po.FechaInicio = po.FechaInicio.split("T")[0];
-            po.FechaFin = po.FechaFin.split("T")[0];
-            po.Checkin = po.Checkin.split("T")[0];
-            po.Checkout = po.Checkout.split("T")[0];
-            /* po.CantAdulto = j.tipoHabitacion; */
-            po.OrdenAlojamientoId = 0;
-            po.CantNino = j.cantidadMenoresPorHabitacion;
-            po.CantInfante = 0;
-            /* po.DescripcionServicio = po.Alojamiento.Descripcion;
-            po.PlanesAlimenticiosId = i.reservedRooms.planAlimenticio
-            po.PlanAlimenticio = {
-              PlanesAlimenticiosId: i.reservedRooms.planAlimenticio
-            } */
-            po.PlanesAlimenticiosId = j.planAlimenticio.PlanesAlimenticiosId;
-            po.PlanAlimenticio = j.planAlimenticio;
-            po.Habitacion = {
-              HabitacionId: j.Habitacion.HabitacionId,
-              Nombre: j.Habitacion.Nombre
-            };
-            po.Distribuidor = {
-              DistribuidorId: po.Distribuidor
-                ? po.Distribuidor.DistribuidorId
-                : 46,
-              Nombre: "Hotetec"
-            };
-            po.DistribuidorId = po.Distribuidor
-              ? po.Distribuidor.DistribuidorId
-              : 46;
-            po.Sobreprecio = {
-              SobreprecioId: po.Sobreprecio.SobreprecioId
-            };
-            po.HotetecIdeses = po.DisponibilidadHotelRespuesta.Ideses;
-            po.EstadoHotetec = "Blocked";
-            po.ListaPrecioAlojamientos = [];
-            if (po.ListaPrecioAlojamientos) {
-              po.ListaPrecioAlojamientos.map(lpa => {
-                let p = {
-                  PrecioAlojamientoId: lpa.PrecioAlojamiento.PrecioAlojamientoId
-                };
+function getListaVehiculosOrden() {
+  return allTypesOrders.value
+    .filter((item: any) => item.tipo == "rent")
+    .map((i: any) => i.orderVehiculo);
+}
 
-                return {
-                  PrecioAlojamiento: p
-                };
-              });
-            }
-            for (let index = 0; index < j.cantidad; index++) {
-              lao.push(po);
-            }
-          });
-        });
-
-      return lao;
-    },
-    findDateInterval() {
-      let startDates = [];
-      let endDates = [];
-
-      this.allTypesOrders.forEach(item => {
-        let fechaEntrada = item.entrada.split("T")[0];
-        let FechaFin = item.salida.split("T")[0];
-        if (item.tipo == "rent") {
-          startDates.push(item.orderVehiculo.FechaRecogida);
-          endDates.push(item.orderVehiculo.FechaEntrega);
+function getListaAlojamientosOrden() {
+  let lao: any[] = [];
+  allTypesOrders.value
+    .filter((item: any) => item.tipo == "lodging")
+    .forEach((i: any) => {
+      i.reservedRooms.combinacion.listado.forEach((j: any) => {
+        let po = j.precioObjOne;
+        if (import.meta.env.DEV) {
+          console.log("precio object", po);
         }
-        if (item.tipo == "lodging") {
-          startDates.push(fechaEntrada);
-          endDates.push(FechaFin);
+        po.Alojamiento = {
+          ProductoId: po.Alojamiento.ProductoId,
+          Nombre: i.name,
+          SKU: j.Habitacion.SKU,
+        };
+        po.FechaInicio = po.FechaInicio.split("T")[0];
+        po.FechaFin = po.FechaFin.split("T")[0];
+        po.Checkin = po.Checkin.split("T")[0];
+        po.Checkout = po.Checkout.split("T")[0];
+        po.OrdenAlojamientoId = 0;
+        po.CantNino = j.cantidadMenoresPorHabitacion;
+        po.CantInfante = 0;
+        po.PlanesAlimenticiosId = j.planAlimenticio.PlanesAlimenticiosId;
+        po.PlanAlimenticio = j.planAlimenticio;
+        po.Habitacion = {
+          HabitacionId: j.Habitacion.HabitacionId,
+          Nombre: j.Habitacion.Nombre,
+        };
+        po.Distribuidor = {
+          DistribuidorId: po.Distribuidor ? po.Distribuidor.DistribuidorId : 46,
+          Nombre: "Hotetec",
+        };
+        po.DistribuidorId = po.Distribuidor
+          ? po.Distribuidor.DistribuidorId
+          : 46;
+        po.Sobreprecio = { SobreprecioId: po.Sobreprecio.SobreprecioId };
+        po.HotetecIdeses = po.DisponibilidadHotelRespuesta.Ideses;
+        po.EstadoHotetec = "Blocked";
+        po.ListaPrecioAlojamientos = [];
+        for (let index = 0; index < j.cantidad; index++) {
+          lao.push(po);
         }
       });
+    });
+  return lao;
+}
 
-      return {
-        min: this.lodash.min(startDates),
-        max: this.lodash.max(endDates)
-      };
-    },
-    calculatePrice(value) {
-      this.priceTotal = value.reduce((total, item) => {
-        if (item.tipo == "rent") return total + item.precio;
-        if (item.tipo == "lodging")
-          return total + item.reservedRooms.combinacion.total;
-      }, 0);
-    },
-    styledPrice(number) {
-      let n = number.toFixed(2);
-      let intPart = Math.ceil(n);
-      let r = (n - intPart).toFixed(2);
-      let decimalPart = (r * 100).toFixed(2);
-
-      if (decimalPart == 0) decimalPart = "00";
-
-      return { intPart: intPart, decimalPart: decimalPart };
-    },
-    updateDeliveryPlace(value) {
-      this.clientDeliveryPlace = value;
-    },
-    updatePickUpPlace(value) {
-      this.clientPickUpPlace = value;
-    },
-    updateName(value) {
-      this.clientName = value;
-    },
-    updateLastname(value) {
-      this.clienteLastName = value;
-    },
-    updatePasaporte(value) {
-      this.clientePasaporte = value;
-    },
-    updatePhone(value) {
-      this.clientePhone = value;
-    },
-    updateNacimiento(value) {
-      this.clienteNacimiento = value;
-    },
-    updateHoraLanding(value) {
-      this.horaTakeoff = value;
-      this.horaLanding = value;
-    },
-    updateHoraTakeoff(value) {
-      this.horaTakeoff = value;
-    },
-    updateAerolineaLanding(value) {
-      this.aerolineaLanding = value;
-    },
-    updateAerolineaTakeoff(value) {
-      this.aerolineaTakeoff = value;
-    },
-    updateNvueloLanding(value) {
-      this.nvueloLanding = value;
-    },
-    updateNvueloTakeoff(value) {
-      this.nvueloTakeoff = value;
-    },
-    closeDeleteModal() {
-      this.deleteModal = false;
-      this.tempItemToDelete = null;
-    },
-    showDeleteModal(item) {
-      this.deleteModal = true;
-      this.tempItemToDelete = item;
-    },
-    closeEditModal() {
-      this.editModal = false;
-      this.currentFilterData = null;
-      this.tempItemToEdit = null;
-    },
-    showEditModal(item) {
-      if (item.tipo == "rent") {
-        this.currentModalComponent = "GttEditRentModal";
-        this.currentFilterData = this.constructFilterDataObj(item);
-      } else if (item.tipo == "lodging") {
-        this.currentModalComponent = "GttEditLodgingModal";
-        this.currentFilterData = this.constructFilterDataObj(item);
-      }
-      this.editModal = true;
-      this.tempItemToEdit = item;
-    },
-    constructFilterDataObj(item) {
-      if (item.tipo == "rent") {
-        let transmision = transmissionTypes.find(i => {
-          return i.nombre == item.transmision;
-        });
-
-        return {
-          propPickUpDate: item.orderVehiculo.FechaRecogida,
-          propDeliveryDate: item.orderVehiculo.FechaEntrega,
-          propPickUpPlace: item.orderVehiculo.LugarRecogida,
-          propDeliveryPlace: item.orderVehiculo.LugarEntrega,
-          propCarCategory: {
-            marcaid: item.marcaid,
-            nombre: item.marca,
-            type: "marca"
-          },
-          /* TODO: agregar nuevos campos */
-          ProductoId: item.id,
-          DistribuidorId: item.orderVehiculo.DistribuidorId,
-          HoraEntrega: this.horaTakeoff,
-          HoraRecogida: this.horaLanding,
-          propTransmission: transmision,
-          id: item.id,
-          name: item.nombre
-        };
-      } else if (item.tipo == "lodging") {
-        return {
-          name: item.name,
-          id: item.uID,
-          item: item,
-          propDateIn: item.entrada,
-          propDateOut: item.salida,
-          propVisitantes: item.acomodation || item.roomL,
-          needPre: item.acomodation != null
-        };
-      }
-    },
-    editOrder(item) {
-      console.log("objeto a editar: ", item);
-      if (item.tipo == "rent") {
-        if (
-          !verifyDifferentsDatesNoCartReturnBoolean(
-            {
-              FechaRecogida: item.nI.orderVehiculo.FechaRecogida,
-              FechaEntrega: item.nI.orderVehiculo.FechaEntrega
-            },
-            this.allTypesOrders.filter(i => {
-              return i.uID != this.tempItemToEdit.uID;
-            })
-          )
-        ) {
-          console.log("actualiza");
-          this.updateSelectedEdit(item.nI);
-          this.tempItemToEdit.orderVehiculo = item.nI.orderVehiculo;
-          this.revert(this.tempItemToEdit.orderVehiculo);
-          this.calculatePrice(this.allTypesOrders);
-          this.$helpers.shoppingCartUpdate(this.allTypesOrders);
-          this.updateCart();
-          // this.$helpers.shoppingCartRemoveOne(item.pItemId)
-          // this.$helpers.shoppingCartAdd(item.nI)
-          // this.updateCart()
-          this.closeEditModal();
-          this.$toasted.show("Elemento editado con éxito", {
-            type: "success"
-          });
-        } else {
-          this.$toasted.show(
-            "Ya tiene un auto reservado dentro de esa misma fecha",
-            {
-              type: "error"
-            }
-          );
-        }
-      }
-    },
-    revert(o) {
-      if (o.LugarRecogida) {
-        o.LugarRecogida = {
-          nombre: o.LugarRecogida.nombre,
-          puntointeresid: o.LugarRecogida.PuntoInteresId
-        };
-      }
-      if (o.LugarEntrega) {
-        o.LugarEntrega = {
-          nombre: o.LugarEntrega.nombre,
-          puntointeresid: o.LugarEntrega.PuntoInteresId
-        };
-      }
-    },
-    updateSelectedEdit(item) {
-      this.tempItemToEdit.nombre = item.nombre;
-      this.tempItemToEdit.cancelation = item.cancelation;
-      this.tempItemToEdit.descripcion = item.descripcion;
-      this.tempItemToEdit.distribuidor = item.distribuidor;
-      this.tempItemToEdit.distribuidorId = item.distribuidorId;
-      this.tempItemToEdit.id = item.id;
-      this.tempItemToEdit.imagen = item.imagen;
-      this.tempItemToEdit.marca = item.marca;
-      this.tempItemToEdit.modeloId = item.modeloId;
-      this.tempItemToEdit.plazas = item.plazas;
-      this.tempItemToEdit.precio = item.precio;
-      this.tempItemToEdit.provider = item.provider;
-      this.tempItemToEdit.providerImage = item.providerImage;
-      this.tempItemToEdit.tipo = item.tipo;
-      this.tempItemToEdit.transmision = item.transmision;
-    },
-    cleanData(item) {
-      item.ListaPreciosRentaAutos = [
-        {
-          PrecioRentaAutos: {
-            PrecioRentaAutosId:
-              item.ListaPreciosRentaAutos[0].PrecioRentaAutos.PrecioRentaAutosId
-          }
-        }
-      ];
-      item.Distribuidor = {
-        DistribuidorId: item.Distribuidor.DistribuidorId
-      };
-      item.Vehiculo = {
-        ProductoId: item.Vehiculo.ProductoId
-      };
-
-      item.Sobreprecio = {
-        SobreprecioId: item.Sobreprecio.SobreprecioId
-      };
-      return item;
+function findDateInterval() {
+  let startDates: any[] = [];
+  let endDates: any[] = [];
+  allTypesOrders.value.forEach((item: any) => {
+    let fechaEntrada = item.entrada?.split("T")[0];
+    let FechaFin = item.salida?.split("T")[0];
+    if (item.tipo == "rent") {
+      startDates.push(item.orderVehiculo.FechaRecogida);
+      endDates.push(item.orderVehiculo.FechaEntrega);
     }
-  },
-
-  watch: {
-    /* TODO: edad cliente */
-    /*  horaTakeoff: async function(newTime) {
-      this.editTime = false;
-      if (this.horaTakeoff != "" && this.horaLanding != "") {
-        let order = {};
-        for (const item of this.allTypesOrders) {
-          if ("orderVehiculo" in item) {
-            order = item;
-          }
-        }
-
-        let { data } = await authUpdateCar({
-          FechaRecogida: order.orderVehiculo.FechaRecogida.split("T")[0],
-          FechaEntrega: order.orderVehiculo.FechaEntrega.split("T")[0],
-          EdadCliente: this.age,
-          Marca: {
-            MarcaId: order.marcaid,
-            Nombre: order.marca,
-          },
-          TipoTransmision: order.transmision,
-          Cliente: {
-            ClienteId: localStorage.getItem("cliente"),
-          },
-          ProductoId: order.id,
-          DistribuidorId: order.distribuidorId,
-          HoraEntrega: this.horaTakeoff,
-          HoraRecogida: this.horaLanding,
-        });
-        data.FechaEntrega = order.orderVehiculo.FechaEntrega;
-        data.DistribuidorId = order.orderVehiculo.DistribuidorId;
-        let fixData = this.cleanData(data);
-        order.orderVehiculo = fixData;
-        order.precio = order.orderVehiculo.PrecioOrden;
-        this.tempItemToEdit = {
-          uID: order.uID,
-        };
-        let item = {
-          nI: order,
-          pItemId: order.id,
-          tipo: "rent",
-        };
-
-        this.editOrder(item);
-
-        var leave = new Date("1970-01-01T" + this.horaTakeoff);
-        var arrive = new Date("1970-01-01T" + this.horaLanding);
-        if (leave > arrive) {
-          this.extraDay = 1;
-          this.$toasted.show(
-            "Departure Time is greater than the Arrival Time. An extra day was charged to your vehicle order!",
-            {
-              type: "warning",
-              position: "top-center",
-              autoClose: false,
-              closeButton: true,
-            }
-          );
-        } else {
-          this.extraDay = 0;
-        }
-      }
-      this.editTime = true;
-    }, */
-    horaLanding: async function(newTime) {
-      this.editTime = false;
-      if (this.horaTakeoff != "" && this.horaLanding != "") {
-        let order = {};
-        for (const item of this.allTypesOrders) {
-          if ("orderVehiculo" in item) {
-            order = item;
-          }
-        }
-
-        let { data } = await authUpdateCar({
-          FechaRecogida: order.orderVehiculo.FechaRecogida,
-          FechaEntrega: order.orderVehiculo.FechaEntrega,
-          EdadCliente: this.age,
-          Marca: {
-            MarcaId: order.marcaid,
-            Nombre: order.marca
-          },
-          TipoTransmision: order.transmision,
-          Cliente: {
-            ClienteId: localStorage.getItem("cliente")
-          },
-          ProductoId: order.id,
-          DistribuidorId: order.distribuidorId,
-          HoraEntrega: this.horaTakeoff,
-          HoraRecogida: this.horaLanding
-        });
-        data.FechaEntrega = order.orderVehiculo.FechaEntrega;
-        data.DistribuidorId = order.orderVehiculo.DistribuidorId;
-        let fixData = this.cleanData(data);
-        order.orderVehiculo = fixData;
-        order.precio = order.orderVehiculo.PrecioOrden;
-        this.tempItemToEdit = {
-          uID: order.uID
-        };
-        let item = {
-          nI: order,
-          pItemId: order.id,
-          tipo: "rent"
-        };
-
-        this.editOrder(item);
-
-        var leave = new Date("1970-01-01T" + this.horaTakeoff);
-        var arrive = new Date("1970-01-01T" + this.horaLanding);
-        if (leave > arrive) {
-          this.extraDay = 1;
-          this.$toasted.show(
-            "Departure Time is greater than the Arrival Time. An extra day was charged to your vehicle order!",
-            {
-              type: "warning",
-              position: "top-center",
-              autoClose: false,
-              closeButton: true
-            }
-          );
-        } else {
-          this.extraDay = 0;
-        }
-      }
-      this.editTime = true;
+    if (item.tipo == "lodging") {
+      startDates.push(fechaEntrada);
+      endDates.push(FechaFin);
     }
-  },
-  data() {
-    // TODO agregar al data de cart view el campo pasaporte
+  });
+  return { min: _.min(startDates), max: _.max(endDates) };
+}
+
+function calculatePrice(value: any[]) {
+  priceTotal.value = value.reduce((total: number, item: any) => {
+    if (item.tipo == "rent") return total + item.precio;
+    if (item.tipo == "lodging")
+      return total + item.reservedRooms.combinacion.total;
+    return total;
+  }, 0);
+}
+
+function styledPrice(number: number) {
+  let n = number.toFixed(2);
+  let intPart = Math.ceil(Number(n));
+  let r = (Number(n) - intPart).toFixed(2);
+  let decimalPart = (Number(r) * 100).toFixed(2);
+  if (decimalPart == "0") decimalPart = "00";
+  return { intPart, decimalPart };
+}
+
+function updateDeliveryPlace(value: any) {
+  clientDeliveryPlace.value = value;
+}
+function updatePickUpPlace(value: any) {
+  clientPickUpPlace.value = value;
+}
+function updateName(value: string) {
+  clientName.value = value;
+}
+function updateLastname(value: string) {
+  clienteLastName.value = value;
+}
+function updatePasaporte(value: string) {
+  clientePasaporte.value = value;
+}
+function updatePhone(value: string) {
+  clientePhone.value = value;
+}
+function updateNacimiento(value: string) {
+  clienteNacimiento.value = value;
+}
+function updateHoraLanding(value: string) {
+  horaTakeoff.value = value;
+  horaLanding.value = value;
+}
+function updateHoraTakeoff(value: string) {
+  horaTakeoff.value = value;
+}
+function updateAerolineaLanding(value: string) {
+  aerolineaLanding.value = value;
+}
+function updateAerolineaTakeoff(value: string) {
+  aerolineaTakeoff.value = value;
+}
+function updateNvueloLanding(value: string) {
+  nvueloLanding.value = value;
+}
+function updateNvueloTakeoff(value: string) {
+  nvueloTakeoff.value = value;
+}
+function closeDeleteModal() {
+  deleteModal.value = false;
+  tempItemToDelete.value = null;
+}
+function showDeleteModal(item: any) {
+  deleteModal.value = true;
+  tempItemToDelete.value = item;
+}
+function closeEditModal() {
+  editModal.value = false;
+  currentFilterData.value = null;
+  tempItemToEdit.value = null;
+}
+function showEditModal(item: any) {
+  if (item.tipo == "rent") {
+    currentModalComponent.value = "GttEditRentModal";
+    currentFilterData.value = constructFilterDataObj(item);
+  } else if (item.tipo == "lodging") {
+    currentModalComponent.value = "GttEditLodgingModal";
+    currentFilterData.value = constructFilterDataObj(item);
+  }
+  editModal.value = true;
+  tempItemToEdit.value = item;
+}
+
+function constructFilterDataObj(item: any) {
+  if (item.tipo == "rent") {
+    let transmision = transmissionTypes.find(
+      (i: any) => i.nombre == item.transmision,
+    );
     return {
-      edadCliente: 0,
-      extraDay: 0,
-      deleteModal: false,
-      editModal: false,
-      currentModalComponent: "",
-      currentFilterData: null,
-      tempItemToDelete: null,
-      tempItemToEdit: null,
-      allTypesOrders: [],
-      priceTotal: 0,
-      clientName: "",
-      clienteLastName: "",
-      clientePasaporte: "",
-      clientePhone: "",
-      clienteNacimiento: "",
-      horaLanding: "",
-      aerolineaLanding: "",
-      nvueloLanding: "",
-      horaTakeoff: "",
-      aerolineaTakeoff: "",
-      nvueloTakeoff: "",
-      editTime: true,
-      clientPickUpPlace: [],
-      clientDeliveryPlace: [],
-      isReserving: false,
-      menuLinks: []
+      propPickUpDate: item.orderVehiculo.FechaRecogida,
+      propDeliveryDate: item.orderVehiculo.FechaEntrega,
+      propPickUpPlace: item.orderVehiculo.LugarRecogida,
+      propDeliveryPlace: item.orderVehiculo.LugarEntrega,
+      propCarCategory: {
+        marcaid: item.marcaid,
+        nombre: item.marca,
+        type: "marca",
+      },
+      ProductoId: item.id,
+      DistribuidorId: item.orderVehiculo.DistribuidorId,
+      HoraEntrega: horaTakeoff.value,
+      HoraRecogida: horaLanding.value,
+      propTransmission: transmision,
+      id: item.id,
+      name: item.nombre,
+    };
+  } else if (item.tipo == "lodging") {
+    return {
+      name: item.name,
+      id: item.uID,
+      item: item,
+      propDateIn: item.entrada,
+      propDateOut: item.salida,
+      propVisitantes: item.acomodation || item.roomL,
+      needPre: item.acomodation != null,
     };
   }
-};
+}
+
+function editOrder(item: any) {
+  if (import.meta.env.DEV) {
+    console.log("objeto a editar: ", item);
+  }
+  if (item.tipo == "rent") {
+    if (
+      !verifyDifferentsDatesNoCartReturnBoolean(
+        {
+          FechaRecogida: item.nI.orderVehiculo.FechaRecogida,
+          FechaEntrega: item.nI.orderVehiculo.FechaEntrega,
+        },
+        allTypesOrders.value.filter(
+          (i: any) => i.uID != tempItemToEdit.value.uID,
+        ),
+      )
+    ) {
+      if (import.meta.env.DEV) {
+        console.log("actualiza");
+      }
+      updateSelectedEdit(item.nI);
+      tempItemToEdit.value.orderVehiculo = item.nI.orderVehiculo;
+      revertFn(tempItemToEdit.value.orderVehiculo);
+      calculatePrice(allTypesOrders.value);
+      $helpers.shoppingCartUpdate(allTypesOrders.value);
+      updateCart();
+      closeEditModal();
+      toast("Elemento editado con éxito", { type: "success" });
+    } else {
+      toast("Ya tiene un auto reservado dentro de esa misma fecha", {
+        type: "error",
+      });
+    }
+  }
+}
+
+function revertFn(o: any) {
+  if (o.LugarRecogida) {
+    o.LugarRecogida = {
+      nombre: o.LugarRecogida.nombre,
+      puntointeresid: o.LugarRecogida.PuntoInteresId,
+    };
+  }
+  if (o.LugarEntrega) {
+    o.LugarEntrega = {
+      nombre: o.LugarEntrega.nombre,
+      puntointeresid: o.LugarEntrega.PuntoInteresId,
+    };
+  }
+}
+
+function updateSelectedEdit(item: any) {
+  if (!tempItemToEdit.value) return;
+  tempItemToEdit.value.nombre = item.nombre;
+  tempItemToEdit.value.cancelation = item.cancelation;
+  tempItemToEdit.value.descripcion = item.descripcion;
+  tempItemToEdit.value.distribuidor = item.distribuidor;
+  tempItemToEdit.value.distribuidorId = item.distribuidorId;
+  tempItemToEdit.value.id = item.id;
+  tempItemToEdit.value.imagen = item.imagen;
+  tempItemToEdit.value.marca = item.marca;
+  tempItemToEdit.value.modeloId = item.modeloId;
+  tempItemToEdit.value.plazas = item.plazas;
+  tempItemToEdit.value.precio = item.precio;
+  tempItemToEdit.value.provider = item.provider;
+  tempItemToEdit.value.providerImage = item.providerImage;
+  tempItemToEdit.value.tipo = item.tipo;
+  tempItemToEdit.value.transmision = item.transmision;
+}
+
+function cleanDataFn(item: any) {
+  item.ListaPreciosRentaAutos = [
+    {
+      PrecioRentaAutos: {
+        PrecioRentaAutosId:
+          item.ListaPreciosRentaAutos[0].PrecioRentaAutos.PrecioRentaAutosId,
+      },
+    },
+  ];
+  item.Distribuidor = { DistribuidorId: item.Distribuidor.DistribuidorId };
+  item.Vehiculo = { ProductoId: item.Vehiculo.ProductoId };
+  item.Sobreprecio = { SobreprecioId: item.Sobreprecio.SobreprecioId };
+  return item;
+}
 </script>
 
 <style scoped>

@@ -1,6 +1,7 @@
 <template>
-  <div class="gtt__select_date">
+  <div class="gtt__select_date" v-click-outside="handleFocusOut">
     <button
+      type="button"
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
@@ -14,9 +15,7 @@
           </div>
           <div class="gtt__toggle_text_second_column twoRows">
             <div class="small">
-              <slot name="placeholder">
-                Fecha de entrada y salida
-              </slot>
+              <slot name="placeholder"> Fecha de entrada y salida </slot>
             </div>
             <div class="bigDown">
               <span v-if="mode == 'range'">
@@ -37,39 +36,40 @@
     <div class="gtt-errors">
       <slot name="error"></slot>
     </div>
-    <div
-      class="gtt__list_area_wrapper"
-      v-if="isVisible"
-      v-click-outside="handleFocusOut"
-    >
+    <div class="gtt__list_area_wrapper" v-if="isVisible">
       <span class="arrow" v-if="arrow"></span>
       <div class="gtt__date_picker">
-        <div v-if="mode == 'range'" class="date-range-inputs">
-          <label class="date-label">Desde:</label>
-          <input
-            type="date"
-            :value="formatDateISO(dates.start)"
-            :min="formatDateISO(minDate)"
-            @input="onStartDateChange"
-            class="date-input"
-          />
-          <label class="date-label">Hasta:</label>
-          <input
-            type="date"
-            :value="formatDateISO(dates.end)"
-            :min="formatDateISO(dates.start || minDate)"
-            @input="onEndDateChange"
-            class="date-input"
-          />
-        </div>
-        <div v-else class="date-single-input">
-          <input
-            type="date"
-            :value="formatDateISO(dates)"
-            :min="formatDateISO(minDate)"
-            @input="onSingleDateChange"
-            class="date-input"
-          />
+        <div class="gtt__date_picker_fields">
+          <template v-if="mode === 'range'">
+            <label class="gtt__date_input">
+              <span>Fecha de entrada</span>
+              <input
+                type="date"
+                :min="minDate"
+                :value="formatDateInput(dates.start)"
+                @change="onStartDateChange($event.target.value)"
+              />
+            </label>
+            <label class="gtt__date_input">
+              <span>Fecha de salida</span>
+              <input
+                type="date"
+                :min="formatDateInput(dates.start || minDate)"
+                :value="formatDateInput(dates.end)"
+                @change="onEndDateChange($event.target.value)"
+              />
+            </label>
+          </template>
+          <template v-else>
+            <label class="gtt__date_input">
+              <input
+                type="date"
+                :min="minDate"
+                :value="formatDateInput(dates)"
+                @change="onDateChange($event.target.value)"
+              />
+            </label>
+          </template>
         </div>
       </div>
       <hr />
@@ -83,123 +83,173 @@
   </div>
 </template>
 
-<script>
-import { clickOutside } from "@/directives/clickOutside";
+<script setup lang="ts">
+import { ref, watch, onMounted, computed } from "vue";
 import moment from "moment";
 
-export default {
-  directives: {
-    clickOutside
+const props = withDefaults(
+  defineProps<{
+    modelValue?: any;
+    value?: any;
+    clickable?: boolean;
+    opened?: boolean;
+    dsb?: boolean;
+    day?: boolean;
+    mode?: string;
+    minDate?: string;
+  }>(),
+  {
+    clickable: true,
+    opened: false,
+    dsb: false,
+    day: false,
+    mode: "range",
   },
-  mounted() {
-    this.popupItem = this.$el;
-    this.isVisible = this.opened;
-  },
-  props: {
-    modelValue: {
-      default() {
-        return moment();
-      }
-    },
-    clickable: {
-      type: Boolean,
-      default: true
-    },
-    opened: {
-      type: Boolean,
-      default: false
-    },
-    dsb: {
-      type: Boolean,
-      default: false
-    },
-    day: {
-      type: Boolean,
-      default: false
-    },
-    mode: {
-      type: String,
-      default: "range"
-    },
-    minDate: {
-      default: function() {
-        return moment().format("DD/MM/YYYY");
-      }
-    }
-  },
-  data() {
-    return {
-      isVisible: false,
-      arrow: true,
-      dates: this.modelValue
-    };
-  },
-  watch: {
-    // Solo sincroniza el valor interno desde el padre SIN re-emitir,
-    // evitando ciclos de realimentación con los watchers del formulario.
-    modelValue: function() {
-      this.updateValue();
-    }
-  },
-  methods: {
-    toggleClicked() {
-      if (this.clickable) this.isVisible = !this.isVisible;
-    },
-    handleFocusOut() {
-      if (!this.opened) this.isVisible = false;
-    },
-    toMoment(date) {
-      return moment(date);
-    },
-    formatDate(stringDate) {
-      return this.toMoment(stringDate)
-        .locale("es")
-        .format("dddd, DD MMM YYYY");
-    },
-    formatDateISO(date) {
-      if (!date) return "";
-      return this.toMoment(date).format("YYYY-MM-DD");
-    },
-    constructDates(startDate, endDate) {
-      let start = this.formatDate(startDate);
-      let end = this.formatDate(endDate);
-      let diff =
-        this.toMoment(startDate).diff(this.toMoment(endDate), "days") * -1;
-      let dayNightString = "";
-      if (diff > 1) dayNightString = this.day ? " días)" : " noches)";
-      else dayNightString = this.day ? " día)" : " noche)";
+);
 
-      return start + " - " + end + " (" + diff + dayNightString;
-    },
-    constructSingleDate(date) {
-      if (!date) return "";
-      return this.toMoment(date)
-        .locale("es")
-        .format("DD MMM YYYY");
-    },
-    updateValue() {
-      this.dates = this.modelValue;
-    },
-    onStartDateChange(e) {
-      const val = e.target.value;
-      this.dates = { ...this.dates, start: val ? moment(val).toDate() : null };
-      this.$emit("update:modelValue", this.dates);
-      this.isVisible = false;
-    },
-    onEndDateChange(e) {
-      const val = e.target.value;
-      this.dates = { ...this.dates, end: val ? moment(val).toDate() : null };
-      this.$emit("update:modelValue", this.dates);
-      this.isVisible = false;
-    },
-    onSingleDateChange(e) {
-      const val = e.target.value;
-      this.dates = val ? moment(val).toDate() : null;
-      this.$emit("update:modelValue", this.dates);
-      this.isVisible = false;
-    }
+const emit = defineEmits<{
+  (e: "input", val: any): void;
+  (e: "update:modelValue", val: any): void;
+}>();
+
+const isVisible = ref(props.opened);
+const arrow = ref(true);
+const dates = ref(
+  props.modelValue !== undefined
+    ? props.modelValue
+    : props.value !== undefined
+      ? props.value
+      : props.mode === "range"
+        ? { start: moment().toDate(), end: moment().add(1, "day").toDate() }
+        : moment().toDate(),
+);
+
+const boundValue = computed({
+  get() {
+    return props.modelValue !== undefined ? props.modelValue : props.value;
+  },
+  set(value) {
+    emit("update:modelValue", value);
+    emit("input", value);
+  },
+});
+
+function toggleClicked() {
+  if (props.clickable) isVisible.value = !isVisible.value;
+}
+
+function handleFocusOut() {
+  if (!props.opened) isVisible.value = false;
+}
+
+function toMoment(date: any) {
+  return moment(date);
+}
+
+function formatDate(stringDate: any) {
+  return toMoment(stringDate).locale("es").format("dddd, DD MMM YYYY");
+}
+
+function constructDates(startDate: any, endDate: any) {
+  const start = formatDate(startDate);
+  const end = formatDate(endDate);
+  let diff = toMoment(startDate).diff(toMoment(endDate), "days") * -1;
+  let dayNightString = "";
+  if (diff > 1) dayNightString = props.day ? " días)" : " noches)";
+  else dayNightString = props.day ? " día)" : " noche)";
+  return start + " - " + end + " (" + diff + dayNightString;
+}
+
+function constructSingleDate(date: any) {
+  return toMoment(date).locale("es").format("DD MMM YYYY");
+}
+
+function updateValue() {
+  if (props.modelValue !== undefined) {
+    dates.value = props.modelValue;
+  } else if (props.value !== undefined) {
+    dates.value = props.value;
+  } else if (props.mode === "range") {
+    dates.value = {
+      start: moment().toDate(),
+      end: moment().add(1, "day").toDate(),
+    };
+  } else {
+    dates.value = moment().toDate();
   }
-};
+}
+
+function emitValue(value: any) {
+  boundValue.value = value;
+}
+
+function formatDateInput(date: any) {
+  if (!date) return "";
+  return moment(date).format("YYYY-MM-DD");
+}
+
+function parseDateInput(value: string) {
+  return value ? moment(value, "YYYY-MM-DD").toDate() : null;
+}
+
+function onStartDateChange(value: string) {
+  const nextDate = parseDateInput(value);
+  if (!nextDate) return;
+
+  if (props.mode === "range") {
+    dates.value = {
+      start: nextDate,
+      end: dates.value?.end || moment(nextDate).add(1, "day").toDate(),
+    };
+  } else {
+    dates.value = nextDate;
+  }
+}
+
+function onEndDateChange(value: string) {
+  const nextDate = parseDateInput(value);
+  if (!nextDate || props.mode !== "range") return;
+
+  dates.value = {
+    start: dates.value.start,
+    end: nextDate,
+  };
+}
+
+watch(dates, (val, oldVal) => {
+  if (val && val !== oldVal) {
+    isVisible.value = false;
+  }
+  if (!val) {
+    emitValue(props.minDate || moment().format("DD/MM/YYYY"));
+  } else {
+    emitValue(val);
+  }
+});
+
+watch(
+  () => props.modelValue,
+  () => {
+    updateValue();
+  },
+);
+
+watch(
+  () => props.value,
+  () => {
+    updateValue();
+  },
+);
+
+onMounted(() => {
+  if (import.meta.env.DEV) {
+    console.log(props.value);
+  }
+  if (import.meta.env.DEV) {
+    console.log(props.opened);
+  }
+  isVisible.value = props.opened;
+});
 </script>
 
 <style lang="scss" scoped>
@@ -269,36 +319,6 @@ export default {
   font-family: "Helvetica Neue LT Std-Roman";
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-}
-
-.date-range-inputs,
-.date-single-input {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: var(--spacing-sm);
-  flex-wrap: wrap;
-}
-
-.date-label {
-  font-family: "Helvetica Neue LT Std-Roman";
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-}
-
-.date-input {
-  padding: 6px 10px;
-  border: 1px solid #c4c4c4;
-  border-radius: var(--border-radius-sm);
-  font-family: "Helvetica Neue LT Std-Roman";
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-.date-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(33, 47, 61, 0.2);
 }
 
 @media (max-width: 1440px) {

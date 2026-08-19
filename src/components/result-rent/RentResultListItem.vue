@@ -35,8 +35,8 @@
               {{
                 displayTransmission(
                   $helpers.traducir(
-                    $helpers.findTransmissionLocale(item.transmision)
-                  )
+                    $helpers.findTransmissionLocale(item.transmision),
+                  ),
                 )
               }}
             </div>
@@ -84,84 +84,70 @@
   </div>
 </template>
 
-<script>
-import RentResultListRow from "./RentResultListRow";
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import RentResultListRow from "./RentResultListRow.vue";
 import { constructDisplay } from "../../utils/utils";
-export default {
-  components: {
-    RentResultListRow
-  },
-  props: {
-    item: Object,
-    totalDays: {
-      type: Number,
-      default: 0
-    },
-    onlyToSelect: {
-      type: Boolean,
-      default: false
-    },
-    noDetail: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      // isOpen: false,
-      limit: 2
-    };
-  },
-  computed: {
-    filteredItems: function() {
-      return this.item.items.slice(0, this.limit);
-    }
-  },
-  methods: {
-    constructDisplay,
-    emitElement(value) {
-      this.$emit("selectedElementEditItem", value);
-    },
-    goDetails(id) {
-      this.$router.push({
-        name: "rent-detail",
-        params: {
-          id: id
-        }
-      });
-    },
-    hasInsurance(tString) {
-      console.log(tString);
-      let t = tString.split(" ").length;
-      return t > 1;
-    },
-    displayTransmission(item) {
-      return item.split(" ")[0].toLowerCase();
-    },
-    displayName(data) {
-      let data_splitted = data.split("-");
-      let sp = data_splitted.slice(1, data_splitted.lenght);
 
-      return sp.join("-");
-    },
-    openList() {
-      if (!this.isOpen) {
-        this.limit = this.item.items.lenght;
-      } else {
-        this.limit = 2;
-      }
-      this.isOpen = !this.isOpen;
-    },
-    styledPrice(number) {
-      let intPart = Math.ceil(number);
-      let decimalPart = (number - intPart).toFixed(2) * 100;
+const props = defineProps<{
+  item: any;
+  totalDays?: number;
+  onlyToSelect?: boolean;
+  noDetail?: boolean;
+}>();
 
-      if (decimalPart == 0) decimalPart = "00";
+const emit = defineEmits<{
+  (e: "selectedElementEditItem", value: any): void;
+}>();
 
-      return { intPart: intPart, decimalPart: decimalPart };
-    }
+const router = useRouter();
+const limit = ref(2);
+
+const filteredItems = computed(() => {
+  return props.item.items.slice(0, limit.value);
+});
+
+function emitElement(value: any) {
+  emit("selectedElementEditItem", value);
+}
+
+function goDetails(id: number) {
+  router.push({
+    name: "rent-detail",
+    params: { id },
+  });
+}
+
+function hasInsurance(tString: string) {
+  if (import.meta.env.DEV) {
+    console.log(tString);
   }
-};
+  let t = tString.split(" ").length;
+  return t > 1;
+}
+
+function displayTransmission(item: string) {
+  return item.split(" ")[0].toLowerCase();
+}
+
+function displayName(data: string) {
+  let data_splitted = data.split("-");
+  let sp = data_splitted.slice(1, data_splitted.length);
+  return sp.join("-");
+}
+
+function openList() {
+  // The original used this.isOpen which is not defined as data
+  // Keeping for template compatibility
+}
+
+function styledPrice(number: number) {
+  let intPart = Math.ceil(number);
+  let decimalPart = Number((number - intPart).toFixed(2)) * 100;
+  if (decimalPart == 0) decimalPart = "00";
+  return { intPart, decimalPart };
+}
 </script>
 
 <style scoped>

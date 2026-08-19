@@ -27,25 +27,14 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    label: {
-      default: "Nombre"
-    },
-    placeholder: {
-      default: "Nombre"
-    }
-  },
-  data() {
-    return {
-      isOpen: true
-    };
-  },
-  methods: {
-    openClose() {
-      this.isOpen = !this.isOpen;
-    }
-  }
-};
+<script setup lang="ts">
+import { ref } from "vue";
+
+defineProps<{ label?: string; placeholder?: string }>();
+
+const isOpen = ref(true);
+
+function openClose() {
+  isOpen.value = !isOpen.value;
+}
 </script>
