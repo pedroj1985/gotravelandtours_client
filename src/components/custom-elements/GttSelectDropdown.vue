@@ -25,11 +25,12 @@
         class="gtt__item"
         role="option"
         v-for="(option, index) in searchResult"
-        :key="option.id"
+        :key="typeof option === 'object' && option !== null ? option.id : option"
         :aria-selected="isSelected(option)"
         :id="'gtt-option-' + index"
         @click="$emit('select', option)"
       >
+        <span v-if="isSelected(option)" class="mdi mdi-check" aria-hidden="true"></span>
         <slot name="option" v-bind:option="option">{{ option }}</slot>
       </li>
     </ul>
@@ -84,15 +85,28 @@ export default {
       }
       return option === this.selectedValue;
     },
+    getOptionText(option) {
+      if (option !== null && typeof option === "object") {
+        return String(option.nombre ?? "");
+      }
+      return String(option);
+    },
+    filterOptions(query) {
+      const q = query.toLowerCase();
+      return this.options.filter(opt =>
+        this.getOptionText(opt)
+          .toLowerCase()
+          .includes(q)
+      );
+    },
     onInput(e) {
-      this.$emit("update:searchQuery", e.target.value);
-      this.$emit("search", e.target.value);
+      const query = e.target.value;
+      this.$emit("update:searchQuery", query);
+      this.$emit("search", query);
+      this.searchResult = this.filterOptions(query);
     },
     submitSearch(e) {
-      let query = e.target.value;
-      this.searchResult = this.options.filter(opt =>
-        opt.nombre.toLowerCase().includes(query.toLowerCase())
-      );
+      this.searchResult = this.filterOptions(e.target.value);
     }
   }
 };

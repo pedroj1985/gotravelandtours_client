@@ -10,8 +10,8 @@
           <span class="antonio-bold text-highlight pl-1">alojamientos</span>
           <span class="antonio-light">
             en
-            <span v-if="selectedLodgingDestinyValue">
-              {{ selectedLodgingDestinyValue.nombre }}
+            <span v-if="hotel">
+              {{ hotel.nombre }}
             </span>
             <span v-else>cualquier lugar</span>
           </span>
@@ -20,14 +20,11 @@
       <template #searching-fields>
         <div class="searching-fields">
         <div>
-          entre el {{ constructDate(selectedArriveDate) }} y el
-          {{ constructDate(selectedDepartureDate) }} ({{
-            calculateNights(selectedArriveDate, selectedDepartureDate)
-          }}
-          noches)
+          entre el {{ constructDate(checkin) }} y el
+          {{ constructDate(checkout) }} ({{ nights }} noches)
         </div>
-        <div v-if="selectedRoomLayout">
-          para {{ constructDisplay(selectedRoomLayout) }}
+        <div v-if="adults || children">
+          para {{ visitorsDisplay }}
         </div>
         </div>
       </template>
@@ -35,7 +32,8 @@
     <div ref="gttDestinyLodging">
       <gtt-select
         v-model:openedLodging="lodgingOpened"
-        v-model="selectedLodgingDestinyValue"
+        :model-value="hotel"
+        @update:model-value="setHotel"
         :options="destinies"
         :alignLeft="true"
       >
@@ -55,7 +53,8 @@
     </div>
     <div ref="gttStartDate">
       <gtt-select-date
-        v-model="selectedArriveDate"
+        :model-value="checkin"
+        @update:model-value="setCheckin"
         :min-date="minArriveDate"
         :mode="'single'"
       >
@@ -70,7 +69,8 @@
     </div>
     <div ref="gttEndDate">
       <gtt-select-date
-        v-model="selectedDepartureDate"
+        :model-value="checkout"
+        @update:model-value="setCheckout"
         :min-date="minDepartureDate"
         :mode="'single'"
       >
@@ -83,7 +83,11 @@
         <template #error><span class="gtt-errors"></span></template>
       </gtt-select-date>
     </div>
-    <gtt-select-form :options="roomLayout" v-model="selectedRoomLayout">
+    <gtt-select-form
+      :options="roomLayout"
+      :model-value="visitorsLayout"
+      @update:model-value="applyVisitors"
+    >
       <template #iconSelectedValue>
         <span><i class="mdi mdi-account"></i></span>
       </template>
@@ -151,13 +155,12 @@ import {
   authGetHotelList
 } from "../../utils/auth";
 import {
-  constructDate,
-  calculateNights,
-  constructDisplay
+  constructDate
 } from "../../utils/utils";
 import { lodgingUtilsMixin } from "../../mixins/lodgingUtilsMixin";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
 import moment from "moment";
+import { useBooking } from "../../composables/useBooking";
 
 export default {
   mixins: [lodgingUtilsMixin],
@@ -177,12 +180,31 @@ export default {
       let minDepartureDate = moment()
         .add(7, "days")
         .format("YYYY-MM-DD");
-      if (this.selectedArriveDate) {
-        minDepartureDate = moment(this.selectedArriveDate)
-          .add(this.selectedNights, "days")
+      if (this.checkin) {
+        minDepartureDate = moment(this.checkin)
+          .add(this.nights, "days")
           .format("YYYY-MM-DD");
       }
       return minDepartureDate;
+    },
+    visitorsLayout() {
+      return {
+        adults: {
+          code: "adults",
+          label: "Adultos",
+          display: "Adulto(s)",
+          value: this.adults
+        },
+        kids: {
+          code: "kids",
+          label: "Niños",
+          display: "Niño(s)",
+          value: this.children
+        }
+      };
+    },
+    visitorsDisplay() {
+      return `${this.adults} Adulto(s) · ${this.children} Niño(s)`;
     }
   },
   watch: {
@@ -193,51 +215,37 @@ export default {
       this.selectedNationality = sn;
     },
     propArriveDate(i) {
-      this.selectedArriveDate = new Date(i);
+      this.setCheckin(i);
     },
     propDepartureDate(i) {
-      this.selectedDepartureDate = new Date(i);
+      this.setCheckout(i);
     },
     propLodgingDestinyValue(i) {
-      this.selectedLodgingDestinyValue = i;
-    },
-    selectedArriveDate(i) {
-      if (moment(i).isAfter(this.selectedDepartureDate)) {
-        this.selectedNights = 3;
-        this.selectedDepartureDate = moment(i)
-          .add(this.selectedNights, "days")
-          .toDate();
-        let n = moment(this.selectedDepartureDate).diff(
-          this.selectedArriveDate,
-          "days"
-        );
-        this.selectedNights = n;
-      }
-    },
-    selectedDepartureDate(i) {
-      let n = moment(this.selectedDepartureDate).diff(
-        this.selectedArriveDate,
-        "days"
-      );
-
-      this.selectedNights = n;
-
-      //return new Date(i);
-    },
-    selectedNights(i) {
-      this.selectedDepartureDate = new Date(
-        moment(this.selectedArriveDate).add(i, "days")
-      );
-    },
-    selectedLodgingDestinyValue(i) {
-      console.info("watch", i);
-      return i;
+      this.setHotel(i);
     }
+  },
+  setup(props) {
+    let adults = 1;
+    let children = 0;
+    if (props.propRoomLayout) {
+      if (props.propRoomLayout.adults) {
+        adults = props.propRoomLayout.adults.value || 1;
+      }
+      if (props.propRoomLayout.kids) {
+        children = props.propRoomLayout.kids.value || 0;
+      }
+    }
+    return useBooking({
+      hotel: props.propLodgingDestinyValue,
+      checkin: moment(props.propArriveDate).toDate(),
+      checkout: moment(props.propDepartureDate).toDate(),
+      adults,
+      children
+    });
   },
   async created() {
     let t = await authGetRoomTypes();
     this.todosTipo = t.data;
-    this.selectedRoomLayout = this.propRoomLayout;
     this.getSearchResults().then(res => {
       console.log("getSearchResults", res);
       if (
@@ -251,8 +259,6 @@ export default {
   },
   methods: {
     constructDate,
-    calculateNights,
-    constructDisplay,
     goToDetail(f, a, id) {
       const currentRoute = this.$route;
 
@@ -282,19 +288,19 @@ export default {
         {
           rules: ["required"],
           name: "gttDestinyLodging",
-          value: this.selectedLodgingDestinyValue,
+          value: this.hotel,
           lang: "es"
         },
         {
-          rules: ["required", "dateAfter:selectedArriveDate"],
+          rules: ["required", "dateAfter:checkin"],
           name: "gttEndDate",
-          value: this.selectedDepartureDate,
+          value: this.checkout,
           lang: "es"
         },
         {
           rules: ["required"],
           name: "gttStartDate",
-          value: this.selectedArriveDate,
+          value: this.checkin,
           lang: "es"
         }
       ];
@@ -303,15 +309,15 @@ export default {
     },
     async returnToPreviousSearch() {
       let searchFilters = {
-        Destiny: this.selectedLodgingDestinyValue,
+        Destiny: this.hotel,
         Region: {
-          RegionId: this.selectedLodgingDestinyValue.id,
-          RegionNombre: this.selectedLodgingDestinyValue.nombre
+          RegionId: this.hotel.id,
+          RegionNombre: this.hotel.nombre
         },
         Cliente: { ClienteId: localStorage.getItem("cliente") },
-        Entrada: this.selectedArriveDate,
-        Salida: this.selectedDepartureDate,
-        Visitantes: this.selectedRoomLayout,
+        Entrada: this.checkin,
+        Salida: this.checkout,
+        Visitantes: this.visitorsLayout,
         Nacionalidad: this.selectedNationality
       };
 
@@ -334,26 +340,26 @@ export default {
       if (getValid(iv)) {
         this.isModalActive = true;
         await this.clearResults();
-        if (this.selectedLodgingDestinyValue.type == "RGN") {
+        if (this.hotel.type == "RGN") {
           console.info("RGN", this);
-          let region = { RegionId: this.selectedLodgingDestinyValue.id };
+          let region = { RegionId: this.hotel.id };
           let cliente = { ClienteId: localStorage.getItem("cliente") };
           let searchItem = {
-            Entrada: this.selectedArriveDate,
-            Salida: this.selectedDepartureDate,
+            Entrada: this.checkin,
+            Salida: this.checkout,
             Region: region,
             Cliente: cliente
           };
           let searchFilters = {
-            Destiny: this.selectedLodgingDestinyValue,
+            Destiny: this.hotel,
             Region: {
-              RegionId: this.selectedLodgingDestinyValue.id,
-              RegionNombre: this.selectedLodgingDestinyValue.nombre
+              RegionId: this.hotel.id,
+              RegionNombre: this.hotel.nombre
             },
             Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.selectedArriveDate,
-            Salida: this.selectedDepartureDate,
-            Visitantes: this.selectedRoomLayout,
+            Entrada: this.checkin,
+            Salida: this.checkout,
+            Visitantes: this.visitorsLayout,
             Nacionalidad: this.selectedNationality
           };
           let resultList = [];
@@ -409,14 +415,14 @@ export default {
               }
             );
           }
-        } else if (this.selectedLodgingDestinyValue.type == "HTL") {
+        } else if (this.hotel.type == "HTL") {
           let searchFilters = {
-            Destiny: this.selectedLodgingDestinyValue,
-            NombreHotel: this.selectedLodgingDestinyValue.nombre,
+            Destiny: this.hotel,
+            NombreHotel: this.hotel.nombre,
             Cliente: { ClienteId: localStorage.getItem("cliente") },
-            Entrada: this.selectedArriveDate,
-            Salida: this.selectedDepartureDate,
-            Visitantes: this.selectedRoomLayout,
+            Entrada: this.checkin,
+            Salida: this.checkout,
+            Visitantes: this.visitorsLayout,
             Nacionalidad: this.selectedNationality
           };
           try {
@@ -438,7 +444,7 @@ export default {
               this.goToDetail(
                 searchFilters,
                 this.buildRoomCombo(this.roomComb),
-                this.selectedLodgingDestinyValue.id
+                this.hotel.id
               );
             } else {
               this.desactivateModal();
@@ -463,6 +469,14 @@ export default {
     },
     desactivateModal() {
       this.isModalActive = false;
+    },
+    applyVisitors(layout) {
+      if (layout && layout.adults) {
+        this.setAdults(layout.adults.value);
+      }
+      if (layout && layout.kids) {
+        this.setChildren(layout.kids.value);
+      }
     },
     async loadDestinies() {
       if (this.lodgingOpened == true) {
@@ -534,12 +548,7 @@ export default {
   },
   data() {
     return {
-      selectedLodgingDestinyValue: this.propLodgingDestinyValue,
-      selectedArriveDate: new Date(moment(this.propArriveDate)),
-      selectedDepartureDate: new Date(moment(this.propDepartureDate)),
-      selectedRoomLayout: null,
       selectedNationality: this.propNationality,
-      selectedNights: 3,
       roomComb: null,
       todosTipo: [],
       hasSearchResults: false,
