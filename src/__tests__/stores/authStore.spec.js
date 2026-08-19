@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { authStore } from "../../stores/authStore";
 
 describe("authStore", () => {
@@ -28,5 +28,29 @@ describe("authStore", () => {
     expect(authStore.isLoggedIn).toBe(false);
     localStorage.setItem("token", "some-token");
     expect(authStore.isLoggedIn).toBe(true);
+  });
+
+  it("should restore persisted user on boot when token exists", async () => {
+    localStorage.setItem("token", "some-token");
+    localStorage.setItem(
+      "usuarioObjeto",
+      JSON.stringify({ name: "PEDRO", clienteNombre: "AGENCIA TEST" })
+    );
+    vi.resetModules();
+    const { authStore: freshStore } = await import("../../stores/authStore");
+    expect(freshStore.user).toEqual({
+      name: "PEDRO",
+      clienteNombre: "AGENCIA TEST"
+    });
+  });
+
+  it("should not restore persisted user without a token", async () => {
+    localStorage.setItem(
+      "usuarioObjeto",
+      JSON.stringify({ name: "PEDRO", clienteNombre: "AGENCIA TEST" })
+    );
+    vi.resetModules();
+    const { authStore: freshStore } = await import("../../stores/authStore");
+    expect(freshStore.user).toBeNull();
   });
 });

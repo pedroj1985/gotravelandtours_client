@@ -1,8 +1,22 @@
 import { reactive } from "vue";
 import { storageService } from "../utils/storageService";
 
+/**
+ * Restore the user from localStorage on app boot so the navbar
+ * (user menu, shopping cart) renders correctly after a page refresh
+ * or direct navigation with an active session. Only restore when a
+ * token exists, to stay in sync with isLoggedIn.
+ */
+function restoreUser() {
+  if (!storageService.getToken()) {
+    return null;
+  }
+  const user = storageService.getUser();
+  return user && typeof user === "object" ? user : null;
+}
+
 const state = reactive({
-  user: null,
+  user: restoreUser(),
   isLoggedIn: !!storageService.getToken()
 });
 
