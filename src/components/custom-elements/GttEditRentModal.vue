@@ -22,7 +22,7 @@
             <div class="selects-inline">
               <gtt-select
                 v-model:openedLodging="pickUpOpened"
-                @click.native="loadPickUpPlaces"
+                @click="loadPickUpPlaces"
                 :options="pickUpDeliveryOptions"
                 class="cleft"
                 v-model="selectedPickUpPlace"
@@ -51,7 +51,7 @@
               </gtt-select>
               <gtt-select
                 v-model:openedLodging="deliveryOpened"
-                @click.native="loadDeliveryPlaces"
+                @click="loadDeliveryPlaces"
                 :options="pickUpDeliveryOptions"
                 v-model="selectedDeliveryPlace"
               >
@@ -121,7 +121,7 @@
               </div>
               <gtt-select
                 v-model:openedLodging="categoriesOpened"
-                @click.native="loadMarcas"
+                @click="loadMarcas"
                 :options="carsCategories"
                 v-model="selectedCarCategory"
                 :isDisabled="useSameCar"
@@ -435,7 +435,13 @@ async function editVehiculoOrder(item: any) {
 }
 
 async function searchResult() {
-  const iv = gttIsValid(gttValidate(), null as any);
+  const iv = gttIsValid(gttValidate(), {
+    $refs: {
+      gttDeliveryDate: gttDeliveryDate.value,
+      gttPickUpDate: gttPickUpDate.value,
+    },
+    selectedPickUpDate: selectedPickUpDate.value,
+  });
   if (getValid(iv)) {
     if (useSameCar.value) {
       await searchResultSameCar();
@@ -520,8 +526,8 @@ async function searchResult() {
         gttDeliveryDate: gttDeliveryDate.value,
         gttPickUpDate: gttPickUpDate.value,
       },
-      $children: [],
-    } as any);
+      selectedPickUpDate: selectedPickUpDate.value,
+    });
   }
 }
 </script>

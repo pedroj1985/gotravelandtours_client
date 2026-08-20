@@ -25,7 +25,7 @@
                   <div ref="gttLodging">
                     <gtt-select
                       v-model:openedLodging="lodgingOpened"
-                      @click.native="loadDestinies"
+                      @click="loadDestinies"
                       v-model="selectedDestiny"
                       :options="destinies"
                       :alignLeft="true"
@@ -373,7 +373,14 @@ function edited(value: any) {
 async function editVehiculoOrder(item: any) {}
 
 async function searchResult() {
-  const iv = gttIsValid(gttValidate(), null as any);
+  const iv = gttIsValid(gttValidate(), {
+    $refs: {
+      gttLodging: gttLodging.value,
+      gttStartDate: gttStartDate.value,
+      gttEndDate: gttEndDate.value,
+    },
+    dateIn: dateIn.value,
+  });
   if (getValid(iv)) {
     isReserving.value = true;
     let totalA = 0;
@@ -445,8 +452,8 @@ async function searchResult() {
         gttStartDate: gttStartDate.value,
         gttEndDate: gttEndDate.value,
       },
-      $children: [],
-    } as any);
+      dateIn: dateIn.value,
+    });
   }
 }
 

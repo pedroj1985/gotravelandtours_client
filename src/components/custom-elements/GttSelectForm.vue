@@ -5,7 +5,6 @@
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
-      :value="uValue"
     >
       <div class="gtt__toggle_content">
         <div class="gtt__toggle_text">
@@ -73,18 +72,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import GttSelect from "../custom-elements/GttSelect.vue";
 import { constructDisplay } from "../../utils/utils";
 
 const props = withDefaults(
-  defineProps<{ options?: any[]; value?: Record<string, any> | null }>(),
+  defineProps<{
+    options?: any[];
+    modelValue?: Record<string, any> | null;
+    value?: Record<string, any> | null;
+  }>(),
   {
+    modelValue: null,
     value: null,
   },
 );
 
-const emit = defineEmits<{ (e: "input", val: any): void }>();
+const emit = defineEmits<{
+  (e: "update:modelValue", val: any): void;
+  (e: "input", val: any): void;
+}>();
 
 const kids = ref<any[]>([]);
 const kidsAgeList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -95,7 +102,13 @@ const root = ref<HTMLElement | null>(null);
 const emitValue = ref<Record<string, any>>({});
 const finalValue = ref<any[]>([]);
 
-if (!props.value) {
+const boundValue = computed(() =>
+  props.modelValue !== null && props.modelValue !== undefined
+    ? props.modelValue
+    : props.value,
+);
+
+if (!boundValue.value) {
   for (let index = 0; index < (props.options || []).length; index++) {
     const opt = props.options![index];
     finalValue.value.push({
@@ -106,7 +119,7 @@ if (!props.value) {
     });
   }
 } else {
-  for (const item of Object.entries(props.value)) {
+  for (const item of Object.entries(boundValue.value)) {
     finalValue.value.push(item[1]);
   }
 }
@@ -116,7 +129,7 @@ finalValue.value.forEach((element) => {
 });
 
 watch(
-  () => props.value,
+  () => boundValue.value,
   (v) => {
     if (v) {
       finalValue.value = [];
@@ -141,7 +154,7 @@ function handleFocusOut(event?: Event) {
 }
 
 function uValue() {
-  emitValue.value = props.value || {};
+  emitValue.value = boundValue.value || {};
 }
 
 function updateValue(item: any) {
@@ -151,6 +164,7 @@ function updateValue(item: any) {
     label: item.label,
     value: item.value,
   };
+  emit("update:modelValue", emitValue.value);
   emit("input", emitValue.value);
 }
 

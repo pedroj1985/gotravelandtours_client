@@ -40,7 +40,7 @@
         <div class="selects-inline">
           <gtt-select
             v-model:openedLodging="pickUpOpened"
-            @click.native="loadPickUpPlaces"
+            @click="loadPickUpPlaces"
             :options="pickUpDeliveryOptions"
             class="cleft"
             v-model="selectedPickUpPlace"
@@ -68,7 +68,7 @@
           </gtt-select>
           <gtt-select
             v-model:openedLodging="deliveryOpened"
-            @click.native="loadDeliveryPlaces"
+            @click="loadDeliveryPlaces"
             :options="pickUpDeliveryOptions"
             v-model="selectedDeliveryPlace"
           >
@@ -166,7 +166,7 @@
           </div>
           <gtt-select
             v-model:openedLodging="categoriesOpened"
-            @click.native="loadMarcas"
+            @click="loadMarcas"
             :options="carsCategories"
             :nullable="true"
             v-model="selectedCarCategory"
@@ -376,7 +376,14 @@ function gttValidate() {
 }
 
 async function activateModal() {
-  let iv = gttIsValid(gttValidate());
+  let iv = gttIsValid(gttValidate(), {
+    $refs: {
+      gttTransmision: gttTransmision.value,
+      gttStartDate: gttStartDate.value,
+      gttEndDate: gttEndDate.value,
+    },
+    selectedStart: selectedStart.value,
+  });
   if (getValid(iv)) {
     try {
       isModalActive.value = true;
@@ -490,7 +497,7 @@ async function activateModal() {
         gttStartDate: gttStartDate.value,
         gttEndDate: gttEndDate.value,
       },
-      $children: [],
+      selectedStart: selectedStart.value,
     });
   }
 }

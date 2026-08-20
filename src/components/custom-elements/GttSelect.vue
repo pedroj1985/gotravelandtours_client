@@ -6,7 +6,7 @@
       ref="buttonToggle"
       @click="toggleClicked"
       @keydown="onToggleKeydown"
-      :value="updateValue"
+      :value="selectedValue"
       :disabled="isDisabled"
       role="combobox"
       :aria-expanded="isVisible"
@@ -103,6 +103,7 @@ const props = withDefaults(
     clickable?: boolean;
     opened?: boolean;
     searchFinished?: boolean;
+    modelValue?: any;
     value?: any;
     isDisabled?: boolean;
     nullable?: boolean;
@@ -121,6 +122,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: "update:openedLodging", val: boolean): void;
+  (e: "update:modelValue", val: any): void;
   (e: "input", val: any): void;
   (e: "update:searchQuery", val: string): void;
 }>();
@@ -128,7 +130,13 @@ const emit = defineEmits<{
 const isVisible = ref(props.opened);
 const searchQuery = ref("");
 const arrow = ref(true);
-const selectedValue = ref(props.value != null ? props.value : "");
+const selectedValue = ref(
+  props.modelValue !== undefined
+    ? props.modelValue
+    : props.value != null
+      ? props.value
+      : "",
+);
 const buttonToggle = ref<HTMLElement | null>(null);
 const root = ref<HTMLElement | null>(null);
 
@@ -159,9 +167,16 @@ const activeDescendant = computed(() => {
 });
 
 watch(
+  () => props.modelValue,
+  (val) => {
+    if (val !== undefined) selectedValue.value = val;
+  },
+);
+
+watch(
   () => props.value,
   (val) => {
-    selectedValue.value = val;
+    if (props.modelValue === undefined) selectedValue.value = val;
   },
 );
 
@@ -170,7 +185,12 @@ onMounted(() => {
 });
 
 function updateValue() {
-  selectedValue.value = props.value;
+  selectedValue.value =
+    props.modelValue !== undefined
+      ? props.modelValue
+      : props.value != null
+        ? props.value
+        : "";
 }
 
 async function toggleClicked() {
@@ -221,6 +241,7 @@ function emitOpen() {
 }
 
 function emitValue(value: any) {
+  emit("update:modelValue", value);
   emit("input", value);
 }
 </script>

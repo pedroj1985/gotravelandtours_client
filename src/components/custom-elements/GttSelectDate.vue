@@ -66,7 +66,7 @@
                 type="date"
                 :min="minDate"
                 :value="formatDateInput(dates)"
-                @change="onDateChange($event.target.value)"
+                @change="onStartDateChange($event.target.value)"
               />
             </label>
           </template>
@@ -90,7 +90,6 @@ import moment from "moment";
 const props = withDefaults(
   defineProps<{
     modelValue?: any;
-    value?: any;
     clickable?: boolean;
     opened?: boolean;
     dsb?: boolean;
@@ -108,7 +107,6 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: "input", val: any): void;
   (e: "update:modelValue", val: any): void;
 }>();
 
@@ -117,20 +115,17 @@ const arrow = ref(true);
 const dates = ref(
   props.modelValue !== undefined
     ? props.modelValue
-    : props.value !== undefined
-      ? props.value
-      : props.mode === "range"
-        ? { start: moment().toDate(), end: moment().add(1, "day").toDate() }
-        : moment().toDate(),
+    : props.mode === "range"
+      ? { start: moment().toDate(), end: moment().add(1, "day").toDate() }
+      : moment().toDate(),
 );
 
 const boundValue = computed({
   get() {
-    return props.modelValue !== undefined ? props.modelValue : props.value;
+    return props.modelValue;
   },
   set(value) {
     emit("update:modelValue", value);
-    emit("input", value);
   },
 });
 
@@ -167,8 +162,6 @@ function constructSingleDate(date: any) {
 function updateValue() {
   if (props.modelValue !== undefined) {
     dates.value = props.modelValue;
-  } else if (props.value !== undefined) {
-    dates.value = props.value;
   } else if (props.mode === "range") {
     dates.value = {
       start: moment().toDate(),
@@ -234,20 +227,7 @@ watch(
   },
 );
 
-watch(
-  () => props.value,
-  () => {
-    updateValue();
-  },
-);
-
 onMounted(() => {
-  if (import.meta.env.DEV) {
-    console.log(props.value);
-  }
-  if (import.meta.env.DEV) {
-    console.log(props.opened);
-  }
   isVisible.value = props.opened;
 });
 </script>

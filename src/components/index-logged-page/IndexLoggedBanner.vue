@@ -51,7 +51,7 @@
         <div ref="gttDestinyLodging" style="width: 100%">
           <gtt-select
             v-model:openedLodging="lodgingOpened"
-            @click.native="loadDestinies"
+            @click="loadDestinies"
             v-model="selectedLodgingDestinyValue"
             :options="destinies"
             :alignLeft="true"
@@ -407,7 +407,7 @@ function getRefsProxy() {
       gttStartDate: gttStartDate.value,
       gttEndDate: gttEndDate.value,
     },
-    $children: [],
+    selectedStartDate: selectedStartDate.value,
   };
 }
 
