@@ -224,7 +224,7 @@
                   :dsb="roomsToReserve.length > 0"
                   class="room-form-item"
                   :clickable="false"
-                  @click.native="changeClicked('fecha-entrada')"
+                  @click="changeClicked('fecha-entrada')"
                 >
                   <i
                     slot="iconSelectedValue"
@@ -240,7 +240,7 @@
                   :dsb="roomsToReserve.length > 0"
                   class="room-form-item"
                   :clickable="false"
-                  @click.native="changeClicked('fecha-salida')"
+                  @click="changeClicked('fecha-salida')"
                 >
                   >
                   <i
@@ -258,7 +258,7 @@
                   :rooms="totalRooms.value"
                   :dsb="roomsToReserve.length > 0"
                   :clickable="false"
-                  @click.native="changeClicked('visitantes')"
+                  @click="changeClicked('visitantes')"
                 >
                   <span slot="iconSelectedValue"
                     ><i class="mdi mdi-account"></i
@@ -270,7 +270,7 @@
                   v-model="totalRooms"
                   :isDisabled="roomsToReserve.length > 0"
                   :clickable="false"
-                  @click.native="changeClicked('habitaciones')"
+                  @click="changeClicked('habitaciones')"
                   class="room-form-item last"
                 >
                   <i slot="iconSelectedValue" class="mdi mdi-bed"></i>

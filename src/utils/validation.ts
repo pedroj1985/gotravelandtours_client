@@ -15,26 +15,26 @@ interface PassResult {
   passes: boolean;
 }
 
-export function gttIsValid(Validator: ValidatorElement[], vueInstance: Record<string, unknown> | null = null): ValidatorElement[] {
-  if (import.meta.env.DEV) { console.log(Validator); }
-  if (import.meta.env.DEV) { console.log(vueInstance); }
-  if (Validator.length == 8 && (vueInstance as Record<string, unknown>)["$children"] && ((vueInstance as Record<string, unknown>)["$children"] as unknown[]).length == 4) {
-    Validator.pop();
-    Validator.pop();
-    Validator.pop();
-  }
+export type ValidationContext = {
+  $refs?: Record<string, HTMLElement | null>;
+  [key: string]: unknown;
+};
 
-  return Validator.map(element => {
-    const passesArray = element.rules.map(item => {
-      return passes(item, element.value, element);
+export function gttIsValid(
+  Validator: ValidatorElement[],
+  context: ValidationContext | null = null,
+): ValidatorElement[] {
+  return Validator.map((element) => {
+    const passesArray = element.rules.map((item) => {
+      return passes(item, element.value, element, context);
     });
 
-    const p = passesArray.filter(item => {
+    const p = passesArray.filter((item) => {
       return item.passes == false;
     });
 
     if (p.length > 0) {
-      const pRequired = p.find(item => {
+      const pRequired = p.find((item) => {
         return item.ruleName == "required";
       });
 
@@ -45,7 +45,7 @@ export function gttIsValid(Validator: ValidatorElement[], vueInstance: Record<st
       }
 
       element["isValid"] = false;
-      const p_messages = p.map(item => {
+      const p_messages = p.map((item) => {
         return translateMessage(item.ruleName, element.lang);
       });
       element["messages"] = p_messages;
@@ -58,14 +58,19 @@ export function gttIsValid(Validator: ValidatorElement[], vueInstance: Record<st
 }
 
 export function getValid(val: ValidatorElement[]): boolean {
-  const r = val.find(i => {
+  const r = val.find((i) => {
     return i.isValid == false;
   });
 
   return !r;
 }
 
-function passes(ruleName: string, value: unknown, vueInstance: ValidatorElement | null = null): PassResult {
+function passes(
+  ruleName: string,
+  value: unknown,
+  element: ValidatorElement,
+  context: ValidationContext | null,
+): PassResult {
   let result: PassResult;
   const splittedRuleName = ruleName.split(":");
   switch (splittedRuleName[0]) {
@@ -86,10 +91,7 @@ function passes(ruleName: string, value: unknown, vueInstance: ValidatorElement 
           }
         }
       } else {
-        if (
-          (vueInstance as unknown as Record<string, unknown>)?.name == "gttLlegada" ||
-          (vueInstance as unknown as Record<string, unknown>)?.name == "gttSalida"
-        ) {
+        if (element.name == "gttLlegada" || element.name == "gttSalida") {
           const param = (value as string).split("-");
           if (
             param[0].length > 1 &&
@@ -116,7 +118,11 @@ function passes(ruleName: string, value: unknown, vueInstance: ValidatorElement 
     case "dateAfter":
       result = {
         ruleName: splittedRuleName[0],
-        passes: dateAfter(value as string, splittedRuleName[1] as string, vueInstance as unknown as Record<string, unknown> | null)
+        passes: dateAfter(
+          value as string,
+          splittedRuleName[1] as string,
+          context,
+        ),
       };
       break;
     default:
@@ -142,22 +148,18 @@ function translateMessage(ruleName: string, lang: string): string {
   return result;
 }
 
-export function renderValid(Validator: ValidatorElement[], vueInstance: { $refs: Record<string, HTMLElement>; $children: Array<{ $refs: Record<string, HTMLElement> }> }) {
-  Validator.forEach(element => {
-    let ref = vueInstance.$refs[element.name];
-
-    if (ref == null) {
-      vueInstance.$children.forEach(child => {
-        if (child.$refs[element.name]) ref = child.$refs[element.name];
-      });
-    }
-
+export function renderValid(
+  Validator: ValidatorElement[],
+  context: ValidationContext | null = null,
+) {
+  Validator.forEach((element) => {
+    const ref = context?.$refs?.[element.name];
     const errorsEl = ref?.querySelector(".gtt-errors");
     if (errorsEl) {
       errorsEl.textContent = "";
     }
     if (!element.isValid) {
-      element.messages?.forEach(item => {
+      element.messages?.forEach((item) => {
         if (errorsEl) {
           errorsEl.textContent += item + "\n";
         }
@@ -166,9 +168,13 @@ export function renderValid(Validator: ValidatorElement[], vueInstance: { $refs:
   });
 }
 
-function dateAfter(date: string, dateToCompare: string, vueInstance: Record<string, unknown> | null = null): boolean {
-  if (vueInstance) {
-    const d = vueInstance[dateToCompare] as string;
+function dateAfter(
+  date: string,
+  dateToCompare: string,
+  context: ValidationContext | null,
+): boolean {
+  if (context && context[dateToCompare] != null) {
+    const d = context[dateToCompare] as string;
     return moment(date) > moment(d);
   }
 

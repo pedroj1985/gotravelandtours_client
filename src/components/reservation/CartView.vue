@@ -417,7 +417,7 @@ function deleteItem(id: string) {
 }
 
 async function reserve() {
-  let iv = gttIsValid(gttValidate(), {} as any);
+  let iv = gttIsValid(gttValidate(), {});
   if (getValid(iv)) {
     let createInHotetec: any = {};
     let listaVehiculosOrden = getListaVehiculosOrden();
@@ -533,7 +533,7 @@ async function reserve() {
       toast("Ha ocurrido un problema con la orden", { type: "error" });
     }
   } else {
-    renderValid(iv, {} as any);
+    renderValid(iv, {});
   }
 }
 

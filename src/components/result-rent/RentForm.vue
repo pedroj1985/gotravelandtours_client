@@ -35,7 +35,7 @@
     <div class="cleft">
       <gtt-select
         v-model:openedLodging="pickUpOpened"
-        @click.native="loadPickUpPlaces"
+        @click="loadPickUpPlaces"
         :options="pickUpDeliveryOptions"
         class="cleft"
         v-model="selectedPickUpPlace"
@@ -67,7 +67,7 @@
     <div class="cleft">
       <gtt-select
         v-model:openedLodging="deliveryOpened"
-        @click.native="loadDeliveryPlaces"
+        @click="loadDeliveryPlaces"
         :options="pickUpDeliveryOptions"
         v-model="selectedDeliveryPlace"
       >
@@ -143,7 +143,7 @@
     </div>
     <gtt-select
       v-model:openedLodging="categoriesOpened"
-      @click.native="loadMarcas"
+      @click="loadMarcas"
       :options="carsCategories"
       class="cleft"
       v-model="selectedCarCategory"
@@ -225,10 +225,26 @@ import {
   transmissionTypes,
 } from "../../utils/utils";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import type { ValidationContext } from "../../utils/validation";
 import { cleanVO } from "../../composables/useCleanup";
 import moment from "moment";
 
 const router = useRouter();
+
+const gttPickUpDate = ref<HTMLElement | null>(null);
+const gttDeliveryDate = ref<HTMLElement | null>(null);
+const gttTransmision = ref<HTMLElement | null>(null);
+
+function getValidationContext(): ValidationContext {
+  return {
+    $refs: {
+      gttPickUpDate: gttPickUpDate.value,
+      gttDeliveryDate: gttDeliveryDate.value,
+      gttTransmision: gttTransmision.value,
+    },
+    selectedPickUpDate: selectedPickUpDate.value,
+  };
+}
 
 const props = defineProps<{
   propPickUpDate?: any;
@@ -304,7 +320,7 @@ function gttValidate() {
 }
 
 async function activateModal() {
-  let iv = gttIsValid(gttValidate(), { $el: null, $refs: {} } as any);
+  let iv = gttIsValid(gttValidate(), getValidationContext());
   if (getValid(iv)) {
     try {
       isModalActive.value = true;
@@ -395,7 +411,7 @@ async function activateModal() {
       });
     }
   } else {
-    renderValid(iv, { $el: null, $refs: {} } as any);
+    renderValid(iv, getValidationContext());
   }
 }
 

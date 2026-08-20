@@ -784,7 +784,7 @@ function cleanVO(orderParam: any) {
 }
 
 async function reserve() {
-  let iv = gttIsValid(gttValidate(), {} as any);
+  let iv = gttIsValid(gttValidate(), {});
   if (getValid(iv)) {
     let listaVehiculosOrden = getListaVehiculosOrden();
     listaVehiculosOrden.forEach((vo: any) => {
@@ -842,7 +842,7 @@ async function reserve() {
       });
     }
   } else {
-    renderValid(iv, {} as any);
+    renderValid(iv, {});
   }
 }
 

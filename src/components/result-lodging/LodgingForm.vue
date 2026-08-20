@@ -37,7 +37,7 @@
     <div ref="gttDestinyLodging">
       <gtt-select
         v-model:openedLodging="lodgingOpened"
-        @click.native="loadDestinies"
+        @click="loadDestinies"
         v-model="selectedLodgingDestinyValue"
         :options="destinies"
         :alignLeft="true"
@@ -173,12 +173,28 @@ import {
 } from "../../utils/utils";
 import { useLodging } from "../../composables/useLodging";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import type { ValidationContext } from "../../utils/validation";
 import { helpers } from "../../utils/helpers";
 import moment from "moment";
 
 const $helpers = helpers;
 const router = useRouter();
 const route = useRoute();
+
+const gttDestinyLodging = ref<HTMLElement | null>(null);
+const gttStartDate = ref<HTMLElement | null>(null);
+const gttEndDate = ref<HTMLElement | null>(null);
+
+function getValidationContext(): ValidationContext {
+  return {
+    $refs: {
+      gttDestinyLodging: gttDestinyLodging.value,
+      gttStartDate: gttStartDate.value,
+      gttEndDate: gttEndDate.value,
+    },
+    selectedArriveDate: selectedArriveDate.value,
+  };
+}
 
 const {
   searchResult,
@@ -295,11 +311,6 @@ watch(selectedNights, (i: number) => {
   );
 });
 
-watch(selectedLodgingDestinyValue, (i: any) => {
-  console.info("watch", i);
-  return i;
-});
-
 onMounted(async () => {
   let t = await authGetRoomTypes();
   todosTipo.value = t.data;
@@ -379,7 +390,7 @@ async function returnToPreviousSearch() {
 }
 
 async function activateModal() {
-  let iv = gttIsValid(gttValidate(), { $el: null, $refs: {} } as any);
+  let iv = gttIsValid(gttValidate(), getValidationContext());
   if (getValid(iv)) {
     isModalActive.value = true;
     await clearResults();
@@ -499,7 +510,7 @@ async function activateModal() {
       }
     }
   } else {
-    renderValid(iv, { $el: null, $refs: {} } as any);
+    renderValid(iv, getValidationContext());
   }
 }
 

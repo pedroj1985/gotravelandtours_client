@@ -4,7 +4,6 @@
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
-      :value="uValue"
       :disabled="dsb"
     >
       <div class="gtt__toggle_content">
@@ -91,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { clickOutside as vClickOutside } from "@/directives/clickOutside";
 import _ from "lodash";
 
@@ -101,6 +100,7 @@ const props = withDefaults(
     clickable?: boolean;
     opened?: boolean;
     options?: any[];
+    modelValue?: any[];
     value?: any[];
     rooms?: number;
   }>(),
@@ -113,6 +113,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
+  (e: "update:modelValue", val: any): void;
   (e: "input", val: any): void;
   (e: "roomAdded"): void;
   (e: "roomRemoved", index: number): void;
@@ -128,7 +129,11 @@ const emitValue = ref({});
 const finalValue = ref<any[]>([]);
 const roomsLayout = ref<any[]>([]);
 
-if (!props.value || props.value.length == 0) {
+const boundValue = computed(() =>
+  props.modelValue !== undefined ? props.modelValue : props.value,
+);
+
+if (!boundValue.value || boundValue.value.length == 0) {
   const r: any[] = [];
   for (let index = 1; index <= props.rooms; index++) {
     const Hs: any[] = [];
@@ -146,9 +151,19 @@ if (!props.value || props.value.length == 0) {
   roomsLayout.value = r;
   updateValue();
 } else {
-  roomsLayout.value = props.value;
+  roomsLayout.value = boundValue.value;
   updateValue();
 }
+
+watch(
+  () => boundValue.value,
+  (val) => {
+    if (val && val.length > 0 && val !== roomsLayout.value) {
+      roomsLayout.value = val;
+      updateValue();
+    }
+  },
+);
 if (import.meta.env.DEV) {
   console.log(roomsLayout.value);
 }
@@ -201,10 +216,11 @@ function handleFocusOut(event?: Event) {
 }
 
 function uValue() {
-  emitValue.value = props.value || [];
+  emitValue.value = boundValue.value || [];
 }
 
 function updateValue(item?: any) {
+  emit("update:modelValue", roomsLayout.value);
   emit("input", roomsLayout.value);
 }
 
