@@ -170,19 +170,23 @@ onMounted(async () => {
     if (f) {
       filters.value = JSON.parse(f);
     }
-    let r = route.params["searchResult"] as any;
-    if (r) {
-      let temp = r;
+
+    let temp: any = null;
+    const persisted = await searchPrev();
+    if (Array.isArray(persisted) && persisted.length > 0) {
+      temp = persisted;
+    } else {
+      const r = route.params["searchResult"] as any;
+      if (Array.isArray(r) && r.length > 0) {
+        temp = r;
+      }
+    }
+
+    if (temp) {
       createList(temp);
       resultTotal.value = resultList.value.length;
     } else {
-      let temp = await searchCResult();
-      if (temp) {
-        createList(temp);
-        resultTotal.value = resultList.value.length;
-      } else {
-        dataLoaded.value = true;
-      }
+      dataLoaded.value = true;
     }
   } catch (error) {
     hasError.value = true;
@@ -224,7 +228,10 @@ function setResultTotal(value: number) {
 }
 
 function createList(list: any[]) {
-  resultList.value = list || [];
+  resultList.value = (list || []).map((item) => ({
+    ...item,
+    habitaciones: Array.isArray(item?.habitaciones) ? item.habitaciones : [],
+  }));
   dataLoaded.value = true;
 }
 

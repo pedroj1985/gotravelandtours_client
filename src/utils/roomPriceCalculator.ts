@@ -145,23 +145,32 @@ export async function calculateRoomPrices(
                 display += `${element.cantidad}x${element.tipoHabitacionNombre} | `;
               });
 
-              const planA = await authGetLodgingEatingPlanOne(
-                lpa.PlanesAlimenticiosId as number | string
-              );
-              listadoPrecios.push({
-                name: j.Nombre,
-                habitacion: j,
-                planAlimenticioCodigo: (planA.data as Record<string, unknown>).Codigo,
-                planAlimenticioNombre: (planA.data as Record<string, unknown>).Nombre,
-                planAlimenticio: lpa.PlanesAlimenticiosId,
-                hotelecData: hotelecData,
-                IsSinContrato: lodgingItem.IsSinContrato,
-                combinacion: {
-                  total: totalPrice,
-                  display: display,
-                  listado: listadoPorTipo
+              try {
+                const planA = await authGetLodgingEatingPlanOne(
+                  lpa.PlanesAlimenticiosId as number | string
+                );
+                listadoPrecios.push({
+                  name: j.Nombre,
+                  habitacion: j,
+                  planAlimenticioCodigo: (planA.data as Record<string, unknown>).Codigo,
+                  planAlimenticioNombre: (planA.data as Record<string, unknown>).Nombre,
+                  planAlimenticio: lpa.PlanesAlimenticiosId,
+                  hotelecData: hotelecData,
+                  IsSinContrato: lodgingItem.IsSinContrato,
+                  combinacion: {
+                    total: totalPrice,
+                    display: display,
+                    listado: listadoPorTipo
+                  }
+                });
+              } catch (_e) {
+                if (import.meta.env.DEV) {
+                  console.error(
+                    "Error obteniendo plan alimenticio:",
+                    lpa.PlanesAlimenticiosId
+                  );
                 }
-              });
+              }
             }
           })
         );

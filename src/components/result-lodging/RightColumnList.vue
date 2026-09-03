@@ -89,7 +89,7 @@ watch(
       currentList.value = _.orderBy(
         currentList.value,
         (o: any) => {
-          let r = getMinPrice(o.habitaciones).combinacion.total;
+          let r = getMinPrice(o.habitaciones)?.combinacion?.total ?? 0;
           return r;
         },
         "desc",
@@ -98,7 +98,7 @@ watch(
       currentList.value = _.orderBy(
         currentList.value,
         (o: any) => {
-          return getMinPrice(o.habitaciones).combinacion.total;
+          return getMinPrice(o.habitaciones)?.combinacion?.total ?? 0;
         },
         "asc",
       );
@@ -121,8 +121,11 @@ function getList(page: number) {
 }
 
 function getMinPrice(array: any[]) {
+  if (!Array.isArray(array) || array.length === 0) {
+    return undefined;
+  }
   return _.minBy(array, function (e: any) {
-    return e.combinacion.total;
+    return e.combinacion?.total ?? 0;
   });
 }
 </script>

@@ -29,35 +29,45 @@ export async function searchResult(
 
   await Promise.all(
     (data as Array<Record<string, unknown>>).map(async i => {
-      if ((i.Alojamiento as Record<string, unknown>).ReferenciaHotetecId !== null) {
-        const rooms = await authSearchRoomsByLodging((i.Alojamiento as Record<string, unknown>).ProductoId as number);
-        const img = await authGetImage((i.Alojamiento as Record<string, unknown>).ProductoId as number);
-        const fullLodging = await authGetLodging((i.Alojamiento as Record<string, unknown>).ProductoId as number);
+      try {
+        if ((i.Alojamiento as Record<string, unknown>).ReferenciaHotetecId !== null) {
+          const rooms = await authSearchRoomsByLodging((i.Alojamiento as Record<string, unknown>).ProductoId as number);
+          const img = await authGetImage((i.Alojamiento as Record<string, unknown>).ProductoId as number);
+          const fullLodging = await authGetLodging((i.Alojamiento as Record<string, unknown>).ProductoId as number);
 
-        const listadoPrecios = await calculateRoomPrices(
-          rooms,
-          fullLodging,
-          searchItem,
-          currentHotelec,
-          resultadoAcomodacion,
-          i
-        );
+          const listadoPrecios = await calculateRoomPrices(
+            rooms,
+            fullLodging,
+            searchItem,
+            currentHotelec,
+            resultadoAcomodacion,
+            i
+          );
 
-        const ro = {
-          tipo: "lodging",
-          entrada: searchItem.Entrada,
-          salida: searchItem.Salida,
-          name: (fullLodging.data as Record<string, unknown>).Nombre,
-          stars: (fullLodging.data as Record<string, unknown>).NumeroEstrellas,
-          location: (fullLodging.data as Record<string, unknown>).Direccion,
-          images: [(img.data as Record<string, unknown>).ImageContent],
-          acomodation: resultadoAcomodacion,
-          habitaciones: listadoPrecios,
-          planesAlimenticios: (fullLodging.data as Record<string, unknown>).ListaPlanesAlimenticios,
-          lodging: i.Alojamiento
-        };
+          const ro = {
+            tipo: "lodging",
+            entrada: searchItem.Entrada,
+            salida: searchItem.Salida,
+            name: (fullLodging.data as Record<string, unknown>).Nombre,
+            stars: (fullLodging.data as Record<string, unknown>).NumeroEstrellas,
+            location: (fullLodging.data as Record<string, unknown>).Direccion,
+            images: [(img.data as Record<string, unknown>).ImageContent],
+            acomodation: resultadoAcomodacion,
+            habitaciones: listadoPrecios,
+            planesAlimenticios: (fullLodging.data as Record<string, unknown>).ListaPlanesAlimenticios,
+            lodging: i.Alojamiento
+          };
 
-        resultList.push(ro);
+          resultList.push(ro);
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error(
+            "Error procesando alojamiento en la búsqueda:",
+            (i.Alojamiento as Record<string, unknown>).ProductoId,
+            error
+          );
+        }
       }
     })
   );

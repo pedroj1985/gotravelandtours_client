@@ -201,7 +201,6 @@ const {
   searchPrev,
   searchPreviousResult,
   getResults,
-  getSearchResults,
   clearResults,
   roomCombination,
   buildCombo,
@@ -315,9 +314,9 @@ onMounted(async () => {
   let t = await authGetRoomTypes();
   todosTipo.value = t.data;
   selectedRoomLayout.value = props.propRoomLayout;
-  getSearchResults().then((res: any) => {
+  getResults().then((res: any) => {
     if (import.meta.env.DEV) {
-      console.log("getSearchResults", res);
+      console.log("getResults", res);
     }
     if (
       Array.isArray(res) &&

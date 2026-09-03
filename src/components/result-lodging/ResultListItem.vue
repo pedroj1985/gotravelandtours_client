@@ -152,7 +152,7 @@
     <div
       class="open-close-button"
       @click="openList"
-      v-if="item.habitaciones.length > 2"
+      v-if="item.habitaciones && item.habitaciones.length > 2"
     >
       <i
         class="mdi"
@@ -194,7 +194,8 @@ const limit = ref(2);
 const disabledItems = ref(false);
 
 const filteredItems = computed(() => {
-  return props.item.habitaciones.slice(0, limit.value);
+  const habitaciones = props.item?.habitaciones || [];
+  return habitaciones.slice(0, limit.value);
 });
 
 function blockingOthers(status: boolean) {
@@ -226,14 +227,18 @@ function reserve(i: any, cant: number) {
 }
 
 function getMinPrice(array: any[]) {
+  if (!Array.isArray(array) || array.length === 0) {
+    return undefined;
+  }
   return _.minBy(array, function (e: any) {
-    return e.combinacion.listado[0].precioObjOne.PrecioOrden;
+    return e.combinacion?.listado?.[0]?.precioObjOne?.PrecioOrden ?? 0;
   });
 }
 
 function openList() {
+  const habitaciones = props.item?.habitaciones || [];
   if (!isOpen.value) {
-    limit.value = props.item.habitaciones.length;
+    limit.value = habitaciones.length || 2;
   } else {
     limit.value = 2;
   }
