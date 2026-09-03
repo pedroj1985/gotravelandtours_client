@@ -9,7 +9,9 @@
       v-bind:type="type"
       v-bind:placeholder="placeholder"
       v-bind:value="modelValue"
-      v-on:input="$emit('update:modelValue', $event.target.value)"
+      v-on:input="
+        $emit('update:modelValue', ($event.target as HTMLInputElement).value)
+      "
       v-bind:disabled="disabled"
       v-bind:maxlength="maxlength"
       v-bind:autocomplete="autocomplete"

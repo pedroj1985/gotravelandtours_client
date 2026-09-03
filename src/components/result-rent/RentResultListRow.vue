@@ -137,9 +137,11 @@ const diffDays = ref(false);
 
 filters.value = JSON.parse(localStorage.getItem("searchRentFilters") || "null");
 
-diffDaysEmitter.on("diffDays", (i: boolean) => {
-  diffDays.value = i;
-});
+function onDiffDays(i: unknown) {
+  diffDays.value = i as boolean;
+}
+
+diffDaysEmitter.on("diffDays", onDiffDays);
 
 onMounted(() => {
   verifyDifferentsDates({
@@ -149,7 +151,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  diffDaysEmitter.off("diffDays");
+  diffDaysEmitter.off("diffDays", onDiffDays);
 });
 
 function addToCartAndGoTo() {
@@ -179,7 +181,7 @@ function addToCart() {
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = Math.round((number - intPart) * 100);
+  let decimalPart: number | string = Math.round((number - intPart) * 100);
   if (decimalPart == 0) decimalPart = "00";
   return { intPart, decimalPart };
 }

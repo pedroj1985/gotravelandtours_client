@@ -8,8 +8,8 @@
   >
     <swiper-slide
       class="wrapper service-c"
-      v-for="destiny in destinies"
-      :key="destiny.id"
+      v-for="(destiny, i) in destinies"
+      :key="i"
     >
       <div class="dest">
         <img

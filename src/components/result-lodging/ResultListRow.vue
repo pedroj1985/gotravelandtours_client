@@ -315,7 +315,7 @@ function validate() {
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = Math.round((number - intPart) * 100);
+  let decimalPart: number | string = Math.round((number - intPart) * 100);
   if (decimalPart == 0) decimalPart = "00";
   return { intPart, decimalPart };
 }
@@ -334,7 +334,7 @@ function findPrecio(item: any, listadoPrecios: any[]) {
     todosTiposHabitaciones.value,
   );
   let r = listadoPrecios.find((i: any) => {
-    return i.tipoHabitacion == tipoHabitacion.TipoHabitacionId;
+    return i.tipoHabitacion == tipoHabitacion!.TipoHabitacionId;
   });
   return r?.price;
 }

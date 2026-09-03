@@ -5,7 +5,7 @@
         style="margin-bottom: 30px"
         class="current-car font16 hn-roman gtt-first-color"
       >
-        <b>Auto actual:</b> <span>{{ displayName(currentCar) }}</span>
+        <b>Auto actual:</b> <span>{{ displayName(currentCar as string) }}</span>
       </div>
       <button type="button" class="ml-auto btn-close" @click="$emit('close')">
         <i class="mdi mdi-close"></i>
@@ -43,6 +43,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "selectedElementEdit", value: any): void;
+  (e: "close"): void;
 }>();
 
 const isLoadingEverything = ref(false);

@@ -36,7 +36,7 @@
             </div>
             <div class="hotel-price hn-roman">
               <div class="desde-word">desde</div>
-              {{ styledPrice(hotel.min_price.value).intPart }}
+              {{ styledPrice(Number(hotel.min_price.value)).intPart }}
               <span class="currency">{{ hotel.min_price.currency }}</span>
             </div>
             <div class="hotel-reserve">
@@ -72,6 +72,7 @@ interface HotelMinPrice {
 }
 
 interface Hotel {
+  id?: number;
   name: string;
   stars: string;
   min_price: HotelMinPrice;
@@ -81,6 +82,7 @@ interface Hotel {
 
 const hotels: Hotel[] = [
   {
+    id: 1,
     name: "Hotel Jagua by Melia Hotels International",
     stars: "4",
     min_price: {
@@ -95,6 +97,7 @@ const hotels: Hotel[] = [
     },
   },
   {
+    id: 2,
     name: "Iberostar Gran Hotel Packard",
     stars: "5",
     min_price: {
@@ -109,6 +112,7 @@ const hotels: Hotel[] = [
     },
   },
   {
+    id: 3,
     name: "Melia Internacional Varadero All Inclusive",
     stars: "5",
     min_price: {
@@ -154,7 +158,8 @@ const hotels: Hotel[] = [
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = (number - intPart).toFixed(2) * 100;
+  let decimalPart: number | string =
+    Number((number - intPart).toFixed(2)) * 100;
 
   if (decimalPart == 0) decimalPart = "00";
 

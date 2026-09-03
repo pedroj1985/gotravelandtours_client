@@ -7,11 +7,7 @@
       :pagination="{ clickable: true }"
       :modules="swiperModules"
     >
-      <swiper-slide
-        class="service-c"
-        v-for="service in services"
-        :key="service.id"
-      >
+      <swiper-slide class="service-c" v-for="(service, i) in services" :key="i">
         <div class="service">
           <img :src="'img/' + service.image" :alt="service.name" />
           <div class="service-content-container">
@@ -25,11 +21,7 @@
             <hr />
             <div class="service-prices hn-roman">
               <div class="hd">Rango de precios:</div>
-              <div
-                class="price"
-                v-for="price in service.prices"
-                :key="price.id"
-              >
+              <div class="price" v-for="(price, j) in service.prices" :key="j">
                 <span class="currency hn-ltcn">{{ price.currency }}</span>
                 <span class="price-interval hn-mdcn"
                   >{{ styledPrice(price.min).intPart }} -
@@ -201,7 +193,8 @@ const services: Service[] = [
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = (number - intPart).toFixed(2) * 100;
+  let decimalPart: number | string =
+    Number((number - intPart).toFixed(2)) * 100;
 
   if (decimalPart == 0) decimalPart = "00";
 

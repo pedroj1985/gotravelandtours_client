@@ -3,7 +3,9 @@
     <ul class="cbreadcrumb-list">
       <li
         class="cbreadcrumb-item"
-        :class="{ 'no-last': Object.keys(elementList).length - 1 != i }"
+        :class="{
+          'no-last': elementList && Object.keys(elementList).length - 1 != i,
+        }"
         v-for="(item, i) in elementList"
         :key="item.id"
       >

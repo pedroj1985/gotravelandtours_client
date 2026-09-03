@@ -5,7 +5,7 @@
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
-      :value="updateValue"
+      :value="undefined"
       :disabled="dsb"
     >
       <div class="gtt__toggle_content">
@@ -47,7 +47,9 @@
                 type="date"
                 :min="minDate"
                 :value="formatDateInput(dates.start)"
-                @change="onStartDateChange($event.target.value)"
+                @change="
+                  onStartDateChange(($event.target as HTMLInputElement).value)
+                "
               />
             </label>
             <label class="gtt__date_input">
@@ -56,7 +58,9 @@
                 type="date"
                 :min="formatDateInput(dates.start || minDate)"
                 :value="formatDateInput(dates.end)"
-                @change="onEndDateChange($event.target.value)"
+                @change="
+                  onEndDateChange(($event.target as HTMLInputElement).value)
+                "
               />
             </label>
           </template>
@@ -66,7 +70,9 @@
                 type="date"
                 :min="minDate"
                 :value="formatDateInput(dates)"
-                @change="onStartDateChange($event.target.value)"
+                @change="
+                  onStartDateChange(($event.target as HTMLInputElement).value)
+                "
               />
             </label>
           </template>

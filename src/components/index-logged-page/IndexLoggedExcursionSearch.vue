@@ -25,7 +25,7 @@
       <template v-slot:searching-fields>
         <div class="searching-fields">
           <div v-if="selectedDate">
-            para el {{ constructDate(selectedDate) }}
+            para el {{ constructDate(selectedDate.toDate()) }}
           </div>
           <div v-if="selectedPassengers">
             para {{ constructDisplay(selectedPassengers) }}

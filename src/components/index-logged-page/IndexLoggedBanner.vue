@@ -218,6 +218,18 @@ import {
 import { helpers } from "../../utils/helpers";
 import { useLodging } from "../../composables/useLodging";
 import { gttIsValid, renderValid, getValid } from "../../utils/validation";
+import type { RoomLayout } from "../../types/visitor";
+
+interface DestinyItem {
+  nombre: string;
+  id: string | number;
+  type: string;
+}
+
+interface CountryItem {
+  nombre: string;
+  flag: string;
+}
 
 const router = useRouter();
 
@@ -263,14 +275,14 @@ const isModalActive = ref(false);
 const lodgingOpened = ref(false);
 const defaultFlagImgPath = "img/flags/";
 const todosTipo = ref<unknown[]>([]);
-const selectedLodgingDestinyValue = ref("");
-const selectedRoomLayout = ref(null);
-const selectedStartDate = ref(new Date(moment().add(4, "days")));
-const selectedEndDate = ref(new Date(moment().add(7, "days")));
-const selectedNationality = ref(null);
-const destinies = ref<unknown[]>([]);
+const selectedLodgingDestinyValue = ref<DestinyItem | null>(null);
+const selectedRoomLayout = ref<any>(null);
+const selectedStartDate = ref(moment().add(4, "days").toDate());
+const selectedEndDate = ref(moment().add(7, "days").toDate());
+const selectedNationality = ref<CountryItem | null>(null);
+const destinies = ref<DestinyItem[]>([]);
 const selectedNights = ref(3);
-const roomComb = ref<unknown>(null);
+const roomComb = ref<RoomLayout | string>(null as any);
 const roomLayout = [
   {
     code: "adults",
@@ -334,7 +346,7 @@ watch(selectedStartDate, (item) => {
 
 watch(selectedNights, (item) => {
   selectedEndDate.value = new Date(
-    moment(selectedStartDate.value).add(item, "days"),
+    moment(selectedStartDate.value).add(item, "days").toDate(),
   );
 });
 
@@ -369,14 +381,14 @@ function gttValidate() {
 
 async function loadDestinies() {
   if (lodgingOpened.value == true) {
-    let totalResult: unknown[] = [];
+    let totalResult: DestinyItem[] = [];
     let l = await authGetHotelList();
     l.data.forEach(
       (i: { Nombre: unknown; IdObjeto: unknown; TipoObjeto: unknown }) => {
         totalResult = totalResult.concat({
-          nombre: i.Nombre,
-          id: i.IdObjeto,
-          type: i.TipoObjeto,
+          nombre: i.Nombre as string,
+          id: i.IdObjeto as string | number,
+          type: i.TipoObjeto as string,
         });
       },
     );
@@ -415,13 +427,14 @@ async function activateModal() {
   let iv = gttIsValid(gttValidate(), getRefsProxy());
   if (getValid(iv)) {
     isModalActive.value = true;
+    const destiny = selectedLodgingDestinyValue.value!;
     await clearResults();
-    if (selectedLodgingDestinyValue.value.type == "RGN") {
+    if (destiny.type == "RGN") {
       if (import.meta.env.DEV) {
         console.log("RGN");
       }
       let region = {
-        RegionId: selectedLodgingDestinyValue.value.id,
+        RegionId: destiny.id,
       };
       let cliente = { ClienteId: localStorage.getItem("cliente") };
       let searchItem = {
@@ -431,10 +444,10 @@ async function activateModal() {
         Cliente: cliente,
       };
       let searchFilters = {
-        Destiny: selectedLodgingDestinyValue.value,
+        Destiny: destiny,
         Region: {
-          RegionId: selectedLodgingDestinyValue.value.id,
-          RegionNombre: selectedLodgingDestinyValue.value.nombre,
+          RegionId: destiny.id,
+          RegionNombre: destiny.nombre,
         },
         Cliente: { ClienteId: localStorage.getItem("cliente") },
         Entrada: selectedStartDate.value,
@@ -442,7 +455,7 @@ async function activateModal() {
         Visitantes: selectedRoomLayout.value,
         Nacionalidad: selectedNationality.value,
       };
-      let resultList: unknown[] = [];
+      let resultList: any[] = [];
       try {
         if (
           searchFilters.Visitantes.adults.value >=
@@ -463,9 +476,10 @@ async function activateModal() {
           searchFilters.Visitantes.kids.value || 0,
         );
         if (roomComb.value != "ERROR") {
+          const roomCombo = roomComb.value as RoomLayout;
           resultList = await search(
             searchItem,
-            roomComb.value,
+            roomCombo,
             roomComb2,
             todosTipo.value,
             helpers,
@@ -496,13 +510,13 @@ async function activateModal() {
           type: "error",
         });
       }
-    } else if (selectedLodgingDestinyValue.value.type == "HTL") {
+    } else if (destiny.type == "HTL") {
       if (import.meta.env.DEV) {
         console.log("HTL");
       }
       let searchFilters = {
-        Destiny: selectedLodgingDestinyValue.value,
-        NombreHotel: selectedLodgingDestinyValue.value.nombre,
+        Destiny: destiny,
+        NombreHotel: destiny.nombre,
         Cliente: { ClienteId: localStorage.getItem("cliente") },
         Entrada: selectedStartDate.value,
         Salida: selectedEndDate.value,
@@ -525,11 +539,7 @@ async function activateModal() {
           );
         }
         if (roomComb.value != "ERROR") {
-          goToDetail(
-            searchFilters,
-            roomComb.value,
-            selectedLodgingDestinyValue.value.id,
-          );
+          goToDetail(searchFilters, roomComb.value, destiny.id);
         } else {
           desactivateModal();
           toast("Demasiados niños", {
@@ -551,7 +561,7 @@ async function activateModal() {
   }
 }
 
-function goToDetail(f: unknown, a: unknown, id: unknown) {
+function goToDetail(f: unknown, a: unknown, id: string | number) {
   localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
   localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
   router.push({

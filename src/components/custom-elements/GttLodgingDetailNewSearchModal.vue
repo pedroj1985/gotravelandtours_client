@@ -111,13 +111,14 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: "searched", val: any): void;
   (e: "errorC"): void;
+  (e: "modalCancel", val: any): void;
 }>();
 
 const roomsOpt = ref<any[]>([]);
 const roomsResult = ref<any[]>([]);
 const dateIn = ref(props.inDate ?? null);
 const dateOut = ref(props.outDate ?? null);
-const selectedRoomLayout = ref(props.sRL ?? null);
+const selectedRoomLayout = ref<any[]>(props.sRL ?? []);
 const totalRooms = ref(props.tR ?? null);
 const loading = ref(false);
 const cI = ref(props.clickedItem);
@@ -127,7 +128,7 @@ const roomLayout = [
 ];
 
 roomsOpt.value = generateRooms();
-selectedRoomLayout.value = props.sRL ?? null;
+selectedRoomLayout.value = props.sRL ?? [];
 totalRooms.value = props.tR ?? null;
 dateIn.value = props.inDate ?? null;
 dateOut.value = props.outDate ?? null;

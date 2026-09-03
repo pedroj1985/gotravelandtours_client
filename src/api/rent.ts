@@ -1,7 +1,6 @@
 import HTTP from "./client";
-import type { RentSearchItem } from "../types/rent";
 
-export function authSearchCars(searchItem: RentSearchItem) {
+export function authSearchCars(searchItem: Record<string, unknown>) {
   return HTTP.post("/Vehiculoes/BuscarOrden", searchItem);
 }
 

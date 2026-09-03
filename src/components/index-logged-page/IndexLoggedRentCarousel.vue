@@ -8,8 +8,8 @@
     >
       <swiper-slide
         class="index-logged-car-wrapper"
-        v-for="car in cars"
-        :key="car.id"
+        v-for="(car, i) in cars"
+        :key="i"
       >
         <div class="index-logged-car">
           <img :src="'img/' + car.img" :alt="car.model_name" />
@@ -60,7 +60,7 @@
             </div>
             <div class="car-price hn-roman">
               <span class="from-word">desde</span>
-              {{ styledPrice(car.min_price.value).intPart }}
+              {{ styledPrice(Number(car.min_price.value)).intPart }}
               <span class="currency">{{ car.min_price.currency }}</span>
             </div>
           </div>
@@ -187,7 +187,8 @@ function isSelected(word: string, list: string[]) {
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = (number - intPart).toFixed(2) * 100;
+  let decimalPart: number | string =
+    Number((number - intPart).toFixed(2)) * 100;
 
   if (decimalPart == 0) decimalPart = "00";
 

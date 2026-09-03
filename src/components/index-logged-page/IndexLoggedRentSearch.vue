@@ -31,7 +31,9 @@
             }}
             días)
           </div>
-          <div v-if="selectedCarCategory">{{ selectedCarCategory.nombre }}</div>
+          <div v-if="selectedCarCategory">
+            {{ (selectedCarCategory as { nombre?: string }).nombre }}
+          </div>
         </div>
       </template>
     </GttModalSearch>
@@ -141,7 +143,7 @@
         <div class="selects-inline">
           <div ref="gttTransmision" class="cleft" style="width: 100%">
             <gtt-select
-              :options="transmissionTypes()"
+              :options="transmissionTypes"
               v-model="selectedTransmissionType"
             >
               <template v-slot:iconSelectedValue>
@@ -219,11 +221,11 @@
             </template>
             <template v-slot:selectedPlaceholder>
               <img
-                :src="defaultFlagImgPath + selectedNationality.flag"
-                :alt="selectedNationality.nombre + 'flag'"
+                :src="defaultFlagImgPath + selectedNationality?.flag"
+                :alt="selectedNationality?.nombre + 'flag'"
                 class="select-flag"
               />
-              {{ selectedNationality.nombre }}
+              {{ selectedNationality?.nombre }}
             </template>
           </gtt-select>
           <div class="form-actions text-right">
@@ -289,14 +291,33 @@ const categoriesOpened = ref(false);
 const countriesOpened = ref(false);
 const isModalActive = ref(false);
 const defaultFlagImgPath = "img/flags/";
-const selectedStart = ref(new Date(moment()));
-const selectedEnd = ref(new Date(moment().add(1, "days")));
+const selectedStart = ref(new Date(moment().toDate()));
+const selectedEnd = ref(new Date(moment().add(1, "days").toDate()));
 const selectedNights = ref(1);
-const selectedPickUpPlace = ref(null);
-const selectedDeliveryPlace = ref(null);
-const selectedCarCategory = ref("");
-const selectedNationality = ref(null);
-const selectedTransmissionType = ref(null);
+interface PlaceOption {
+  nombre: string;
+  regionid?: unknown;
+  puntointeresid?: unknown;
+  type?: string;
+}
+interface CategoryOption {
+  nombre: string;
+  marcaid?: unknown;
+  type?: string;
+}
+interface CountryOption {
+  nombre: string;
+  flag: string;
+}
+interface TransmissionOption {
+  nombre: string;
+  display: string;
+}
+const selectedPickUpPlace = ref<PlaceOption | null>(null);
+const selectedDeliveryPlace = ref<PlaceOption | null>(null);
+const selectedCarCategory = ref<CategoryOption | string>("");
+const selectedNationality = ref<CountryOption | null>(null);
+const selectedTransmissionType = ref<TransmissionOption | null>(null);
 const countries = [
   {
     nombre: "Afganistán",
@@ -336,13 +357,15 @@ watch(selectedStart, () => {
 });
 
 watch(selectedNights, (item) => {
-  selectedEnd.value = new Date(moment(selectedStart.value).add(item, "days"));
+  selectedEnd.value = new Date(
+    moment(selectedStart.value).add(item, "days").toDate(),
+  );
 });
 
 function cleanVOFn(
-  order: unknown,
-  pickUpPlace?: unknown,
-  DeliveryPlace?: unknown,
+  order: Record<string, unknown>,
+  pickUpPlace?: Record<string, unknown> | null,
+  DeliveryPlace?: Record<string, unknown> | null,
 ) {
   cleanVO(
     order,
@@ -392,15 +415,16 @@ async function activateModal() {
         selectedCarCategory.value ||
         selectedCarCategory.value != "ALL_ITEMS"
       ) {
+        const cat = selectedCarCategory.value as CategoryOption;
         marca = {
-          MarcaId: selectedCarCategory.value.marcaid,
-          Nombre: selectedCarCategory.value.nombre,
+          MarcaId: cat.marcaid,
+          Nombre: cat.nombre,
         };
       } else {
         marca = undefined;
       }
       let cliente = { ClienteId: localStorage.getItem("cliente") };
-      let transmissionType = selectedTransmissionType.value.nombre;
+      let transmissionType = selectedTransmissionType.value?.nombre;
       let searchItem = {
         FechaRecogida: moment(selectedStart.value).format("YYYY-MM-D"),
         FechaEntrega: moment(selectedEnd.value).format("YYYY-MM-D"),
@@ -408,7 +432,7 @@ async function activateModal() {
         TipoTransmision: transmissionType,
         Cliente: cliente,
       };
-      let resultList: unknown[] = [];
+      let resultList: any[] = [];
       let { data } = await authSearchCars(searchItem);
       await Promise.all(
         data
@@ -418,7 +442,7 @@ async function activateModal() {
           .map(
             async (item: {
               Vehiculo: {
-                ProductoId: unknown;
+                ProductoId: string | number;
                 Nombre: unknown;
                 CantidadPlazas: unknown;
                 Descripcion: unknown;
@@ -426,8 +450,8 @@ async function activateModal() {
                 TieneSeguro: unknown;
                 TipoTransmision: unknown;
                 ModeloId: unknown;
-                MarcaId: unknown;
-                ProveedorId: unknown;
+                MarcaId: string | number;
+                ProveedorId: string | number;
               };
               PrecioOrden: unknown;
               Distribuidor: { Nombre: unknown; DistribuidorId: unknown };

@@ -14,7 +14,7 @@ defineOptions({ name: "GttButton" });
 
 withDefaults(
   defineProps<{
-    type?: string;
+    type?: "reset" | "button" | "submit";
     disabled?: boolean;
   }>(),
   {

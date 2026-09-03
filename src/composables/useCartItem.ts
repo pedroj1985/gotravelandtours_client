@@ -1,7 +1,7 @@
 import { useCartStore } from "../stores/cartStore";
 
 interface Helpers {
-  shoppingCartAdd: (item: unknown) => void;
+  shoppingCartAdd: (item: any) => void;
 }
 
 export function addToCartItem(item: Record<string, unknown>, i: { combinacion: { listado: Array<{ precioObjOne: Record<string, unknown> }>; total: number } }, cant: number, helpers: Helpers) {

@@ -101,6 +101,14 @@ import { storageService } from "../../utils/storageService";
 defineOptions({ name: "IndexBanner" });
 
 const router = useRouter();
+interface LoginData {
+  rol: string;
+  token: string;
+  nombre: string;
+  Id: string | number;
+  clienteId: string | number;
+  fechaF: string;
+}
 
 const swiperModules = [Navigation, Pagination, Autoplay];
 const loading = ref(false);
@@ -134,14 +142,15 @@ function login() {
   };
   loading.value = true;
   authLogin(user)
-    .then(({ data }) => {
+    .then((res) => {
+      const data = res.data as unknown as LoginData;
       const { rol } = data;
 
       if (rol == "Cliente") {
         storageService.setToken(data.token);
         localStorage.setItem("nombre", data.nombre);
-        localStorage.setItem("userid", data.Id);
-        localStorage.setItem("cliente", data.clienteId);
+        localStorage.setItem("userid", String(data.Id));
+        localStorage.setItem("cliente", String(data.clienteId));
         localStorage.setItem("fecha_exp", data.fechaF);
         authLog({
           Fecha: moment().format(),
@@ -163,7 +172,9 @@ function login() {
             let uEncode = JSON.stringify(userToSave);
             localStorage.setItem("usuarioObjeto", uEncode);
             loading.value = false;
-            let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
+            let uS = JSON.parse(
+              localStorage.getItem("usuarioObjeto") as string,
+            );
             useAuthStore().login(uS);
             updateHeader(localStorage.getItem("token"));
             useCartStore().refresh();
@@ -177,7 +188,9 @@ function login() {
                 clienteId: data.clienteId,
               }),
             );
-            let uS = JSON.parse(localStorage.getItem("usuarioObjeto"));
+            let uS = JSON.parse(
+              localStorage.getItem("usuarioObjeto") as string,
+            );
             let u = uS;
             useAuthStore().login(u);
             updateHeader(localStorage.getItem("token"));

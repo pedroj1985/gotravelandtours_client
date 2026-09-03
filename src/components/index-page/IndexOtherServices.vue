@@ -12,9 +12,9 @@
       :modules="swiperModules"
     >
       <swiper-slide
-        :key="oService.id"
+        :key="i"
         class="other-services-container"
-        v-for="oService in oServices"
+        v-for="(oService, i) in oServices"
       >
         <img :src="'img/' + oService.image" :alt="oService.name" />
         <div class="other-service-content">

@@ -21,6 +21,6 @@ const router = useRouter();
 
 function emitUserLogin(value: unknown) {
   emit("userLogin", value);
-  router.go();
+  router.go(0);
 }
 </script>

@@ -28,7 +28,7 @@ export interface PriceSearchObj {
   CantidadMenores: number;
   CantidadInfantes: number;
   CantidadHabitaciones: number;
-  HotetecIdeses: string;
+  HotetecIdeses: string | null;
   Habitacion: { HabitacionId: number | string };
   Entrada: string;
   IsSinContrato: boolean;

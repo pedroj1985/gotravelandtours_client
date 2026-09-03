@@ -40,7 +40,9 @@
           <input
             type="time"
             :value="pickUp"
-            @input="$emit('inputPickUp', $event.target.value)"
+            @input="
+              $emit('inputPickUp', ($event.target as HTMLInputElement).value)
+            "
             :disabled="!editable"
           />
         </div>
@@ -75,7 +77,9 @@
             type="time"
             :disabled="true"
             :value="deliver"
-            @input="$emit('inputDeliver', $event.target.value)"
+            @input="
+              $emit('inputDeliver', ($event.target as HTMLInputElement).value)
+            "
           />
         </div>
       </div>

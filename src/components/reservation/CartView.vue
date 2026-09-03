@@ -464,7 +464,9 @@ async function reserve() {
         Tipo: "Info",
         FuncionParam: JSON.stringify(orden),
       });
-      let onlyOrdenId = { OrdenId: ordenSaveIt.data.OrdenId };
+      let onlyOrdenId: Record<string, any> = {
+        OrdenId: ordenSaveIt.data.OrdenId,
+      };
       try {
         let createQB = await authCreateQbEstimated(onlyOrdenId);
         onlyOrdenId["EstimatedCreated"] = true;
@@ -508,16 +510,17 @@ async function reserve() {
           FuncionParam: JSON.stringify(onlyOrdenId),
         });
       }
-      $helpers.shoppingCartDeleteAll();
+      $helpers.shoppingCartDeleteAll(true);
       isReserving.value = false;
       let msg = "Orden creada y confirmada con éxito. Puede proceder al pago.";
-      let msgType = "success";
+      let msgType: "success" | "info" | "error" | "warning" | "default" =
+        "success";
       if (createInHotetec.Estado !== orderStatusList.confirmed) {
         msg =
           "Orden creada con éxito. Pendiente de aceptación por la administración.";
         msgType = "info";
       }
-      toast(msg, { type: msgType, duration: 5000 });
+      toast(msg, { type: msgType, autoClose: 5000 });
       useCartStore().refresh();
       router.push({ name: "myreservations" });
     } catch (error) {

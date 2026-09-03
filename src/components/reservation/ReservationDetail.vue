@@ -359,7 +359,7 @@ watch(isOpenModalToPay, (newVal) => {
 });
 
 emit("adminPanelInfo", "reservation-detail");
-let id = route.params.id;
+let id = route.params.id as string;
 let { data } = await authGetOrder(id);
 if (import.meta.env.DEV) {
   console.log("thisAll: ", data);
@@ -375,7 +375,7 @@ isVisibleCancelButton.value = [
   orderStatusList.open,
   orderStatusList.confirmed,
   orderStatusList.pending,
-].includes(state.value);
+].includes(state.value as "Open" | "Confirmed" | "Pending");
 
 await preproccesingLists(order.value.ListaVehiculosOrden);
 await preproccesingLists(order.value.ListaAlojamientoOrden, "lodging");
@@ -531,7 +531,10 @@ async function cancelateOrder() {
   });
   try {
     order.value.Estado = orderStatusList.rejected;
-    let ordenSaveIt = await authPutReserve(route.params.id, order.value);
+    let ordenSaveIt = await authPutReserve(
+      route.params.id as string,
+      order.value,
+    );
     toast("Orden cancelada con éxito.", {
       type: "success",
     });
@@ -816,7 +819,10 @@ async function reserve() {
       }
       idsToDelete.value = [];
       isReserving.value = true;
-      let ordenSaveIt = await authPutReserve(route.params.id, order.value);
+      let ordenSaveIt = await authPutReserve(
+        route.params.id as string,
+        order.value,
+      );
       let onlyOrdenId = {
         OrdenId: ordenSaveIt.data.OrdenId,
       };
@@ -1032,7 +1038,7 @@ function tropipayPayment(
   request.concept = "Rent a " + typeLabel;
   request.currency = orderParam.CurrencyUsada;
   request.TipoOrden = typeCode;
-  request.OrdenProductoId = id;
+  request.OrdenProductoId = String(id);
   request.EnviarLinkDePago = sendPaymentLInk;
   request.description = description;
   request.directPayment = false;
@@ -1099,14 +1105,14 @@ function tropipayPayment(
             "Correo electrónico no proporcionado. El enlace de pago se abrirá en una nueva pestaña.",
             {
               type: "info",
-              duration: 5000,
+              autoClose: 5000,
             },
           );
           window.open(shortUrl, "_blank");
         } else if (email.value !== "") {
           toast(`Enlace de pago enviado a ${email.value}: ${shortUrl}`, {
             type: "info",
-            duration: 5000,
+            autoClose: 5000,
           });
         }
       }
