@@ -81,7 +81,14 @@ function isSelected(option: any) {
   if (option === "ALL_ITEMS") {
     return props.selectedValue === "ALL_ITEMS";
   }
-  if (typeof option === "object" && typeof props.selectedValue === "object") {
+  if (
+    option !== null &&
+    option !== undefined &&
+    props.selectedValue !== null &&
+    props.selectedValue !== undefined &&
+    typeof option === "object" &&
+    typeof props.selectedValue === "object"
+  ) {
     return option.id === props.selectedValue.id;
   }
   return option === props.selectedValue;
