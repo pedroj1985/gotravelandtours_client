@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       environment: "jsdom",
       include: ["src/**/*.spec.js", "src/**/*.test.js"],
       css: false,
+      pool: "forks",
     },
     base: "./",
     resolve: {

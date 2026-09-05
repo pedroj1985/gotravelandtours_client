@@ -7,6 +7,8 @@ import "bootstrap/dist/css/bootstrap.css";
 import "@/assets/styles/main.scss";
 import Vue3Toastify, { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import { setupCalendar, Calendar as VCalendar, DatePicker as VDatePicker } from "v-calendar";
+import "v-calendar/style.css";
 import { storageService } from "./utils/storageService";
 import lodash from "lodash";
 import { helpers } from "./utils/helpers";
@@ -33,6 +35,10 @@ app.directive("click-outside", clickOutside);
 app.use(Vue3Toastify, {
   autoClose: 5000
 });
+
+app.use(setupCalendar, {});
+app.component("VCalendar", VCalendar);
+app.component("VDatePicker", VDatePicker);
 
 setToastInstance(toast);
 
