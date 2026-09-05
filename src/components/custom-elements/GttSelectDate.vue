@@ -47,7 +47,7 @@
           is-required
           :min-date="minDate"
           locale="es"
-          :masks="{ weekdays: 'WWW' }"
+          :masks="{ weekdays: 'WWW', title: 'MMMM' }"
           :columns="mode === 'range' ? 2 : 1"
         />
       </div>

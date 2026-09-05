@@ -43,7 +43,10 @@ describe("GttSelectDate", () => {
     const wrapper = mountDate({ mode: "single", opened: true });
     expect(wrapper.find(".gtt__list_area_wrapper").exists()).toBe(true);
     expect(wrapper.find(".vc-container").exists()).toBe(true);
-    expect(wrapper.findComponent(VDatePicker).props("masks").weekdays).toBe("WWW");
+    expect(wrapper.findComponent(VDatePicker).props("masks")).toMatchObject({
+      weekdays: "WWW",
+      title: "MMMM",
+    });
   });
 
   it("renders two calendar columns in range mode", async () => {
