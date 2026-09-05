@@ -112,6 +112,7 @@ function submitSearch(e: Event) {
 <style lang="scss" scoped>
 .gtt__list_area_div {
   @include dropdown-wrapper;
+  padding: 0;
 }
 
 ul.gtt__list_area {
@@ -120,10 +121,8 @@ ul.gtt__list_area {
   min-width: 150px;
   list-style: none;
   text-align: left;
-  border-radius: var(--border-radius-lg);
   overflow: auto;
   padding: var(--spacing-md) 0;
-  background-color: var(--color-background-white);
   margin-bottom: 0;
   color: var(--color-text-primary);
   padding-left: 0;
@@ -134,10 +133,7 @@ ul.gtt__list_area {
 .gtt__list_area_input {
   @include gtt-input;
   border: none;
-  background: var(--color-background-white);
   padding: var(--spacing-md) var(--spacing-xl);
-  border-top-left-radius: var(--border-radius-lg);
-  border-top-right-radius: var(--border-radius-lg);
   border-bottom: 1px solid var(--color-border-light);
 
   &:focus {

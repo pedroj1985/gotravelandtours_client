@@ -308,6 +308,7 @@ function emitValue(value: any) {
   right: 0;
   top: calc(100% + var(--spacing-xs));
   margin-top: 0;
+  padding: 0;
   z-index: var(--z-dropdown);
 
   &.isVisible {

@@ -86,8 +86,6 @@ function submitSearch(e: Event) {
   text-align: left;
   padding: var(--spacing-xl);
   color: var(--color-text-primary);
-  border-radius: var(--border-radius-lg);
-  background-color: var(--color-background-white);
   font-family: "Helvetica Neue LT Std-Roman";
   font-size: var(--font-size-sm);
 
@@ -125,10 +123,8 @@ ul.gtt__list_area {
   min-width: 150px;
   list-style: none;
   text-align: left;
-  border-radius: var(--border-radius-lg);
   overflow: auto;
   padding: var(--spacing-md) 0;
-  background-color: var(--color-background-white);
   margin-bottom: 0;
   color: var(--color-text-primary);
   padding-left: 0;
