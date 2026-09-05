@@ -38,7 +38,7 @@
     </div>
     <div class="gtt__list_area_wrapper" v-if="isVisible">
       <span class="arrow" v-if="arrow"></span>
-      <div class="gtt__date_picker">
+      <div class="gtt__date_picker" :data-mode="mode">
         <VDatePicker
           v-model="dates"
           :is-range="mode === 'range'"
@@ -47,6 +47,7 @@
           is-required
           :min-date="minDate"
           locale="es"
+          :masks="{ weekdays: 'WWW' }"
           :columns="mode === 'range' ? 2 : 1"
         />
       </div>
@@ -241,7 +242,7 @@ onMounted(() => {
 }
 
 .gtt__date_picker {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 .displayDate {

@@ -43,6 +43,7 @@ describe("GttSelectDate", () => {
     const wrapper = mountDate({ mode: "single", opened: true });
     expect(wrapper.find(".gtt__list_area_wrapper").exists()).toBe(true);
     expect(wrapper.find(".vc-container").exists()).toBe(true);
+    expect(wrapper.findComponent(VDatePicker).props("masks").weekdays).toBe("WWW");
   });
 
   it("renders two calendar columns in range mode", async () => {
@@ -50,6 +51,7 @@ describe("GttSelectDate", () => {
     await new Promise((r) => setTimeout(r, 50));
     const paneLayout = wrapper.find(".vc-pane-layout");
     expect(paneLayout.exists()).toBe(true);
+    expect(wrapper.find('.gtt__date_picker[data-mode="range"]').exists()).toBe(true);
     const style = paneLayout.attributes("style") || "";
     expect(style).toMatch(/repeat\(2, 1fr\)/);
     expect(wrapper.findAll(".vc-pane").length).toBe(2);
