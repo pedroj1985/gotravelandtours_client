@@ -261,7 +261,9 @@ function remove(item: any, step = 1) {
 .gtt__form {
   padding: var(--spacing-xl);
   position: relative;
-  min-width: 450px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 150px;
   font-family: "Helvetica Neue LT Std-Roman";
   color: var(--color-text-primary);
@@ -269,9 +271,23 @@ function remove(item: any, step = 1) {
   line-height: var(--line-height-tight);
 }
 
+.gtt__form .row {
+  margin-left: 0;
+  margin-right: 0;
+  align-items: center;
+}
+
+.gtt__form .row > [class*="col-"] {
+  min-width: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
 .gtt__picker_button {
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  max-width: 48px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 100%;
   border: 1px solid var(--color-text-primary);
   background: var(--color-background-white);
@@ -322,8 +338,9 @@ function remove(item: any, step = 1) {
     font-size: 12px;
   }
   .gtt__picker_button {
-    width: 36px;
-    height: 36px;
+    width: 100%;
+    max-width: 36px;
+    height: auto;
     font-size: 12px;
   }
   .gtt__itemKids {
