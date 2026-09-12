@@ -364,7 +364,9 @@ function remove(item: any, index: number) {
 .gtt__form {
   padding: 30px;
   position: relative;
-  min-width: 450px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: 350px;
   font-family: "Helvetica Neue LT Std-Roman";
   color: #212f3d;
@@ -378,13 +380,25 @@ function remove(item: any, index: number) {
 .gtt__room_row {
   /* display: flex; */
   margin-bottom: 5px;
+  align-items: center;
+}
+.gtt__form .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+.gtt__form .row > [class*="col-"] {
+  min-width: 0;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 .gtt__item_v_picker {
   display: flex;
 }
 .gtt__picker_button {
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  max-width: 48px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 100%;
   border: 1px solid #212f3d;
   background: #ffffff;
@@ -456,8 +470,9 @@ function remove(item: any, index: number) {
     font-size: 12px;
   }
   .gtt__picker_button {
-    width: 36px;
-    height: 36px;
+    width: 100%;
+    max-width: 36px;
+    height: auto;
     font-size: 12px;
   }
   .gtt__itemKids {
