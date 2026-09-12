@@ -120,7 +120,7 @@
     </div>
     <div ref="gttTransmision">
       <gtt-select
-        :options="transmissionTypes()"
+        :options="transmissionTypes"
         v-model="selectedTransmissionType"
       >
         <template v-slot:iconSelectedValue>
@@ -319,6 +319,10 @@ function gttValidate() {
   ];
 }
 
+function desactivateModal() {
+  isModalActive.value = false;
+}
+
 async function activateModal() {
   let iv = gttIsValid(gttValidate(), getValidationContext());
   if (getValid(iv)) {
@@ -398,7 +402,7 @@ async function activateModal() {
         name: "rentResultHolder",
         params: {
           searchResult: resultList,
-          filters: filtersToStorage,
+          filters: filtersToStorage as any,
         },
       });
     } catch (error) {

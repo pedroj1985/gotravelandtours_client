@@ -38,7 +38,7 @@ export function closeSession(vueInstance: { $router: { push: (route: { name: str
   vueInstance.$router.push({ name: "index" });
 }
 
-export function updateHeader() {}
+export function updateHeader(_token?: string | null) {}
 
 export function getVoucher() {}
 

@@ -24,6 +24,7 @@ import {
   deleteDatabase
 } from "../utils/searchPersistenceService";
 import { visitantesToAcomodation } from "../utils/visitorTransformer";
+import { helpers } from "../utils/helpers";
 import type { RoomLayout, RoomBuiltItem, AccommodationItem, VisitorLayout, RoomTypeInfo } from "../types/visitor";
 import type { Combination } from "../types/api";
 
@@ -79,14 +80,14 @@ export function useLodging() {
     combination: RoomLayout,
     combinationV2: RoomLayout | null = null,
     todosTipo: unknown,
-    helpers: { habitacionPorCantidadPersonas: (i: number, todosTipo: unknown) => RoomTypeInfo | undefined }
+    helpers: unknown
   ) {
     return await searchResult(
       searchItem,
       combination,
       combinationV2,
       todosTipo,
-      helpers
+      helpers as { habitacionPorCantidadPersonas: (i: number, todosTipo: unknown) => RoomTypeInfo | undefined }
     );
   }
 
@@ -118,6 +119,45 @@ export function useLodging() {
     return visitantesToAcomodation(visitantes);
   }
 
+  function habitacionPorCantidadPersonas(
+    cantidadAdultos: number,
+    todosTiposHabitaciones: RoomTypeInfo[]
+  ): RoomTypeInfo | undefined {
+    return helpers.habitacionPorCantidadPersonas(
+      cantidadAdultos,
+      todosTiposHabitaciones
+    ) as RoomTypeInfo | undefined;
+  }
+
+  async function searchResultBinding(
+    searchItem: Record<string, unknown>,
+    combination: RoomLayout | null,
+    combinationV2: RoomLayout | null = null,
+    todosTipo: unknown = [],
+    h: {
+      habitacionPorCantidadPersonas: (i: number, todosTipo: unknown) => RoomTypeInfo | undefined;
+    } = { habitacionPorCantidadPersonas: () => undefined }
+  ) {
+    return await searchResult(searchItem, combination, combinationV2, todosTipo, h);
+  }
+
+  function buildRoomComboBinding(
+    roomLayout: RoomLayout,
+    h: {
+      habitacionPorCantidadPersonas: (i: number, todosTipo: unknown) => RoomTypeInfo | undefined;
+    } = { habitacionPorCantidadPersonas: () => undefined },
+    todosTipo: unknown = []
+  ) {
+    return buildRoomCombo(roomLayout, (i: number) =>
+      h.habitacionPorCantidadPersonas(i, todosTipo)
+    );
+  }
+
+  async function checkIsAvailable(child: unknown) {
+    const c = child as { hotelectData?: unknown } | null;
+    return c?.hotelectData ?? child;
+  }
+
   return {
     roomCombination,
     getTotalRooms,
@@ -132,6 +172,11 @@ export function useLodging() {
     canFulfill,
     search,
     searchPrev,
+    searchResult: searchResultBinding,
+    searchPreviousResult: searchPrev,
+    buildRoomCombo: buildRoomComboBinding,
+    habitacionPorCantidadPersonas,
+    checkIsAvailable,
     saveResult,
     executeQuery,
     getResults,

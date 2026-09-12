@@ -246,6 +246,7 @@ function remove(item: any, step = 1) {
   right: 0;
   top: calc(100% + var(--spacing-xs));
   margin-top: 0;
+  padding: 0;
   z-index: var(--z-dropdown);
 
   &.isVisible {
@@ -260,10 +261,8 @@ function remove(item: any, step = 1) {
 .gtt__form {
   padding: var(--spacing-xl);
   position: relative;
-  background: var(--color-background-white);
   min-width: 450px;
   min-height: 150px;
-  border-radius: var(--border-radius-lg);
   font-family: "Helvetica Neue LT Std-Roman";
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);

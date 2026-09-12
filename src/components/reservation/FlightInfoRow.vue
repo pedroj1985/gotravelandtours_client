@@ -35,7 +35,12 @@
               type="text"
               :value="nvuelo_landing"
               :disabled="!editable"
-              @input="$emit('inputNvueloLanding', $event.target.value)"
+              @input="
+                $emit(
+                  'inputNvueloLanding',
+                  ($event.target as HTMLInputElement).value,
+                )
+              "
               class="ir-input font18"
               placeholder="No. VUELO"
             />
@@ -69,7 +74,12 @@
               type="text"
               :value="nvuelo_takeoff"
               :disabled="!editable"
-              @input="$emit('inputNvueloTakeoff', $event.target.value)"
+              @input="
+                $emit(
+                  'inputNvueloTakeoff',
+                  ($event.target as HTMLInputElement).value,
+                )
+              "
               class="ir-input font14"
               placeholder="No. VUELO"
             />

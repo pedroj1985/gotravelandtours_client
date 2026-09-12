@@ -8,7 +8,7 @@
         class="package"
         v-for="(indexPackage, index) in packages"
         :class="{ 'no-last': isNotLastPackage(index) }"
-        :key="indexPackage.id"
+        :key="index"
       >
         <img :src="'img/' + indexPackage.icon" alt="" />
         <div class="package-name hn-roman">{{ indexPackage.name }}</div>

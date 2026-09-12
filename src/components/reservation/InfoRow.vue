@@ -18,7 +18,9 @@
             :disabled="!editable"
             type="text"
             :value="name"
-            @input="$emit('inputName', $event.target.value)"
+            @input="
+              $emit('inputName', ($event.target as HTMLInputElement).value)
+            "
             class="ir-input font18"
             placeholder="Su(s) nombre(s)"
           />
@@ -40,7 +42,9 @@
             type="text"
             :disabled="!editable"
             :value="lastname"
-            @input="$emit('inputLastname', $event.target.value)"
+            @input="
+              $emit('inputLastname', ($event.target as HTMLInputElement).value)
+            "
             class="ir-input font18"
             placeholder="Sus apellidos"
           />
@@ -60,7 +64,9 @@
             type="text"
             :disabled="!editable"
             :value="pasaporte"
-            @input="$emit('inputPasaporte', $event.target.value)"
+            @input="
+              $emit('inputPasaporte', ($event.target as HTMLInputElement).value)
+            "
             class="ir-input font18"
             placeholder="# Pasaporte"
           />
@@ -81,7 +87,9 @@
             type="text"
             :disabled="!editable"
             :value="phone"
-            @input="$emit('inputPhone', $event.target.value)"
+            @input="
+              $emit('inputPhone', ($event.target as HTMLInputElement).value)
+            "
             class="ir-input font18"
             placeholder="# Teléfono"
           />
@@ -105,7 +113,12 @@
             type="date"
             :disabled="!editable"
             :value="nacimiento"
-            @input="$emit('inputNacimiento', $event.target.value)"
+            @input="
+              $emit(
+                'inputNacimiento',
+                ($event.target as HTMLInputElement).value,
+              )
+            "
             class="ir-input font18"
           />
           <span class="gtt-errors"></span>

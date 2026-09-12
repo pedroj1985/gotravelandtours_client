@@ -1,53 +1,105 @@
-.gtt__date_picker .vc-grid-cell-col-1 .vc-pane {
-  margin-right: 15px;
-}
-.gtt__date_picker .vc-grid-cell-col-2 .vc-pane {
-  margin-left: 15px;
-}
 .gtt__date_picker .vc-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   font-family: "Helvetica Neue LT Std-Roman";
-  line-height: 1.2;
+  line-height: 1.1;
   border: none;
 }
+
+/* Permite que el calendario se contraiga al ancho del contenedor en lugar
+   de imponer 250px por pane (min-width por defecto de v-calendar). */
+.gtt__date_picker .vc-pane,
+.gtt__date_picker .vc-weeks {
+  min-width: 0;
+  width: 100%;
+}
+
+.gtt__date_picker .vc-weeks {
+  padding: 2px 4px;
+}
+
+.gtt__date_picker[data-mode="single"] .vc-pane-layout {
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+
+.gtt__date_picker[data-mode="range"] .vc-pane-layout {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+/* Tamaño compacto */
+.gtt__date_picker .vc-header {
+  height: 22px;
+  margin-top: 2px;
+}
+
 .gtt__date_picker .vc-container .vc-title {
-  font-size: 16px;
+  background-color: transparent !important;
+  font-size: 12px;
+  line-height: 22px;
   text-transform: uppercase;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 .gtt__date_picker .vc-container .vc-weekday {
-  font-size: 14px;
+  font-size: 11px;
+  line-height: 10px;
+  padding-top: 2px;
+  padding-bottom: 4px;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.gtt__date_picker .vc-highlights .vc-highlight {
-  background: transparent;
+
+.gtt__date_picker .vc-day {
+  min-height: 22px;
 }
-.gtt__date_picker .vc-highlights + span {
-  background: var(--color-primary);
+
+.gtt__date_picker .vc-day-content {
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  color: var(--color-text-primary);
+  font-size: 11px;
 }
+
+.gtt__date_picker .vc-highlight {
+  height: 22px;
+}
+
 .gtt__date_picker .vc-container span {
-  color: #212f3d;
-  padding: 16px;
-  font-size: 14px;
+  color: var(--color-text-primary);
 }
-.gtt__date_picker .vc-highlights + span:focus {
+
+.gtt__date_picker .vc-highlights .vc-highlight {
   background: var(--color-primary);
 }
-.gtt__date_picker hr {
-  height: 1px;
-  border: none;
-  background-color: #c4c4c4;
+
+.gtt__date_picker .vc-highlight.vc-highlight-base-middle {
+  background: color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
-/* .gtt__date_picker .vc-grid-cell + .vc-grid-cell > .vc-pane{
-        margin-left: 60px;
-    } */
+
+.gtt__date_picker .vc-day-content.vc-highlight-content-solid {
+  color: var(--color-text-light);
+}
+
+.gtt__date_picker .vc-day:not(.vc-day-disabled) .vc-day-content:hover {
+  background: var(--color-primary);
+  color: var(--color-text-light);
+}
+
 @media (max-width: 1368px) {
   .gtt__date_picker .vc-container .vc-title {
-    font-size: 12px;
+    font-size: 11px;
   }
+
   .gtt__date_picker .vc-container .vc-weekday {
     font-size: 10px;
-    /* color: #6d6d6d !important; */
   }
-  .gtt__date_picker .vc-container span {
-    padding: 12px;
-    font-size: 12px;
+
+  .gtt__date_picker .vc-day-content {
+    font-size: 10px;
   }
 }

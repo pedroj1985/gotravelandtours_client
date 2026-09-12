@@ -10,7 +10,6 @@ const router = useRouter();
 const temp = route.params["searchResult"];
 router.push({
   name: "resultLodging",
-  key: "changed",
   params: {
     searchResult: temp,
   },

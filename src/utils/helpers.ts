@@ -26,7 +26,7 @@ interface CartItem {
   tipo: string;
   uID?: string;
   orderVehiculo?: { FechaRecogida: string };
-  reservedRooms?: { unblockRequest: Record<string, unknown> };
+  reservedRooms?: unknown;
   [key: string]: unknown;
 }
 
@@ -108,7 +108,10 @@ export const helpers = {
       const temp: CartItem[] = JSON.parse(localStorage.getItem("gttCart") as string) || [];
       for (const tempElement of temp) {
         if (tempElement.tipo == "lodging") {
-          const unblockRequest = tempElement.reservedRooms?.unblockRequest;
+          const unblockRequest = (tempElement.reservedRooms as
+            | { unblockRequest?: Record<string, unknown> }
+            | null
+            | undefined)?.unblockRequest;
           try {
             if (unblockRequest) {
               await hotetecBlockProduct(unblockRequest);

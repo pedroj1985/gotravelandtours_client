@@ -63,7 +63,7 @@
                 class="gtt-first-color hn-roman to-uppercase"
                 :class="{ selected: currentChild == item.code }"
                 v-for="item in adminElements"
-                :key="item.id"
+                :key="item.code"
               >
                 <router-link :to="{ name: item.route }">
                   <span class="ap-name">

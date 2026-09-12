@@ -247,7 +247,7 @@ function openList() {
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = Math.round((number - intPart) * 100);
+  let decimalPart: number | string = Math.round((number - intPart) * 100);
   if (decimalPart == 0) decimalPart = "00";
   return { intPart, decimalPart };
 }

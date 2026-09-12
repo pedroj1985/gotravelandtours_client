@@ -5,7 +5,7 @@
       class="gtt__toggle"
       ref="buttonToggle"
       @click="toggleClicked"
-      :value="updateValue"
+      :value="undefined"
       :disabled="dsb"
     >
       <div class="gtt__toggle_content">
@@ -38,39 +38,18 @@
     </div>
     <div class="gtt__list_area_wrapper" v-if="isVisible">
       <span class="arrow" v-if="arrow"></span>
-      <div class="gtt__date_picker">
-        <div class="gtt__date_picker_fields">
-          <template v-if="mode === 'range'">
-            <label class="gtt__date_input">
-              <span>Fecha de entrada</span>
-              <input
-                type="date"
-                :min="minDate"
-                :value="formatDateInput(dates.start)"
-                @change="onStartDateChange($event.target.value)"
-              />
-            </label>
-            <label class="gtt__date_input">
-              <span>Fecha de salida</span>
-              <input
-                type="date"
-                :min="formatDateInput(dates.start || minDate)"
-                :value="formatDateInput(dates.end)"
-                @change="onEndDateChange($event.target.value)"
-              />
-            </label>
-          </template>
-          <template v-else>
-            <label class="gtt__date_input">
-              <input
-                type="date"
-                :min="minDate"
-                :value="formatDateInput(dates)"
-                @change="onStartDateChange($event.target.value)"
-              />
-            </label>
-          </template>
-        </div>
+      <div class="gtt__date_picker" :data-mode="mode">
+        <VDatePicker
+          v-model="dates"
+          :is-range="mode === 'range'"
+          :mode="'date'"
+          is-inline
+          is-required
+          :min-date="minDate"
+          locale="es"
+          :masks="{ weekdays: 'WWW', title: 'MMMM' }"
+          :columns="mode === 'range' ? 2 : 1"
+        />
       </div>
       <hr />
       <div v-if="dates" class="displayDate">
@@ -176,39 +155,6 @@ function emitValue(value: any) {
   boundValue.value = value;
 }
 
-function formatDateInput(date: any) {
-  if (!date) return "";
-  return moment(date).format("YYYY-MM-DD");
-}
-
-function parseDateInput(value: string) {
-  return value ? moment(value, "YYYY-MM-DD").toDate() : null;
-}
-
-function onStartDateChange(value: string) {
-  const nextDate = parseDateInput(value);
-  if (!nextDate) return;
-
-  if (props.mode === "range") {
-    dates.value = {
-      start: nextDate,
-      end: dates.value?.end || moment(nextDate).add(1, "day").toDate(),
-    };
-  } else {
-    dates.value = nextDate;
-  }
-}
-
-function onEndDateChange(value: string) {
-  const nextDate = parseDateInput(value);
-  if (!nextDate || props.mode !== "range") return;
-
-  dates.value = {
-    start: dates.value.start,
-    end: nextDate,
-  };
-}
-
 watch(dates, (val, oldVal) => {
   if (val && val !== oldVal) {
     isVisible.value = false;
@@ -287,6 +233,7 @@ onMounted(() => {
   right: 0;
   top: calc(100% + var(--spacing-xs));
   margin-top: 0;
+  padding: 0;
   z-index: var(--z-dropdown);
 }
 
@@ -294,11 +241,24 @@ onMounted(() => {
   @include dropdown-arrow;
 }
 
+.gtt__date_picker {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
 .displayDate {
   text-align: center;
   font-family: "Helvetica Neue LT Std-Roman";
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+  padding: var(--spacing-md);
+}
+
+.gtt__list_area_wrapper hr {
+  height: 1px;
+  border: none;
+  background-color: #c4c4c4;
+  margin: 0;
+  width: 100%;
 }
 
 @media (max-width: 1440px) {

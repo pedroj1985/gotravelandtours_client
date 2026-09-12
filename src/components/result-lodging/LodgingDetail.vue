@@ -119,11 +119,7 @@
                 <button
                   type="button"
                   class="to-uppercase inverse antonio-regular"
-                  @click="
-                    document
-                      .getElementById('pai')
-                      ?.scrollIntoView({ behavior: 'smooth' })
-                  "
+                  @click="scrollToPrices"
                 >
                   Precios e información
                 </button>
@@ -300,10 +296,7 @@
               >
                 <span class="result-text">Resultados para: </span>
                 <div class="buscando flex-wrapper">
-                  <div
-                    v-for="(rl, index) in this.selectedRoomLayout"
-                    :key="rl.id"
-                  >
+                  <div v-for="(rl, index) in selectedRoomLayout" :key="rl.id">
                     <span><i v-if="index != 0">, </i>Hab. {{ rl.room }} </span>
                     (<AdultsKidsIcons
                       :adults="getAdults(rl)"
@@ -394,7 +387,11 @@ const filters = ref<any>(null);
 const totalRooms = ref<any>(null);
 const roomsOpt = ref<any[]>([]);
 const selectedRoomLayout = ref<any[]>([]);
-const roomsToReserve = ref<any[]>([]);
+const roomsToReserve = ref<any>([]);
+
+function scrollToPrices() {
+  document.getElementById("pai")?.scrollIntoView({ behavior: "smooth" });
+}
 const roomsSelecting = ref(false);
 const selectingWizardStep = ref(0);
 const inDate = ref<any>(null);
@@ -454,7 +451,7 @@ async function initializeData() {
   fillRoomLayout(a);
   inDate.value = new Date(filters.value.Entrada);
   outDate.value = new Date(filters.value.Salida);
-  let id = route.params.id;
+  let id = route.params.id as string;
   let { data } = await authGetLodging(id);
   console.info("dataDetail", data);
   let imgs = await authGetImages(id);
@@ -879,7 +876,7 @@ async function searchRooms(room: any) {
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = Math.round((number - intPart) * 100);
+  let decimalPart: number | string = Math.round((number - intPart) * 100);
   if (decimalPart == 0) decimalPart = "00";
   return { intPart, decimalPart };
 }

@@ -183,7 +183,7 @@ const emit = defineEmits<{
 const currentPage = ref(1);
 const searching = ref(false);
 const totalItems = ref(0);
-const filters = ref({
+const filters = ref<Record<string, any>>({
   IsRiesgo: null,
   TipoServicio: 0,
   col: 0,

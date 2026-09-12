@@ -23,8 +23,8 @@
       <template v-slot:searching-fields>
         <div class="searching-fields">
           <div v-if="selectedDepartureDate && selectedArrivalDate">
-            entre el {{ constructDate(selectedDepartureDate) }} y el
-            {{ constructDate(selectedArrivalDate) }}
+            entre el {{ constructDate(selectedDepartureDate.toDate()) }} y el
+            {{ constructDate(selectedArrivalDate.toDate()) }}
           </div>
           <div v-if="selectedPassengers">
             para {{ constructDisplay(selectedPassengers) }}

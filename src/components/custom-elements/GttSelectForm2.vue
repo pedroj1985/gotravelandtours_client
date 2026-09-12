@@ -330,6 +330,7 @@ function remove(item: any, index: number) {
   right: 0;
   top: calc(100% + var(--spacing-xs));
   margin-top: 0;
+  background: #ffffff;
   border-radius: 10px;
   z-index: var(--z-dropdown);
   box-shadow: 0.5px -1px 15px rgba(0, 0, 0, 50%);
@@ -363,10 +364,8 @@ function remove(item: any, index: number) {
 .gtt__form {
   padding: 30px;
   position: relative;
-  background: #ffffff;
   min-width: 450px;
   height: 350px;
-  border-radius: 10px;
   font-family: "Helvetica Neue LT Std-Roman";
   color: #212f3d;
   font-size: 14px;

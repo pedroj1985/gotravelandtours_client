@@ -97,7 +97,9 @@ export async function calculateRoomPrices(
                   });
 
                   try {
-                    const precioA = await authGetRoomPrice(roomPriceSearchObj);
+                    const precioA = await authGetRoomPrice(
+                      roomPriceSearchObj as unknown as Record<string, unknown>
+                    );
 
                     if (
                       (precioA.data as Array<Record<string, unknown>>).length != 0 &&

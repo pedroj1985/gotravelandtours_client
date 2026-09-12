@@ -217,8 +217,10 @@ const props = defineProps<{
 }>();
 
 const selectedLodgingDestinyValue = ref(props.propLodgingDestinyValue);
-const selectedArriveDate = ref(new Date(moment(props.propArriveDate)));
-const selectedDepartureDate = ref(new Date(moment(props.propDepartureDate)));
+const selectedArriveDate = ref(new Date(moment(props.propArriveDate).toDate()));
+const selectedDepartureDate = ref(
+  new Date(moment(props.propDepartureDate).toDate()),
+);
 const selectedRoomLayout = ref<any>(null);
 const selectedNationality = ref(props.propNationality);
 const selectedNights = ref(3);
@@ -306,7 +308,7 @@ watch(selectedDepartureDate, (i: any) => {
 
 watch(selectedNights, (i: number) => {
   selectedDepartureDate.value = new Date(
-    moment(selectedArriveDate.value).add(i, "days"),
+    moment(selectedArriveDate.value).add(i, "days").toDate(),
   );
 });
 
@@ -332,7 +334,7 @@ function goToDetail(f: any, a: any, id: any) {
   const currentRoute = route;
   localStorage.setItem("searchLodgingFilters", JSON.stringify(f));
   localStorage.setItem("searchLodgingAcomodation", JSON.stringify(a));
-  if (currentRoute.params.id != parseInt(id)) {
+  if (parseInt(currentRoute.params.id as string, 10) != parseInt(id, 10)) {
     router.push({ name: "lodging-detail", params: { id } });
   } else {
     router.go(0);

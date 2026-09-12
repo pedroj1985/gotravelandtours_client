@@ -148,14 +148,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { getPackages } from "@/utils/auth";
-import moment from "moment/moment";
+import moment from "moment";
 
 const loading = ref(true);
-const packages = ref([]);
+const packages = ref<any[]>([]);
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = (number - intPart).toFixed(2) * 100;
+  let decimalPart: number | string =
+    Number((number - intPart).toFixed(2)) * 100;
 
   if (decimalPart == 0) decimalPart = "00";
 
@@ -176,7 +177,7 @@ onMounted(() => {
     IsActivo: true,
     FechaI: moment(currentDate).format("YYYY-MM-D"),
   };
-  getPackages(query)
+  getPackages(query as any)
     .then((response) => {
       packages.value = response.data;
     })

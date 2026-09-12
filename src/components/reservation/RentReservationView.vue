@@ -276,7 +276,8 @@ function openList() {
 
 function styledPrice(number: number) {
   let intPart = Math.floor(number);
-  let decimalPart = Number((number - intPart).toFixed(2)) * 100;
+  let decimalPart: number | string =
+    Number((number - intPart).toFixed(2)) * 100;
   if (decimalPart == 0) decimalPart = "00";
   return { intPart, decimalPart };
 }

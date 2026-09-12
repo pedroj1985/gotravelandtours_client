@@ -11,7 +11,6 @@ const f = route.params["filters"];
 const temp = route.params["searchResult"];
 router.push({
   name: "resultRent",
-  key: "changed",
   params: {
     searchResult: temp,
     filters: f,

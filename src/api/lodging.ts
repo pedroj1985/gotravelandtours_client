@@ -17,7 +17,7 @@ export function authGetLodgingsAll() {
   return HTTP.get("/Alojamientoes/Todos");
 }
 
-export function authGetRoomPrice(searchRoomPrice: PriceSearchObj) {
+export function authGetRoomPrice(searchRoomPrice: Record<string, unknown>) {
   return HTTP.post("/Alojamientoes/BuscarOrdenPrecio", searchRoomPrice);
 }
 

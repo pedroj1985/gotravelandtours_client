@@ -50,8 +50,8 @@
       :onlyToSelect="onlyToSelect"
       :totalDays="
         calculateNights(
-          toMoment(filter.deliveryDate),
-          toMoment(filter.pickUpDate),
+          toMoment(filter.deliveryDate).toDate(),
+          toMoment(filter.pickUpDate).toDate(),
         )
       "
     >

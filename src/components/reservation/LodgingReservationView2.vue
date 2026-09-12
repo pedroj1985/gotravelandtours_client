@@ -133,7 +133,7 @@
                   </div>
                   <div
                     class="ml-auto font24 printer-button"
-                    v-if="ordenId != -1 && this.Voucher"
+                    v-if="ordenId != -1 && hasVoucher"
                   >
                     <!-- :class="{divDisabled: !hasVoucher}"> -->
                     <a :href="UrlVoucher" target="_blank">
@@ -148,7 +148,7 @@
                   :key="room.id"
                 >
                   <div class="to-left">
-                    Hab. {{ pos + 1 }}, {{ room.CantAdulto }} adulto(s)
+                    Hab. {{ Number(pos) + 1 }}, {{ room.CantAdulto }} adulto(s)
                     <template v-if="room.CantNino > 0">
                       y {{ room.CantNino }} niño(s)
                     </template>
@@ -217,12 +217,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import GttTwoRowsInfo from "../custom-elements/GttTwoRowsInfo.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/swiper-bundle.css";
 import moment from "moment";
+import { voucher } from "../../utils/auth";
 
 const props = defineProps<{
   item: any;
@@ -235,11 +236,36 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "open-modal-to-pay", order: any, room: any, itemIndex: number): void;
+  (e: "edit", item: any): void;
+  (e: "remove", item: any): void;
 }>();
 
 const swiperModules = [Navigation, Pagination, Autoplay];
 const selectedInfo = ref("info");
-const pos = ref(1);
+const roomPos = ref(1);
+const UrlVoucher = ref("");
+
+async function getVoucher() {
+  try {
+    let v = await voucher(props.ordenId);
+    if (v.data.length == 0) {
+      UrlVoucher.value =
+        `//admin.gotravelandtours.com/#/dasboard/admin/voucher?id=` +
+        props.ordenId +
+        `&type=Vehicle&position=0`;
+    } else {
+      UrlVoucher.value = v.data[0].UrlVoucher;
+    }
+  } catch (e) {
+    if (import.meta.env.DEV) {
+      console.log(e);
+    }
+  }
+}
+
+onMounted(async () => {
+  await getVoucher();
+});
 
 const getTotal = computed(() => {
   let total = 0;
@@ -264,8 +290,8 @@ function getHabitaciones(item: any) {
 }
 
 function addPos() {
-  pos.value = pos.value + 1;
-  return pos.value;
+  roomPos.value = roomPos.value + 1;
+  return roomPos.value;
 }
 
 function selectInfo(section: string) {
@@ -292,13 +318,13 @@ function getDateSalida(item: any) {
 
 function styledPrice(number: number) {
   let intPart = Math.ceil(number);
-  let decimalPart = Math.round((number - intPart) * 100);
+  let decimalPart: number | string = Math.round((number - intPart) * 100);
   if (decimalPart == 0) decimalPart = "00";
   return { intPart, decimalPart };
 }
 
-function openModalToPay(order: any, room: any, itemIndex: number) {
-  emit("open-modal-to-pay", order, room, itemIndex);
+function openModalToPay(order: any, room: any, itemIndex: number | undefined) {
+  emit("open-modal-to-pay", order, room, itemIndex as number);
 }
 </script>
 <style scoped>
