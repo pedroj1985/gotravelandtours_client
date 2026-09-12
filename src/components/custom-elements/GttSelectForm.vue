@@ -56,7 +56,11 @@
             v-for="(kid, i) in kids"
             :key="kid.id"
           >
-            <gtt-select :options="kidsAgeList" v-model="kid.age">
+            <gtt-select
+              :options="kidsAgeList"
+              v-model="kid.age"
+              :two-rows="true"
+            >
               <template v-slot:placeholder>
                 <span>Edad del menor {{ i + 1 }}</span>
               </template>
