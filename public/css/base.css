@@ -1043,7 +1043,7 @@ sup {
   line-height: 1.2;
   width: 100%;
   height: 224px;
-  background-color: #112b3a;
+  background-color: #112b3a !important;
 }
 
 #footer2 .footer2-container {
@@ -1192,9 +1192,16 @@ sup {
   display: flex;
   top: 26%;
   padding-left: 8vw;
+  padding-right: 8vw; /* evita que el form choque con el borde */
+  width: 100%;
+  box-sizing: border-box;
+  gap: 1.5625vw;
+  align-items: flex-start;
 }
 
 .custom-form {
+  flex: 0 0 39.06vw;
+  max-width: 39.06vw;
   width: 39.06vw;
   /* min-height: 350px; */
   background-color: #ffffff;
@@ -1207,11 +1214,48 @@ sup {
   font-size: 48px;
   color: #ffffff;
   margin-top: 70px;
-  height: auto;
   margin-right: 1.5625vw;
-  line-height: 1.2;
+  line-height: 1.3;
+  height: auto;
+
+  /* Ya no fuerces ancho fijo: deja que crezca con flex */
+  flex: 1 1 auto;
+  min-width: 0; /* permite encogerse sin desbordar */
+  max-width: 32vw; /* tope para que no empuje el formulario */
+  box-sizing: border-box;
+
   text-align: right;
-  width: 24.74vw;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* Cada línea ocupa su propio renglón y se alinea a la derecha */
+.custom-text .text-line {
+  display: block;
+  width: 100%;
+  line-height: 1.25;
+  text-align: right;
+}
+
+/* Los fondos deben clonarse cuando el texto salta de línea */
+.bannerText,
+.yellow-words {
+  display: inline;
+  padding: 2px 6px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.bannerText {
+  background-color: #212f3d;
+  color: #ffffff;
+}
+
+.yellow-words {
+  color: #bcd01d;
+  background-color: #212f3d;
+  text-transform: uppercase;
 }
 
 .custom-form .custom-form-select {

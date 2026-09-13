@@ -307,9 +307,7 @@ onUnmounted(() => {
 .form-actions {
   margin-left: auto;
 }
-.custom-text {
-  margin-top: 100px;
-}
+
 @media (max-width: 1440px) {
   #index-logged-transfer .single-date-transfer {
     width: 30%;

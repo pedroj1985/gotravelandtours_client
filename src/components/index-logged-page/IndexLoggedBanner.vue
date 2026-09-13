@@ -41,11 +41,19 @@
         </div>
       </template>
     </GttModalSearch>
-    <div class="lodging-text-form custom-margin">
+    <div class="lodging-text-form">
       <div class="lodging-text antonio-light">
-        <span class="bannerText">Tenemos los mejores</span>
-        <span class="yellow-words antonio-bold">alojamientos</span>
-        <span class="bannerText">para usted y su familia</span>
+        <span class="text-line">
+          <span class="bannerText">Tenemos los</span>
+        </span>
+        <span class="text-line">
+          <span class="bannerText">mejores</span>
+          <span class="yellow-words antonio-bold">alojamientos</span>
+          <span class="bannerText">para</span>
+        </span>
+        <span class="text-line">
+          <span class="bannerText">usted y su familia</span>
+        </span>
       </div>
       <div class="lodging-form">
         <div ref="gttDestinyLodging" style="width: 100%">
@@ -623,28 +631,66 @@ onUnmounted(() => {
 .lodging-text-form {
   position: absolute;
   display: flex;
-  top: 26%;
-  padding-left: 8vw;
-}
-
-.lodging-form {
-  width: 39.06vw;
-  height: 350px;
-  background-color: #ffffff;
-  box-shadow: 0.5px 2px 15px rgba(0, 0, 0, 15%);
-  border-radius: 10px;
-  padding: 1.5625vw;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  gap: 4vw;
 }
 
 .lodging-text {
   font-size: 48px;
   color: #ffffff;
-  margin-top: 70px;
-  height: auto;
-  margin-right: 1.5625vw;
-  line-height: 1.2;
+  line-height: 1.3;
   text-align: right;
-  width: 24.74vw;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 38vw;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.lodging-text .text-line {
+  display: block;
+  width: 100%;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.bannerText,
+.yellow-words {
+  display: inline;
+  padding: 2px 6px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.bannerText {
+  background-color: #212f3d;
+  color: #ffffff;
+}
+
+.yellow-words {
+  color: #bcd01d;
+  background-color: #212f3d;
+  text-transform: uppercase;
+}
+
+.lodging-form {
+  flex: 0 0 39.06vw;
+  max-width: 39.06vw;
+  height: 350px;
+  background-color: #ffffff;
+  box-shadow: 0.5px 2px 15px rgba(0, 0, 0, 15%);
+  border-radius: 10px;
+  padding: 1.5625vw;
+  box-sizing: border-box;
 }
 
 .lodging-form .lodging-form-select {
@@ -687,19 +733,18 @@ onUnmounted(() => {
   }
 
   .lodging-text-form {
-    position: absolute;
-    display: flex;
-    top: 26%;
-    padding-left: 8vw;
+    gap: 3vw;
   }
 
   .lodging-form {
+    flex: 0 0 45.06vw;
+    max-width: 45.06vw;
     height: 230px;
-    width: 45.06vw;
   }
 
   .lodging-text {
     font-size: 36px;
+    max-width: 38vw;
   }
 
   #home-logged-banner .select-flag {
