@@ -15,36 +15,24 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Footer2 from "./components/shared/Footer2.vue";
 import Footer1 from "./components/shared/Footer1.vue";
 import NavBar1 from "./components/shared/NavBar1.vue";
+import { computed, onMounted } from "vue";
 import { useAuthStore } from "./stores/authStore";
 import { useCartStore } from "./stores/cartStore";
 
-export default {
-  name: "App",
-  computed: {
-    user() {
-      return useAuthStore().user;
-    },
-    itemsInCart() {
-      return useCartStore().count;
-    },
-    isLogged() {
-      return this.user ? true : false;
-    },
-  },
-  methods: {},
-  mounted() {
-    useCartStore().refresh();
-  },
-  components: {
-    Footer2,
-    Footer1,
-    NavBar1,
-  },
-};
+const authStore = useAuthStore();
+const cartStore = useCartStore();
+
+const user = computed(() => authStore.user);
+const itemsInCart = computed(() => cartStore.count);
+const isLogged = computed(() => Boolean(user.value));
+
+onMounted(() => {
+  cartStore.refresh();
+});
 </script>
 
 <style>
