@@ -5,13 +5,44 @@ export const MIN_NIGHTS = 3;
 export const MAX_NIGHTS = 30;
 export const MAX_VISITORS = 10;
 
-function toDate(value) {
+export type Hotel = string | { nombre: string; [key: string]: unknown } | null;
+
+export interface BookingInitial {
+  hotel?: Hotel;
+  checkin?: Date | string | null;
+  checkout?: Date | string | null;
+  nights?: number;
+  adults?: number;
+  children?: number;
+}
+
+export interface BookingState {
+  hotel: Hotel;
+  checkin: Date | null;
+  checkout: Date | null;
+  nights: number;
+  adults: number;
+  children: number;
+}
+
+export interface BookingSummary {
+  hotel: string;
+  checkin: string | null;
+  checkout: string | null;
+  nights: number;
+  adults: number;
+  children: number;
+}
+
+type DateInput = Date | string | null | undefined;
+
+function toDate(value: DateInput): Date | null {
   if (!value) return null;
   const d = dayjs(value);
   return d.isValid() ? d.toDate() : null;
 }
 
-function clamp(value, min, max) {
+function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
@@ -20,8 +51,8 @@ function clamp(value, min, max) {
  * Centraliza las reglas de negocio y garantiza la sincronización
  * entre los campos: destino, fechas, noches y visitantes.
  */
-export function useBooking(initial = {}) {
-  const state = reactive({
+export function useBooking(initial: BookingInitial = {}) {
+  const state = reactive<BookingState>({
     hotel: initial.hotel ?? null,
     checkin: toDate(initial.checkin) ?? dayjs().add(4, "day").toDate(),
     checkout:
@@ -37,7 +68,7 @@ export function useBooking(initial = {}) {
    * 2. nights siempre dentro de [MIN_NIGHTS, MAX_NIGHTS].
    * 3. Al forzar nights, checkout se ajusta a checkin + nights.
    */
-  function recalcDates() {
+  function recalcDates(): void {
     if (!state.checkin) return;
 
     if (
@@ -53,7 +84,7 @@ export function useBooking(initial = {}) {
     state.checkout = dayjs(state.checkin).add(state.nights, "day").toDate();
   }
 
-  function normalizeVisitors() {
+  function normalizeVisitors(): void {
     state.adults = clamp(Number(state.adults) || 0, 0, MAX_VISITORS);
     state.children = clamp(Number(state.children) || 0, 0, MAX_VISITORS);
     if (state.adults === 0 && state.children === 0) {
@@ -61,25 +92,25 @@ export function useBooking(initial = {}) {
     }
   }
 
-  function setHotel(hotel) {
+  function setHotel(hotel: Hotel): void {
     state.hotel = hotel;
   }
 
-  function setCheckin(date) {
+  function setCheckin(date: DateInput): void {
     const d = toDate(date);
     if (!d) return;
     state.checkin = d;
     recalcDates();
   }
 
-  function setCheckout(date) {
+  function setCheckout(date: DateInput): void {
     const d = toDate(date);
     if (!d) return;
     state.checkout = d;
     recalcDates();
   }
 
-  function setNights(n) {
+  function setNights(n: number | string): void {
     const value = Number(n);
     if (Number.isNaN(value)) return;
     if (!state.checkin) return;
@@ -87,17 +118,17 @@ export function useBooking(initial = {}) {
     state.checkout = dayjs(state.checkin).add(state.nights, "day").toDate();
   }
 
-  function setAdults(n) {
+  function setAdults(n: number): void {
     state.adults = n;
     normalizeVisitors();
   }
 
-  function setChildren(n) {
+  function setChildren(n: number): void {
     state.children = n;
     normalizeVisitors();
   }
 
-  function getSummary() {
+  function getSummary(): BookingSummary {
     const hotel =
       state.hotel && typeof state.hotel === "object"
         ? state.hotel.nombre
