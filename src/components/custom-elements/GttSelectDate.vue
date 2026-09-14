@@ -36,7 +36,7 @@
     <div class="gtt-errors">
       <slot name="error"></slot>
     </div>
-    <div class="gtt__list_area_wrapper" v-if="isVisible">
+    <div class="gtt__list_area_wrapper" v-show="isVisible">
       <span class="arrow" v-if="arrow"></span>
       <div class="gtt__date_picker" :data-mode="mode">
         <VDatePicker
@@ -138,7 +138,20 @@ function constructSingleDate(date: any) {
   return toMoment(date).locale("es").format("DD MMM YYYY");
 }
 
+function sameValue(a: any, b: any): boolean {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a instanceof Date || b instanceof Date) {
+    return new Date(a).getTime() === new Date(b).getTime();
+  }
+  if (a.start != null && b.start != null) {
+    return sameValue(a.start, b.start) && sameValue(a.end, b.end);
+  }
+  return false;
+}
+
 function updateValue() {
+  if (sameValue(props.modelValue, dates.value)) return;
   if (props.modelValue !== undefined) {
     dates.value = props.modelValue;
   } else if (props.mode === "range") {
