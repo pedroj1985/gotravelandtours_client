@@ -1,7 +1,10 @@
 <template>
   <div id="my-admin-panel">
     <NavBar2 :menuLinks="menuLinks"></NavBar2>
-    <div class="admin-panel-content custom-margin custom-padding-top-2-navbar">
+    <div
+      v-if="user"
+      class="admin-panel-content custom-margin custom-padding-top-2-navbar"
+    >
       <div id="admin-panel-mini-nav">
         <div id="ap-nav-icon">
           <i class="mdi mdi-home-outline"></i>
@@ -121,26 +124,27 @@ const adminElements = ref([
     code: "reservation",
     route: "myreservations",
   },
-  {
-    displayName: "Reportes",
-    code: "report",
-    route: "myreports",
-  },
-  {
-    displayName: "Agenda",
-    code: "agend",
-    route: "myagend",
-  },
-  {
-    displayName: "Facturas",
-    code: "bill",
-    route: "mybills",
-  },
-  {
-    displayName: "Documentos",
-    code: "document",
-    route: "mydocs",
-  },
+  // TODO: crear componentes y rutas para estos módulos
+  // {
+  //   displayName: "Reportes",
+  //   code: "report",
+  //   route: "myreports",
+  // },
+  // {
+  //   displayName: "Agenda",
+  //   code: "agend",
+  //   route: "myagend",
+  // },
+  // {
+  //   displayName: "Facturas",
+  //   code: "bill",
+  //   route: "mybills",
+  // },
+  // {
+  //   displayName: "Documentos",
+  //   code: "document",
+  //   route: "mydocs",
+  // },
 ]);
 
 onMounted(() => {
