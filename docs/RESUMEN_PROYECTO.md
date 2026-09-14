@@ -12,7 +12,7 @@
 | Stores propios / event-bus | Pinia + TypeScript (`authStore`, `cartStore`, `filtersStore`, `scrollStore`) |
 | vee-validate v2 | vee-validate v4 + reglas en `utils/vee-validate-setup.ts` |
 | Bootstrap-vue + jQuery | Bootstrap CSS solo (`bootstrap/dist/css` en `main.ts`) |
-| v-calendar (Vue 2) | Inputs nativos `<input type="date">` |
+| v-calendar (Vue 2) | v-calendar 3 (Vue 3) en `GttSelectDate.vue` (`<VDatePicker>`) y registro global en `main.ts` |
 | Moment.js | Day.js (alias `moment` → `src/utils/momentShim.ts`) |
 | ESLint 8 (.eslintrc.js) | ESLint 9 flat config (`eslint.config.js`) |
 | JS plano | 40 archivos JS → TypeScript; 98 componentes a `<script setup>` |
@@ -31,7 +31,7 @@
 - Componentes reutilizables: `GttCarousel`, `GttSkeleton`, `GttEmptyState`, `GttErrorState`, `GttModal`, `GttInput`.
 
 ### 1.3 Calidad y limpieza
-- Código muerto eliminado; dependencias sin uso removidas; v-calendar fuera del bundle.
+- Código muerto eliminado; dependencias sin uso removidas.
 - Cabeceras de seguridad en Vite (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) y CSP en `index.html`.
 - Suite de pruebas Vitest + Vue Test Utils + jsdom (31 specs sobre stores, utils y composables; 301 tests en verde).
 
@@ -67,9 +67,19 @@ Al migrar los componentes Gtt* a Vue 3 quedaron bugs de sincronización y valida
   - `utils.spec.js`: valida el alias `moment` post-renombre, 15 tests ✅
 - Sin cambios de comportamiento: solo tipado y renombrado de archivos.
 
-## 4. Pendientes generales
-- ~296 errores de typecheck pre-existentes en ~58 archivos (deuda de la migración TS).
-- Migrar `App.vue` (único componente Options API restante) a `<script setup>`.
-- Limpiar `package.json` (`v-calendar` sin uso) y `index.html`/`public/` (jquery 3.4.1, bootstrap.bundle.min.js, slick-master, owlcarousel, MDI duplicados).
+## 4. Verificación (issue #101 — limpieza de assets obsoletos)
+
+- Eliminados de `index.html`: `css/bootstrap.min.css` (Bootstrap v5 ya entra por `main.ts`), `lib/slick-master/slick/{slick,slick-theme}.css`, `js/jquery-3.4.1.min.js` y `js/bootstrap.bundle.min.js` (sin uso: cero `$()`/JS de Bootstrap en `src/`).
+- Eliminados de `public/`: `lib/slick-master`, `lib/owlcarousel` (sin referencias), `lib/mdi/iconfont` (duplicado; `iconfont2` es el que se enlaza y usan los iconos `mdi mdi-*`), `css/bootstrap.min.css`, `js/jquery-3.4.1.min.js`, `js/bootstrap.bundle.min.js`, `js/domready.js`.
+- Se conservan por estar en uso activo:
+  - `v-calendar` en `package.json` y registro global en `main.ts` (`GttSelectDate.vue` usa `<VDatePicker>`; lo consumen LodgingForm, LodgingDetail, RentForm, IndexLogged* y GttEdit*Modal).
+  - `public/css/base.css` y `public/css/responsive.css` (fuentes `@font-face` y clases de layout como `.hn-roman`, `.custom-padding`, `#twoColumn`).
+  - `public/lib/mdi/iconfont2` (iconos `mdi mdi-*` en ~30 componentes) y `public/js/auth_config.js` (importado por `IndexBanner.vue`).
+- **`npm run typecheck`** (vue-tsc): ✅ exit 0, sin errores.
+- **`npm run test:unit`** (Vitest + Vue Test Utils + jsdom): ✅ **301 tests / 31 archivos**.
+- Pendiente opcional: reglas `.slick-*` muertas en `src/assets/styles/*.scss` (sin efecto visual).
+
+## 5. Pendientes generales
 - `origin/main` (yuniertilan1) queda 8 commits detrás de `main` local.
 - Revocar token de GitHub que quedó filtrado en una URL de remote durante la migración (acción del propietario).
+- Limpieza opcional: reglas `.slick-*` muertas en `src/assets/styles/*.scss`.
