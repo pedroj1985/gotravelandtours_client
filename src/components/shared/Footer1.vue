@@ -2,8 +2,8 @@
   <div id="footer1">
     <div class="footer1-content custom-margin">
       <div class="question hn-roman">
-        ¿Quieres recibir ofertas exclusivas de hoteles? ¡Suscríbete a nuestro
-        boletín de noticias!
+        ¿Quieres recibir ofertas exclusivas de hoteles?<br />
+        ¡Suscríbete a nuestro boletín de noticias!
       </div>
       <Form class="form-inline" @submit="sendSubsPetition">
         <Field name="correo" rules="required" v-slot="{ field, errors }">
@@ -63,6 +63,41 @@ async function sendSubsPetition(values: any) {
 </script>
 
 <style lang="scss" scoped>
+@media (min-width: 769px) {
+  #footer1 .footer1-content .form-inline {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  #footer1 .footer1-content .form-group {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  #footer1 .footer1-content input {
+    width: 100%;
+    flex: 1 1 320px;
+    min-width: 260px;
+  }
+
+  #footer1 .footer1-content button {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 0 24px;
+  }
+
+  #footer1 .footer1-content .question {
+    width: auto;
+    flex: 0 1 auto;
+    margin-right: 22.5px;
+    white-space: normal;
+  }
+}
+
 @media (max-width: 768px) {
   .footer1-content {
     flex-direction: column;

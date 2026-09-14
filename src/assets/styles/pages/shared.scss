@@ -1,3 +1,7 @@
+.text-right {
+  text-align: right;
+}
+
 .terms-of-use {
   font-weight: bold;
   line-height: 1.2;
@@ -37,7 +41,7 @@
   padding-bottom: 15px;
   text-align: right;
 }
-@media(max-width: 1440px) {
+@media (max-width: 1440px) {
   .c-modal {
     top: 29%;
     width: 49.06vw;
