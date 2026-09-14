@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// The 'moment' import is aliased to momentShim.js (dayjs) via vite.config.js resolve.alias
+// The 'moment' import is aliased to momentShim.ts (dayjs) via vite.config.js resolve.alias
 import {
   constructDate,
   calculateNights,

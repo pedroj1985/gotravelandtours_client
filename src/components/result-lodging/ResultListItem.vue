@@ -254,6 +254,26 @@ function styledPrice(number: number) {
 </script>
 
 <style lang="scss" scoped>
+.result-item-price {
+  display: flex;
+  flex-direction: column;
+}
+
+.result-item-price .price-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.result-item-price .details-btn {
+  margin-top: auto;
+  position: static;
+  transform: none;
+  -webkit-transform: none;
+  display: flex;
+  justify-content: center;
+}
+
 @media (max-width: 1024px) {
   .result-item {
     flex-direction: column;

@@ -13,7 +13,7 @@
 | vee-validate v2 | vee-validate v4 + reglas en `utils/vee-validate-setup.ts` |
 | Bootstrap-vue + jQuery | Bootstrap CSS solo (`bootstrap/dist/css` en `main.ts`) |
 | v-calendar (Vue 2) | Inputs nativos `<input type="date">` |
-| Moment.js | Day.js (alias `moment` → `src/utils/momentShim.js`) |
+| Moment.js | Day.js (alias `moment` → `src/utils/momentShim.ts`) |
 | ESLint 8 (.eslintrc.js) | ESLint 9 flat config (`eslint.config.js`) |
 | JS plano | 40 archivos JS → TypeScript; 98 componentes a `<script setup>` |
 
@@ -33,7 +33,7 @@
 ### 1.3 Calidad y limpieza
 - Código muerto eliminado; dependencias sin uso removidas; v-calendar fuera del bundle.
 - Cabeceras de seguridad en Vite (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) y CSP en `index.html`.
-- Suite de pruebas Vitest + Vue Test Utils + jsdom (29 specs sobre stores, utils y composables).
+- Suite de pruebas Vitest + Vue Test Utils + jsdom (31 specs sobre stores, utils y composables; 301 tests en verde).
 
 ## 2. Problemas pendientes del formulario de búsqueda de alojamientos
 
@@ -57,10 +57,19 @@ Al migrar los componentes Gtt* a Vue 3 quedaron bugs de sincronización y valida
 
 6. **Watcher de destino** en `LodgingForm.vue:298` deja un `console.info("watch", i)` de depuración.
 
-## 3. Pendientes generales
+## 3. Verificación (issue #100 — migración a TS de useBooking y momentShim)
+
+- Migrados a TypeScript los archivos JS restantes: `src/composables/useBooking.ts` (tipado de `Hotel`, `BookingInitial`, `BookingState`, `BookingSummary` y todas las firmas) y `src/utils/momentShim.ts`.
+- Alias `moment` en `vite.config.js` actualizado a `momentShim.ts` (lo consumen ~22 componentes vía `import moment`).
+- **`npm run typecheck`** (vue-tsc): ✅ exit 0, sin errores.
+- **`npm run test:unit`** (Vitest + Vue Test Utils + jsdom): ✅ **301 tests / 31 archivos pasan**.
+  - `useBooking.spec.js`: 13 tests ✅
+  - `utils.spec.js`: valida el alias `moment` post-renombre, 15 tests ✅
+- Sin cambios de comportamiento: solo tipado y renombrado de archivos.
+
+## 4. Pendientes generales
 - ~296 errores de typecheck pre-existentes en ~58 archivos (deuda de la migración TS).
 - Migrar `App.vue` (único componente Options API restante) a `<script setup>`.
-- Migrar a TypeScript los archivos JS restantes: `useBooking.js`, `momentShim.js`.
 - Limpiar `package.json` (`v-calendar` sin uso) y `index.html`/`public/` (jquery 3.4.1, bootstrap.bundle.min.js, slick-master, owlcarousel, MDI duplicados).
 - `origin/main` (yuniertilan1) queda 8 commits detrás de `main` local.
 - Revocar token de GitHub que quedó filtrado en una URL de remote durante la migración (acción del propietario).

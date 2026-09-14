@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
       extensions: [".vue", ".mjs", ".js", ".jsx", ".ts", ".tsx", ".json"],
       alias: {
         "@": path.resolve(__dirname, "src"),
-        moment: path.resolve(__dirname, "src/utils/momentShim.js"),
+        moment: path.resolve(__dirname, "src/utils/momentShim.ts"),
       },
     },
     css: {

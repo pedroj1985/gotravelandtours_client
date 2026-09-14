@@ -104,7 +104,7 @@ Files: `.env.development` (local), `.env.production` (production).
 ## Key Architectural Decisions
 
 1. **No `bootstrap-vue`** — all Vue components replaced with native HTML + CSS.
-2. **Day.js instead of Moment.js** — 82% smaller bundle. Shim at `src/utils/momentShim.js`.
+2. **Day.js instead of Moment.js** — 82% smaller bundle. Shim at `src/utils/momentShim.ts`.
 3. **Pinia** for state management (4 stores).
 4. **Axios interceptors** for auth token injection, error handling, toast.
 5. **IDB** for search result persistence via `searchPersistenceService.ts`.
@@ -155,7 +155,7 @@ Files: `.env.development` (local), `.env.production` (production).
 ## Known Issues
 
 - **Typecheck**: ~270 type errors from strict TS in components. Build and tests pass.
-- **moment imports**: 22 components still import "moment" (resolves to momentShim.js). Future: migrate to dayjs.
+- **moment imports**: 22 components still import "moment" (resolves to momentShim.ts). Future: migrate to dayjs.
 - **console.log**: 68 calls guarded with `import.meta.env.DEV` — consider removing entirely.
 
 ## Constraints & Warnings
